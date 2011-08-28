@@ -541,7 +541,7 @@ function showDialog() {
 							<p><strong>' . __('Name', 'nggallery') . ' : </strong>' . nggGallery::i18n( $obj['name'] ) . '</p>
 							<p><strong>' . __('Title', 'nggallery') . ' : </strong>' . nggGallery::i18n( $obj['title'] ) . '</p>
 							<p><strong>' . __('Page', 'nggallery'). ' : </strong>' . nggGallery::i18n( $obj['pagenname'] ) . '</p>
-							' . apply_filters('ngg_display_album_item_content', '', $obj['id']) . '
+							' . apply_filters('ngg_display_album_item_content', '', $obj) . '
 						</div>
 				</div>
 			   </div>'; 
