@@ -488,6 +488,7 @@ function showDialog() {
 	
 			$obj['id']   = $album->id;
 			$obj['name'] = $obj['title'] = $album->name;
+            $obj['type'] = 'album';
 			$class = 'album_obj';
 
 			// get the post name
@@ -512,6 +513,7 @@ function showDialog() {
 			$obj['id']    = $gallery->gid;
 			$obj['name']  = $gallery->name;
 			$obj['title'] = $gallery->title;
+            $obj['type']  = 'gallery';
 		
 			// get the post name
 			$post = get_post($gallery->pageid);
