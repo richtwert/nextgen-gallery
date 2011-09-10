@@ -4,7 +4,7 @@
  * 
  * @package NextGEN Gallery
  * @author Alex Rabe
- * @copyright 2008-2010
+ * @copyright 2008-2011
  * @since 1.0.0
  */
 class nggAdminPanel{
@@ -190,10 +190,32 @@ class nggAdminPanel{
 					'error' => __('Unexpected Error', 'nggallery'),
 					'failure' => __('A failure occurred', 'nggallery')				
 		) );
+        wp_register_script( 'ngg-plupload-handler', NGGALLERY_URLPATH .'admin/js/plupload.handler.js', array('plupload-full'), '0.0.1' );
+    	wp_localize_script( 'ngg-plupload-handler', 'pluploadL10n', array(
+    		'queue_limit_exceeded' => __('You have attempted to queue too many files.'),
+    		'file_exceeds_size_limit' => __('This file exceeds the maximum upload size for this site.'),
+    		'zero_byte_file' => __('This file is empty. Please try another.'),
+    		'invalid_filetype' => __('This file type is not allowed. Please try another.'),
+    		'not_an_image' => __('This file is not an image. Please try another.'),
+    		'image_memory_exceeded' => __('Memory exceeded. Please try another smaller file.'),
+    		'image_dimensions_exceeded' => __('This is larger than the maximum size. Please try another.'),
+    		'default_error' => __('An error occurred in the upload. Please try again later.'),
+    		'missing_upload_url' => __('There was a configuration error. Please contact the server administrator.'),
+    		'upload_limit_exceeded' => __('You may only upload 1 file.'),
+    		'http_error' => __('HTTP error.'),
+    		'upload_failed' => __('Upload failed.'),
+    		'io_error' => __('IO error.'),
+    		'security_error' => __('Security error.'),
+    		'file_cancelled' => __('File canceled.'),
+    		'upload_stopped' => __('Upload stopped.'),
+    		'dismiss' => __('Dismiss'),
+    		'crunching' => __('Crunching&hellip;'),
+    		'deleted' => __('moved to the trash.'),
+    		'error_uploading' => __('&#8220;%s&#8221; has failed to upload due to an error')
+    	) );        
 		wp_register_script('ngg-progressbar', NGGALLERY_URLPATH .'admin/js/ngg.progressbar.js', array('jquery'), '2.0.1');
+        wp_register_script('jquery-ui-autocomplete', NGGALLERY_URLPATH .'admin/js/jquery.ui.autocomplete.min.js', array('jquery-ui-core', 'jquery-ui-widget'), '1.8.15');
 		wp_register_script('swfupload_f10', NGGALLERY_URLPATH .'admin/js/swfupload.js', array('jquery'), '2.2.0');
-        // Until release of 3.1 not used, due to script conflict
-        wp_register_script('jquery-ui-autocomplete', NGGALLERY_URLPATH .'admin/js/jquery.ui.autocomplete.min.js', array('jquery-ui-core', 'jquery-ui-widget'), '1.8.9');
        		
 		switch ($_GET['page']) {
 			case NGGFOLDER : 
@@ -227,8 +249,11 @@ class nggAdminPanel{
 			break;		
 			case "nggallery-add-gallery" :
 				wp_enqueue_script( 'jquery-ui-tabs' );
-				wp_enqueue_script( 'mutlifile', NGGALLERY_URLPATH .'admin/js/jquery.MultiFile.js', array('jquery'), '1.4.4' );
-				wp_enqueue_script( 'ngg-swfupload-handler', NGGALLERY_URLPATH .'admin/js/swfupload.handler.js', array('swfupload_f10'), '1.0.3' );
+				wp_enqueue_script( 'multifile', NGGALLERY_URLPATH .'admin/js/jquery.MultiFile.js', array('jquery'), '1.4.4' );
+                if ( defined('IS_WP_3_3') )
+                    wp_enqueue_script( 'ngg-plupload-handler' );
+                else
+				    wp_enqueue_script( 'ngg-swfupload-handler', NGGALLERY_URLPATH .'admin/js/swfupload.handler.js', array('swfupload_f10'), '1.0.3' );
 				wp_enqueue_script( 'ngg-ajax' );
 				wp_enqueue_script( 'ngg-progressbar' );
                 wp_enqueue_script( 'jquery-ui-dialog' );

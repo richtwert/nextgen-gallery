@@ -253,7 +253,9 @@ class nggLoader {
 	}
 	
 	function define_constant() {
-		
+	   
+		global $wp_version;
+        
 		//TODO:SHOULD BE REMOVED LATER
 		define('NGGVERSION', $this->version);
 		// Minimum required database version
@@ -278,6 +280,9 @@ class nggLoader {
 			else define( 'SAFE_MODE', ini_get('safe_mode') );
 		} else
 		define( 'SAFE_MODE', ini_get('safe_mode') );
+        
+        if ( version_compare($wp_version, '3.2.999', '>') )
+            define('IS_WP_3_3', TRUE);
 		
 	}
 	

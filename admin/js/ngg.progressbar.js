@@ -1,6 +1,6 @@
 /*
  * Progress bar Plugin for NextGEN gallery
- * Version:  2.0.1
+ * Version:  2.0.2
  * Author : Alex Rabe
  */ 
 (function($) {
@@ -10,7 +10,8 @@
 				id:	'progressbar',
 				maxStep: 100,
 				wait: false,
-				header: '' 
+				header: '',
+                init:false 
 		},
 		
 		init: function( s ) {
@@ -31,6 +32,7 @@
                     title: s.header       
             	});
 			}
+            s.init = true;
 		},
 		
 		addMessage: function( message ) {
