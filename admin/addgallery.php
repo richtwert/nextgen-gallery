@@ -39,7 +39,7 @@ class nggAddGallery {
 
     	$defaultpath = $ngg->options['gallerypath'];	
     	
-    	if ($_POST['addgallery']){
+    	if ( isset($_POST['addgallery']) ){
     		check_admin_referer('ngg_addgallery');
     		
     		if ( !nggGallery::current_user_can( 'NextGEN Add new gallery' ))
@@ -50,7 +50,7 @@ class nggAddGallery {
     			nggAdmin::create_gallery($newgallery, $defaultpath);
     	}
     	
-    	if ($_POST['zipupload']){
+    	if ( isset($_POST['zipupload']) ){
     		check_admin_referer('ngg_addgallery');
     
     		if ( !nggGallery::current_user_can( 'NextGEN Upload a zip' ))
@@ -62,7 +62,7 @@ class nggAddGallery {
     			nggGallery::show_error( __('Upload failed!','nggallery') );
     	}
     	
-    	if ($_POST['importfolder']){
+    	if ( isset($_POST['importfolder']) ){
     		check_admin_referer('ngg_addgallery');
     
     		if ( !nggGallery::current_user_can( 'NextGEN Import image folder' ))
@@ -73,7 +73,7 @@ class nggAddGallery {
     			nggAdmin::import_gallery($galleryfolder);
     	}
     	
-    	if ($_POST['uploadimage']){
+    	if ( isset($_POST['uploadimage']) ){
     		check_admin_referer('ngg_addgallery');
     		
     		if ( !nggGallery::current_user_can( 'NextGEN Upload in all galleries' ))
@@ -85,7 +85,7 @@ class nggAddGallery {
     			nggGallery::show_error( __('Upload failed! ' . nggAdmin::decode_upload_error( $_FILES['imagefiles']['error'][0]),'nggallery') );	
     	}
     	
-    	if (isset($_POST['swf_callback'])){
+    	if ( isset($_POST['swf_callback']) ){
     		if ($_POST['galleryselect'] == '0' )
     			nggGallery::show_error(__('No gallery selected !','nggallery'));
     		else {

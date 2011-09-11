@@ -475,7 +475,7 @@ class nggMeta{
 	function get_date_time() {
 
 		// get exif - data
-		if ( $this->exif_data ) {
+		if ( isset( $this->exif_data['EXIF']) ) {
 			$date_time = $this->exif_data['EXIF']['DateTimeDigitized'];
 			// if we didn't get the correct exif value we take filetime
 			if ($date_time == null)
