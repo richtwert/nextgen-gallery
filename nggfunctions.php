@@ -578,7 +578,10 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
         // apply a filter on gallery object before the output
         $galleries[$key] = apply_filters('ngg_album_galleryobject', $galleries[$key]);
     }
-
+    
+    // apply a filter on gallery object before paging starts
+    $galleries = apply_filters('ngg_album_galleries_before_paging', $galleries, $album);
+    
     // check for page navigation
     if ($maxElement > 0) {
         if ( !is_home() || $pageid == get_the_ID() ) {
