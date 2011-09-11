@@ -111,7 +111,7 @@ class nggPostThumbnail {
             $mode = isset($size[2]) ? $size[2] : '';
 
             // check fo cached picture
-            if ( ($ngg_options['imgCacheSinglePic']) && ($post->post_status == 'publish') )
+            if ( $post->post_status == 'publish' )
                 $img_src = $image->cached_singlepic_file( $width, $height, $mode );                
 		    
 		    // if we didn't use a cached image then we take the on-the-fly mode 
@@ -189,8 +189,7 @@ class nggPostThumbnail {
      			$width = absint( $_wp_additional_image_sizes['post-thumbnail']['width'] );
     			$height = absint( $_wp_additional_image_sizes['post-thumbnail']['height'] );
     		    // check fo cached picture
-    		    if ( ($ngg_options['imgCacheSinglePic']) )
-    		        $img_src = $image->cached_singlepic_file( $width, $height, 'crop' );                
+   		        $img_src = $image->cached_singlepic_file( $width, $height, 'crop' );                
             }
 
 		    // if we didn't use a cached image then we take the on-the-fly mode 

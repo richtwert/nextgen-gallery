@@ -800,7 +800,7 @@ function nggSinglePicture($imageID, $width = 250, $height = 250, $mode = '', $fl
     $picture->thumbnailURL = false;
 
     // check fo cached picture
-    if ( ($ngg_options['imgCacheSinglePic']) && ($post->post_status == 'publish') )
+    if ( $post->post_status == 'publish' )
         $picture->thumbnailURL = $picture->cached_singlepic_file($width, $height, $mode );
     
     // if we didn't use a cached image then we take the on-the-fly mode 

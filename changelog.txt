@@ -6,6 +6,7 @@ by Alex Rabe & NextGEN DEV Team
 * TODO : Facebook connector
 * TODO : Rework album page for large amount of galleries
 * Changed : Updated to jQuery Cycle Version 2.9995
+* Changed : Always cache the single pictures
 * Bugfix : Couldn't use bulk operation for serach results
 
 = V1.8.3 - 07.08.2011 =
