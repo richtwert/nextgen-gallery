@@ -368,7 +368,7 @@ function showDialog() {
 		</div>
 		
 		<!-- /#target-album -->
-		<div class="widget target-album widget-liquid-left">
+		<div class="widget target-album widget-left">
 
 		<?php
 			if ($this->currentID > 0){			

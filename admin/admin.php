@@ -43,9 +43,6 @@ class nggAdminPanel{
 	    if ( wpmu_enable_function('wpmuRoles') || wpmu_site_admin() )
 			add_submenu_page( NGGFOLDER , __('Roles', 'nggallery'), __('Roles', 'nggallery'), 'activate_plugins', 'nggallery-roles', array (&$this, 'show_menu'));
 	    add_submenu_page( NGGFOLDER , __('About this Gallery', 'nggallery'), __('About', 'nggallery'), 'NextGEN Gallery overview', 'nggallery-about', array (&$this, 'show_menu'));
-		//TODO: Remove after WP 3.1 release, not longer needed 
-        if ( is_multisite() && wpmu_site_admin() ) 
-			add_submenu_page( 'ms-admin.php' , __('NextGEN Gallery', 'nggallery'), __('NextGEN Gallery', 'nggallery'), 'activate_plugins', 'nggallery-wpmu', array (&$this, 'show_menu'));
 
 	    if ( !is_multisite() || wpmu_site_admin() ) 
             add_submenu_page( NGGFOLDER , __('Reset / Uninstall', 'nggallery'), __('Reset / Uninstall', 'nggallery'), 'activate_plugins', 'nggallery-setup', array (&$this, 'show_menu'));
@@ -157,12 +154,6 @@ class nggAdminPanel{
 			case "nggallery-about" :
 				include_once ( dirname (__FILE__) . '/about.php' );		// nggallery_admin_about
 				nggallery_admin_about();
-				break;
-            //TODO: Remove after WP 3.1 release, not longer needed   
-			case "nggallery-wpmu" :
-				include_once ( dirname (__FILE__) . '/style.php' );		
-				include_once ( dirname (__FILE__) . '/wpmu.php' );		// nggallery_wpmu_admin
-				nggallery_wpmu_setup();
 				break;
 			case "nggallery" :
 			default :
@@ -282,7 +273,9 @@ class nggAdminPanel{
 				wp_enqueue_style( 'thickbox' );	
 			case "nggallery-about" :
 				wp_enqueue_style( 'nggadmin' );
-                wp_admin_css( 'css/dashboard' );
+                //TODO:Remove ater WP 3.3 release
+                if ( !defined('IS_WP_3_3') )
+                    wp_admin_css( 'css/dashboard' );
 			break;
 			case "nggallery-add-gallery" :
 				wp_enqueue_style( 'ngg-jqueryui' );
