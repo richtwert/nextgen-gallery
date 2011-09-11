@@ -188,6 +188,9 @@ class nggLoader {
         // get the real memory limit before some increase it
 		$this->memory_limit = ini_get('memory_limit');
         
+        // PHP docs : Note that to have no memory limit, set this directive to -1.
+        if ($memory_limit == -1 ) return true;
+        
         // Yes, we reached Gigabyte limits, so check if it's a megabyte limit
         if (strtolower( substr($this->memory_limit, -1) ) == 'm') {
             

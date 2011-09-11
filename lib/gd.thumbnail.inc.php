@@ -233,6 +233,11 @@ class ngg_Thumbnail {
 		    $memoryNeeded = memory_get_usage() + $memoryNeeded;
 			// get memory limit
 			$memory_limit = ini_get('memory_limit');
+            
+            // PHP docs : Note that to have no memory limit, set this directive to -1.
+            if ($memory_limit == -1 ) return;
+            
+            // Just check megabyte limits, not higher
             if ( strtolower(substr($memory_limit, -1)) == 'm' ) {
                 
     			if ($memory_limit != '') {
