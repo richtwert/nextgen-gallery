@@ -436,22 +436,29 @@ class nggAdminPanel{
 	 * @return array of the content
 	 */
 	function get_remote_array($url) {
-		if ( function_exists('wp_remote_request') ) {
-					
-			$options = array();
-			$options['headers'] = array(
-				'User-Agent' => 'NextGEN Gallery Information Reader V' . NGGVERSION . '; (' . get_bloginfo('url') .')'
-			 );
-			 
-			$response = wp_remote_request($url, $options);
-			
-			if ( is_wp_error( $response ) )
-				return false;
-		
-			if ( 200 != $response['response']['code'] )
-				return false;
-		   	
-			$content = unserialize($response['body']);
+        
+        if ( function_exists('wp_remote_request') ) {
+
+            if ( false === ( $content = get_transient( 'ngg_request_' . md5($url) ) ) ) {
+                
+    			$options = array();
+    			$options['headers'] = array(
+    				'User-Agent' => 'NextGEN Gallery Information Reader V' . NGGVERSION . '; (' . get_bloginfo('url') .')'
+    			 );
+    			 
+    			$response = wp_remote_request($url, $options);
+    			
+    			if ( is_wp_error( $response ) )
+    				return false;
+    		
+    			if ( 200 != $response['response']['code'] )
+    				return false;
+    		   	
+                $content = $response['body'];
+                set_transient( 'ngg_request_' . md5($url), $content, 60*60*48 );            
+            }
+            
+			$content = unserialize($content);
 	
 			if (is_array($content)) 
 				return $content;

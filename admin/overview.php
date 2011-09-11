@@ -784,11 +784,15 @@ function ngg_widget_related_plugins() {
 function ngg_related_plugins() {
 	include(ABSPATH . 'wp-admin/includes/plugin-install.php');
 
-	// this api sucks , tags will not be used in the correct way : nextgen-gallery cannot be searched
-	$api = plugins_api('query_plugins', array('search' => 'nextgen') );
-	
-	if ( is_wp_error($api) )
-		return;
+    if ( false === ( $api = get_transient( 'ngg_related_plugins' ) ) ) {
+    	// this api sucks , tags will not be used in the correct way : nextgen-gallery cannot be searched
+    	$api = plugins_api('query_plugins', array('search' => 'nextgen') );
+        
+    	if ( is_wp_error($api) )
+            return;  
+                  
+        set_transient( 'ngg_related_plugins', $api, 60*60*24 ); 
+    }
 	
 	// don't show my own plugin :-) and some other plugins, which come up with the search result
 	$blacklist = array(
