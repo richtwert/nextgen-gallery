@@ -45,19 +45,19 @@ class nggMeta{
 
 			// get exif - data
 			if ( is_callable('exif_read_data'))
-			$this->exif_data = @exif_read_data($this->image->imagePath , 0, true );
+                $this->exif_data = @exif_read_data($this->image->imagePath , 0, true );
  			
  			// stop here if we didn't need other meta data
  			if ($onlyEXIF)
  				return true;
- 			
+
  			// get the iptc data - should be in APP13
- 			if ( is_callable('iptcparse'))
-			$this->iptc_data = @iptcparse($metadata["APP13"]);
+ 			if ( is_callable('iptcparse') && isset($metadata['APP13']) )
+                $this->iptc_data = @iptcparse($metadata['APP13']);
 
 			// get the xmp data in a XML format
 			if ( is_callable('xml_parser_create'))
-			$this->xmp_data = $this->extract_XMP($this->image->imagePath );
+                $this->xmp_data = $this->extract_XMP($this->image->imagePath );
 						
 			return true;
 		}
