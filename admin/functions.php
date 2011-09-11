@@ -1095,9 +1095,8 @@ class nggAdmin{
 	 */
 	function chmod($filename = '') {
 
-		$stat = @ stat(dirname($filename));
-		$perms = $stat['mode'] & 0007777;
-		$perms = $perms & 0000666;
+		$stat = @ stat( dirname($filename) );
+		$perms = $stat['mode'] & 0000666; // Remove execute bits for files
 		if ( @chmod($filename, $perms) )
 			return true;
 			
