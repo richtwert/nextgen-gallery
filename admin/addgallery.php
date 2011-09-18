@@ -35,7 +35,7 @@ class nggAddGallery {
 	 * @return void
 	 */
 	function processor() {
-        global $wpdb, $ngg;
+        global $wpdb, $ngg, $nggdb;
 
     	$defaultpath = $ngg->options['gallerypath'];	
     	
@@ -89,10 +89,8 @@ class nggAddGallery {
     		if ($_POST['galleryselect'] == '0' )
     			nggGallery::show_error(__('No gallery selected !','nggallery'));
     		else {
-    			// get the path to the gallery
-    			$galleryID = (int) $_POST['galleryselect'];
-    			$gallerypath = $wpdb->get_var("SELECT path FROM $wpdb->nggallery WHERE gid = '$galleryID' ");
-    			nggAdmin::import_gallery($gallerypath);
+                $gallery = $nggdb->find_gallery( (int) $_POST['galleryselect'] );
+    			nggAdmin::import_gallery( $gallery->path );
     		}	
     	}
     
@@ -152,6 +150,7 @@ class nggAddGallery {
         }
         
         $post_params_str = implode( ',', $p ). "\n";
+       
 	?>
 	
 	<?php if($ngg->options['swfUpload'] && !empty ($this->gallerylist) ) { ?>
@@ -159,8 +158,8 @@ class nggAddGallery {
     <!-- plupload script -->
     <script type="text/javascript">
     //<![CDATA[
-    var resize_height = <?php echo get_option('large_size_h', 1024); ?>, 
-    	resize_width = <?php echo get_option('large_size_w', 1024); ?>;
+    var resize_height = <?php echo (int) $ngg->options['imgHeight']; ?>, 
+    	resize_width = <?php echo (int) $ngg->options['imgWidth']; ?>;
     
     jQuery(document).ready(function($) {
     	window.uploader = new plupload.Uploader({
@@ -233,8 +232,6 @@ class nggAddGallery {
 		  	maxStep: 100
 		};
 
-    	if ( uploader.runtime == 'html5' )
-    		$('.dragdrop-info').show();
     });
     //]]>
     </script>
@@ -475,6 +472,8 @@ class nggAddGallery {
 
     function tab_uploadimage() {
         global $ngg;
+        // check the cookie for the current setting
+        $checked = get_user_setting('ngg_upload_resize') ? ' checked="true"' : '';
     ?>
     	<!-- upload images -->
     	<h2><?php _e('Upload Images', 'nggallery') ;?></h2>
@@ -493,6 +492,10 @@ class nggAddGallery {
                 	</div>
                 	<p class="dragdrop-info howto" style="display:none;" ><?php _e('Or you can drop the files into this window.'); ?></p>
                     <div id='uploadQueue'></div>
+                    <p><label><input name="image_resize" type="checkbox" id="image_resize" value="true"<?php echo $checked; ?> />
+                        <?php printf( __( 'Scale images to max width %1$dpx or max height %2$dpx' ), (int) $ngg->options['imgWidth' ], (int) $ngg->options[ 'imgHeight' ] ); ?>
+                        </label>
+                    </p>
                  </div>
                 </td>
                 <?php } else { ?>

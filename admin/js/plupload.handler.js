@@ -10,7 +10,7 @@
 // on load change the upload to plupload
 function initUploader() {
 
-	jQuery(function() {
+	jQuery(document).ready(function($){
 	   
     	/* Not working in chrome, needs rework
         var dropElm = jQuery('#' + uploader.settings.drop_element);
@@ -22,6 +22,23 @@ function initUploader() {
     			jQuery(this).css('border', 'none');
     		});
     	}*/
+        
+        // enable or disable the resize feature
+		jQuery('#image_resize').bind('change', function() {
+			var arg = jQuery(this).prop('checked');
+			setResize( arg );
+            
+			if ( arg )
+				setUserSetting('ngg_upload_resize', '1');
+			else
+				deleteUserSetting('ngg_upload_resize');            
+		});
+        
+        // get user settings from cookie
+        setResize( getUserSetting('ngg_upload_resize', false) );
+        
+        if ( uploader.features.dragdrop )
+				jQuery('.dragdrop-info').show();
         	
         jQuery("#uploadimage_btn").after("<input class='button-primary' type='button' name='uploadimage' id='plupload_btn' value='" + uploader.settings.i18n.upload + "' />")
                                   .remove();
@@ -147,6 +164,21 @@ function uploadError(fileObj, errorCode, message) {
 	nggProgressBar.addNote("<strong>ERROR " + error_name + " </strong>: " + message);
 	jQuery("#" + fileObj.id).hide("slow");
 	jQuery("#" + fileObj.id).remove();
+}
+
+// client side resize feature
+function setResize(arg) {
+	if ( arg ) {
+        debug('[enable resize]');
+		if ( uploader.features.jpgresize )
+			uploader.settings['resize'] = { width: resize_width, height: resize_height, quality: 100 };
+		else
+			uploader.settings.multipart_params.image_resize = true;
+	} else {
+        debug('[disable resize]');
+		delete(uploader.settings.resize);
+		delete(uploader.settings.multipart_params.image_resize);
+	}
 }
 
 function debug() {
