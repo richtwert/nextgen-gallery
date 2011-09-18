@@ -347,7 +347,7 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
             $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode(get_the_title());
 
         // create link for imagebrowser and other effects
-        $args ['nggpage'] = empty($nggpage) ? false : $nggpage;
+        $args ['nggpage'] = empty($nggpage) || ($images === false) ? false : $nggpage;  // only needed for carousel mode
         $args ['pid']     = ($ngg_options['usePermalinks']) ? $picture->image_slug : $picture->pid;
         $picturelist[$key]->pidlink = $nggRewrite->get_permalink( $args );
         
