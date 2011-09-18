@@ -274,7 +274,8 @@ jQuery(document).ready( function() {
                                 if ( intval($gallery->previewpic) != 0) {
                                     if ( !array_key_exists ($gallery->previewpic, $picturelist )){
                                         $previewpic = $nggdb->find_image($gallery->previewpic);
-                                        echo '<option value="'.$previewpic->pid.'" selected="selected" >'.$previewpic->pid.' - '.$previewpic->filename.'</option>'."\n";                
+                                        if ($previewpic)
+                                            echo '<option value="'.$previewpic->pid.'" selected="selected" >'.$previewpic->pid.' - '.$previewpic->filename.'</option>'."\n";                
                                     }
                                 }
 								if(is_array($picturelist)) {

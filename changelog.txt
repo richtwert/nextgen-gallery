@@ -8,6 +8,7 @@ by Alex Rabe & NextGEN DEV Team
 = V1.9.0 - sometimes = 
 * NEW : Switch to Plupload, suport now HTML5 Upload
 * NEW : Added client side resize feature
+* NEW : Support for gallery templates in album shortcodes [ album id=x template="name" gallery="templatename" ]
 * Changed : Updated to jQuery Cycle Version 2.9995
 * Changed : Always cache the single pictures
 * Bugfix : Couldn't use bulk operation for serach results

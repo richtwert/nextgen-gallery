@@ -347,7 +347,7 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
             $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode(get_the_title());
 
         // create link for imagebrowser and other effects
-        $args ['nggpage'] = empty($nggpage) || ($images === false) ? false : $nggpage;  // only needed for carousel mode
+        $args ['nggpage'] = empty($nggpage) || ($template != 'carousel') ? false : $nggpage;  // only needed for carousel mode
         $args ['pid']     = ($ngg_options['usePermalinks']) ? $picture->image_slug : $picture->pid;
         $picturelist[$key]->pidlink = $nggRewrite->get_permalink( $args );
         
@@ -406,9 +406,10 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
  * @access public 
  * @param int | string $albumID
  * @param string (optional) $template
+ * @param string (optional) $gallery_template
  * @return the content
  */
-function nggShowAlbum($albumID, $template = 'extend') {
+function nggShowAlbum($albumID, $template = 'extend', $gallery_template = '') {
     
     // $_GET from wp_query
     $gallery  = get_query_var('gallery');
@@ -426,7 +427,7 @@ function nggShowAlbum($albumID, $template = 'extend') {
                 return;
                 
         // if gallery is submit , then show the gallery instead 
-        $out = nggShowGallery( $gallery );
+        $out = nggShowGallery( $gallery, $gallery_template );
         $GLOBALS['nggShowGallery'] = true;
         
         return $out;
@@ -526,11 +527,7 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
             $args['gallery'] = false; 
             $args['nggpage'] = false;
             $pageid = (isset($subalbum->pageid) ? $subalbum->pageid : 0);
-            if ($pageid > 0) {
-                $galleries[$key]->pagelink = get_permalink($pageid);
-            } else {
-                $galleries[$key]->pagelink = $nggRewrite->get_permalink($args);
-            }
+            $galleries[$key]->pagelink = ($pageid > 0) ? get_permalink($pageid) : $nggRewrite->get_permalink($args);
             $galleries[$key]->galdesc = html_entity_decode ( nggGallery::i18n($subalbum->albumdesc) );
             $galleries[$key]->title = html_entity_decode ( nggGallery::i18n($subalbum->name) ); 
             

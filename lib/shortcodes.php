@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Alex Rabe, Vincent Prat 
- * @copyright 2008 - 2009
+ * @copyright 2008 - 2011
  * @since 1.0.0
  * @description Use WordPress Shortcode API for more features
  * @Docs http://codex.wordpress.org/Shortcode_API
@@ -184,10 +184,11 @@ class NextGEN_shortcodes {
     
         extract(shortcode_atts(array(
             'id'        => 0,
-            'template'  => 'extend' 
+            'template'  => 'extend',
+            'gallery'   => ''  
         ), $atts ));
         
-        $out = nggShowAlbum($id, $template);
+        $out = nggShowAlbum($id, $template, $gallery);
             
         return $out;
     }
