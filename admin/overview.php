@@ -13,14 +13,14 @@ function nggallery_admin_overview()  {
         <?php screen_icon( 'nextgen-gallery' ); ?>
 		<h2><?php _e('NextGEN Gallery Overview', 'nggallery') ?></h2>
         <?php if (version_compare(PHP_VERSION, '5.0.0', '<')) ngg_check_for_PHP5(); ?>
-		<div id="dashboard-widgets-wrap" class="ngg-overview">
+		<div id="dashboard-widgets-container" class="ngg-overview">
 		    <div id="dashboard-widgets" class="metabox-holder">
 				<div id="post-body">
 					<div id="dashboard-widgets-main-content">
-						<div class="postbox-container" style="width:75%;">
+						<div class="postbox-container" id="main-container" style="width:75%;">
 							<?php do_meta_boxes('ngg_overview', 'left', ''); ?>
 						</div>
-			    		<div class="postbox-container" style="width:24%;">
+			    		<div class="postbox-container" id="side-container" style="width:24%;">
 							<?php do_meta_boxes('ngg_overview', 'right', ''); ?>
 						</div>						
 					</div>
@@ -136,7 +136,6 @@ function ngg_plugin_check() {
 				img_run:  '<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" class="icon" alt="started"/>',
                 img_ok:   '<img src="<?php echo esc_url( admin_url( 'images/yes.png' ) ); ?>" class="icon" alt="ok"/>',
                 img_fail: '<img src="<?php echo esc_url( admin_url( 'images/no.png' ) ); ?>" class="icon" alt="failed" />',
-                adminurl: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
                 domain:   '<?php echo esc_url( home_url('index.php') ); ?>'
 		},
 		
@@ -188,7 +187,7 @@ function ngg_plugin_check() {
             var stop = false;
 			var req = $.ajax({
                 type: "POST",
-			   	url: s.adminurl,
+			   	url: ajaxurl,
 			   	data:"action=ngg_image_check&step=" + step,
 			   	cache: false,
 			   	timeout: 10000,
@@ -222,7 +221,7 @@ function ngg_plugin_check() {
             this.start(3);
 			var req = $.ajax({
                 type: "POST",
-			   	url: s.adminurl,
+			   	url: ajaxurl,
 			   	data:"action=ngg_test_head_footer",
 			   	cache: false,
 			   	timeout: 10000,

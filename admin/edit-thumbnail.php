@@ -107,7 +107,7 @@ if ( ($ngg_options['thumbfix'] == 1) ) {
 		}
 				
 		jQuery.ajax({
-		  url: "admin-ajax.php",
+		  url: ajaxurl,
 		  type : "POST",
 		  data:  {x: xT, y: yT, w: wT, h: hT, action: 'createNewThumb', id: <?php echo $id; ?>, rr: <?php echo $rr; ?>},
 		  cache: false,
