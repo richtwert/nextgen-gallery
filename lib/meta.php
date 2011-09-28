@@ -380,8 +380,8 @@ class nggMeta{
 		}
 		
 		// return one element if requested	
-		if ($object)
-			return $this->xmp_array[$object];		 
+		if ($object != false )
+			return isset($this->xmp_array[$object]) ? $this->xmp_array[$object] : false;		 
 		
 		return $this->xmp_array;
 	}

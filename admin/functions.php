@@ -368,7 +368,7 @@ class nggAdmin{
 			if ( ($ngg->options['imgBackup'] == 1) && (!file_exists($image->imagePath . '_backup')) )
 				@copy ($image->imagePath, $image->imagePath . '_backup');
 			
-			$file->resize($width, $height, 4);
+			$file->resize($width, $height);
 			$file->save($image->imagePath, $ngg->options['imgQuality']);
 			// read the new sizes
 			$size = @getimagesize ( $image->imagePath );

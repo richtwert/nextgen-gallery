@@ -180,6 +180,18 @@ class NextGEN_shortcodes {
         return $out;
     }
 
+    /**
+     * Function to show a collection of galleries:
+     * 
+     * [album id="1,2,4,5,..." template="filename" gallery="filename" /]
+     * where 
+     * - id of a album
+     * - template is a name for a album template, which is located in themefolder/nggallery or plugins/nextgen-gallery/view
+     * - template is a name for a gallery template, which is located in themefolder/nggallery or plugins/nextgen-gallery/view
+     * 
+     * @param array $atts
+     * @return the_content
+     */
     function show_album( $atts ) {
     
         extract(shortcode_atts(array(

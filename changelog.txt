@@ -4,14 +4,21 @@ by Alex Rabe & NextGEN DEV Team
 = V2.0.0 - In the future =
 * TODO : Facebook connector
 * TODO : Rework album page for large amount of galleries
+* TODO : Use WP-Pointer : http://theme.fm/2011/09/introducing-pointers-in-wordpress-3-3-2407/
 
 = V1.9.0 - sometimes = 
+* NEW : Keep images transparency for PNG and GIF format
 * NEW : Switch to Plupload, suport now HTML5 Upload
 * NEW : Added client side resize feature
 * NEW : Support for gallery templates in album shortcodes [ album id=x template="name" gallery="templatename" ]
 * Changed : Updated to jQuery Cycle Version 2.9995
 * Changed : Always cache the single pictures
 * Bugfix : Couldn't use bulk operation for serach results
+* Bugfix : Bugfix for Edit thumbnails under IE 8 + 9
+* Bugfix : Allow empty altext in ngg.editImage
+* TODO : BUG Keine Error text aussage
+* TODO : Integration of Wp-pointer
+* TODO : Thickbox geht nicht mehr
 
 = V1.8.3 - 07.08.2011 =
 * Changed : Support for simple custom permalink structures (i.e. /%category%/%postname%/)
