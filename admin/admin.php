@@ -218,7 +218,13 @@ class nggAdminPanel{
 				wp_enqueue_script( 'ngg-ajax' );
 				wp_enqueue_script( 'ngg-progressbar' );
 				wp_enqueue_script( 'jquery-ui-dialog' );
-				add_thickbox();
+    			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.js', false ,'1.3.2');
+    			wp_localize_script('shutter', 'shutterSettings', array(
+    						'msgLoading' => __('L O A D I N G', 'nggallery'),
+    						'msgClose' => __('Click to Close', 'nggallery'),
+    						'imageCount' => '1'				
+    			) );
+    			wp_enqueue_script( 'shutter' ); 
 			break;
 			case "nggallery-manage-album" :
                 if ( version_compare( $wp_version, '3.0.999', '>' ) ) {
@@ -285,11 +291,11 @@ class nggAdminPanel{
 				wp_enqueue_style( 'nggadmin' );
             break;    
 			case "nggallery-manage-gallery" :
+                wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.css', false, '1.3.2', 'screen');
 			case "nggallery-roles" :
 			case "nggallery-manage-album" :
 				wp_enqueue_style( 'ngg-jqueryui' );
 				wp_enqueue_style( 'nggadmin' );
-				wp_enqueue_style( 'thickbox' );			
 			break;
 			case "nggallery-tags" :
 				wp_enqueue_style( 'nggtags', NGGALLERY_URLPATH .'admin/css/tags-admin.css', false, '2.6.1', 'screen' );
