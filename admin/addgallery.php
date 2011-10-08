@@ -317,7 +317,8 @@ class nggAddGallery {
 	/* <![CDATA[ */
 		jQuery(document).ready(function(){
             jQuery('html,body').scrollTop(0);
-			jQuery('#slider').tabs({ fxFade: true, fxSpeed: 'fast' });	
+			jQuery('#slider').tabs({ fxFade: true, fxSpeed: 'fast' });
+            jQuery('#slider').css('display', 'block');  	
 		});
 		
 		// File Tree implementation
@@ -334,7 +335,7 @@ class nggAddGallery {
 		});
 	/* ]]> */
 	</script>
-	<div id="slider" class="wrap">
+	<div id="slider" class="wrap" style="display: none;">
         <ul id="tabs">
             <?php    
         	foreach($tabs as $tab_key => $tab_name) {
@@ -490,11 +491,11 @@ class nggAddGallery {
                     	<?php _e( 'Choose files to upload' ); ?>
                     	<input id="plupload-browse-button" type="button" value="<?php esc_attr_e('Select Files'); ?>" class="button" />
                 	</div>
-                	<p class="dragdrop-info howto" style="display:none;" ><?php _e('Or you can drop the files into this window.'); ?></p>
+                	<p class="ngg-dragdrop-info howto" style="display:none;" ><?php _e('Or you can drop the files into this window.'); ?></p>
                     <div id='uploadQueue'></div>
-                    <p><label><input name="image_resize" type="checkbox" id="image_resize" value="true"<?php echo $checked; ?> />
+                    <p><div id='image_resize_label'><label><input name="image_resize" type="checkbox" id="image_resize" value="true"<?php echo $checked; ?> />
                         <?php printf( __( 'Scale images to max width %1$dpx or max height %2$dpx' ), (int) $ngg->options['imgWidth' ], (int) $ngg->options[ 'imgHeight' ] ); ?>
-                        </label>
+                        </label></div>
                     </p>
                  </div>
                 </td>

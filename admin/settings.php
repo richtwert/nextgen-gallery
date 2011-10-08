@@ -129,7 +129,8 @@ class nggOptions {
 				return false;
 			});
             */
-			jQuery('#slider').tabs({ fxFade: true, fxSpeed: 'fast' });
+            jQuery('#slider').tabs({ fxFade: true, fxSpeed: 'fast' });
+			jQuery('#slider').css('display', 'block');            
             /*
 			jQuery('.picker').ColorPicker({
 				onSubmit: function(hsb, hex, rgb, el) {
@@ -180,7 +181,7 @@ class nggOptions {
 		};
 	</script>
 	
-	<div id="slider" class="wrap">
+	<div id="slider" class="wrap" style="display: none;">
         <ul id="tabs">
             <?php    
         	foreach($tabs as $tab_key => $tab_name) {

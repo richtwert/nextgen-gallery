@@ -38,7 +38,7 @@ function initUploader() {
         setResize( getUserSetting('ngg_upload_resize', false) );
         
         if ( uploader.features.dragdrop )
-				jQuery('.dragdrop-info').show();
+				jQuery('.ngg-dragdrop-info').show();
         	
         jQuery("#uploadimage_btn").after("<input class='button-primary' type='button' name='uploadimage' id='plupload_btn' value='" + uploader.settings.i18n.upload + "' />")
                                   .remove();
