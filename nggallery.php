@@ -55,7 +55,7 @@ class nggLoader {
 		$this->load_dependencies();
 		$this->start_rewrite_module();
 		
-		$this->plugin_name = plugin_basename(__FILE__);
+		$this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 		
 		// Init options & tables during activation & deregister init option
 		register_activation_hook( $this->plugin_name, array(&$this, 'activate') );
@@ -270,8 +270,8 @@ class nggLoader {
 		// define URL
 		define('NGGFOLDER', plugin_basename( dirname(__FILE__)) );
 		
-		define('NGGALLERY_ABSPATH', trailingslashit( str_replace("\\","/", WP_PLUGIN_DIR . '/' . plugin_basename( dirname(__FILE__) ) ) ) );
-		define('NGGALLERY_URLPATH', trailingslashit( plugins_url( '', __FILE__ ) ) );
+		define('NGGALLERY_ABSPATH', trailingslashit( str_replace("\\","/", WP_PLUGIN_DIR . '/' . NGGFOLDER ) ) );
+		define('NGGALLERY_URLPATH', trailingslashit( plugins_url( NGGFOLDER ) ) );
 		
 		// look for imagerotator
 		define('NGGALLERY_IREXIST', !empty( $this->options['irURL'] ));
@@ -330,7 +330,7 @@ class nggLoader {
 	
 	function load_textdomain() {
 		
-		load_plugin_textdomain('nggallery', false, dirname( plugin_basename(__FILE__) ) . '/lang');
+		load_plugin_textdomain('nggallery', false, NGGFOLDER . '/lang');
 
 	}
 	
@@ -436,7 +436,7 @@ class nggLoader {
 		global $wpdb;
 		//Starting from version 1.8.0 it's works only with PHP5.2
         if (version_compare(PHP_VERSION, '5.2.0', '<')) { 
-                deactivate_plugins(plugin_basename(__FILE__)); // Deactivate ourself
+                deactivate_plugins($this->plugin_name); // Deactivate ourself
                 wp_die("Sorry, but you can't run this plugin, it requires PHP 5.2 or higher."); 
 				return; 
         } 
@@ -490,16 +490,14 @@ class nggLoader {
     }
     
 	function disable_upgrade($option){
-
-	 	$this_plugin = plugin_basename(__FILE__);
 	 	
 		// PHP5.2 is required for NGG V1.4.0 
-		if ( version_compare($option->response[ $this_plugin ]->new_version, '1.4.0', '>=') )
+		if ( version_compare($option->response[ $this->plugin_name ]->new_version, '1.4.0', '>=') )
 			return $option;
 
-	    if( isset($option->response[ $this_plugin ]) ){
+	    if( isset($option->response[ $this->plugin_name ]) ){
 	        //Clear it''s download link
-	        $option->response[ $this_plugin ]->package = '';
+	        $option->response[ $this->plugin_name ]->package = '';
 	        
 	        //Add a notice message
 	        if ($this->add_PHP5_notice == false){
@@ -513,7 +511,7 @@ class nggLoader {
 	// Taken from Google XML Sitemaps from Arne Brachhold
 	function add_plugin_links($links, $file) {
 		
-		if ( $file == plugin_basename(__FILE__) ) {
+		if ( $file == $this->plugin_name ) {
 			$links[] = '<a href="admin.php?page=nextgen-gallery">' . __('Overview', 'nggallery') . '</a>';
 			$links[] = '<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10">' . __('Get help', 'nggallery') . '</a>';
 			$links[] = '<a href="http://code.google.com/p/nextgen-gallery/">' . __('Contribute', 'nggallery') . '</a>';
