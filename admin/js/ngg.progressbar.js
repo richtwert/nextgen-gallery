@@ -1,6 +1,6 @@
 /*
  * Progress bar Plugin for NextGEN gallery
- * Version:  2.0.2
+ * Version:  2.0.3
  * Author : Alex Rabe
  */ 
 (function($) {
@@ -17,7 +17,6 @@
 		init: function( s ) {
 			
 			s = this.settings = $.extend( {}, this.settings, {}, s || {} );
-            div = $('#' + s.id + '_dialog');
 			width = Math.round( ( 100 / s.maxStep ) * 100 ) /100;			
 			// add the initial progressbar
 			if ( $( "#" + s.id + "_dialog" ).length == 0) {
@@ -32,6 +31,8 @@
                     title: s.header       
             	});
 			}
+            // get the pointer to the dialog
+            div = $('#' + s.id + '_dialog');
             s.init = true;
 		},
 		

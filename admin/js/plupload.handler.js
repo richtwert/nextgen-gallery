@@ -105,6 +105,9 @@ function uploadComplete(fileObj) {
 function uploadSuccess(fileObj, serverData) {
     debug('[uploadSuccess]', serverData);
     
+    if (serverData.response != 0)
+        nggProgressBar.addNote("<strong>ERROR</strong>: " + fileObj.name + " : " + serverData.response);
+    
 	jQuery("#" + fileObj.id).hide("slow");
 	jQuery("#" + fileObj.id).remove();
 }
