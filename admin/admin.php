@@ -10,7 +10,7 @@
 class nggAdminPanel{
 	
 	// constructor
-	function nggAdminPanel() {
+	function __construct() {
 
 		// Add the admin menu
 		add_action( 'admin_menu', array (&$this, 'add_menu') ); 
@@ -19,7 +19,8 @@ class nggAdminPanel{
 		// Add the script and style files
 		add_action('admin_print_scripts', array(&$this, 'load_scripts') );
 		add_action('admin_print_styles', array(&$this, 'load_styles') );
-
+        
+        //TODO: remove after release of Wordpress 3.3
 		add_filter('contextual_help', array(&$this, 'show_help'), 10, 2);
         add_filter('current_screen', array(&$this, 'edit_current_screen'));
 
@@ -279,7 +280,7 @@ class nggAdminPanel{
 				wp_enqueue_style( 'thickbox' );	
 			case "nggallery-about" :
 				wp_enqueue_style( 'nggadmin' );
-                //TODO:Remove ater WP 3.3 release
+                //TODO:Remove after WP 3.3 release
                 if ( !defined('IS_WP_3_3') )
                     wp_admin_css( 'css/dashboard' );
 			break;
@@ -309,11 +310,11 @@ class nggAdminPanel{
 	}
 	
 	function show_help($help, $screen) {
-		
+
 		// since WP3.0 it's an object
 		if ( is_object($screen) )
 			$screen = $screen->id;
-		
+        
 		$link = '';
 		// menu title is localized...
 		$i18n = strtolower  ( _n( 'Gallery', 'Galleries', 1, 'nggallery' ) );
@@ -381,6 +382,20 @@ class nggAdminPanel{
 		return $help;
 	}
 
+    /**
+     * New wrapper for WordPress 3.3, so contextual help will be added to the admin bar
+     * 
+     * @since 1.9.0
+     * @param object $screen
+     * @return void
+     */
+    function add_contextual_help($screen) {
+        
+        $help = $this->show_help('', $screen);
+        add_contextual_help( $screen, $help );
+        
+    }
+
 	/**
 	 * We need to manipulate the current_screen name so that we can show the correct column screen options
 	 * 
@@ -409,6 +424,9 @@ class nggAdminPanel{
 					$screen->base = $screen->id = 'nggallery-manage-gallery';	
 			break;
 		}
+        
+        if ( defined('IS_WP_3_3') )
+            $this->add_contextual_help($screen);
 
 		return $screen;
 	}
