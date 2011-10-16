@@ -227,6 +227,8 @@ class nggAPI {
      */
     function create_xml_array( &$arr )
     {
+        $xml = '';
+        
         if( is_object( $arr ) )
             $arr = get_object_vars( $arr );
 
