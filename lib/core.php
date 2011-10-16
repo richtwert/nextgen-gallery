@@ -576,5 +576,16 @@ class nggGallery {
         echo $text . ': ' . $exp . $rounded .'<br />'; 
           
     }
+    
+    /**
+     * Show NextGEN Version in header
+     * @since 1.9.0
+     * 
+     * @return void
+     */
+    function nextgen_version() {
+        global $ngg;
+        echo apply_filters('show_nextgen_version', '<meta name="NextGEN" content="'. $ngg->version . '" />' . "\n");	   
+    }
 }
 ?>

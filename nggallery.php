@@ -82,7 +82,10 @@ class nggLoader {
 		add_filter('plugin_row_meta', array(&$this, 'add_plugin_links'), 10, 2);
         
         // Check for the header / footer
-        add_action( 'init', array(&$this, 'test_head_footer_init' ) );	
+        add_action( 'init', array(&$this, 'test_head_footer_init' ) );
+        
+        // Show NextGEN version in header
+        add_action('wp_head', array('nggGallery', 'nextgen_version') );
 		
 	}
 	
@@ -127,9 +130,6 @@ class nggLoader {
 			add_action('template_redirect', array(&$this, 'load_scripts') );
 			add_action('template_redirect', array(&$this, 'load_styles') );
 			
-			// Add a version number to the header
-			add_action('wp_head', create_function('', 'echo "\n<meta name=\'NextGEN\' content=\'' . $this->version . '\' />\n";') );
-
 		}	
 	}
 
@@ -323,7 +323,7 @@ class nggLoader {
 			if ( is_admin() ) {	
 				require_once (dirname (__FILE__) . '/admin/admin.php');
 				require_once (dirname (__FILE__) . '/admin/media-upload.php');
-				$this->nggAdminPanel = new nggAdminPanel();
+                $this->nggAdminPanel = new nggAdminPanel();
 			}	
 		}
 	}
