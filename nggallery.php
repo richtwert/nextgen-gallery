@@ -98,7 +98,7 @@ class nggLoader {
 		
 		// All credits to the tranlator 
 		$this->translator  = '<p class="hint">'. __('<strong>Translation by : </strong><a target="_blank" href="http://alexrabe.de/wordpress-plugins/nextgen-gallery/languages/">See here</a>', 'nggallery') . '</p>';
-		$this->translator .= '<p class="hint">'. __('<strong>This translation is not yet updated for Version 1.8.0</strong>. If you would like to help with translation, download the current po from the plugin folder and read <a href="http://alexrabe.de/wordpress-plugins/wordtube/translation-of-plugins/">here</a> how you can translate the plugin.', 'nggallery') . '</p>'; 
+		$this->translator .= '<p class="hint">'. __('<strong>This translation is not yet updated for Version 1.9.0</strong>. If you would like to help with translation, download the current po from the plugin folder and read <a href="http://alexrabe.de/wordpress-plugins/wordtube/translation-of-plugins/">here</a> how you can translate the plugin.', 'nggallery') . '</p>'; 
 
         // Check for upgrade
         $this->check_for_upgrade();
@@ -268,7 +268,7 @@ class nggLoader {
 		define('WINABSPATH', str_replace("\\", "/", ABSPATH) );
 			
 		// define URL
-		define('NGGFOLDER', plugin_basename( dirname(__FILE__)) );
+		define('NGGFOLDER', basename( dirname(__FILE__) ) );
 		
 		define('NGGALLERY_ABSPATH', trailingslashit( str_replace("\\","/", WP_PLUGIN_DIR . '/' . NGGFOLDER ) ) );
 		define('NGGALLERY_URLPATH', trailingslashit( plugins_url( NGGFOLDER ) ) );
@@ -323,6 +323,7 @@ class nggLoader {
 			if ( is_admin() ) {	
 				require_once (dirname (__FILE__) . '/admin/admin.php');
 				require_once (dirname (__FILE__) . '/admin/media-upload.php');
+				//require_once (dirname (__FILE__) . '/admin/pointer.php');
                 $this->nggAdminPanel = new nggAdminPanel();
 			}	
 		}
