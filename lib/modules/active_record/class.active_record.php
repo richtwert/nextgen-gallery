@@ -10,6 +10,8 @@ class Ext_Active_Record_Persistence extends Ext
      */
     function save()
     {
+        $this->validate();
+        
         if ($this->object->is_valid()) {
             if ($this->object->is_new()) $this->object->_create ();
             else $this->object->_update ();
@@ -47,6 +49,11 @@ class Ext_Active_Record_Persistence extends Ext
         );
         return $this->object->db->query($query);
     }
+    
+    /**
+     * Expected to be overwritten
+     */
+    function validate() {}
 }
 
 

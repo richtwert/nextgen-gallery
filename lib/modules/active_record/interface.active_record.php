@@ -18,6 +18,8 @@ interface I_Active_Record
     
     function is_valid();
     
+    function validate();
+    
     function get_errors();
     
     function set_properties($value);
