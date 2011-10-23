@@ -2,7 +2,7 @@
 CSS Name: Default Styles
 Description: NextGEN Default Gallery Stylesheet
 Author: Alex Rabe
-Version: 2.10
+Version: 2.11
 
 This is a template stylesheet that can be used with NextGEN Gallery. I tested the
 styles with a default theme Kubrick. Modify it when your theme struggle with it,
@@ -187,7 +187,7 @@ html>body .ngg-album {
 .ngg-navigation span.prev {
 	border:1px solid #DDDDDD;
 	margin-right:3px;
-	padding:3px 7px;
+	padding:2px 8px;
 }
 
 .ngg-navigation a.page-numbers:hover,

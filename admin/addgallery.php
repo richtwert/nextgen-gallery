@@ -15,7 +15,7 @@ class nggAddGallery {
     }
     
     /**
-     * nggOptions::__construct()
+     * nggAddGallery::__construct()
      * 
      * @return void
      */
@@ -89,9 +89,13 @@ class nggAddGallery {
     		if ($_POST['galleryselect'] == '0' )
     			nggGallery::show_error(__('No gallery selected !','nggallery'));
     		else {
-                $gallery = $nggdb->find_gallery( (int) $_POST['galleryselect'] );
-    			nggAdmin::import_gallery( $gallery->path );
-    		}	
+                if ($_POST['swf_callback'] == '-1' )
+                    nggGallery::show_error( __('Upload failed! ','nggallery') );
+                else {
+                    $gallery = $nggdb->find_gallery( (int) $_POST['galleryselect'] );
+                    nggAdmin::import_gallery( $gallery->path );
+                }
+            }
     	}
     
     	if ( isset($_POST['disable_flash']) ){
@@ -493,9 +497,10 @@ class nggAddGallery {
                 	</div>
                 	<p class="ngg-dragdrop-info howto" style="display:none;" ><?php _e('Or you can drop the files into this window.'); ?></p>
                     <div id='uploadQueue'></div>
-                    <p><div id='image_resize_label'><label><input name="image_resize" type="checkbox" id="image_resize" value="true"<?php echo $checked; ?> />
+                    <p><label><input name="image_resize" type="checkbox" id="image_resize" value="true"<?php echo $checked; ?> />
                         <?php printf( __( 'Scale images to max width %1$dpx or max height %2$dpx' ), (int) $ngg->options['imgWidth' ], (int) $ngg->options[ 'imgHeight' ] ); ?>
-                        </label></div>
+                        </label>
+                        <div id='image_resize_pointer'></div>
                     </p>
                  </div>
                 </td>
