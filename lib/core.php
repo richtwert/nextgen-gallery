@@ -585,7 +585,7 @@ class nggGallery {
      */
     function nextgen_version() {
         global $ngg;
-        echo apply_filters('show_nextgen_version', '<meta name="NextGEN" content="'. $ngg->version . '" />' . "\n");	   
+        echo apply_filters('show_nextgen_version', '<!-- <meta name="NextGEN" version="'. $ngg->version . '" /> -->' . "\n");	   
     }
 }
 ?>
