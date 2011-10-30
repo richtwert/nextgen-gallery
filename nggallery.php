@@ -4,7 +4,7 @@ Plugin Name: NextGEN Gallery
 Plugin URI: http://alexrabe.de/?page_id=80
 Description: A NextGENeration Photo Gallery for WordPress
 Author: Alex Rabe
-Version: 1.9.0a
+Version: 1.9.0b1
 
 Author URI: http://alexrabe.de/
 

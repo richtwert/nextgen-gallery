@@ -352,7 +352,7 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
         $picturelist[$key]->pidlink = $nggRewrite->get_permalink( $args );
         
         // generate the thumbnail size if the meta data available
-        if (is_array ($size = $picturelist[$key]->meta_data['thumbnail']) )
+        if ( isset($picturelist[$key]->meta_data['thumbnail']) && is_array ($size = $picturelist[$key]->meta_data['thumbnail']) )
         	$thumbsize = 'width="' . $size['width'] . '" height="' . $size['height'] . '"';
         
         // choose link between imagebrowser or effect

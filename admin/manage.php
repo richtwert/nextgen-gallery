@@ -214,7 +214,7 @@ class nggManageGallery {
 			//save the new values for the next operation
 			$ngg->options['thumbwidth']  = (int)  $_POST['thumbwidth'];
 			$ngg->options['thumbheight'] = (int)  $_POST['thumbheight'];
-			$ngg->options['thumbfix']    = (bool) $_POST['thumbfix']; 
+			$ngg->options['thumbfix']    = isset ($_POST['thumbfix']) ? true : false; 
 			// What is in the case the user has no if cap 'NextGEN Change options' ? Check feedback
 			update_option('ngg_options', $ngg->options);
 			
