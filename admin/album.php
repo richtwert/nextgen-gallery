@@ -400,6 +400,7 @@ function showDialog() {
 	</div><!-- /#container -->
 </div><!-- /#wrap -->
 
+<?php if ($this->currentID > 0) : ?>
 <!-- #editalbum -->
 <div id="editalbum" style="display: none;" >
 	<form id="form-edit-album" method="POST" accept-charset="utf-8">
@@ -461,6 +462,7 @@ function showDialog() {
 	</form>
 </div>
 <!-- /#editalbum -->
+<?php endif; ?>
 
 <?php
 		
