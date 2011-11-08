@@ -231,7 +231,7 @@ jQuery(document).ready( function() {
 
 <br style="clear: both;" />
 
-<form id="updategallery" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;mode=edit&amp;s=' . $_GET['s']; ?>" accept-charset="utf-8">
+<form id="updategallery" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;mode=edit&amp;s=' . get_search_query(); ?>" accept-charset="utf-8">
 <?php wp_nonce_field('ngg_updategallery') ?>
 <input type="hidden" name="page" value="manage-images" />
 

@@ -4,7 +4,7 @@ Plugin Name: NextGEN Gallery
 Plugin URI: http://alexrabe.de/?page_id=80
 Description: A NextGENeration Photo Gallery for WordPress
 Author: Alex Rabe
-Version: 1.9.0b1
+Version: 1.9.0RC1
 
 Author URI: http://alexrabe.de/
 
@@ -352,7 +352,7 @@ class nggLoader {
 
 		// activate modified Shutter reloaded if not use the Shutter plugin
 		if ( ($this->options['thumbEffect'] == "shutter") && !function_exists('srel_makeshutter') ) {
-			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.js', false ,'1.3.2');
+			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.js', false ,'1.3.3');
 			wp_localize_script('shutter', 'shutterSettings', array(
 						'msgLoading' => __('L O A D I N G', 'nggallery'),
 						'msgClose' => __('Click to Close', 'nggallery'),
@@ -402,7 +402,7 @@ class nggLoader {
 
 		// activate modified Shutter reloaded if not use the Shutter plugin
 		if ( ($this->options['thumbEffect'] == 'shutter') && !function_exists('srel_makeshutter') )
-			wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.css', false, '1.3.2', 'screen');
+			wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.css', false, '1.3.3', 'screen');
 		
 	}
 	

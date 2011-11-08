@@ -7,8 +7,8 @@ by Alex Rabe & NextGEN DEV Team
 
 = V1.9.0 - sometimes = 
 * NEW : Keep images transparency for PNG and GIF format
-* NEW : Switch to Plupload, support now HTML5 Upload
-* NEW : Added client side resize feature
+* NEW : Switch to Plupload, support now HTML5 Upload (only with WordPress 3.3)
+* NEW : Added client side resize feature (only with WordPress 3.3)
 * NEW : Support for gallery templates in album shortcodes [ album id=x template="name" gallery="templatename" ]
 * Changed : Updated to jQuery Cycle Version 2.9995
 * Changed : Always cache the single pictures, remove option
@@ -16,6 +16,7 @@ by Alex Rabe & NextGEN DEV Team
 * Bugfix : Bugfix for Edit thumbnails under IE 8 + 9
 * Bugfix : Allow empty altext in ngg.editImage
 * Bugfix : Various PHP notice fixes
+* Bugfix : Resize fix for Shutter effect and mobile Browser
 
 = V1.8.4 - 26.10.2011 =
 * Bugfix : Fixed security vulnerability (TXH to Alain Schneider)

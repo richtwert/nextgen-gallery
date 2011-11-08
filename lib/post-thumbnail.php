@@ -1,5 +1,5 @@
 <?php
-
+// see : http://wordpress.org/support/topic/plugin-nextgen-gallery-ngg-and-featured-image-issue?replies=14
 /**
  * nggPostThumbnail - Class for adding the post thumbnail feature
  * 
@@ -90,7 +90,7 @@ class nggPostThumbnail {
 		
 		$class = 'wp-post-image ngg-image-' . $image->pid . ' ';
         
-        // look up for the post thumbnial size and use them if defined
+        // look up for the post thumbnail size and use them if defined
         if ($size == 'post-thumbnail') {
             if ( is_array($_wp_additional_image_sizes) && isset($_wp_additional_image_sizes['post-thumbnail']) ) {
                 $size = array();
