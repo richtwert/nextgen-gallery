@@ -17,8 +17,8 @@ class C_NextGen_Thumbnail_Gallery_View extends C_MVC_Controller
         // Create factory
         $factory    = $this->_registry->get_singleton_utility('I_Component_Factory');
         $image      = $factory->create('gallery_image');
-        $width      = $this->gallery_instance->thumbnails['width'];
-        $height     = $this->gallery_instance->thumbnails['height'];
+        $width      = $this->gallery_instance->settings['thumbnail_width'];
+        $height     = $this->gallery_instance->settings['thumbnail_height'];
         
         // Collect images
         $images = array();
@@ -28,7 +28,7 @@ class C_NextGen_Thumbnail_Gallery_View extends C_MVC_Controller
             // Override image to use gallery instance properties
             $img->update_properties($properties);
             $thumbnail = $img->get_thumbnail_url(
-                (object)$this->gallery_instance->thumbnails
+                (object)$this->gallery_instance->settings
             );
             $img->merge_meta(array('thumbnail' => array('width'=>$width, 'height'=>$height)));
             $img = $img->to_nggImage(); // wrapped version of ngg_image

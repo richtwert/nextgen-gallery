@@ -2,6 +2,8 @@
 
 class C_NextGen_Thumbnail_Gallery_Settings extends C_Thumbnail_Settings
 {
+    var $form_identifier = __CLASS__;
+    
     function preview()
     {
         $src = $this->static_url('preview.jpg');
