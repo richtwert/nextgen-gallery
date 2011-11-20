@@ -20,7 +20,7 @@ class NGG_Pointers {
 			'nggallery-add-gallery' => array(
 				'id'	   => 'image_resize_pointer',
 				'content'  => __('<h3>Client side resize</h3><p>You can now resize the images before you start with the upload.</p>', 'nggallery'),
-                'posititon'=> 'bottom'
+                'posititon'=> 'top'
 			)
 		);
         

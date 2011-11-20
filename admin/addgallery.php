@@ -498,10 +498,11 @@ class nggAddGallery {
                 	<p class="ngg-dragdrop-info howto" style="display:none;" ><?php _e('Or you can drop the files into this window.'); ?></p>
                     <div id='uploadQueue'></div>
                     <p><label><input name="image_resize" type="checkbox" id="image_resize" value="true"<?php echo $checked; ?> />
-                        <?php printf( __( 'Scale images to max width %1$dpx or max height %2$dpx' ), (int) $ngg->options['imgWidth' ], (int) $ngg->options[ 'imgHeight' ] ); ?>
+                        <?php printf( __( 'Scale images to max width %1$dpx or max height %2$dpx', 'nggallery' ), (int) $ngg->options['imgWidth' ], (int) $ngg->options[ 'imgHeight' ] ); ?>
+                        <div id='image_resize_pointer'>&nbsp;</div>
                         </label>
-                        <div id='image_resize_pointer'></div>
                     </p>
+                    
                  </div>
                 </td>
                 <?php } else { ?>
