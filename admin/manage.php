@@ -75,14 +75,16 @@ class nggManageGallery {
 				if ($ngg->options['deleteImg']) {
 					@unlink($image->imagePath);
 					@unlink($image->thumbPath);	
-					@unlink($image->imagePath . "_backup" );
+					@unlink($image->imagePath . '_backup' );
 				} 
-				$delete_pic = nggdb::delete_image ( $this->pid );
+				$result = nggdb::delete_image ( $this->pid );
             }
                                 
-			if($delete_pic)
+			if ($result) {
 				nggGallery::show_message( __('Picture','nggallery').' \''.$this->pid.'\' '.__('deleted successfully','nggallery') );
-				
+                do_action('ngg_delete_picture', $this->pid);
+			}
+            
 		 	$this->mode = 'edit'; // show pictures
 	
 		}
