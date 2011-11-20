@@ -136,7 +136,7 @@ function ngg_plugin_check() {
 				img_run:  '<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" class="icon" alt="started"/>',
                 img_ok:   '<img src="<?php echo esc_url( admin_url( 'images/yes.png' ) ); ?>" class="icon" alt="ok"/>',
                 img_fail: '<img src="<?php echo esc_url( admin_url( 'images/no.png' ) ); ?>" class="icon" alt="failed" />',
-                domain:   '<?php echo esc_url( home_url('index.php') ); ?>'
+                domain:   '<?php echo esc_url( home_url('index.php', is_ssl() ? 'https' : 'http') ); ?>'
 		},
 		
         run: function( index, state ) {
