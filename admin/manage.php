@@ -192,6 +192,8 @@ class nggManageGallery {
 			$newgallery = esc_attr( $_POST['galleryname']);
 			if ( !empty($newgallery) )
 				nggAdmin::create_gallery($newgallery, $defaultpath);
+            
+            do_action( 'ngg_update_addgallery_page' );
 		}
 
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_ResizeImages']))  {
