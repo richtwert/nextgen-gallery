@@ -170,13 +170,13 @@ class nggAdmin{
 		$gallery_id = $wpdb->get_var("SELECT gid FROM $wpdb->nggallery WHERE path = '$galleryfolder' ");
 
 		if (!$gallery_id) {
-			$result = $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggallery (name, path, title, author) VALUES (%s, %s, %s, %s)", $galleryname, $galleryfolder, $galleryname , $user_ID) );
-			if (!$result) {
+            // now add the gallery to the database
+            $gallery_id = nggdb::add_gallery( $galleryname, $galleryfolder, '', 0, 0, $user_ID );
+			if (!$gallery_id) {
 				nggGallery::show_error(__('Database error. Could not add gallery!','nggallery'));
 				return;
 			}
 			$created_msg = _n( 'Gallery', 'Galleries', 1, 'nggallery' ) . ' <strong>' . $galleryname . '</strong> ' . __('successfully created!','nggallery') . '<br />';
-			$gallery_id  = $wpdb->insert_id;  // get index_id
 		}
 		
 		// Look for existing image list
