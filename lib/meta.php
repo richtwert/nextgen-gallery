@@ -5,7 +5,7 @@
  * nggmeta.lib.php
  * 
  * @author 		Alex Rabe 
- * @copyright 	Copyright 2007-2009
+ * @copyright 	Copyright 2007-2011
  * 
  */
 	  
@@ -120,6 +120,8 @@ class nggMeta{
     				$meta['camera'] = trim( $exif['Model'] );
     			if (!empty($exif['DateTimeDigitized']))
     				$meta['created_timestamp'] = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $this->exif_date2ts($exif['DateTimeDigitized']));
+    			else if (!empty($exif['DateTimeOriginal']))
+    				$meta['created_timestamp'] = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $this->exif_date2ts($exif['DateTimeOriginal']));
     			if (!empty($exif['FocalLength']))
     				$meta['focal_length'] = $this->exif_frac2dec( $exif['FocalLength'] ) . __(' mm','nggallery');
     			if (!empty($exif['ISOSpeedRatings']))
@@ -472,16 +474,30 @@ class nggMeta{
 
 	}	
 
+	/**
+	 * Return the Timestamp from the image , if possible it's read from exif data
+	 * 
+	 * @return
+	 */
 	function get_date_time() {
-
+	   
+        $date_time = false;
+        
 		// get exif - data
 		if ( isset( $this->exif_data['EXIF']) ) {
-			$date_time = $this->exif_data['EXIF']['DateTimeDigitized'];
+		  
+            // try to read the date / time from the exif
+			if ( empty($this->exif_data['EXIF']['DateTimeDigitized']) ) 
+                $date_time = $this->exif_data['EXIF']['DateTimeOriginal'];
+            else
+                $date_time = $this->exif_data['EXIF']['DateTimeDigitized'];
+                 
 			// if we didn't get the correct exif value we take filetime
 			if ($date_time == null)
 				$date_time = $this->exif_data['FILE']['FileDateTime'];
 			else
 				$date_time = $this->exif_date2ts($date_time);
+                
 		} else {
 			// if no other date available, get the filetime
 			$date_time = @filectime($this->image->imagePath );	
