@@ -173,8 +173,11 @@ class nggManageGallery {
                 			$deleted = nggdb::delete_gallery( $id );
   						}
                         
-						if($deleted)
-							nggGallery::show_message(__('Gallery deleted successfully ', 'nggallery'));
+						if($deleted) {
+                            nggGallery::show_message(__('Gallery deleted successfully ', 'nggallery'));
+                            do_action('ngg_delete_gallery', $id);						  
+						}
+							
 					}
 					break;
 			}
