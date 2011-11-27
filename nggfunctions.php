@@ -567,7 +567,7 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
         }
         
         // description can contain HTML tags
-        $galleries[$key]->galdesc = html_entity_decode ( stripslashes($galleries[$key]->galdesc) ) ;
+        $galleries[$key]->galdesc = html_entity_decode ( nggGallery::i18n( stripslashes($galleries[$key]->galdesc) ) ) ;
 
         // i18n
         $galleries[$key]->title = html_entity_decode ( nggGallery::i18n( stripslashes($galleries[$key]->title) ) ) ;
