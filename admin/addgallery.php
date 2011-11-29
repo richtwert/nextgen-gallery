@@ -330,7 +330,7 @@ class nggAddGallery {
 		    jQuery("span.browsefiles").show().click(function(){
     		    jQuery("#file_browser").fileTree({
     		      script: "admin-ajax.php?action=ngg_file_browser&nonce=<?php echo wp_create_nonce( 'ngg-ajax' ) ;?>",
-                  root: jQuery("#galleryfolder").val(),
+                  root: jQuery("#galleryfolder").val()
     		    }, function(folder) {
     		        jQuery("#galleryfolder").val( folder );
     		    });
