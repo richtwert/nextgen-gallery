@@ -426,8 +426,8 @@ if($picturelist) {
                         $attributes = 'class="title column-filename column-title"' . $style;
 						?>
 						<td <?php echo $attributes ?>>
-							<strong><a href="<?php echo $picture->imageURL; ?>" class="thickbox" title="<?php echo $picture->filename ?>">
-								<?php echo ( empty($picture->alttext) ) ? $picture->filename : stripslashes(nggGallery::i18n($picture->alttext)); ?>
+							<strong><a href="<?php echo $picture->imageURL; ?>" class="thickbox" title="<?php echo esc_attr ($picture->filename); ?>">
+								<?php echo ( empty($picture->alttext) ) ? esc_html( $picture->filename ) : esc_html( stripslashes(nggGallery::i18n($picture->alttext)) ); ?>
 							</a></strong>
 							<br /><?php echo $date; ?>
 							<?php if ( !empty($picture->meta_data) ): ?>
