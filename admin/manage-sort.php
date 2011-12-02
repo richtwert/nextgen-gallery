@@ -2,7 +2,7 @@
 
 /**
  * @author Alex Rabe
- * @copyright 2008-2010
+ * @copyright 2008-2011
  */
 
 function nggallery_sortorder($galleryID = 0){
@@ -88,7 +88,7 @@ function nggallery_sortorder($galleryID = 0){
 				?>
 				<div class="imageBox" id="pid-<?php echo $picture->pid ?>">
 					<div class="imageBox_theImage" style="background-image:url('<?php echo $picture->thumbURL; ?>')"></div>	
-					<div class="imageBox_label"><span><?php echo stripslashes($picture->alttext) ?></span></div>
+					<div class="imageBox_label"><span><?php echo esc_html( stripslashes($picture->alttext) ); ?></span></div>
 				</div>
 				<?php
 			}
