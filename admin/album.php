@@ -98,6 +98,9 @@ class nggManageAlbum {
 			$result = nggdb::add_album( $_POST['newalbum'] );
             $this->currentID = ($result) ? $result : 0 ;
 			
+            //hook for other plugins
+            do_action('ngg_add_album', $this->currentID);
+            
 			if ($result) 
 				nggGallery::show_message(__('Update Successfully','nggallery'));
 		} 
@@ -114,6 +117,10 @@ class nggManageAlbum {
 			} else {
 				$wpdb->query("UPDATE $wpdb->nggalbum SET sortorder = '0' WHERE id = $this->currentID ");
 			}
+			
+            //hook for other plugins
+            do_action('ngg_update_album_sortorder', $this->currentID);
+			
 			nggGallery::show_message(__('Update Successfully','nggallery'));
 
 		}
@@ -124,9 +131,13 @@ class nggManageAlbum {
 				wp_die(__('Cheatin&#8217; uh?'));
 				
 			$result = nggdb::delete_album( $this->currentID );
+
+            //hook for other plugins
+            do_action('ngg_delete_album', $this->currentID);
             
+            // jump back to main selection
             $this->currentID = 0;
-            
+
 			if ($result) 
 				nggGallery::show_message(__('Album deleted','nggallery'));
 		}
