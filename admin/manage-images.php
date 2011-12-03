@@ -236,7 +236,7 @@ jQuery(document).ready( function() {
 <input type="hidden" name="page" value="manage-images" />
 
 <?php else :?>
-<h2><?php echo _n( 'Gallery', 'Galleries', 1, 'nggallery' ); ?> : <?php echo nggGallery::i18n($gallery->title); ?></h2>
+<h2><?php echo _n( 'Gallery', 'Galleries', 1, 'nggallery' ); ?> : <?php echo esc_html ( nggGallery::i18n($gallery->title) ); ?></h2>
 
 <br style="clear: both;" />
 
@@ -275,14 +275,14 @@ jQuery(document).ready( function() {
                                     if ( !array_key_exists ($gallery->previewpic, $picturelist )){
                                         $previewpic = $nggdb->find_image($gallery->previewpic);
                                         if ($previewpic)
-                                            echo '<option value="'.$previewpic->pid.'" selected="selected" >'.$previewpic->pid.' - '.$previewpic->filename.'</option>'."\n";                
+                                            echo '<option value="'.$previewpic->pid.'" selected="selected" >'.$previewpic->pid.' - ' . esc_attr( $previewpic->filename ) . '</option>'."\n";                
                                     }
                                 }
 								if(is_array($picturelist)) {
 									foreach($picturelist as $picture) {
                                         if ($picture->exclude) continue;									   
 										$selected = ($picture->pid == $gallery->previewpic) ? 'selected="selected" ' : '';
-										echo '<option value="'.$picture->pid.'" '.$selected.'>'.$picture->pid.' - '.$picture->filename.'</option>'."\n";
+										echo '<option value="'.$picture->pid.'" '.$selected.'>'.$picture->pid.' - ' . esc_attr( $picture->filename ) . '</option>'."\n";
 									}
 								}
 							?>
@@ -426,7 +426,7 @@ if($picturelist) {
                         $attributes = 'class="title column-filename column-title"' . $style;
 						?>
 						<td <?php echo $attributes ?>>
-							<strong><a href="<?php echo $picture->imageURL; ?>" class="thickbox" title="<?php echo esc_attr ($picture->filename); ?>">
+							<strong><a href="<?php echo esc_url( $picture->imageURL ); ?>" class="thickbox" title="<?php echo esc_attr ($picture->filename); ?>">
 								<?php echo ( empty($picture->alttext) ) ? esc_html( $picture->filename ) : esc_html( stripslashes(nggGallery::i18n($picture->alttext)) ); ?>
 							</a></strong>
 							<br /><?php echo $date; ?>
@@ -437,7 +437,7 @@ if($picturelist) {
 							<p>
 							<?php
 							$actions = array();
-							$actions['view']   = '<a class="shutter" href="' . $picture->imageURL . '" title="' . esc_attr(sprintf(__('View "%s"'), $picture->filename)) . '">' . __('View', 'nggallery') . '</a>';
+							$actions['view']   = '<a class="shutter" href="' . esc_url( $picture->imageURL ) . '" title="' . esc_attr( sprintf(__('View "%s"'), sanitize_title ($picture->filename) )) . '">' . __('View', 'nggallery') . '</a>';
 							$actions['meta']   = '<a class="ngg-dialog" href="' . NGGALLERY_URLPATH . 'admin/showmeta.php?id=' . $pid . '" title="' . __('Show Meta data','nggallery') . '">' . __('Meta', 'nggallery') . '</a>';
 							$actions['custom_thumb']   = '<a class="ngg-dialog" href="' . NGGALLERY_URLPATH . 'admin/edit-thumbnail.php?id=' . $pid . '" title="' . __('Customize thumbnail','nggallery') . '">' . __('Edit thumb', 'nggallery') . '</a>';							
 							$actions['rotate'] = '<a class="ngg-dialog" href="' . NGGALLERY_URLPATH . 'admin/rotate.php?id=' . $pid . '" title="' . __('Rotate','nggallery') . '">' . __('Rotate', 'nggallery') . '</a>';
@@ -462,8 +462,8 @@ if($picturelist) {
 					case 'thumbnail' :
                         $attributes = 'class="id column-thumbnail media-icon"' . $style;
 						?>
-						<td <?php echo $attributes ?>><a href="<?php echo add_query_arg('i', mt_rand(), $picture->imageURL); ?>" class="shutter" title="<?php echo $picture->filename ?>">
-								<img class="thumb" src="<?php echo add_query_arg('i', mt_rand(), $picture->thumbURL); ?>" id="thumb<?php echo $pid ?>" />
+						<td <?php echo $attributes ?>><a href="<?php echo esc_url ( add_query_arg('i', mt_rand(), $picture->imageURL) ); ?>" class="shutter" title="<?php echo $picture->filename ?>">
+								<img class="thumb" src="<?php echo esc_url ( add_query_arg('i', mt_rand(), $picture->thumbURL) ); ?>" id="thumb<?php echo $pid ?>" />
 							</a>
 						</td>
 						<?php						
@@ -556,7 +556,7 @@ if ( $counter == 0 )
 		    				foreach ($gallerylist as $gallery) { 
 		    					if ($gallery->gid != $act_gid) { 
 		    			?>
-						<option value="<?php echo $gallery->gid; ?>" ><?php echo $gallery->gid; ?> - <?php echo stripslashes($gallery->title); ?></option>
+						<option value="<?php echo $gallery->gid; ?>" ><?php echo $gallery->gid; ?> - <?php echo esc_attr( stripslashes($gallery->title) ); ?></option>
 						<?php 
 		    					} 
 		    				}

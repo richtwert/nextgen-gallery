@@ -66,7 +66,7 @@ function nggallery_sortorder($galleryID = 0){
 					<input class="button-primary action" type="submit" name="updateSortorder" onclick="saveImageOrder()" value="<?php _e('Update Sort Order', 'nggallery') ?>" />
 				</div>
 				<div class="alignright actions">
-					<a href="<?php echo $back_url; ?>" class="button"><?php _e('Back to gallery', 'nggallery'); ?></a>
+					<a href="<?php echo esc_url( $back_url ); ?>" class="button"><?php _e('Back to gallery', 'nggallery'); ?></a>
 				</div>
 			</div>	
 			<input name="sortorder" type="hidden" />
@@ -87,7 +87,7 @@ function nggallery_sortorder($galleryID = 0){
 			foreach($picturelist as $picture) {
 				?>
 				<div class="imageBox" id="pid-<?php echo $picture->pid ?>">
-					<div class="imageBox_theImage" style="background-image:url('<?php echo $picture->thumbURL; ?>')"></div>	
+					<div class="imageBox_theImage" style="background-image:url('<?php echo esc_url( $picture->thumbURL ); ?>')"></div>	
 					<div class="imageBox_label"><span><?php echo esc_html( stripslashes($picture->alttext) ); ?></span></div>
 				</div>
 				<?php
