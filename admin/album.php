@@ -299,7 +299,7 @@ function showDialog() {
 						if( is_array($this->albums) ) {
 							foreach($this->albums as $album) {
 								$selected = ($this->currentID == $album->id) ? 'selected="selected" ' : '';
-								echo '<option value="' . $album->id . '" ' . $selected . '>' . $album->id . ' - ' . $album->name . '</option>'."\n";
+								echo '<option value="' . $album->id . '" ' . $selected . '>' . $album->id . ' - ' . esc_attr( $album->name ) . '</option>'."\n";
 							}
 						}
 					?>
@@ -441,7 +441,7 @@ function showDialog() {
                                 echo '<option value="0" selected="selected">' . __('No picture', 'nggallery') . '</option>';
                             else {
                                 $picture = nggdb::find_image($album->previewpic);
-                                echo '<option value="' . $picture->pid . '" selected="selected" >'. $picture->pid . ' - ' . ( empty($picture->alltext) ? esc_attr( $picture->filenam ) : esc_attr( $picture->alltext ) ) .' </option>'."\n";
+                                echo '<option value="' . $picture->pid . '" selected="selected" >'. $picture->pid . ' - ' . ( empty($picture->alltext) ? esc_attr( $picture->filename ) : esc_attr( $picture->alltext ) ) .' </option>'."\n";
                             }
 						?>
 					</select>
