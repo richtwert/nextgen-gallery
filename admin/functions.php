@@ -797,6 +797,9 @@ class nggAdmin{
             $p_header['filename'] = substr ( $p_header['filename'], 0, strpos($p_header['filename'], chr(0) ));        
         // check for extension
 		$info = pathinfo($p_header['filename']);
+        // sanitize the file name before we do further processing
+        $info['basename'] = sanitize_file_name( $info['basename'] );
+        $p_header['filename'] = $info['dirname'] . '/' . $info['basename'];
 		// check for extension
 		$ext = apply_filters('ngg_allowed_file_types', array('jpeg', 'jpg', 'png', 'gif') ); 
 		if ( in_array( strtolower($info['extension']), $ext) ) {
