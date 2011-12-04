@@ -42,8 +42,7 @@ function nggallery_picturelist() {
 		}	
 		
 		// look for pagination	
-		if ( ! isset( $_GET['paged'] ) || $_GET['paged'] < 1 )
-			$_GET['paged'] = 1;
+        $_GET['paged'] = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
 		
 		$start = ( $_GET['paged'] - 1 ) * 50;
 		

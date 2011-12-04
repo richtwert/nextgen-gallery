@@ -23,7 +23,7 @@ class nggManageGallery {
         // Check for pagination request, avoid post process of other submit button, exclude search results
         if ( isset($_POST['post_paged']) && !isset($_GET['s'] ) ) {
             if ( $_GET['paged'] != $_POST['post_paged'] ) {		
-                $_GET['paged'] = $_POST['post_paged'];		
+                $_GET['paged'] = absint( $_POST['post_paged'] );		
                 return;		
             }		
         }                        
