@@ -8,7 +8,7 @@ function nggallery_manage_gallery_main() {
 	global $ngg, $nggdb, $wp_query;
 	
 	//Build the pagination for more than 25 galleries
-    $_GET['paged'] = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+    $_GET['paged'] = isset($_GET['paged']) && ($_GET['paged'] > 0) ? absint($_GET['paged']) : 1;
 	
     $items_per_page = 25;
     
