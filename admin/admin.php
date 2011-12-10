@@ -416,6 +416,7 @@ class nggAdminPanel{
 
     /**
      * New wrapper for WordPress 3.3, so contextual help will be added to the admin bar
+     * Rework this see http://wpdevel.wordpress.com/2011/12/06/help-and-screen-api-changes-in-3-3/
      * 
      * @since 1.9.0
      * @param object $screen
@@ -424,8 +425,7 @@ class nggAdminPanel{
     function add_contextual_help($screen) {
         
         $help = $this->show_help('', $screen);
-        add_contextual_help( $screen, $help );
-        
+        //add_contextual_help( $screen, $help );
     }
 
 	/**
