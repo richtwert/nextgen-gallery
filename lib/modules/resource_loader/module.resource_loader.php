@@ -1,5 +1,12 @@
 <?php
 
+/***
+	{
+		Module: photocrati-resource_loader,
+		Depends: { photocrati-mvc }
+	}
+***/
+
 define(
     'PHOTOCRATI_GALLERY_MOD_RESOURCE_LOADER_ROUTING_PATTERN',
     "/\/resource_loader\/?([^\?]*)/"
