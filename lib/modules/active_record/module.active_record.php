@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-active_record
+	}
+***/
+
 class M_Active_Record extends C_Base_Module
 {
     function initialize()
