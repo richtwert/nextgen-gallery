@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-simple_html_dom
+	}
+***/
+
 include_once('simplehtmldom/simple_html_dom.php');
 class M_Simple_Html_Dom extends C_Base_Module
 {
