@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-gallery-base
+	}
+***/
+
 class Mixin_Substitute_Placeholders extends Mixin
 {   
     /**
