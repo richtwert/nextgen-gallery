@@ -1,0 +1,1 @@
+<input type="hidden" name="form" value="<?php echo_h($value) ?>"/>
