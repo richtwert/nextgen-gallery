@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-gallery-nextgen-thumbnail
+	}
+***/
+
 class M_NextGen_Thumbnail_Gallery extends C_Base_Module
 {
     function initialize()
