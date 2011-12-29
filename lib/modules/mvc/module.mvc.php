@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-mvc
+	}
+***/
+
 define('MVC_MODULE_DIR', dirname(__FILE__));
 define('MVC_TEMPLATE_DIR', path_join(MVC_MODULE_DIR, 'templates'));
 include_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
