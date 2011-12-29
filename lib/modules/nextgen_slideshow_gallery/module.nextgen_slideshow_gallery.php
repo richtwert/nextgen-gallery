@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-gallery-nextgen-slideshow
+	}
+***/
+
 class M_NextGen_Slideshow_Gallery extends C_Base_Module
 {
     function initialize()
