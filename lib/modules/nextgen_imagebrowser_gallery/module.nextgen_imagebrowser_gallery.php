@@ -1,5 +1,11 @@
 <?php
 
+/***
+	{
+		Module: photocrati-gallery-nextgen-imagebrowser
+	}
+***/
+
 class M_NextGen_ImageBrowser_Gallery extends C_Base_Module
 {
     function initialize($context=FALSE)
