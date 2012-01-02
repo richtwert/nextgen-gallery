@@ -4,7 +4,7 @@
  *
  * @package NextGEN Gallery
  * @author Alex Rabe
- * @copyright 2009-2011
+ * @copyright 2009-2012
  */
 class nggXMLRPC{
 	
@@ -494,7 +494,7 @@ class nggXMLRPC{
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage albums' ) );
 
 		if ( !empty( $name ) )
-			$result = nggdb::update_album($id, $name, $preview, $description, $description, $galleries);
+			$result = nggdb::update_album($id, $name, $preview, $description, $galleries);
 		
 		if ( !$result )
 			return new IXR_Error(500, __('Sorry, could not update the album'));
