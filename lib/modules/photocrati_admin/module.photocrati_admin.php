@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-gallery-admin,
-                Depends: { photocrati-mvc, photocrati-resource_loader }
+                Depends: { photocrati-mvc, photocrati-resource_loader, photocrati-gallery-base }
 	}
 ***/
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
