@@ -2,7 +2,8 @@
 
 /***
 	{
-		Module: photocrati-gallery-nextgen-imagebrowser
+		Module: photocrati-gallery-nextgen-imagebrowser,
+                Depends: { photocrati-gallery-attach_from_posttype }
 	}
 ***/
 
@@ -11,7 +12,7 @@ class M_NextGen_ImageBrowser_Gallery extends C_Base_Module
     function initialize($context=FALSE)
     {
         parent::initialize(
-        		'photocrati-gallery-nextgen-imagebrowser',
+            'photocrati-gallery-nextgen-imagebrowser',
             'NextGen Basic ImageBrowser',
             "Provides the NextGen Basic ImageBrowser gallery type",
             '0.1',
