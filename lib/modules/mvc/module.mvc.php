@@ -18,7 +18,7 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-        		"photocrati-mvc",
+            "photocrati-mvc",
             "MVC Framework",
             "Provides an MVC architecture for the plugin to use",
             "0.1",
