@@ -2,10 +2,10 @@
 
 /***
 	{
-		Module: photocrati-gallery-admin
+		Module: photocrati-gallery-admin,
+                Depends: { photocrati-mvc, photocrati-resource_loader }
 	}
 ***/
-
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL', path_join(PHOTOCRATI_GALLERY_ADMIN_MOD_URL, 'static'));
 
@@ -17,7 +17,7 @@ class M_Photocrati_Admin extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-        		'photocrati-gallery-admin',
+            'photocrati-gallery-admin',
             'Photocrati Admin Interface',
             'Provides an easy-to-use interface for managing NextGEN galleries',
             '0.1',
