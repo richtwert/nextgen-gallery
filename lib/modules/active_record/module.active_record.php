@@ -11,7 +11,7 @@ class M_Active_Record extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-        		'photocrati-active_record',
+            'photocrati-active_record',
             'Active Record',
             'Provides the active record pattern for other modules to use',
             '0.1',
