@@ -2,7 +2,8 @@
 
 /***
 	{
-		Module: photocrati-simple_html_dom
+		Module: photocrati-simple_html_dom,
+                Depends: { photocrati-gallery-base }
 	}
 ***/
 
@@ -12,7 +13,7 @@ class M_Simple_Html_Dom extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-        		'photocrati-simple_html_dom',
+            'photocrati-simple_html_dom',
             'Simple HTML Dom',
             'Provides the simple_html_dom utility for other modules to use',
             '0.1',
