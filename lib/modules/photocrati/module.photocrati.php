@@ -2,8 +2,8 @@
 
 /***
 	{
-		Module: photocrati-gallery-base,
-                Depends: { photocrati-mvc, photocrati-active-record }
+		Module: photocrati-base,
+                Depends: { photocrati-mvc, photocrati-active_record, photocrati-simple_html_dom }
 	}
 ***/
 
@@ -152,7 +152,7 @@ class M_Photocrati extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-            'photocrati-gallery-base',
+            'photocrati-base',
             'Photocrati Gallery',
             "Provides Photocrati's abstraction for NextGen Gallery",
             '0.1',
