@@ -2,8 +2,8 @@
 
 /***
 	{
-		Module: photocrati-gallery-nextgen-slideshow,
-                Depends: { photocrati-gallery-attach_from_posttype }
+		Module: photocrati-nextgen_slideshow,
+                Depends: { photocrati-attach_from_post_type }
 	}
 ***/
 
@@ -12,7 +12,7 @@ class M_NextGen_Slideshow_Gallery extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-            'photocrati-gallery-nextgen-slideshow',
+            'photocrati-nextgen_slideshow',
             'NextGen Basic Slideshow',
             'JQuery Cycle and JW Image Rotator-based Slideshow',
             '0.1',
