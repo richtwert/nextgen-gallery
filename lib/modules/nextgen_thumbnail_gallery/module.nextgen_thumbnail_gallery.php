@@ -2,8 +2,8 @@
 
 /***
 	{
-		Module: photocrati-gallery-nextgen-thumbnail,
-                Depends: { photocrati-gallery-attach_from_posttype }
+		Module: photocrati-nextgen_thumbnail,
+                Depends: { photocrati-attach_from_post_type }
 	}
 ***/
 
@@ -12,7 +12,7 @@ class M_NextGen_Thumbnail_Gallery extends C_Base_Module
     function initialize()
     {
         parent::initialize(
-            'photocrati-gallery-nextgen-thumbnail',
+            'photocrati-nextgen_thumbnail',
             'NextGen Basic Thumbnails',
             "Provides support for NextGen's legacy thumbnail galleries",
             '0.1',
