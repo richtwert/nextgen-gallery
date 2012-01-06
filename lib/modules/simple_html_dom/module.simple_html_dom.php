@@ -3,11 +3,11 @@
 /***
 	{
 		Module: photocrati-simple_html_dom,
-                Depends: { photocrati-gallery-base }
+                Depends: { photocrati-base }
 	}
 ***/
 
-include_once('simplehtmldom/simple_html_dom.php');
+if (!function_exists(('file_get_html'))) include_once('simplehtmldom/simple_html_dom.php');
 class M_Simple_Html_Dom extends C_Base_Module
 {
     function initialize()
