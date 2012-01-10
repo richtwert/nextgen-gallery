@@ -15,7 +15,7 @@ class A_Gallery_Instance_Dimensions extends Hook
     
     function calculate_dimensions()
     {
-        if ($this->object->has_errors()) return;
+        if ($this->object->has_errors() or !isset($this->object->image)) return;
         
         $longest = 0;
         $widest = 0;
