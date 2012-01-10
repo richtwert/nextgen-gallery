@@ -1,4 +1,5 @@
 <input
+    id="<?php echo_h($id)?>"
     type="text" 
     size="3" 
     maxlength="3" 

@@ -35,6 +35,7 @@ class C_Thumbnail_Settings extends C_Base_Gallery_Settings_Controller
         
         $this->append_field(array(
             'id'        => 'generate_thumbnails',
+            'name'      => 'generate_thumbnails',
             'template'  => 'generate_thumbnails',
             'hidden'    => TRUE
         ));
