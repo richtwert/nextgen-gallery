@@ -71,8 +71,14 @@ class M_Resource_Loader extends C_Base_Module
            PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_STYLES_URL.'?id='.$id
         );
         
-        wp_enqueue_script('dynamic_scripts');
-        wp_enqueue_style('dynamic_styles');
+        // If the request is NOT for the dynamic stylesheet or scripts, then
+        // enqueue these resources. They'll be blank for things that aren't posts
+        // or pages anyhow.
+        if ((strpos($_SERVER['REQUEST_URI'], PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_STYLES_URL) === FALSE) AND
+             strpos($_SERVER['REQUEST_URI'], PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_SCRIPTS_URL) == FALSE) {
+            wp_enqueue_script('dynamic_scripts');
+            wp_enqueue_style('dynamic_styles');
+        }   
     }
     
     
