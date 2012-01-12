@@ -8,13 +8,18 @@
 
 define('PHOTOCRATI_GALLERY_FANCYBOX_JS_URL', path_join(
         PHOTOCRATI_GALLERY_MODULE_URL, 
-        basename(dirname(__FILE__))).'/static/jquery.fancybox-1.3.4.min.js'
+        basename(dirname(__FILE__))).'/static/fancybox/jquery.fancybox-1.3.4.pack.js'
 );
 
 define('PHOTOCRATI_GALLERY_JQUERY_EASING_JS_URL', path_join(
         PHOTOCRATI_GALLERY_MODULE_URL, 
-        basename(dirname(__FILE__))).'/static/jquery.easing-1.3.pack.js'
+        basename(dirname(__FILE__))).'/static/fancybox/jquery.easing-1.3.pack.js'
 );
+
+define('PHOTOCRATI_GALLERY_JQUERY_FANCYBOX_CSS_URL', path_join(
+        PHOTOCRATI_GALLERY_MODULE_URL,
+        basename(dirname(__FILE__)).'/static/fancybox/jquery.fancybox-1.3.4.css'
+));
 
 class M_Fancybox extends C_Base_Module
 {
@@ -45,6 +50,13 @@ class M_Fancybox extends C_Base_Module
             PHOTOCRATI_GALLERY_JQUERY_EASING_JS_URL,
             array('jquery'),
             '1.3'
+        );
+        
+        wp_register_style(
+            'fancybox',
+            PHOTOCRATI_GALLERY_JQUERY_FANCYBOX_CSS_URL,
+            array(),
+            '1.3.4'
         );
     }
     

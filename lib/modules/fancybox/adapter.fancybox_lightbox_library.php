@@ -24,8 +24,9 @@ class A_Fancybox_Lightbox_Library extends Mixin
         if (!isset($libraries['fancybox'])) {
             $libraries['fancybox'] = array(
                 'script'            => 'fancybox',
-                'javascript_code'   => 'jQuery(function($){$(".fancybox").fancybox();});',
-                'html'              => "class='fancybox' rel='%GALLERY_NAME%'"
+                'style'             => 'fancybox',
+                'javascript_code'   => 'jQuery(function($){$(".ngg-fancybox").fancybox();});',
+                'html'              => "class='ngg-fancybox' rel='%GALLERY_NAME%'"
             );
             
             $this->object->set_method_property(
