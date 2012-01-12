@@ -1,0 +1,69 @@
+<?php
+
+/***
+    {
+        Module: photocrati-shutter-reloaded
+    }
+ ***/
+
+define('PHOTOCRATI_GALLERY_SHUTTER_RELOADED_CSS_URL', path_join(
+    PHOTOCRATI_GALLERY_MODULE_URL,
+    basename(dirname(__FILE__)).'/static/shutter/shutter.css'
+));
+
+define('PHOTOCRATI_GALLERY_SHUTTER_RELOADED_JS_URL', path_join(
+    PHOTOCRATI_GALLERY_MODULE_URL,
+    basename(dirname(__FILE__)).'/static/shutter/shutter.js'
+));
+
+define('PHOTOCRATI_GALLERY_SHUTTER_IMAGES_URL', path_join(
+    PHOTOCRATI_GALLERY_MODULE_URL,
+    basename(dirname(__FILE__)).'/static/shutter/images/'
+));
+
+class M_Shutter_Reloaded extends C_Base_Module
+{
+    function initialize()
+    {
+        parent::initialize(
+            'photocrati-shutter-reloaded',
+            'Shutter Reloaded',
+            'Provides integration with the Shutter Reloaded lightbox plugin',
+            '0.1',
+            'http://www.laptoptips.ca/javascripts/shutter-reloaded/',
+            'Photocrati Media',
+            'http://www.photocrati.com'
+        );
+    }
+    
+    function _register_hooks()
+    {
+        wp_register_style(
+            'shutter',
+            PHOTOCRATI_GALLERY_SHUTTER_RELOADED_CSS_URL,
+            array(),
+            '2.0.1'
+        );
+        
+        wp_register_script(
+            'shutter',
+            PHOTOCRATI_GALLERY_SHUTTER_RELOADED_JS_URL,
+            array('jquery'),
+            '2.0.1'
+        );
+        
+        $data = array('image_path' => PHOTOCRATI_GALLERY_SHUTTER_IMAGES_URL);
+        wp_localize_script('shutter', 'custom_vars', $data);
+    }
+    
+    
+    function _register_adapters()
+    {
+        $this->_registry->add_adapter(
+            'I_Lightbox_Library',
+            'A_Shutter_Lightbox_Library'
+        );
+    }
+}
+
+new M_Shutter_Reloaded();
