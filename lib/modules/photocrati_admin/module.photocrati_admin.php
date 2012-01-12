@@ -8,6 +8,7 @@
 ***/
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL', path_join(PHOTOCRATI_GALLERY_ADMIN_MOD_URL, 'static'));
+define('PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN', "/\/wp-admin\/ajax_handler\/?([^\?]*)/");
 
 /**
  * Depends on MVC Module
@@ -28,6 +29,8 @@ class M_Photocrati_Admin extends C_Base_Module
         
         $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('admin_controller');
+        
+        $this->_add_routes();
     }
     
     function _register_adapters()
@@ -40,6 +43,15 @@ class M_Photocrati_Admin extends C_Base_Module
     {
         add_action('admin_menu', array(&$this, 'admin_menu'));
         $this->_enqueue();
+    }
+    
+    
+    function _add_routes()
+    {
+        $router = $this->_registry->get_singleton_utility('I_Router');
+        $router->add_route(__CLASS__, 'C_Ajax_Handler', array(
+            'uri'=>PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN
+        ));
     }
     
     
@@ -171,7 +183,7 @@ class M_Photocrati_Admin extends C_Base_Module
         remove_submenu_page(NGGFOLDER, 'nggallery-add-gallery');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-manage-gallery');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-manage-album');
-        remove_submenu_page(NGGFOLDER, 'nggallery-tags');
+//        remove_submenu_page(NGGFOLDER, 'nggallery-tags');
         //remove_submenu_page(NGGFOLDER, 'nggallery-options');
         //remove_submenu_page(NGGFOLDER, 'nggallery-style');
         //remove_submenu_page(NGGFOLDER, 'nggallery-roles');
@@ -189,7 +201,7 @@ class M_Photocrati_Admin extends C_Base_Module
         //add_submenu_page(NGGFOLDER, $add_galleries_menu, $add_galleries_menu, 'NextGEN Upload images', 'pc-add-gallery');
         add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, 'NextGEN Change options', 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
         add_submenu_page(NGGFOLDER, $albums_menu, $albums_menu, 'NextGEN Edit album', 'pc-albums');
-        add_submenu_page(NGGFOLDER, $other_options_menu, $other_options_menu, 'NextGEN Change options', 'pc-other-options');
+        add_submenu_page(NGGFOLDER, $other_options_menu, $other_options_menu, 'NextGEN Change options', 'pc-other-options', array($this->_controller, 'other_options'));
         add_submenu_page(NGGFOLDER, $upgrade_menu, $upgrade_menu, 'Administrator', 'pc-upgrade');
     }
 }

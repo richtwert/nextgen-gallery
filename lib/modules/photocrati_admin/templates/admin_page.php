@@ -1,4 +1,4 @@
 <div class='wrap'>
-    <h2>Gallery Settings</h2>
+    <h2><?php echo_h($title) ?></h2>
     <?php echo $accordion ?>
 </div>

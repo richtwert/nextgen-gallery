@@ -4,12 +4,23 @@
  * Methods which are expected to be overridden by subclasses 
  */
 class Mixin_Base_Gallery_Settings_Overrides extends Mixin
-{
-    function get_config(){}
-    
+{   
     function get_gallery_name(){}
     
     function configure_fields(){}
+}
+
+
+/**
+ *  Overrides the render_form method from C_Base_Form_Handler   
+ */
+class Mixin_Base_Gallery_Settings_Renderer extends Mixin
+{
+    function render_form()
+    {
+        $this->configure_fields();
+        $this->render_partial('fields', array('fields'=>$this->fields));
+    }
 }
 
 
@@ -25,37 +36,16 @@ class Mixin_Base_Gallery_Settings extends Mixin
 }
 
 
-class C_Base_Gallery_Settings_Controller extends C_MVC_Controller
+class C_Base_Gallery_Settings_Controller extends C_Base_Form_Handler
 {
     var $fields = array();
     var $config  = NULL;
-    var $form_identifier = __CLASS__;
     
     function define()
     {
         parent::define();
         $this->add_mixin('Mixin_Base_Gallery_Settings_Overrides');
         $this->add_mixin('Mixin_Base_Gallery_Settings');
-    }
-    
-    function initialize($context=FALSE)
-    {
-        parent::initialize($context);
-        $this->config = $this->get_config();
-    }
-    
-    function index()
-    {   
-        $message = FALSE;
-        
-        if ($this->is_post_request() && $this->handle_this_form()) {
-            if ($this->config->save()) $message = _e("Settings saved successfully");
-        }
-        
-        echo $this->show_errors_for($this->config);
-        echo $this->render_form_handle_tag();
-        $this->configure_fields();
-        $this->render_partial('fields', array('fields'=>$this->fields));
     }
     
     
@@ -79,20 +69,6 @@ class C_Base_Gallery_Settings_Controller extends C_MVC_Controller
     {
         $fields = array($field['id'] => $field);
         $this->fields = array_merge($fields, $this->fields);
-    }
-    
-    
-    function render_form_handle_tag()
-    {
-        $this->render_partial('form_handle_tag', array(
-            'value'=>$this->form_identifier
-        ));
-    }
-    
-    
-    function handle_this_form()
-    {
-        return ($this->param('form') == $this->form_identifier);
     }
 }
 
