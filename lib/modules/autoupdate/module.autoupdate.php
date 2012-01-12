@@ -8,13 +8,13 @@
 
 class M_AutoUpdate extends C_Base_Module
 {
-  	// XXX change URL
-		const API_URL = 'http://members.photocrati.com/api/';
+    // XXX change URL
+    const API_URL = 'http://members.photocrati.com/api/';
 		
     function initialize()
     {
         parent::initialize(
-        		'photocrati-auto_update',
+            'photocrati-auto_update',
             'Photocrati Auto Update',
             "Provides automatic updates",
             '0.1',
@@ -186,7 +186,7 @@ class M_AutoUpdate extends C_Base_Module
   		{
   			$return = wp_remote_retrieve_body($return);
   			
-  			echo $return;
+  			//echo $return;
   			
   			$return = json_decode($return, true);
   			
