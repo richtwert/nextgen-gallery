@@ -22,10 +22,10 @@ class Mixin_Load_Lightbox_Library extends Mixin
         $lightbox = $factory->create('lightbox_library');
         $lightbox = $lightbox->find_default();
         if ($lightbox) {
-            
+            global $post;
             wp_enqueue_script($lightbox->script);
-            
             if ($lightbox->style) wp_enqueue_style($lightbox->style);
+            $post->post_content .= "<script type='text/javascript'>{$lightbox->javascript_code}</script>";
         }
     }
 }
