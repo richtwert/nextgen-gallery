@@ -106,7 +106,7 @@ class nggPostThumbnail {
 			} else {
 				$width = absint( $_wp_additional_image_sizes[$size]['width'] );
 				$height = absint( $_wp_additional_image_sizes[$size]['height'] );
- 			    $mode = ($_wp_additional_image_sizes[$size]['height']) ? 'crop' : '';
+            	$mode = ($_wp_additional_image_sizes[$size]['crop']) ? 'crop' : '';
 			}
 
             // check fo cached picture
