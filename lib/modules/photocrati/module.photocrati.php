@@ -3,9 +3,33 @@
 /***
 	{
 		Module: photocrati-base,
-                Depends: { photocrati-mvc, photocrati-active_record, photocrati-simple_html_dom }
+                Depends: { photocrati-mvc, photocrati-active_record, photocrati-simple_html_dom, photocrati-fancybox-1x, photocrati-thickbox }
 	}
 ***/
+
+
+class Mixin_Load_Lightbox_Library extends Mixin
+{
+    function load_lightbox_library()
+    {
+        // Only execute in frontend
+        if (is_backend()) return;
+        
+        // Create a factory to hatch C_Lightbox_Library objects
+        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        
+        // Find the default
+        $lightbox = $factory->create('lightbox_library');
+        $lightbox = $lightbox->find_default();
+        if ($lightbox) {
+            
+            wp_enqueue_script($lightbox->script);
+            
+            if ($lightbox->style) wp_enqueue_style($lightbox->style);
+        }
+    }
+}
+
 
 class Mixin_Substitute_Placeholders extends Mixin
 {   
@@ -146,6 +170,7 @@ class M_Photocrati extends C_Base_Module
     function define()
     {
         $this->add_mixin('Mixin_Substitute_Placeholders');
+        $this->add_mixin('Mixin_Load_Lightbox_Library');
     }
     
     
@@ -165,9 +190,10 @@ class M_Photocrati extends C_Base_Module
     
     function _register_hooks()
     {
-        add_filter('posts_results', array(&$this, 'load_gallery_instances'), 100, 2);
-        add_action('wp_print_scripts', array(&$this, 'dequeue_scripts'));
-        remove_filter('the_content', 'wpautop');
+        add_filter('posts_results',     array(&$this, 'load_gallery_instances'), 100, 2);
+        add_action('wp_print_scripts',  array(&$this, 'dequeue_scripts'));
+        add_action('wp_enqueue_scripts',  array(&$this, 'load_lightbox_library'));
+        remove_filter('the_content',    'wpautop');
     }
     
     

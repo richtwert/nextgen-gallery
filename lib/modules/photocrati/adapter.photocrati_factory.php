@@ -43,6 +43,12 @@ class A_Photocrati_Factory extends Mixin
     }
     
     
+    function lightbox_library($properties=array(), $context=FALSE)
+    {
+        return new C_Lightbox_Library($properties, $context);
+    }
+    
+    
     function nggImage($gallery, $context=FALSE)
     {
         return new C_nggImage_Wrapper($gallery, $context);
