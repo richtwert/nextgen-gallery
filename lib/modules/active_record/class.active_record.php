@@ -118,9 +118,10 @@ class Mixin_Active_Record_Query extends Mixin
         if ($start)     $sql[] = $this->db->prepare("OFFSET %d", $start);
         $sql = $this->db->_substitute_id_for_id_field(implode(' ', $sql), $this->object->id_field);
         
+        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        
         // Convert each row to it's corresponding component
         foreach ($this->object->db->get_results($sql, ARRAY_A) as $row) {
-            $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
             
             $retval[] = $factory->create(
                $this->object->object_name,
