@@ -46,6 +46,8 @@ class C_Base_Gallery_Settings_Controller extends C_Base_Form_Handler
         parent::define();
         $this->add_mixin('Mixin_Base_Gallery_Settings_Overrides');
         $this->add_mixin('Mixin_Base_Gallery_Settings');
+        $this->add_mixin('Mixin_Base_Gallery_Settings_Renderer');
+        $this->remove_mixin('Mixin_Form_Handler_Overrides');
     }
     
     
