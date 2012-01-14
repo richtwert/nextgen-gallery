@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-base,
-                Depends: { photocrati-mvc, photocrati-active_record, photocrati-simple_html_dom, photocrati-fancybox-1x, photocrati-thickbox, photocrati-shutter-reloaded }
+                Depends: { photocrati-mvc, photocrati-active_record, photocrati-simple_html_dom, photocrati-fancybox-1x, photocrati-thickbox, photocrati-shutter-reloaded, photocrati-highslide, photocrati-jquery-lightbox }
 	}
 ***/
 
