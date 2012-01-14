@@ -31,7 +31,7 @@ jQuery(function($j){
 <input id='script' type='hidden' name='settings[script]'/>
 <input id='style' type='hidden' name='settings[style]'/>
 
-<table>
+<table class="lightbox_fields">
     <tr>
         <th>
             <label for="lightbox_library">

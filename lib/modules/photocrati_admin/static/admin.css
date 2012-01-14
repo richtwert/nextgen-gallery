@@ -72,3 +72,8 @@
 .tooltip {
     cursor: help;
 }
+
+.lightbox_fields textarea{
+    width: 400px;
+    height: 75px;
+}
