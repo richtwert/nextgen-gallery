@@ -146,21 +146,54 @@ class M_AutoUpdate extends C_Base_Module
   		if ($list_use != null)
   		{
   			$return = $this->api_request(self::API_URL, 'ckups', array('product-list' => $list_use));
+  			
+  			// XXX testing... remove this later
+  			if (is_array($return))
+  			{
+  				foreach ($return as $command)
+  				{
+  					$this->execute_api_command($command['action'], $command['info']);
+  				}
+  			}
   		}
     	
     	return $return;
     }
     
     
-    function update_module($module_id, $api_manifest)
+    function download_package($module_info, $timeout = 300)
     {
-    	
+			$tmpfname = wp_tempnam($module_info['id']);
+			
+			if (!$tmpfname)
+			{
+				return false;
+			}
+
+			$return = $this->api_request(
+									self::API_URL, 'dlpkg', 
+									array(
+										'product-list' => array($module_info['product'] => $module_info['product-version']), 
+										'module-list' => array($module_info['id'] => $module_info['version']),
+										'module-package' => $module_info['package'],
+										'http-timeout' => $timeout, 'http-stream' => true, 'http-filename' => $tmpfname
+									));
+									
+			if ($return === false)
+			{
+				unlink($tmpfname);
+				
+				return false;
+			}
+			
+			return $tmpfname;
     }
     
     
     function api_request($url, $action, $parameter_list = null)
     {
     	$url = $url . '?post_back=1&api_act=' . $action;
+    	$http_args = array();
     	
     	if (!isset($parameter_list['license-key']))
     	{
@@ -180,22 +213,86 @@ class M_AutoUpdate extends C_Base_Module
     		$parameter_list['module-list'] = $module_list;
     	}
     	
-    	$return = wp_remote_post($url, array('body' => $parameter_list));
-  		
+  		if (isset($parameter_list['http-timeout']))
+  		{
+    		$http_args['timeout'] = $parameter_list['http-timeout'];
+  			
+  			unset($parameter_list['http-timeout']);
+  		}
+    	
+  		if (isset($parameter_list['http-stream']))
+  		{
+    		$http_args['stream'] = $parameter_list['http-stream'];
+  			
+  			unset($parameter_list['http-stream']);
+  		}
+    	
+  		if (isset($parameter_list['http-filename']))
+  		{
+    		$http_args['filename'] = $parameter_list['http-filename'];
+  			
+  			unset($parameter_list['http-filename']);
+  		}
+    		
+    	$http_args['body'] = $parameter_list;
+    	$return = wp_remote_post($url, $http_args);
+    	
   		if ($return != null && !is_wp_error($return))
   		{
-  			$return = wp_remote_retrieve_body($return);
-  			
-  			//echo $return;
-  			
-  			$return = json_decode($return, true);
-  			
-  			//var_dump($return);
-  			
-  			return $return;
+  			if (isset($http_args['filename']))
+  			{
+  				if (wp_remote_retrieve_response_code($return) == 200)
+  				{
+  					return true;
+  				}
+  			}
+  			else
+  			{
+					$return = wp_remote_retrieve_body($return);
+					
+					//echo $return;
+					
+					$return = json_decode($return, true);
+					
+					//var_dump($return);
+					
+					return $return;
+  			}
   		}
   		
   		return false;
+    }
+    
+    // Executes the required $stage for this API command and returns the new stage in the execution pipeline for the command
+    function execute_api_command($api_command, $command_info, $stage = null)
+    {
+    	list($group, $action) = explode('-', $api_command);
+    	
+  		switch ($group)
+  		{
+  			case 'module':
+  			{
+					switch ($action)
+					{
+						case 'add':
+						{
+							break;
+						}
+						case 'remove':
+						{
+							break;
+						}
+						case 'update':
+						{
+							//var_dump($this->download_package($command_info));
+							
+							break;
+						}
+					}
+					
+					break;
+  			}
+			}
     }
 }
 new M_AutoUpdate();
