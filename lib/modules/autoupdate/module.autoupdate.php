@@ -190,6 +190,37 @@ class M_AutoUpdate extends C_Base_Module
     }
     
     
+    function install_package($module_info, $package_file)
+    {
+    	$install_path = isset($module_info['local-path']) ? $module_info['local-path'] : null;
+    	
+    	if ($install_path != null)
+    	{
+    		// XXX transform local relative path to absolute path
+    	}
+    	else
+    	{
+	    	$install_path = $this->_registry->get_module_dir($module_info['id']);
+    	}
+    	
+    	if ($install_path != null && $package_file != null && is_file($package_file))
+    	{
+    		$dir = dirname($install_path);
+    		$base = basename($install_path);
+    		$install_path = $dir . DIRECTORY_SEPARATOR . '__' . $base;
+    		
+    		$ret = unzip_file($package_file, $install_path);
+    		
+    		if ($ret && !is_wp_error($ret))
+    		{
+    			return $install_path;
+    		}
+    	}
+    	
+    	return false;
+    }
+    
+    
     function api_request($url, $action, $parameter_list = null)
     {
     	$url = $url . '?post_back=1&api_act=' . $action;
@@ -268,31 +299,99 @@ class M_AutoUpdate extends C_Base_Module
     {
     	list($group, $action) = explode('-', $api_command);
     	
+    	if ($stage == null)
+    	{
+		  	if (isset($command_info['-command-stage']))
+		  	{
+		  		$stage = $command_info['-command-stage'];
+		  	}
+		  	else
+		  	{
+    			$stage = 'download';
+		  	}
+    	}
+    	
   		switch ($group)
   		{
   			case 'module':
   			{
-					switch ($action)
-					{
-						case 'add':
-						{
-							break;
-						}
-						case 'remove':
-						{
-							break;
-						}
-						case 'update':
-						{
-							//var_dump($this->download_package($command_info));
+  				switch ($stage)
+  				{
+  					case 'download':
+  					{
+							switch ($action)
+							{
+								case 'add':
+								case 'update':
+								{
+									$package_file = $this->download_package($command_info);
+									
+									if ($package_file)
+									{
+										$command_info['-command-package-file'] = $package_file;
+										$command_info['-command-stage'] = 'install';
+									}
+									else
+									{
+										$command_info['-command-error'] = __('Could not download package file.');
+										$command_info['-command-stage'] = 'cleanup';
+									}
+							
+									return $command_info;
+								}
+							}
 							
 							break;
-						}
-					}
+  					}
+  					case 'install':
+  					{
+							switch ($action)
+							{
+								case 'add':
+								case 'update':
+								{
+									ob_start();
+									
+									$url = isset($command_info['-command-url']) ? $command_info['-command-url'] : 'admin.php';
+									$url = wp_nonce_url($url);
+									$creds = request_filesystem_credentials($url, '', false, false, array());
+									
+									$form = ob_get_clean();
+									
+									if ($creds && WP_Filesystem($creds))
+									{
+										$install_path = $this->install_package($command_info, $command_info['-command-package-file']);
+										
+										if ($install_path)
+										{
+											$command_info['-command-stage'] = 'activate';
+											$command_info['-command-install-path'] = $install_path;
+										}
+										else
+										{
+											$command_info['-command-error'] = __('Could not install package.');
+											$command_info['-command-stage'] = 'cleanup';
+										}
+									}
+									else
+									{
+										$command_info['-command-form'] = $form;
+										$command_info['-command-stage'] = 'install';
+									}
+							
+									return $command_info;
+								}
+							}
+							
+							break;
+  					}
+  				}
 					
 					break;
   			}
 			}
+			
+			return null;
     }
 }
 new M_AutoUpdate();
