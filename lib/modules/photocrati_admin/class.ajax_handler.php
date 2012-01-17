@@ -1,7 +1,13 @@
 <?php
 
 class C_Ajax_Handler extends C_MVC_Controller
-{
+{   
+    function define()
+    {
+        parent::define();
+        $this->implement('I_Ajax_Handler');
+    }
+    
     function index()
     {
         $retval = array('error' => 'Action does not exist');
