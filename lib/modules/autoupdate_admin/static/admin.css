@@ -1,0 +1,22 @@
+#update-content {
+margin-top:10px;
+}
+#update-loader {
+background:transparent none no-repeat scroll left center;
+background-image:url('ajax-loader.gif');
+padding:20px 40px;
+}
+#update-loader .message {
+font-style:italic;
+}
+#update-content .details {
+font-size:105%;
+font-style:italic;
+margin:8px 0px;
+}
+#update-content .details-alert .message {
+font-weight:bold;
+color:#dd3322;
+}
+
+
