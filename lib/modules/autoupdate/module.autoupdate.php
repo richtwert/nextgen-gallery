@@ -33,10 +33,10 @@ class M_AutoUpdate extends C_Base_Module
     
     function admin_init()
     {
-    	$this->check_license();
+    	//$this->check_license();
     	//$this->check_updates();
     	
-    	$this->check_product_list();
+    	//$this->check_product_list();
     }
     
     
@@ -146,15 +146,6 @@ class M_AutoUpdate extends C_Base_Module
   		if ($list_use != null)
   		{
   			$return = $this->api_request(self::API_URL, 'ckups', array('product-list' => $list_use));
-  			
-  			// XXX testing... remove this later
-  			if (is_array($return))
-  			{
-  				foreach ($return as $command)
-  				{
-  					$this->execute_api_command($command['action'], $command['info']);
-  				}
-  			}
   		}
     	
     	return $return;
@@ -163,7 +154,7 @@ class M_AutoUpdate extends C_Base_Module
     
     function download_package($module_info, $timeout = 300)
     {
-			$tmpfname = wp_tempnam($module_info['id']);
+			$tmpfname = wp_tempnam($module_info['module-id']);
 			
 			if (!$tmpfname)
 			{
@@ -173,12 +164,12 @@ class M_AutoUpdate extends C_Base_Module
 			$return = $this->api_request(
 									self::API_URL, 'dlpkg', 
 									array(
-										'product-list' => array($module_info['product'] => $module_info['product-version']), 
-										'module-list' => array($module_info['id'] => $module_info['version']),
-										'module-package' => $module_info['package'],
+										'product-list' => array($module_info['product-id'] => $module_info['product-version']), 
+										'module-list' => array($module_info['module-id'] => $module_info['module-version']),
+										'module-package' => $module_info['module-package'],
 										'http-timeout' => $timeout, 'http-stream' => true, 'http-filename' => $tmpfname
 									));
-									
+			
 			if ($return === false)
 			{
 				unlink($tmpfname);
@@ -200,7 +191,12 @@ class M_AutoUpdate extends C_Base_Module
     	}
     	else
     	{
-	    	$install_path = $this->_registry->get_module_dir($module_info['id']);
+	    	$install_path = $this->_registry->get_module_dir($module_info['module-id']);
+    	}
+    	
+    	if ($install_path == null)
+    	{
+    		// XXX pick default install path
     	}
     	
     	if ($install_path != null && $package_file != null && is_file($package_file))
@@ -218,6 +214,53 @@ class M_AutoUpdate extends C_Base_Module
     	}
     	
     	return false;
+    }
+    
+    
+    // Activates previously installed module (through install_package(...))
+    function activate_module($module_info, $install_path)
+    {
+			global $wp_filesystem;
+  			
+    	if ($wp_filesystem != null && $install_path != null && is_dir($install_path))
+    	{
+    		$old_prefix = '__old__';
+    		$new_prefix = '__';
+    		$dir = dirname($install_path);
+    		$base = basename($install_path);
+    		$activate_path = null;
+    		$other_path = null;
+    		
+    		if (strpos($base, $old_prefix) === 0)
+    		{
+    			$activate_path = $dir . DIRECTORY_SEPARATOR . substr($base, strlen($old_prefix));
+    			$other_path = $dir . DIRECTORY_SEPARATOR . $new_prefix . substr($base, strlen($old_prefix));
+    		}
+    		else if (strpos($base, $new_prefix) === 0)
+    		{
+    			$activate_path = $dir . DIRECTORY_SEPARATOR . substr($base, strlen($new_prefix));
+    			$other_path = $dir . DIRECTORY_SEPARATOR . $old_prefix . substr($base, strlen($new_prefix));
+    		}
+    		
+    		if ($activate_path != null)
+    		{
+    			if ($other_path != null && is_dir($other_path))
+    			{
+    				$wp_filesystem->delete($other_path, true);
+    			}
+    			
+    			if (is_dir($activate_path))
+    			{
+    				$wp_filesystem->delete($activate_path, true);
+    			}
+    			
+  				$wp_filesystem->move($install_path, $activate_path, true);
+  				
+  				return $activate_path;
+    		}
+    	}
+    	
+    	return null;
     }
     
     
@@ -272,7 +315,7 @@ class M_AutoUpdate extends C_Base_Module
   		{
   			if (isset($http_args['filename']))
   			{
-  				if (wp_remote_retrieve_response_code($return) == 200)
+  				//if (wp_remote_retrieve_response_code($return) == 200)
   				{
   					return true;
   				}
@@ -315,6 +358,8 @@ class M_AutoUpdate extends C_Base_Module
   		{
   			case 'module':
   			{
+  				unset($command_info['-command-error']);
+  				
   				switch ($stage)
   				{
   					case 'download':
@@ -344,6 +389,7 @@ class M_AutoUpdate extends C_Base_Module
 							break;
   					}
   					case 'install':
+  					case 'activate':
   					{
 							switch ($action)
 							{
@@ -352,31 +398,48 @@ class M_AutoUpdate extends C_Base_Module
 								{
 									ob_start();
 									
+									$old_err = error_reporting(0);
+									
 									$url = isset($command_info['-command-url']) ? $command_info['-command-url'] : 'admin.php';
 									$url = wp_nonce_url($url);
 									$creds = request_filesystem_credentials($url, '', false, false, array());
 									
 									$form = ob_get_clean();
 									
+									error_reporting($old_err);
+									
 									if ($creds && WP_Filesystem($creds))
 									{
-										$install_path = $this->install_package($command_info, $command_info['-command-package-file']);
+										unset($command_info['-command-form']);
 										
-										if ($install_path)
+										$new_stage = $stage == 'activate' ? 'cleanup' : 'activate';
+										$new_path = null;
+										
+										if ($stage == 'install')
 										{
-											$command_info['-command-stage'] = 'activate';
-											$command_info['-command-install-path'] = $install_path;
+											$new_path = $this->install_package($command_info, $command_info['-command-package-file']);
+										}
+										else if ($stage == 'activate')
+										{
+											$new_path = $this->activate_module($command_info, $command_info['-command-install-path']);
+										}
+										
+										if ($new_path != null)
+										{
+											$command_info['-command-stage'] = $new_stage;
+											$command_info['-command-' . $stage . '-path'] = $new_path;
 										}
 										else
 										{
-											$command_info['-command-error'] = __('Could not install package.');
+											$command_info['-command-error'] = __('Could not ' . $stage . ' package.');
 											$command_info['-command-stage'] = 'cleanup';
 										}
 									}
 									else
 									{
+										$command_info['-command-error'] = __('No permission to ' . $stage .' package.');
 										$command_info['-command-form'] = $form;
-										$command_info['-command-stage'] = 'install';
+										$command_info['-command-stage'] = $stage;
 									}
 							
 									return $command_info;
@@ -384,6 +447,10 @@ class M_AutoUpdate extends C_Base_Module
 							}
 							
 							break;
+  					}
+  					case 'cleanup':
+  					{
+  						break;
   					}
   				}
 					
