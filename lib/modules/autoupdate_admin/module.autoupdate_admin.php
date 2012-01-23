@@ -43,6 +43,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     {
         add_action('admin_init', array($this, 'admin_init'));
 				add_action('admin_menu', array($this, 'admin_menu'));
+				add_action('wp_dashboard_setup', array($this, 'dashboard_setup'));
 				
         wp_register_script(
             'pc-autoupdate-admin', 
@@ -132,6 +133,59 @@ class M_AutoUpdate_Admin extends C_Base_Module
         {
 					add_submenu_page('tools.php', __('Update'), __('Update'), 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
         }
+    }
+    
+    function dashboard_setup()
+    {
+   		wp_add_dashboard_widget('photocrati_admin_dashboard_widget', 'Welcome to Photocrati', array($this, 'dashboard_widget'));
+
+			global $wp_meta_boxes;
+			
+			if (isset($wp_meta_boxes['dashboard']['normal']['core']))
+			{
+				$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+				$widget_backup = array('photocrati_admin_dashboard_widget' => $normal_dashboard['photocrati_admin_dashboard_widget']);
+				unset($normal_dashboard['photocrati_admin_dashboard_widget']);
+				
+				$sorted_dashboard = array_merge($widget_backup, $normal_dashboard);
+				$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
+			}
+    }
+    
+    function dashboard_widget()
+    {
+    	$product_list = $this->_registry->get_product_list();
+    	$product_count = count($product_list);
+    	$update_list = $this->_get_update_list();
+    	
+    	if ($product_count > 0)
+    	{
+    		echo '<p>You are using';
+    	
+    		if ($product_count > 1)
+    		{
+    			echo ' the following products:';
+    		}
+    		
+    		for ($i = 0; $i < $product_count; $i++)
+    		{
+    			$product = $this->_registry->get_product($product_list[$i]);
+    			
+    			if ($i > 0)
+    			{
+    				echo ',';
+    			}
+    			
+    			echo ' ' . $product->module_name . ' v' . $product->module_version;
+    		}
+    		
+    		echo '</p>';
+    	}
+    	
+    	if ($update_list != null)
+    	{
+    		echo '<p>There are updates available <a class="button-secondary" href="' . esc_url(admin_url('tools.php?page=photocrati-auto_update-admin')) . '">Update Now</a></p>';
+    	}
     }
 }
 new M_AutoUpdate_Admin();
