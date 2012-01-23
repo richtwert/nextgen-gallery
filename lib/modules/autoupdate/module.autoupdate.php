@@ -307,7 +307,7 @@ class M_AutoUpdate extends C_Base_Module
   			
   			unset($parameter_list['http-filename']);
   		}
-    		
+    	
     	$http_args['body'] = $parameter_list;
     	$return = wp_remote_post($url, $http_args);
     	
@@ -450,6 +450,17 @@ class M_AutoUpdate extends C_Base_Module
   					}
   					case 'cleanup':
   					{
+							switch ($action)
+							{
+								case 'add':
+								case 'update':
+								{
+									$command_info['-command-stage'] = 'none';
+					
+									return $command_info;
+								}
+							}
+							
   						break;
   					}
   				}
