@@ -4,6 +4,12 @@ class A_AutoUpdate_Admin_Ajax extends Mixin
 {
 	function autoupdate_admin_handle()
 	{
+		if (!current_user_can('update_plugins'))
+		{
+			// Not allowed, skip...
+			return null;
+		}
+		
 		// XXX ugly, one of the reasons to use ajax-admin.php
 		include_once(ABSPATH . '/wp-admin/includes/admin.php');
 		
