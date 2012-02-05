@@ -516,10 +516,14 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
             
             //populate the sub album values
             $galleries[$key]->counter = 0;
-            if ($subalbum->previewpic > 0)
+            $galleries[$key]->previewurl = '';
+            // ensure that album contain a preview image
+            if ($subalbum->previewpic > 0){
                 $image = $nggdb->find_image( $subalbum->previewpic );
-            $galleries[$key]->previewpic = $subalbum->previewpic;
-            $galleries[$key]->previewurl = isset($image->thumbURL) ? $image->thumbURL : '';
+				$galleries[$key]->previewurl = isset($image->thumbURL) ? $image->thumbURL : '';
+			}
+            
+            $galleries[$key]->previewpic = $subalbum->previewpic;            
             $galleries[$key]->previewname = $subalbum->name;
             
             //link to the subalbum
