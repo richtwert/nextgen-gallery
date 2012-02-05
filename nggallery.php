@@ -36,7 +36,7 @@ class nggLoader {
 	
 	var $version     = '1.9.2';
 	var $dbversion   = '1.8.0';
-	var $minium_WP   = '3.1';
+	var $minimum_WP   = '3.1';
 	var $donators    = 'http://nextgen.boelinger.com/donators.php';
 	var $options     = '';
 	var $manage_page;
@@ -162,14 +162,14 @@ class nggLoader {
 		global $wp_version;
 			
 		// Check for WP version installation
-		$wp_ok  =  version_compare($wp_version, $this->minium_WP, '>=');
+		$wp_ok  =  version_compare($wp_version, $this->minimum_WP, '>=');
 		
 		if ( ($wp_ok == FALSE) ) {
 			add_action(
 				'admin_notices', 
 				create_function(
 					'', 
-					'global $ngg; printf (\'<div id="message" class="error"><p><strong>\' . __(\'Sorry, NextGEN Gallery works only under WordPress %s or higher\', "nggallery" ) . \'</strong></p></div>\', $ngg->minium_WP );'
+					'global $ngg; printf (\'<div id="message" class="error"><p><strong>\' . __(\'Sorry, NextGEN Gallery works only under WordPress %s or higher\', "nggallery" ) . \'</strong></p></div>\', $ngg->minimum_WP );'
 				)
 			);
 			return false;
