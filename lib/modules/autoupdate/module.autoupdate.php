@@ -183,11 +183,28 @@ class M_AutoUpdate extends C_Base_Module
     
     function install_package($module_info, $package_file)
     {
-    	$install_path = isset($module_info['local-path']) ? $module_info['local-path'] : null;
+    	$local_path = isset($module_info['local-path']) ? $module_info['local-path'] : null;
+    	$install_path = null;
     	
-    	if ($install_path != null)
+    	if ($local_path != null)
     	{
     		// XXX transform local relative path to absolute path
+    		if (isset($local_path['product']))
+    		{
+    			$path = $this->_registry->get_product_module_path($local_path['product']);
+    			
+    			if ($path != null)
+    			{
+						if (isset($local_path['path']))
+						{
+							$install_path = $path . DIRECTORY_SEPARATOR . $local_path['path'];
+						}
+						else
+						{
+							$install_path = $path . DIRECTORY_SEPARATOR . $module_info['module-id'];
+						}
+    			}
+    		}
     	}
     	else
     	{
@@ -196,7 +213,13 @@ class M_AutoUpdate extends C_Base_Module
     	
     	if ($install_path == null)
     	{
-    		// XXX pick default install path
+    		// XXX pick better default install path?
+    		$path = $this->_registry->get_default_module_path();
+    		
+    		if ($path != null)
+    		{
+    			$install_path = $path . DIRECTORY_SEPARATOR . $module_info['module-id'];
+    		}
     	}
     	
     	if ($install_path != null && $package_file != null && is_file($package_file))
@@ -261,6 +284,12 @@ class M_AutoUpdate extends C_Base_Module
     	}
     	
     	return null;
+    }
+    
+    
+    // Cleans up after a command is run
+    function cleanup_command($command_info)
+    {
     }
     
     
@@ -455,6 +484,8 @@ class M_AutoUpdate extends C_Base_Module
 								case 'add':
 								case 'update':
 								{
+									$this->cleanup_command($command_info);
+									
 									$command_info['-command-stage'] = 'none';
 					
 									return $command_info;
