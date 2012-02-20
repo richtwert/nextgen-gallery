@@ -26,7 +26,8 @@ class M_NextGen_ImageBrowser_Gallery extends C_Base_Module
             $this->module_name,
             $this->module_description,
             'C_NextGen_ImageBrowser_Settings',
-            'C_NextGen_ImageBrowser_View'
+            'C_NextGen_ImageBrowser_View',
+            'C_NextGen_ImageBrowser_Config'
         );
     }
     
