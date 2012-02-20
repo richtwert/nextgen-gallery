@@ -112,10 +112,10 @@ class Mixin_Active_Record_Query extends Mixin
         
         // Generate query
         $sql = array($select = 'SELECT * FROM `'.$this->object->table_name.'`');
-        if ($where)     $sql[] = ' WHERE '.$this->db->prepare($where, $vars);
-        if ($order)  $sql[] = 'ORDER BY '.str_replace(';', '', $order);
-        if ($limit)     $sql[] = $this->db->prepare("LIMIT %d", $limit);
-        if ($start)     $sql[] = $this->db->prepare("OFFSET %d", $start);
+        if ($where)                     $sql[] = ' WHERE '.$this->db->prepare($where, $vars);
+        if ($order)                     $sql[] = 'ORDER BY '.str_replace(';', '', $order);
+        if ($limit && $limit != -1)     $sql[] = $this->db->prepare("LIMIT %d", $limit);
+        if ($start && $start != -1)     $sql[] = $this->db->prepare("OFFSET %d", $start);
         $sql = $this->db->_substitute_id_for_id_field(implode(' ', $sql), $this->object->id_field);
         
         $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
