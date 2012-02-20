@@ -6,10 +6,10 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 class Mixin_MVC_Controller_Defaults extends Mixin
 {   
     // Provide a default view
-    function index()
+    function index($return=FALSE)
     {
         $this->debug = TRUE;
-        $this->render_partial('index');
+        return $this->render_partial('index', array(), $return);
     }
 }
 
@@ -30,6 +30,24 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             case 'jscript':
             case 'emcascript':
                 $type = 'x-application/javascript';
+                break;
+            case 'jpeg':
+            case 'jpg':
+            case 'jpe':
+                $type = 'image/jpeg';
+                break;
+            case 'gif':
+                $type = 'image/gif';
+                break;
+            case 'png':
+                $type = 'image/x-png';
+                break;
+            case 'tiff':
+            case 'tif':
+                $type = 'image/tiff';
+                break;
+            case 'pdf':
+                $type = 'application/pdf';
                 break;
         }
         
@@ -156,8 +174,30 @@ abstract class C_MVC_Controller extends C_Component
         parent::initialize($context);
         $this->_request = function_exists('apache_request_headers') ? 
             apache_request_headers() : array();
-        $this->_params = $_REQUEST;
+        $this->_params = $this->parse_params($_REQUEST);
         $this->_request_method = $_SERVER['REQUEST_METHOD'];
+    }
+    
+    
+    function parse_params($arr)
+    {
+        $retval = array();
+        
+        foreach ($arr as $key => $value) {
+            if (is_array($value)) {
+                $value = $this->parse_params($value);
+            }
+            elseif (is_string($value)) {
+                if ($value == 'true') $value = TRUE;
+                elseif ($value == 'false') $value = FALSE;
+                elseif ($value == 'null') $value = NULL;
+            }
+            
+            // Update the value
+            $retval[$key] = $value;
+        }
+        
+        return $retval;
     }
     
     
@@ -165,7 +205,7 @@ abstract class C_MVC_Controller extends C_Component
     {
         header("HTTP/1.0 {$code} {$message}");
         $this->render_view($code, array('message' => $message));
-        exit(-1);
+        throw new CleanExitException();
     }
     
     function is_valid_request($method)
@@ -208,9 +248,16 @@ abstract class C_MVC_Controller extends C_Component
      * @param string $key
      * @return mixed 
      */
-    function param($key)
+    function param($key, $default=NULL)
     {
-        return isset($this->_params[$key]) ? $this->_params[$key] : NULL;
+        $retval = $default;
+        
+        if (isset($this->_params[$key])) {
+            $val = $this->_params[$key];
+            if (!in_array(strtolower($val), array('null', 'false'))) $retval = $val;
+        }
+        
+        return $retval;
     }
     
     

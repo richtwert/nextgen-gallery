@@ -8,7 +8,6 @@ class Mixin_Route_Persistence extends Mixin
     
 }
 
-
 /**
  * Provides a means for adding/removing routes
  */
@@ -153,7 +152,15 @@ class Mixin_Router extends Mixin
             ));
         }
         
-        exit;
+        // We've finished routing the request.
+        // Since the plugin is currently routed within WordPress, we need to
+        // tell WordPress that we're finished as well. In the past, I've been
+        // calling exit() but that isn't recommended to do in FastCGI
+        // environments. See http://serverfault.com/questions/84962/php-via-fastcgi-terminated-by-calling-exit
+        //
+        
+        throw new CleanExitException();
+        //exit;
     }
     
     /**
