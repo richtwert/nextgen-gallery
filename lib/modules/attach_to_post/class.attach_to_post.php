@@ -69,7 +69,9 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                 // Create the attached gallery images
                 else {
                     $attached_gallery->save();
-                    foreach ($this->object->param('images') as $order => $overrides) {
+                    $images = $this->object->param('images');
+                    ksort($images);
+                    foreach ($images as $order => $overrides) {
                         $attached_gallery_image = FALSE;
                         
                         // Is this an existing attached gallery image id ?
@@ -91,7 +93,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                         
                         // If we have an image and it saved successfully
                         if ($attached_gallery_image) {
-                            if  ($attached_gallery_image->save($overrides)) {                        
+                            if  ($attached_gallery_image->save($overrides)) {
 
                                 // Return the new image id
                                 if (!isset($retval['attached_gallery_image_ids'])) {
@@ -277,7 +279,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
             $args[] = 'attach_to_post';
             
             // Get image forms
-            $order = 0;
+            $order = 1;
             foreach ($obj->call_method('get_images', $args) as $image) {
                 
                 // Rendering an attached gallery image
@@ -524,10 +526,8 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
         if (!$this->object->attached_gallery->is_new()) {
             $images = array();
             
-            // We fetch only 20 of the images. The rest will be loaded
-            // using AJAX
             $order=0;
-            foreach ($this->object->attached_gallery->get_images(1, 20) as $image) {
+            foreach ($this->object->attached_gallery->get_images(1, 20, FALSE, TRUE) as $image) {
               $images[] = $this->object->render_image_form($image, $image->gallery_image_id, $image->id(), $order);  
               $order++;
             }

@@ -7,15 +7,17 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
         $retval = FALSE;
         
         // Update the properties and validate
-        $this->update_properties($updates);
+        $this->update_properties($updates);;
         
         // Ensure that nothing is overriding the post type
         $this->__set('post_type', 'attached_gal_image');
         
         // If it's valid, then persist as a custom post type
         $this->validate();
+        
         if ($this->object->is_valid()) {
             if (($retval = wp_insert_post($this->object->properties))) {
+                
                 $this->object->__set('ID', $retval);
                 
                 // Save the attached gallery id as meta data
@@ -45,9 +47,17 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
         $retval = NULL;
         
         $custom = get_post_custom($id);
-        if ($custom && isset($custom['properties'])) {
-            $retval = $this->object->factory->create('attached_gallery_image', $custom[0], $context);
+        $properties = array();
+        foreach ($custom as $meta_key => $meta_value) {
+            $property = unserialize($meta_value[0]);
+            if (is_array($property)) {
+                $properties = array_merge($properties, $property);
+            }
+            else {
+                $properties[$meta_key] = $property;
+            }
         }
+        $retval = $this->object->factory->create('attached_gallery_image', $properties);
         
         return $retval;
     }
@@ -89,7 +99,9 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
 
 
 class C_Attached_Gallery_Image extends C_NextGen_Gallery_Image
-{   
+{
+    var $factory = NULL;
+    
     function define()
     {
         parent::define();

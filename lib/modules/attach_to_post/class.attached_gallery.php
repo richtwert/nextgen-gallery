@@ -29,13 +29,16 @@ class Mixin_Attached_Gallery_Queries extends Mixin
                 $properties[$key] = $value;
             }
             $properties['attached_gallery_id'] = $id;
-
-            // Create new attached gallery objected based on the above
-            $retval =  $this->object->factory->create(
-                $this->object->object_name,
-                $properties
-            );
         }
+        else {
+            $properties['attached_gallery_id'] = FALSE;
+        }
+        
+        // Create new attached gallery objected based on the above
+        $retval =  $this->object->factory->create(
+            $this->object->object_name,
+            $properties
+        );
         
         return $retval;
     }
@@ -76,6 +79,7 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
                 if (($retval = wp_insert_post($this->object->properties))) {
                     if ($retval) {
                         $this->object->__set('ID', $retval);
+                        $this->object->__set('attached_gallery_id', $retval);
                         $retval = TRUE;
                     }
                 }
