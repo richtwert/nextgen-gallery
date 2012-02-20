@@ -79,7 +79,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                             
                             // Create the attached gallery image
                             $overrides = $this->array_merge_assoc($gallery_image->properties, $overrides);
-                            $overrides['attached_gallery_id'] = $params['attached_gallery_id'];
+                            $overrides['attached_gallery_id'] = $attached_gallery->id();
                             $attached_gallery_image = $this->object->factory->create('attached_gallery_image', $overrides);
                             $attached_gallery_image_id = $attached_gallery_image->save();                        
 
@@ -272,9 +272,6 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
             
             // Get image forms
             $order = 0;
-            
-            
-            die(print_r($obj->call_method('get_images', $args)));
             foreach ($obj->call_method('get_images', $args) as $image) {
                 
                 // Rendering an attached gallery image
