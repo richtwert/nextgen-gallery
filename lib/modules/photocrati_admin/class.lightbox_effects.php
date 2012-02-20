@@ -22,16 +22,16 @@ class C_Lightbox_Effects extends C_Base_Form_Handler
     }
     
     
-    function render_form()
+    function render_form($return=FALSE)
     {
         $config     = $this->get_config();
         $libraries  = $config->find_all();
         $default    = $config->find_default();
         
-        $this->render_partial('lightbox_effects_form', array(
+        return $this->render_partial('lightbox_effects_form', array(
             'config'    => $config,
             'libraries' => $libraries,
             'default'   => $default ? $default->name : ''
-        ));
+        ), $return);
     }
 }

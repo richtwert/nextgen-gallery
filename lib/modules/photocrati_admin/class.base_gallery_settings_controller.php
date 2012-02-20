@@ -16,22 +16,22 @@ class Mixin_Base_Gallery_Settings_Overrides extends Mixin
  */
 class Mixin_Base_Gallery_Settings_Renderer extends Mixin
 {
-    function render_form()
+    function render_form($return=FALSE)
     {
         $this->configure_fields();
-        $this->render_partial('fields', array('fields'=>$this->fields));
+        return $this->render_partial('fields', array('fields'=>$this->fields), $return);
     }
 }
 
 
 class Mixin_Base_Gallery_Settings extends Mixin
 {
-    function preview()
+    function preview($return=FALSE)
     {
-        $this->render_partial('preview', array(
+        return $this->render_partial('preview', array(
            'gallery_name'       =>  $this->object->get_gallery_name(),
            'preview_image_src'  =>  $this->object->static_url('preview.jpg')
-        ));
+        ), $return);
     }
 }
 

@@ -23,6 +23,7 @@ class C_Photocrati_Admin extends C_Base_Admin_Controller
     {
         parent::define();
         $this->add_mixin('C_Photocrati_Admin_Overrides');
+        $this->implement('I_Admin_Controller');
     }
     
     
