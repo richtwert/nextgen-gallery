@@ -25,7 +25,8 @@ class M_NextGen_Thumbnail_Gallery extends C_Base_Module
             $this->module_name,
             $this->module_description,
             'C_NextGen_Thumbnail_Gallery_Settings',
-            'C_NextGen_Thumbnail_Gallery_View'
+            'C_NextGen_Thumbnail_Gallery_View',
+            'C_NextGen_Thumbnail_Gallery_Config'
         );
     }
     

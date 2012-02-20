@@ -26,8 +26,8 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
         // Get global options and merge with gallery instance options
         $ngg_options = $this->array_merge_assoc(
             nggGallery::get_option('ngg_options'),
-            $this->gallery_instance_settings_to_ngg_legacy(
-                $this->gallery_instance->settings
+            $this->attached_gallery_settings_to_ngg_legacy(
+                $this->attached_gallery->settings
             )
         );
 
@@ -41,10 +41,10 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
             if ( $show == 'slide' ) {
                 $args['show'] = "gallery";
                 $out  = '<div class="ngg-galleryoverview">';
-                if ($this->gallery_instance->settings['show_thumbnails_link']) {
+                if ($this->attached_gallery->settings['show_thumbnails_link']) {
                     $out .= '<div class="slideshowlink"><a class="slideshowlink" href="' . $nggRewrite->get_permalink($args) . '">'.nggGallery::i18n($ngg_options['galTextGallery']).'</a></div>';
                 }
-                $out .= nggShowSlideshow($this->gallery_instance->gallery_id, $ngg_options['irWidth'], $ngg_options['irHeight']);
+                $out .= nggShowSlideshow($this->attached_gallery->gallery_id, $ngg_options['irWidth'], $ngg_options['irHeight']);
                 $out .= '</div>'."\n";
                 $out .= '<div class="ngg-clear"></div>'."\n";
                 echo $out;
@@ -54,12 +54,12 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
             
         // Call NextGen legacy methods
         echo $this->nggCreateGallery(
-            $this->gallery_instance->get_images(TRUE),
-            $this->gallery_instance->gallery_id,
-            $this->gallery_instance->display_template,
+            $this->attached_gallery->get_images(TRUE),
+            $this->attached_gallery->gallery_id,
+            $this->attached_gallery->display_template,
             FALSE,
-            $this->gallery_instance_settings_to_ngg_legacy(
-                $this->gallery_instance->settings
+            $this->attached_gallery_settings_to_ngg_legacy(
+                $this->attached_gallery->settings
             )
         ); 
         
@@ -72,7 +72,7 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
      * @param array $settings
      * @return array 
      */
-    function gallery_instance_settings_to_ngg_legacy($settings)
+    function attached_gallery_settings_to_ngg_legacy($settings)
     {
         return array(
             'galShowSlide'      =>  $settings['show_slideshow_link'],
