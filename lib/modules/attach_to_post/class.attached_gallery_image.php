@@ -96,6 +96,12 @@ class C_Attached_Gallery_Image extends C_NextGen_Gallery_Image
         $this->add_mixin('Mixin_Attached_Gallery_Image_Persistence');
         $this->add_mixin('Mixin_Attached_Gallery_Image_Query');
     }
+    
+    function initialize($properties = array(), $context = FALSE)
+    {
+        parent::initialize($properties, $context);
+        $this->factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+    }
   
     
     function id()

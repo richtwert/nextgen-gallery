@@ -38,7 +38,6 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     function _save_attached_gallery()
     {
         $retval = array();
-        $attached_gallery_images = array();
         
         try {
             $params = $this->object->_params;
@@ -64,35 +63,42 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                 
                 // If the attached gallery is valid, then we can create
                 // images for the attached gallery
-                if (!($retval['saved'] = $attached_gallery->save())) {
+                if (!($retval['saved'] = $attached_gallery->is_valid()))
                     $retval['validation_errors'] = $attached_gallery->get_errors();
-                }
-                
+                    
                 // Create the attached gallery images
                 else {
+                    $attached_gallery->save();
                     foreach ($this->object->param('images') as $order => $overrides) {
+                        $attached_gallery_image = FALSE;
                         
-                        // Look up the gallery image
-                        $gallery_image = $this->object->factory->create('gallery_image');
-                        $gallery_image = $gallery_image->find($overrides['gallery_image_id']);
-                        if ($gallery_image) {
-                            
-                            // Create the attached gallery image
-                            $overrides = $this->array_merge_assoc($gallery_image->properties, $overrides);
+                        // Is this an existing attached gallery image id ?
+                        if (isset($overrides['attached_gallery_image_id']) && $overrides['attached_gallery_image_id']) {
+                            $image_factory = $this->object->factory->create('attached_gallery_image');
+                            $attached_gallery_image = $image_factory->find($overrides['attached_gallery_image_id']);
+                            unset($image_factory);
+                        }
+                        
+                        // We need to create a new attached gallery image, based
+                        // on an existing gallery image
+                        elseif(isset($overrides['gallery_image_id']) && $overrides['gallery_image_id']) {
+                            $gallery_image = $this->object->factory->create('gallery_image');
+                            $gallery_image = $gallery_image->find($overrides['gallery_image_id']);
                             $overrides['attached_gallery_id'] = $attached_gallery->id();
+                            $overrides = $this->array_merge_assoc($gallery_image->properties, $overrides);
                             $attached_gallery_image = $this->object->factory->create('attached_gallery_image', $overrides);
-                            $attached_gallery_image_id = $attached_gallery_image->save();                        
-
-                            // Did the image get saved successfully?
-                            if ($attached_gallery_image_id) {
-                                $attached_gallery_images[] = $attached_gallery_image;
+                        }
+                        
+                        // If we have an image and it saved successfully
+                        if ($attached_gallery_image) {
+                            if  ($attached_gallery_image->save($overrides)) {                        
 
                                 // Return the new image id
                                 if (!isset($retval['attached_gallery_image_ids'])) {
                                     $retval['attached_gallery_image_ids'] = array();
                                 }
                                 $retval['attached_gallery_image_ids'][] = $attached_gallery_image_id;
-                            }
+                            }    
 
                             // The image was not saved successfully. Return the validation errors
                             else {
@@ -101,8 +107,8 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                                 }
                                 $retval['image_validation_errors'][] = $attached_gallery_image->get_errors();
                             }
-
-                        }                        
+                        }
+                        else $retval['error'] = "Gallery image does NOT exist";
                     }
                     
                     // Include the new attached gallery id in the response
@@ -123,10 +129,10 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         // Perform any clean up if errors occured
         foreach (array('error','image_validation_errors') as $field) {
             if (isset($retval[$field])) {
+                
+                // TODO: When an attached gallery is deleted, the attached
+                // gallery images should be deleted as well
                 $attached_gallery->delete();
-                foreach ($attached_gallery_images as $attached_gallery_image) {
-                    $attached_gallery_image->delete();
-                }
                 $retval['saved'] = FALSE;
                 unset($retval['attached_gallery_id']);
             }
