@@ -1,6 +1,6 @@
 <?php
 
-class A_Gallery_Instance_Thumbnails extends Mixin
+class A_attached_gallery_Thumbnails extends Mixin
 {
     function initialize()
     {
