@@ -1,6 +1,6 @@
 <?php
 
-class A_Gallery_Instance_Dimensions extends Hook
+class A_attached_gallery_Dimensions extends Hook
 {
     function initialize()
     {

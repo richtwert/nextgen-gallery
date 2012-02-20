@@ -93,10 +93,12 @@ class Mixin_NextGen_Gallery_Storage extends Mixin
             //)
             
             if ($img['error']) {
-                throw new Exception(
-                    _("There was a problem uploading the image:").
-                    isset($img['name'])? $img['name'] : _('unknown filename')
-                );
+                $error_msg = _("There was a problem uploading the image, ").
+                    (isset($img['name'])? $img['name'] : _('unknown filename')).'. ';
+                if (in_array($img[error], array(1,2))) {
+                    $error_msg .= "The file exceeded the maximum size allowed.";
+                }
+                throw new Exception($error_msg);
             }
             
             // filter function to rename/change/modify image before
@@ -230,13 +232,16 @@ class C_NextGen_Gallery extends C_Active_Record
      * @param string $context
      * @return array 
      */
-    function get_images($order='', $start=0, $limit=0, $context=FALSE)
+    function get_images($page=FALSE, $num_per_page=-1, $legacy=FALSE, $context=FALSE)
     {
         /**
          * @var $component C_NextGen_Gallery_Image
          */
         $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
-        $component = $factory->create('gallery_image', $context);
-        return $component->find_by(self::IMAGE_GALLERY_ID." = %s", array($this->id()), $order, $start, $limit, $context);
+        $component = $factory->create('gallery_image');
+        
+        // Calculate start. start = (limit+1)*(page-1)
+        $start = $page == 1 ? $page : ($num_per_page+1)*($page-1);
+        return $component->find_by(self::IMAGE_GALLERY_ID." = %s", array($this->id()), '', $start, $limit, $context);
     }
 }

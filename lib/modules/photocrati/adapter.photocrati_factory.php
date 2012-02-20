@@ -20,7 +20,7 @@ class A_Photocrati_Factory extends Mixin
     }
     
     
-    function gallery_type_controller($gallery_type, $gallery_instance, $admin=FALSE, $context=FALSE)
+    function gallery_type_controller($gallery_type, $admin=FALSE, $context=FALSE)
     {
         $retval = NULL;
         $gallery_type = C_Gallery_Type_Registry::get($gallery_type);
@@ -31,15 +31,19 @@ class A_Photocrati_Factory extends Mixin
                 $retval = new $gallery_type['public_controller']($context);
         }
         
-        $retval->gallery_instance = $gallery_instance;
-        
         return $retval;
     }
     
     
-    function gallery_instance($properties=array(), $context=FALSE)
+    function gallery_type_config($gallery_type, $settings=array(), $context=FALSE)
     {
-        return new C_Gallery_Instance($properties, $context);
+        $retval = NULL;
+        
+        $gallery_type = C_Gallery_Type_Registry::get($gallery_type);
+        if ($gallery_type) {
+            $retval = new $gallery_type['config']($settings, $context);
+        }
+        return $retval;
     }
     
     

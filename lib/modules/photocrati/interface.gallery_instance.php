@@ -1,6 +1,6 @@
 <?php
 
-interface I_Gallery_Instance
+interface I_attached_gallery
 {
     
 }

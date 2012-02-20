@@ -4,13 +4,14 @@ class C_Gallery_Type_Registry
 {
     static $_gallery_types = array();
     
-    static function add($name, $description, $admin_controller, $public_controller)
+    static function add($name, $description, $admin_controller, $public_controller, $config)
     {
         self::$_gallery_types[$name] = array(
           'name'                => $name,
           'description'         => $description,
           'admin_controller'    => $admin_controller,
-          'public_controller'   => $public_controller
+          'public_controller'   => $public_controller,
+          'config'              => $config,
         );
     }
     

@@ -171,6 +171,10 @@ class C_NextGen_Gallery_Image extends C_Active_Record
         return $this->__get(self::GALLERY_ID);
     }
     
+    function gallery_image_id()
+    {
+        return $this->id();
+    }
     
     /**
      * Respond to legacy properties that other Nextgen classes expect
