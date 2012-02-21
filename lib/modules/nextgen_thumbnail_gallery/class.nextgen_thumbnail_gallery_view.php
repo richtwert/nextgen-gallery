@@ -27,7 +27,7 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
         $ngg_options = $this->array_merge_assoc(
             nggGallery::get_option('ngg_options'),
             $this->attached_gallery_settings_to_ngg_legacy(
-                $this->attached_gallery->settings
+                $this->config->settings
             )
         );
 
@@ -41,10 +41,10 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
             if ( $show == 'slide' ) {
                 $args['show'] = "gallery";
                 $out  = '<div class="ngg-galleryoverview">';
-                if ($this->attached_gallery->settings['show_thumbnails_link']) {
+                if ($this->config->settings['show_thumbnails_link']) {
                     $out .= '<div class="slideshowlink"><a class="slideshowlink" href="' . $nggRewrite->get_permalink($args) . '">'.nggGallery::i18n($ngg_options['galTextGallery']).'</a></div>';
                 }
-                $out .= nggShowSlideshow($this->attached_gallery->gallery_id, $ngg_options['irWidth'], $ngg_options['irHeight']);
+                $out .= nggShowSlideshow($this->config->gallery_id, $ngg_options['irWidth'], $ngg_options['irHeight']);
                 $out .= '</div>'."\n";
                 $out .= '<div class="ngg-clear"></div>'."\n";
                 echo $out;
@@ -54,12 +54,12 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
             
         // Call NextGen legacy methods
         echo $this->nggCreateGallery(
-            $this->attached_gallery->get_images(TRUE),
-            $this->attached_gallery->gallery_id,
-            $this->attached_gallery->display_template,
+            $this->config->get_images(TRUE),
+            $this->config->gallery_id,
+            $this->config->display_template,
             FALSE,
             $this->attached_gallery_settings_to_ngg_legacy(
-                $this->attached_gallery->settings
+                $this->config->settings
             )
         ); 
         
