@@ -16,6 +16,18 @@ class Mixin_Replicate_Thumbnail_Config extends Mixin
             update_option('ngg_options', $ngg_options);
         }
     }
+    
+    function set_defaults()
+    {
+        $this->object->settings = array_merge($this->object->settings, array(
+            'use_thumbnails'    =>  1,
+            'show_captions'     =>  0,
+            'thumbnail_quality' =>  100,
+            'thumbnail_crop'    =>  1,
+            'thumbnail_width'   =>  100,
+            'thumbnail_height'  =>  80
+        ));
+    }
 }
 
 
