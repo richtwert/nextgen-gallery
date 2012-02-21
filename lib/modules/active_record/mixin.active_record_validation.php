@@ -12,8 +12,8 @@ class Mixin_Active_Record_Validation extends Mixin
        "validates_format_of"        => "%s is invalid",
        "validates_inclusion_of"     => "%s is not included in the list",
        "validates_numericality_of"  => "%s is not numeric",
-       "validates_greather_than"    => "%s is too small",
-       "validates_less_than"        => "%s is too large",
+       "validates_less_than"        => "%s is too small",
+       "validates_greater_than"     => "%s is too large",
        "validates_equals"           => "%s is invalid",
     );
     
@@ -122,7 +122,6 @@ class Mixin_Active_Record_Validation extends Mixin
 
             if (!$this->is_empty($value)) {
                 $invalid = FALSE;
-                
                 if (is_numeric($value)) {
                     $value = $value += 0;
                     
@@ -134,28 +133,28 @@ class Mixin_Active_Record_Validation extends Mixin
                         switch ($comparison_operator) {
                             case '=':
                             case '==':
-                                $invalid = !$value == $comparison;
+                                $invalid = ($value == $comparison) ? FALSE : TRUE;
                                 $default_msg = $this->_get_default_error_message_for('validates_equals');
                                 break;
                             case '!=':
                             case '!':
-                                $invalid = !$value != $comparison;
+                                $invalid = ($value != $comparison) ? FALSE : TRUE;
                                 $default_msg = $this->_get_default_error_message_for('validates_equals');
                                 break;
                             case '<':
-                                $invalid = !$value < $comparion;
+                                $invalid = ($value < $comparion) ? FALSE : TRUE;
                                 $default_msg = $this->_get_default_error_message_for('validates_less_than');
                                 break;
                             case '>':
-                                $invalid = !$value > $comparison;
+                                $invalid = ($value > $comparison) ? FALSE : TRUE;
                                 $default_msg = $this->_get_default_error_message_for('validates_greater_than');
                                 break;
                             case '<=':
-                                $invalid = !$value <= $comparison;
+                                $invalid = ($value <= $comparison) ? FALSE : TRUE;
                                 $default_msg = $this->_get_default_error_message_for('validates_less_than');
                                 break;
                             case '>=':
-                                $invalid = !$value >= $comparion;
+                                $invalid = ($value >= $comparison) ? FALSE : TRUE;
                                 $default_msg = $this->_get_default_error_message_for('validates_greater_than');
                                 break;
                         }
