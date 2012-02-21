@@ -92,7 +92,7 @@ class Mixin_Substitute_Gallery_Placeholders extends Mixin
                     ob_end_clean();                    
                 }
                 
-                // The gallery type is no longe registered
+                // The gallery type is no longer registered
                 else {
                     $img->outertext = "<p class='invalid_gallery_type'>".
                         h(_($attached_gallery->gallery_type.
