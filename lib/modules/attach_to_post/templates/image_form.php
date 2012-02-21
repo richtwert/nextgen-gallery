@@ -41,6 +41,14 @@
         class="attached_gallery_image_id"
     />
     
+    <!-- Order -->
+    <input
+        name="images[<?php echo($order)?>][order]"
+        value="<?php echo($order) ?>"
+        type="hidden"
+        class="image_order"
+    />
+    
     <!-- Render other fields -->
     <table class="hidden image_form" rel="<?php echo_h($order) ?>">
         <td colspan='2'>

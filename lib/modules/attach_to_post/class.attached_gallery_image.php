@@ -25,6 +25,9 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
                 
                 // Save the properties as meta data
                 update_post_meta($retval, 'properties', $this->object->properties);
+                
+                // Save the order
+                update_post_meta($retval, 'order', $this->object->properties['order']);
             }
         }
         
@@ -77,15 +80,29 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
 //        $query->meta_value = $id;
 //        $query->posts_per_page = $num_per_page;
 //        $query->paged = $page;
-        
-        $sql = $wpdb->prepare("SELECT * FROM {$wpdb->posts} WHERE ID IN (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s)", $meta_key, $id);
+
+        // Create SQL query
+        $sql = $wpdb->prepare("
+            SELECT {$wpdb->posts}.*,
+                   order_postmeta.meta_value AS `order`,
+                   properties_postmeta.meta_value AS `properties`
+            FROM {$wpdb->posts} 
+            LEFT JOIN {$wpdb->postmeta} order_postmeta ON {$wpdb->posts}.ID = order_postmeta.post_id
+            LEFT JOIN {$wpdb->postmeta} properties_postmeta ON {$wpdb->posts}.ID = properties_postmeta.post_id
+            WHERE {$wpdb->posts}.ID IN
+                (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %d)
+            AND order_postmeta.meta_key = 'order' AND properties_postmeta.meta_key = 'properties'
+            ORDER BY CAST(`order` AS UNSIGNED)                 
+        ", $meta_key, $id);
+            
+        // Iterate through results
         foreach($wpdb->get_results($sql, ARRAY_A) as $post) {
-            $sql = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'properties' AND post_id = {$post['ID']}";
-            $properties = unserialize($wpdb->get_var($sql));
-            $properties = $this->array_merge_assoc($post, $properties);
+            $properties = unserialize($post['properties']);;
             $properties['meta_data'] = unserialize($properties['meta_data']);
-            $properties['ID'] = $properties['post_id'] = $post['ID'];
-            $results[] = $factory->create('attached_gallery_image', $properties);
+            unset($post['properties']);
+            $post = array_merge($post, $properties);
+            $post['post_id'] = $post['ID'];
+            $results[] = $factory->create('attached_gallery_image', $post);
         }
         
         return $results;

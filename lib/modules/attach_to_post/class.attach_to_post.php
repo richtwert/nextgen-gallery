@@ -70,7 +70,6 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                 else {
                     $attached_gallery->save();
                     $images = $this->object->param('images');
-                    ksort($images);
                     foreach ($images as $order => $overrides) {
                         $attached_gallery_image = FALSE;
                         
@@ -778,7 +777,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
         // Render the index view
         $this->render_view('index', array(
            'accordion'              =>  $accordion,
-           'attached_gallery_id'    =>  $attached_gallery_id,
+           'attached_gallery_id'    =>  $this->attached_gallery->id(),
         ));
     }
     
@@ -807,7 +806,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
         if (is_array($arr_or_object)) {
             if (isset($arr_or_object[$key])) $retval = $arr_or_object[$key];
         }
-        elseif (is_object) {
+        elseif (is_object($arr_or_object)) {
             $retval = $arr_or_object->$key;
         }
         
