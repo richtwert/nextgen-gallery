@@ -85,7 +85,6 @@ class M_Photocrati extends C_Base_Module
         $this->_registry->add_adapter('I_Gallery_Image',     'A_Parse_Image_Metadata', 'imported_image');
         $this->_registry->add_adapter('I_Gallery_Image',     'A_Auto_Rotate_Image', 'imported_image');
         $this->_registry->add_adapter('I_Gallery_Image',     'A_Auto_Resize_Image', 'imported_image');
-        $this->_registry->add_adapter('I_attached_gallery',  'A_attached_gallery_Dimensions');
     }
     
     

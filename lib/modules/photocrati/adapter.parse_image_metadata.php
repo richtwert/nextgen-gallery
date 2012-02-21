@@ -21,7 +21,8 @@ class A_Parse_Image_Metadata extends Hook
         
         //TODO: NextGen provides notices when looking for metadata, as it does
         //not check whether array indexes exist, such as EXIF['title']
-        $er = error_reporting(error_reporting() ^ E_WARNING ^ E_NOTICE);
+//        $er = error_reporting(error_reporting() ^ E_WARNING ^ E_NOTICE);
+        $er = error_reporting(0);
         $meta = nggAdmin::import_MetaData($this->object->id());
         error_reporting($er);
         if ($meta) {
