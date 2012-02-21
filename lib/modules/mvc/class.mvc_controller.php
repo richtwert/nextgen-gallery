@@ -254,7 +254,10 @@ abstract class C_MVC_Controller extends C_Component
         
         if (isset($this->_params[$key])) {
             $val = $this->_params[$key];
-            if (!in_array(strtolower($val), array('null', 'false'))) $retval = $val;
+            if (is_array($val))
+                $retval = $val;
+            elseif (is_string($val) && !in_array(strtolower($val), array('null','false')))
+                $retval = $val;
         }
         
         return $retval;
