@@ -76,7 +76,17 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
             
             // Are we to create a new record?
             if (!$this->object->id()) {
-                if (($retval = wp_insert_post($this->object->properties))) {
+                
+                // Temporarily set some fake properties needed to by-pass the
+                // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
+                // For users that don't have WordPress 3.3.1
+                $properties = $this->object->properties;
+                $properties['post_title'] = $this->object->gallery_name;
+                $properties['post_content'] = $this->object->gallery_description;
+                $properties['post_excerpt'] = $this->object->gallery_description;
+                
+                // Create post
+                if (($retval = wp_insert_post($properties))) {
                     if ($retval) {
                         $this->object->__set('ID', $retval);
                         $this->object->__set('attached_gallery_id', $retval);
@@ -86,11 +96,13 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
             }
             
             // Store the properties as meta data for the post
-            $retval = update_post_meta(
+            update_post_meta(
                 $this->object->id(),
                 'properties',
                 $this->object->properties
             );
+            
+            
         }
         
         return $retval;

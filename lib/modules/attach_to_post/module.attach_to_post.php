@@ -65,6 +65,7 @@ class M_Attach_to_Post extends C_Base_Module
     function _register_adapters()
     {
         $this->_registry->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
+        $this->_registry->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
     }
     
     
@@ -87,7 +88,7 @@ class M_Attach_to_Post extends C_Base_Module
                 'add_new_item'  =>  _('Attach Gallery'),
             ),
             'public'            =>  FALSE,
-            'publicy_queryable' =>  FALSE,
+            'publicly_queryable' =>  FALSE,
             'show_ui'           =>  TRUE,
             'query_var'         =>  FALSE,
             'capabilitiy_post'  =>  'post',
@@ -103,7 +104,7 @@ class M_Attach_to_Post extends C_Base_Module
                 'add_new_item'  =>  _('New Attached Gallery Image'),
             ),
             'public'            =>  FALSE,
-            'publicy_queryable' =>  FALSE,
+            'publicl    y_queryable' =>  FALSE,
             'show_ui'           =>  TRUE,
             'query_var'         =>  FALSE,
             'capabilitiy_post'  =>  'post',

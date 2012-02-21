@@ -63,8 +63,10 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                 
                 // If the attached gallery is valid, then we can create
                 // images for the attached gallery
-                if (!($retval['saved'] = $attached_gallery->is_valid()))
+                
+                if (!(($retval['saved'] = $attached_gallery->is_valid()))) {
                     $retval['validation_errors'] = $attached_gallery->get_errors();
+                }
                     
                 // Create the attached gallery images
                 else {
@@ -93,12 +95,13 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                         // If we have an image and it saved successfully
                         if ($attached_gallery_image) {
                             if  ($attached_gallery_image->save($overrides)) {
-
+                                
+                                
                                 // Return the new image id
                                 if (!isset($retval['attached_gallery_image_ids'])) {
                                     $retval['attached_gallery_image_ids'] = array();
                                 }
-                                $retval['attached_gallery_image_ids'][] = $attached_gallery_image_id;
+                                $retval['attached_gallery_image_ids'][] = $attached_gallery_image->id();
                             }    
 
                             // The image was not saved successfully. Return the validation errors
@@ -206,7 +209,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         $gallery = FALSE;
         
         // Is this an existing gallery?
-        if ($this->param('gallery_id')) {
+        if ($this->param('gallery_source') == 'existing_gallery') {
             $gallery = $this->object->factory->create('gallery');
             $gallery = $gallery->find($this->param('gallery_id'));
         }

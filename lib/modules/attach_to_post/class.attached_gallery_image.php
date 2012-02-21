@@ -16,19 +16,41 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
         $this->validate();
         
         if ($this->object->is_valid()) {
-            if (($retval = wp_insert_post($this->object->properties))) {
-                
-                $this->object->__set('ID', $retval);
-                
-                // Save the attached gallery id as meta data
-                update_post_meta($retval, 'attached_gallery_id', $this->object->attached_gallery_id);
-                
-                // Save the properties as meta data
-                update_post_meta($retval, 'properties', $this->object->properties);
-                
-                // Save the order
-                update_post_meta($retval, 'order', $this->object->properties['order']);
+            
+            // Are we to create a new post?
+            if (!$this->object->id()) {
+            
+                // Temporarily set some fake properties needed to by-pass the
+                // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
+                // For users that don't have WordPress 3.3.1
+                $properties = $this->object->properties;
+                $properties['post_title'] = $this->object->alttext;
+                $properties['post_content'] = $this->object->alttext;
+                $properties['post_excerpt'] = $this->object->alttext;
+
+                if (($retval = wp_insert_post($properties))) {
+
+                    // Set commonly used IDs
+                    $this->object->__set('ID', $retval);
+                    $this->object->__set('post_id', $retval);
+                    $this->object->__set('attached_gallery_image_id', $retval);
+                    $this->object->__set('attached_gal_image_id', $retval);
+                    $retval = TRUE;
+                }
             }
+                            
+            // Get real meta data
+            $properties = $this->object->properties;
+            
+            // Save the attached gallery id as meta data
+            update_post_meta($this->object->id(), 'attached_gallery_id', $this->object->attached_gallery_id);
+
+            // Save the properties as meta data
+            update_post_meta($this->object->id(), 'properties', $properties);
+
+            // Save the order
+            update_post_meta($this->object->id(), 'order', $properties['order']);
+            
         }
         
         return $retval;
