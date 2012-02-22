@@ -242,6 +242,7 @@ class C_NextGen_Gallery extends C_Active_Record
         
         // Calculate start. start = (limit+1)*(page-1)
         $start = $page == 1 ? $page : ($num_per_page+1)*($page-1);
+        if ($start == -1) $start=0;
         return $component->find_by(self::IMAGE_GALLERY_ID." = %s", array($this->id()), '', $start, $limit, $context);
     }
 }
