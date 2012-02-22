@@ -12,19 +12,14 @@ class Mixin_Attach_To_Post_Preview_Image extends Mixin
                 $this->param('attached_gallery_id')
             );
             
-            // Get the associated gallery
-            $gallery = $this->attached_gallery->get_gallery();
-            $preview_pic_id = $gallery->previewpic;
-            
-            // Get the preview image associated with the gallery
-            $gallery_image = $this->object->factory->create('gallery_image');
-            $gallery_image = $gallery_image->find($preview_pic_id);
-            $filename = $gallery_image->get_thumbnail_filename($attached_gallery->settings);
-            
-            // Determine content type
-            $content_type = filetype($filename);
+            $image = $this->attached_gallery->get_images(1,1);
+            if ($image && ($image = array_shift($image))) {
+                $filename = $image->get_thumbnail_filename($attached_gallery->settings);
+            }
         }
         
+        // Render!
+        $content_type = filetype($filename);
         header('Content-Type: image/gif');
         header('Content-Length: '.filesize($filename));
         readfile($filename);

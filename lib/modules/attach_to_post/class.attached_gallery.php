@@ -67,7 +67,7 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
         // Validate the object
         $this->object->validate();
         
-        if ($this->object->is_valid()) {
+        if (($retval = $this->object->is_valid())) {
         
             // Images are not stored in the custom post type
             if (isset($this->object->properties['images'])) {
@@ -86,12 +86,10 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
                 $properties['post_excerpt'] = $this->object->gallery_description;
                 
                 // Create post
-                if (($retval = wp_insert_post($properties))) {
-                    if ($retval) {
-                        $this->object->__set('ID', $retval);
-                        $this->object->__set('attached_gallery_id', $retval);
-                        $retval = TRUE;
-                    }
+                if (($id = wp_insert_post($properties))) {
+                    $retval = $id;
+                    $this->object->__set('ID', $retval);
+                    $this->object->__set('attached_gallery_id', $retval);
                 }
             }
             
@@ -147,7 +145,7 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         return C_Gallery_Type_Registry::get($this->object->__get('gallery_type'));
     }
     
-    function get_images($page=FALSE, $num_per_page=-1, $legacy=FALSE, $include_exclusions=FALSE, $context=FALSE)
+    function get_images($page=FALSE, $num_per_page=FALSE, $legacy=FALSE, $include_exclusions=FALSE, $context=FALSE)
     {
         $images = array();
         
@@ -155,26 +153,25 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         $image_factory      = $this->object->factory->create('attached_gallery_image');
         foreach ($image_factory->find_by('attached_gallery_id', $this->object->id(), $page, $num_per_page, $context) as $gallery_image) {
             if (!$include_exclusions && !$gallery_image->included) continue;
-            $image = $legacy ? $gallery_image->to_nggImage() : $gallery_image;
-            
             
             // Override image to use gallery instance properties
-            $thumbnail = $image->get_thumbnail_url(
+            $thumbnail = $gallery_image->get_thumbnail_url(
                 (object)$this->settings
             );
 
             // A gallery instance might have it's own specific thumbnail settings
             if (isset($this->object->settings['thumbnail_width'])) {
-                $image->merge_meta(array(
+                $gallery_image->merge_meta(array(
                     'thumbnail' => array(
                             'width' =>$this->object->settings['thumbnail_width'], 
                             'height'=>$this->object->settings['thumbnail_height']
                         )
                     )
                 );
-            }
+            };
             
-            $images[] = $image;
+            // Add image to array, optionally for legacy purposes
+            $images[] = $legacy ? $gallery_image->to_nggImage() : $gallery_image;
         }
         
         return $images;

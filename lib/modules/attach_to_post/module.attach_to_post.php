@@ -122,12 +122,9 @@ class M_Attach_to_Post extends C_Base_Module
             wp_register_script('tinymce_helpers', $this->static_url('tinymce_helpers.js'));
             wp_enqueue_script('tinymce_helpers');
             wp_localize_script('tinymce_helpers', 'vars', array(
-               'preview_url'    =>  admin_url('attach_to_post/preview')
+               'preview_url'    =>  admin_url('attach_to_post/preview'),
+               'post_id'        =>  ''
             ));
-            wp_register_script(
-            'firebug-lite',
-            'http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'
-            );
         }
     }
     

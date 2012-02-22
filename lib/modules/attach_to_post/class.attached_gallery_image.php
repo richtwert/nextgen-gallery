@@ -15,7 +15,7 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
         // If it's valid, then persist as a custom post type
         $this->validate();
         
-        if ($this->object->is_valid()) {
+        if (($retval = $this->object->is_valid())) {
             
             // Are we to create a new post?
             if (!$this->object->id()) {
@@ -28,14 +28,14 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
                 $properties['post_content'] = $this->object->alttext;
                 $properties['post_excerpt'] = $this->object->alttext;
 
-                if (($retval = wp_insert_post($properties))) {
-
+                if (($id = wp_insert_post($properties))) {
+                    $retval = $id;
+                    
                     // Set commonly used IDs
                     $this->object->__set('ID', $retval);
                     $this->object->__set('post_id', $retval);
                     $this->object->__set('attached_gallery_image_id', $retval);
                     $this->object->__set('attached_gal_image_id', $retval);
-                    $retval = TRUE;
                 }
             }
                             
@@ -88,10 +88,10 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
     }
     
     
-    function find_by($meta_key, $id, $page=FALSE, $num_per_page=-1, $context=FALSE)
+    function find_by($meta_key, $id, $page=FALSE, $num_per_page=FALSE, $context=FALSE)
     {   
-        $results = array();
         global $wpdb;
+        $results = array();
         
         // Create factory need to hatch images
         $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
@@ -116,6 +116,10 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
             AND order_postmeta.meta_key = 'order' AND properties_postmeta.meta_key = 'properties'
             ORDER BY CAST(`order` AS UNSIGNED)                 
         ", $meta_key, $id);
+        
+        // Add limits
+        if ($num_per_page) $sql .= $wpdb->prepare(" LIMIT %d", $num_per_page);
+        if ($num_per_page && $page)  $sql .= $wpdb->prepare(" OFFSET %d", $page);        
             
         // Iterate through results
         foreach($wpdb->get_results($sql, ARRAY_A) as $post) {
