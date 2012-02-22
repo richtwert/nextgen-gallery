@@ -145,6 +145,18 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         return C_Gallery_Type_Registry::get($this->object->__get('gallery_type'));
     }
     
+    
+    function get_gallery_type_css_class()
+    {
+        return strtolower(
+            preg_replace(
+                "/[^A-Za-z0-9]+/", 
+                '_',
+                $this->object->__get('gallery_type')
+            )
+        );
+    }
+    
     function get_images($page=FALSE, $num_per_page=FALSE, $legacy=FALSE, $include_exclusions=FALSE, $context=FALSE)
     {
         $images = array();
