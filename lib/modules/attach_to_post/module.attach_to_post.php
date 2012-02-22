@@ -71,13 +71,7 @@ class M_Attach_to_Post extends C_Base_Module
     
     function _register_hooks()
     {
-        // Registers our tinymce button and plugin for attaching galleries
-        if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
-            if (get_user_option('rich_editing') == 'true') {
-                add_filter('mce_buttons', array(&$this, 'add_tinymce_button'));
-                add_filter('mce_external_plugins', array(&$this, 'add_tinymce_plugin'));
-            }
-        }
+        add_action('admin_enqueue_scripts', array(&$this, 'load_tinymce_helpers'));
         
         // Add custom post type for attached galleries
         register_post_type('attached_gallery', array(
@@ -115,17 +109,28 @@ class M_Attach_to_Post extends C_Base_Module
         // Add hooks to load attached galleries
         add_filter('posts_results',     array(&$this, 'load_attached_galleries'), 100, 2);
         remove_filter('the_content',    'wpautop');
+    }
+    
+    
+    function load_tinymce_helpers()
+    {
+        global $post_ID;
         
-        
-        // Enqueue the tinymce helpers script
-        if (is_admin()) {
-            wp_register_script('tinymce_helpers', $this->static_url('tinymce_helpers.js'));
-            wp_enqueue_script('tinymce_helpers');
-            wp_localize_script('tinymce_helpers', 'vars', array(
-               'preview_url'    =>  admin_url('attach_to_post/preview'),
-               'post_id'        =>  ''
-            ));
+        // Registers our tinymce button and plugin for attaching galleries
+        if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
+            if (get_user_option('rich_editing') == 'true') {
+                add_filter('mce_buttons', array(&$this, 'add_tinymce_button'));
+                add_filter('mce_external_plugins', array(&$this, 'add_tinymce_plugin'));
+            }
         }
+
+        // Enqueue the tinymce helpers script
+        wp_register_script('tinymce_helpers', $this->static_url('tinymce_helpers.js'));
+        wp_enqueue_script('tinymce_helpers');
+        wp_localize_script('tinymce_helpers', 'vars', array(
+           'preview_url'    =>  admin_url('attach_to_post/preview'),
+           'post_id'        =>  $post_ID
+        ));
     }
     
     
