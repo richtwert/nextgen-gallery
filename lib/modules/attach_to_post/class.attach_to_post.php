@@ -264,8 +264,8 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
             
             // Create arguments for get_images() call
             $args = array(
-                $this->object->param('page', 0),
-                $this->object->param('num_per_age', 0),
+                $this->object->param('page', FALSE),
+                $this->object->param('num_per_age', FALSE),
                 FALSE, // legacy 
             );
             
