@@ -21,17 +21,17 @@ class Mixin_Base_Gallery_View_Lightbox extends Mixin
         $lightbox = $lightbox->find_default();
         if ($lightbox) {
             // Ensure we have the gallery name
-            if ($this->is_empty($this->attached_gallery->gallery_name)) {
+            if ($this->is_empty($this->config->gallery_name)) {
                 $gallery = $factory->create('gallery');
-                $gallery = $gallery->find($this->attached_gallery->gallery_id);
-                $this->attached_gallery->gallery_name = $gallery->name;
-                $this->attached_gallery->gallery_description = $gallery->galdesc;
+                $gallery = $gallery->find($this->config->gallery_id);
+                $this->config->gallery_name = $gallery->name;
+                $this->config->gallery_description = $gallery->galdesc;
             }
             
             // Substitute the gallery name placeholder
             $retval = str_replace(
                 "%GALLERY_NAME%",
-                $this->attached_gallery->gallery_name,
+                $this->config->gallery_name,
                 $lightbox->html
             );        
         }
