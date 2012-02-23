@@ -431,6 +431,8 @@ class Mixin_Attach_To_Post_Resources extends Mixin
         wp_enqueue_style('global');
         wp_enqueue_style('wp-admin');
         wp_enqueue_style('colors-fresh');
+        wp_enqueue_script('tiptip');
+        wp_enqueue_style('tiptip');
         wp_enqueue_style('jquery.plupload.queue');
         wp_enqueue_style('nextgen_attach_to_post');
         wp_enqueue_script('nextgen_attach_to_post');

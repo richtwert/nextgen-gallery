@@ -7,10 +7,14 @@
     margin: 5px;
 }
 
+#attach_gallery,
+#attach_gallery table{
+    font-size: 12px;
+}
+
 
 /** Gallery source styles **/
 #gallery_source_tab table{
-    font-size: 12px;
     width: 100%;
 }
 
@@ -108,4 +112,17 @@
 .errors ul {
     list-style-type: disc;
     margin-left: 20px;
+}
+
+/* Gallery Type Tab */
+#gallery_type_tab .gallery_type {
+    float: left;
+    text-align: center;
+    width: 240px;
+    margin-bottom: 10px;
+}
+
+#gallery_type_tab .gallery_type .gallery_type_title {
+    font-size: 10px;
+    font-weight: bold;
 }

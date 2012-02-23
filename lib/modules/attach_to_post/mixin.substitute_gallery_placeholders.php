@@ -68,6 +68,9 @@ class Mixin_Substitute_Gallery_Placeholders extends Mixin
                 // Override config with attached gallery
                 $controller->config = $attached_gallery;
                 
+                // Ensure that attached gallery meets the default values
+                
+                
                 // Clean up
                 unset($factory);
                 
