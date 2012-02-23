@@ -23,9 +23,16 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
                 // Temporarily set some fake properties needed to by-pass the
                 // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
                 // For users that don't have WordPress 3.3.1
+                //
+                // We can store our properties in one of three ways:
+                // 1) Store each property as a single postmeta entry
+                // 2) Store properties as a single serialized postmeta entry
+                // 3) Store properties as a serialized value in post_content
+                //
+                // We've opted option #3 for efficent querying capabilities
                 $properties = $this->object->properties;
                 $properties['post_title'] = $this->object->alttext;
-                $properties['post_content'] = $this->object->alttext;
+                $properties['post_content'] = serialize($this->object->properties);
                 $properties['post_excerpt'] = $this->object->alttext;
 
                 if (($id = wp_insert_post($properties))) {
@@ -45,11 +52,11 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
             // Save the attached gallery id as meta data
             update_post_meta($this->object->id(), 'attached_gallery_id', $this->object->attached_gallery_id);
 
-            // Save the properties as meta data
-            update_post_meta($this->object->id(), 'properties', $properties);
-
             // Save the order
             update_post_meta($this->object->id(), 'order', $properties['order']);
+            
+            // Save the included/exclusion flag
+            update_post_meta($this->object->id(), 'included', $properties['included']);
             
         }
         
@@ -72,6 +79,10 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
         $retval = NULL;
         
         $custom = get_post_custom($id);
+        $post = (array)get_post($id);
+        if ($post && isset($post['post_content'])) {
+            $custom['properties'] = array($post['post_content']);
+        }
         $properties = array();
         foreach ($custom as $meta_key => $meta_value) {
             $property = unserialize($meta_value[0]);
@@ -87,8 +98,7 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
         return $retval;
     }
     
-    
-    function find_by($meta_key, $id, $page=FALSE, $num_per_page=FALSE, $context=FALSE)
+    function find_by($meta_key, $id, $page=FALSE, $num_per_page=FALSE, $include_excluded=FALSE, $context=FALSE)
     {   
         global $wpdb;
         $results = array();
@@ -107,15 +117,21 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
         $sql = $wpdb->prepare("
             SELECT {$wpdb->posts}.*,
                    order_postmeta.meta_value AS `order`,
-                   properties_postmeta.meta_value AS `properties`
+                   included_postmeta.meta_value AS `included`,
+                   {$wpdb->posts}.post_content AS `properties`
             FROM {$wpdb->posts} 
             LEFT JOIN {$wpdb->postmeta} order_postmeta ON {$wpdb->posts}.ID = order_postmeta.post_id
-            LEFT JOIN {$wpdb->postmeta} properties_postmeta ON {$wpdb->posts}.ID = properties_postmeta.post_id
+            LEFT JOIN {$wpdb->postmeta} included_postmeta ON {$wpdb->posts}.ID = included_postmeta.post_id
             WHERE {$wpdb->posts}.ID IN
                 (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %d)
-            AND order_postmeta.meta_key = 'order' AND properties_postmeta.meta_key = 'properties'
-            ORDER BY CAST(`order` AS UNSIGNED)                 
+            AND order_postmeta.meta_key = 'order' AND included_postmeta.meta_key = 'included'                 
         ", $meta_key, $id);
+                
+        // Add where clause exclude excluded images
+        if (!$include_excluded) $sql .= " AND included_postmeta.meta_value = '1'";
+                
+        // Add ordering
+        $sql .= ' ORDER BY CAST(`order` AS UNSIGNED)';
         
         // Add limits
         if ($num_per_page) $sql .= $wpdb->prepare(" LIMIT %d", $num_per_page);

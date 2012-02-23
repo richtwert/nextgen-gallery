@@ -8,11 +8,11 @@ class Mixin_Attached_Gallery_Queries extends Mixin
         
         // Collect custom post type fields
         $properties = array();
-        $custom = get_post_custom($id);
-        if ($custom && isset($custom['properties'])) {
+        $custom = (array) get_post($id);
+        if ($custom && isset($custom['post_content'])) {
             
             // Ensure that properties is unserialized
-            $arr = array_shift($custom['properties']);
+            $arr = $custom['post_content'];
             if (is_string($arr) && strpos($arr, "a:") !== FALSE) {
                 $arr = unserialize($arr);
             }
@@ -33,6 +33,21 @@ class Mixin_Attached_Gallery_Queries extends Mixin
         else {
             $properties['attached_gallery_id'] = FALSE;
         }
+        
+        // Get the config for this gallery type
+        $config = $this->object->factory->create(
+            'gallery_type_config',
+            $properties['gallery_type']
+        );
+
+        // Create merged set of settings for the attached gallery.
+        // We do this so that we can include any new default values into
+        // the attached gallery
+        $settings = $config->settings;
+        foreach ($properties['settings'] as $key => $value) {
+            $settings[$key] = $value;
+        }
+        $properties['settings'] = $settings;
         
         // Create new attached gallery objected based on the above
         $retval =  $this->object->factory->create(
@@ -74,33 +89,29 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
                 unset($this->object->properties['images']);
             }
             
-            // Are we to create a new record?
-            if (!$this->object->id()) {
                 
-                // Temporarily set some fake properties needed to by-pass the
-                // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
-                // For users that don't have WordPress 3.3.1
-                $properties = $this->object->properties;
-                $properties['post_title'] = $this->object->gallery_name;
-                $properties['post_content'] = $this->object->gallery_description;
-                $properties['post_excerpt'] = $this->object->gallery_description;
-                
-                // Create post
-                if (($id = wp_insert_post($properties))) {
-                    $retval = $id;
-                    $this->object->__set('ID', $retval);
-                    $this->object->__set('attached_gallery_id', $retval);
-                }
+            // Temporarily set some fake properties needed to by-pass the
+            // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
+            // For users that don't have WordPress 3.3.1
+            //
+            // We can store our properties in one of three ways:
+            // 1) Store each property as a single postmeta entry
+            // 2) Store properties as a single serialized postmeta entry
+            // 3) Store properties as a serialized value in post_content
+            //
+            // We've opted option #3 for efficent querying capabilities
+            $properties = $this->object->properties;
+            $properties['post_title'] = $this->object->gallery_name;
+            $properties['post_content'] = serialize($this->object->properties);
+            $properties['post_excerpt'] = $this->object->gallery_description;
+
+            // Create post
+            if (($id = wp_insert_post($properties))) {
+                $retval = $id;
+                $this->object->__set('ID', $retval);
+                $this->object->__set('attached_gallery_id', $retval);
+                $this->object->__Set('post_id', $retval);
             }
-            
-            // Store the properties as meta data for the post
-            update_post_meta(
-                $this->object->id(),
-                'properties',
-                $this->object->properties
-            );
-            
-            
         }
         
         return $retval;
@@ -164,7 +175,6 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         // Needed to create images
         $image_factory      = $this->object->factory->create('attached_gallery_image');
         foreach ($image_factory->find_by('attached_gallery_id', $this->object->id(), $page, $num_per_page, $context) as $gallery_image) {
-            if (!$include_exclusions && !$gallery_image->included) continue;
             
             // Override image to use gallery instance properties
             $thumbnail = $gallery_image->get_thumbnail_url(

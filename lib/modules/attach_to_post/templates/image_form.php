@@ -1,4 +1,4 @@
-<?php $included = $gallery_image_id ? ($image->included ? TRUE : FALSE) : TRUE; ?>
+<?php $included = $image->included ?>
 <li class='<?php echo($included ? 'image': 'image hidden_img') ?>' rel="<?php echo_h($order) ?>" title="Drag to sort">
     
     <!-- Display Thumbnail -->
