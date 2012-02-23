@@ -2,7 +2,7 @@
 
 <table class="form_fields">
     <?php if (empty($fields)): ?>
-    <p><?php echo_h(_("No options configured for this gallery type."))?></p>
+    <p><?php echo_h(_("No options configurable for this gallery type."))?></p>
     <?php endif ?>
     <?php while (!empty($fields)): ?>
     <tr>
