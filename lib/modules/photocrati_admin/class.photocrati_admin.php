@@ -1,6 +1,6 @@
 <?php
 
-class C_Photocrati_Admin_Overrides extends Mixin
+class Mixin_Photocrati_Admin_Overrides extends Mixin
 {
     /**
      * Returns a list of form controllers, used to populate the "Other Options"
@@ -22,7 +22,7 @@ class C_Photocrati_Admin extends C_Base_Admin_Controller
     function define()
     {
         parent::define();
-        $this->add_mixin('C_Photocrati_Admin_Overrides');
+        $this->add_mixin('Mixin_Photocrati_Admin_Overrides');
         $this->implement('I_Admin_Controller');
     }
     
