@@ -448,6 +448,9 @@ function nggShowAlbum($albumID, $template = 'extend', $gallery_template = '') {
     // still no success ? , die !
     if( !$album ) 
         return __('[Album not found]','nggallery');
+
+    // ensure to set the slug for "all" albums
+    $album->slug = ($albumID == 'all') ? $album->id : $album->slug;
     
     if ( is_array($album->gallery_ids) )
         $out = nggCreateAlbum( $album->gallery_ids, $template, $album );
@@ -544,7 +547,13 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
 		// If a gallery is not found it should be ignored
         if (!$unsort_galleries[$key])
         	continue;
-		
+            
+		// No images found, set counter to 0
+        if (!isset($galleries[$key]->counter)){
+            $galleries[$key]->counter = 0;
+            $galleries[$key]->previewurl = '';
+        }
+        
 		// Add the counter value if avaible
         $galleries[$key] = $unsort_galleries[$key];
     	
@@ -554,9 +563,11 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
             $galleries[$key]->previewurl  = site_url().'/' . $galleries[$key]->path . '/thumbs/thumbs_' . $albumPreview[$galleries[$key]->previewpic]->filename;
         } else {
             $first_image = $wpdb->get_row('SELECT * FROM '. $wpdb->nggpictures .' WHERE exclude != 1 AND galleryid = '. $key .' ORDER by pid DESC limit 0,1');
-            $galleries[$key]->previewpic  = $first_image->pid;
-            $galleries[$key]->previewname = $first_image->filename;
-            $galleries[$key]->previewurl  = site_url() . '/' . $galleries[$key]->path . '/thumbs/thumbs_' . $first_image->filename;
+            if (isset($first_image)) {
+                $galleries[$key]->previewpic  = $first_image->pid;
+                $galleries[$key]->previewname = $first_image->filename;
+                $galleries[$key]->previewurl  = site_url() . '/' . $galleries[$key]->path . '/thumbs/thumbs_' . $first_image->filename;                
+            }
         }
 
         // choose between variable and page link
