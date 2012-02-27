@@ -79,7 +79,6 @@ class M_Photocrati_Admin extends C_Base_Module
         
         $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('admin_controller');
-        
         $this->_add_routes();
     }
     
