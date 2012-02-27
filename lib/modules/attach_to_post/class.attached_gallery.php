@@ -29,6 +29,8 @@ class Mixin_Attached_Gallery_Queries extends Mixin
                 $properties[$key] = $value;
             }
             $properties['attached_gallery_id'] = $id;
+            $properties['ID'] = $id;
+            $properties['post_id'] = $id;
         }
         else {
             $properties['attached_gallery_id'] = FALSE;
@@ -174,7 +176,7 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         
         // Needed to create images
         $image_factory      = $this->object->factory->create('attached_gallery_image');
-        foreach ($image_factory->find_by('attached_gallery_id', $this->object->id(), $page, $num_per_page, $context) as $gallery_image) {
+        foreach ($image_factory->find_by('attached_gallery_id', $this->object->id(), $page, $num_per_page, $include_exclusions, $context) as $gallery_image) {
             
             // Override image to use gallery instance properties
             $thumbnail = $gallery_image->get_thumbnail_url(
