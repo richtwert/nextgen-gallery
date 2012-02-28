@@ -27,9 +27,9 @@ define('PHOTOCRATI_GALLERY_MOD_RESOURCE_LOADER_ID', hash('md5', serialize(array(
 
 class M_Resource_Loader extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
         		'photocrati-resource_loader',
             'Resource Loader',
             'Provides stylesheets/scripts that are dynamic and can be modified by other
@@ -39,6 +39,11 @@ class M_Resource_Loader extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
         $this->_add_routes();
         
     }
