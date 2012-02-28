@@ -11,9 +11,9 @@ class M_AutoUpdate extends C_Base_Module
     // XXX change URL
     const API_URL = 'http://members.photocrati.com/api/';
 		
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-auto_update',
             'Photocrati Auto Update',
             "Provides automatic updates",
@@ -22,6 +22,11 @@ class M_AutoUpdate extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     
