@@ -9,9 +9,9 @@
 
 class M_NextGen_Thumbnail_Gallery extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-nextgen_thumbnail',
             'NextGen Basic Thumbnails',
             "Provides support for NextGen's legacy thumbnail galleries",
@@ -28,6 +28,11 @@ class M_NextGen_Thumbnail_Gallery extends C_Base_Module
             'C_NextGen_Thumbnail_Gallery_View',
             'C_NextGen_Thumbnail_Gallery_Config'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     
