@@ -50,17 +50,10 @@ class Mixin_Dequeue_NextGen_Legacy_Scripts extends Mixin
 }
 
 class M_Photocrati extends C_Base_Module
-{
+{   
     function define()
     {
-        $this->add_mixin('Mixin_Dequeue_NextGen_Legacy_Scripts');
-        $this->add_mixin('Mixin_Load_Lightbox_Library');
-    }
-    
-    
-    function initialize()
-    {
-        parent::initialize(
+        parent::define(
             'photocrati-base',
             'Photocrati Gallery',
             "Provides Photocrati's abstraction for NextGen Gallery",
@@ -69,6 +62,14 @@ class M_Photocrati extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+        
+        $this->add_mixin('Mixin_Dequeue_NextGen_Legacy_Scripts');
+        $this->add_mixin('Mixin_Load_Lightbox_Library');
+    }
+    
+    
+    function initialize()
+    {
     }
     
     

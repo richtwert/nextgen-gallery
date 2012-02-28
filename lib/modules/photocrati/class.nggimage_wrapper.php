@@ -4,6 +4,8 @@ class C_nggImage_Wrapper extends C_Component
 {
     function define($args)
     {
+    		parent::define();
+    		
         $this->wrap('nggImage', array(&$this, 'instantiate_wrapped_class'), $args);
     }
     

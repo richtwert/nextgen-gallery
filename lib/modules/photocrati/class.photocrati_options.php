@@ -69,6 +69,8 @@ class C_Photocrati_Options extends C_Component
     
     function define()
     {
+    		parent::define();
+    		
         $this->implement('I_Photocrati_Options');
         $this->add_mixin('Mixin_NextGen_Options');
     }
