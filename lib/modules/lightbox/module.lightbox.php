@@ -44,9 +44,9 @@ define('PHOTOCRATI_GALLERY_MOD_LIGHTBOX_IMG_BTN_PREV_URL', path_join(
 
 class M_Lightbox extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-lightbox',
             'Lightbox',
             _("Provides integration with JQuery's lightbox plugin"),
@@ -55,6 +55,11 @@ class M_Lightbox extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     function _register_hooks()
