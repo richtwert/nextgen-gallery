@@ -644,6 +644,11 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
            'galleries'                  =>  $galleries
         ), TRUE);
     }
+    
+    function render_recent_images_fields()
+    {
+    
+    }
 }
 
 

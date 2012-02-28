@@ -29,13 +29,7 @@ class M_Attach_to_Post extends C_Base_Module
 {
     function define()
     {
-        $this->add_mixin('Mixin_MVC_Controller_Rendering');
-        $this->add_mixin('Mixin_Substitute_Gallery_Placeholders');
-    }
-    
-    function initialize()
-    {
-        parent::initialize(
+        parent::define(
             'photocrati-attach_to_post',
             'Photocrati Attach to Post/Page Interface',
             'Provides an easy-to-use interface for attaching new or existing galleries to any post type',
@@ -45,10 +39,17 @@ class M_Attach_to_Post extends C_Base_Module
             'http://www.photocrati.com'
         );
         
+        $this->add_mixin('Mixin_MVC_Controller_Rendering');
+        $this->add_mixin('Mixin_Substitute_Gallery_Placeholders');
+        
         @ini_set('post_max_size', '20M');
         @ini_set('upload_max_filesize', '20M');
         @ini_set('max_input_time', '1600');
-        
+    }
+    
+    
+    function initialize()
+    {
         $this->_register_routes();
     }
     
