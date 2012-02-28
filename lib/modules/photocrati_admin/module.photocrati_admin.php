@@ -60,14 +60,7 @@ class M_Photocrati_Admin extends C_Base_Module
 {
     function define()
     {
-        $this->add_mixin('M_Photocrati_Admin_Menu');
-        $this->implement('I_Photocrati_Admin_Module');
-    }
-    
-    
-    function initialize()
-    {
-        parent::initialize(
+        parent::define(
             'photocrati-admin',
             'Photocrati Admin Interface',
             'Provides an easy-to-use interface for managing NextGEN galleries',
@@ -77,6 +70,13 @@ class M_Photocrati_Admin extends C_Base_Module
             'http://www.photocrati.com'
         );
         
+        $this->add_mixin('M_Photocrati_Admin_Menu');
+        $this->implement('I_Photocrati_Admin_Module');
+    }
+    
+    
+    function initialize()
+    {
         $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('admin_controller');
         
