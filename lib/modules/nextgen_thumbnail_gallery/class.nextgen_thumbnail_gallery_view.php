@@ -51,7 +51,7 @@ class C_NextGen_Thumbnail_Gallery_View extends C_Base_Gallery_View_Controller
                 return;
             }
         }
-            
+        
         // Call NextGen legacy methods
         echo $this->nggCreateGallery(
             $this->config->get_images(1, 20, TRUE),
