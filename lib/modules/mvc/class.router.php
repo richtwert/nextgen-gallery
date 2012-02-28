@@ -195,6 +195,8 @@ class C_Router extends C_Component
     
     function define()
     {
+    		parent::define();
+    		
         $this->implement('I_Router');
         $this->add_mixin('Mixin_Router');
     }

@@ -164,6 +164,8 @@ abstract class C_MVC_Controller extends C_Component
     
     function define()
     {
+    		parent::define();
+    		
         $this->add_mixin('Mixin_MVC_Controller_Defaults');
         $this->add_mixin('Mixin_MVC_Controller_Rendering');
         $this->implement('I_MVC_Controller');

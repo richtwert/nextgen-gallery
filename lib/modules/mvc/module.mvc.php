@@ -26,9 +26,9 @@ class M_MVC extends C_Base_Module
 {
     var $_router;
     
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             "photocrati-mvc",
             "MVC Framework",
             "Provides an MVC architecture for the plugin to use",
@@ -37,8 +37,11 @@ class M_MVC extends C_Base_Module
             "Photocrati Media",
             "http://www.photocrati.com"
         );
-        
-        
+    }
+    
+    
+    function initialize()
+    {
         set_exception_handler(array(&$this, 'handle_exit'));
         $this->_router = $this->_registry->get_singleton_utility('I_Router');
     }
