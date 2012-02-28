@@ -158,14 +158,11 @@ abstract class C_Active_Record extends C_Component
     var $object_name = 'gallery';
     var $properties = array();
     
-    /**
-     * @var C_Component_Registry 
-     */
-    var $_registry;
-    
     
     function define()
     {
+    		parent::define();
+    		
         $this->add_mixin('Mixin_Active_Record_Validation');
         $this->add_mixin('Mixin_Active_Record_Persistence');
         $this->add_mixin('Mixin_Active_Record_Query');

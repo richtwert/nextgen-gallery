@@ -10,9 +10,9 @@
 
 class M_Active_Record extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-active_record',
             'Active Record',
             'Provides the active record pattern for other modules to use',
@@ -23,6 +23,10 @@ class M_Active_Record extends C_Base_Module
         );
     }
     
+    
+    function initialize()
+    {
+    }
     
     function _register_adapters()
     {
