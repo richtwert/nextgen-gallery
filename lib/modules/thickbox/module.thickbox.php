@@ -8,9 +8,9 @@
 
 class M_Thickbox extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-thickbox',
             'Thickbox',
             'Provides integration with the JQuery-based Thickbox library for lightbox effects',
@@ -19,6 +19,11 @@ class M_Thickbox extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     
