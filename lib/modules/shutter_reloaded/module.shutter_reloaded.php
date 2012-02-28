@@ -23,9 +23,9 @@ define('PHOTOCRATI_GALLERY_SHUTTER_IMAGES_URL', path_join(
 
 class M_Shutter_Reloaded extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-shutter-reloaded',
             'Shutter Reloaded',
             'Provides integration with the Shutter Reloaded lightbox plugin',
@@ -34,6 +34,11 @@ class M_Shutter_Reloaded extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     function _register_hooks()
