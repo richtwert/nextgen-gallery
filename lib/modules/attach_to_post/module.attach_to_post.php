@@ -41,15 +41,15 @@ class M_Attach_to_Post extends C_Base_Module
         
         $this->add_mixin('Mixin_MVC_Controller_Rendering');
         $this->add_mixin('Mixin_Substitute_Gallery_Placeholders');
-        
-        @ini_set('post_max_size', '20M');
-        @ini_set('upload_max_filesize', '20M');
-        @ini_set('max_input_time', '1600');
     }
     
     
     function initialize()
     {
+        @ini_set('post_max_size', '20M');
+        @ini_set('upload_max_filesize', '20M');
+        @ini_set('max_input_time', '1600');
+        
         $this->_register_routes();
     }
     

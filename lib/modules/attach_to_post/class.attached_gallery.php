@@ -14,7 +14,7 @@ class Mixin_Attached_Gallery_Queries extends Mixin
             // Ensure that properties is unserialized
             $arr = $custom['post_content'];
             if (is_string($arr) && strpos($arr, "a:") !== FALSE) {
-                $arr = unserialize($arr);
+                $arr = $this->object->try_unserialize($arr);
             }
             
             // Get each property
@@ -22,7 +22,7 @@ class Mixin_Attached_Gallery_Queries extends Mixin
 
                 // If the value is serialized, then we need to unserialize it
                 if (is_string($value) && strpos($value, "a:") !== FALSE) {
-                    $value = unserialize($value);
+                    $value = $this->object->try_unserialize($value);
                 }
 
                 // Assign the property
@@ -104,7 +104,7 @@ class Mixin_Attached_Gallery_Persistence extends Mixin
             // We've opted option #3 for efficent querying capabilities
             $properties = $this->object->properties;
             $properties['post_title'] = $this->object->gallery_name;
-            $properties['post_content'] = serialize($this->object->properties);
+            $properties['post_content'] = $this->object->try_serialize($this->object->properties);
             $properties['post_excerpt'] = $this->object->gallery_description;
 
             // Create post

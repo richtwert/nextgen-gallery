@@ -85,6 +85,17 @@
     width: 100%;
     overflow: hidden;
 }
+#image_options_tab .image_form th{
+    text-align: right;
+    vertical-align: top;
+}
+#image_options_tab .image_form textarea {
+    height: 100px;
+    width: 645px;
+}
+#image_options_tab .image_form input[type=text] {
+    width: 645px;
+}
 
 #image_options_tab #image_list_actions {
     text-align: right;

@@ -5,9 +5,9 @@
     <td>
         <input
             type="text"
-            name="images[<?php echo_h($order)?>][caption]"
+            name="images[<?php echo_h($order)?>][alttext]"
             id="caption_<?php echo_h($order)?>"
-            value="<?php echo_h($image->caption)?>"
+            value="<?php echo_h($image->alttext)?>"
         />
     </td>
 </tr>

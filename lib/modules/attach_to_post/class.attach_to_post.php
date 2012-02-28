@@ -504,8 +504,8 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
     function get_image_fields()
     {
         return array(
-            'caption'   =>  'render_caption_field',
-            'alttext'   =>  'render_alttext_field',
+            'caption'       =>  'render_caption_field',
+            'description'   =>  'render_description_field',
         );
     }
     
@@ -540,9 +540,9 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
     }
     
     
-    function render_alttext_field($image)
+    function render_description_field($image, $gallery_image_id, $attached_gallery_image_id, $order)
     {
-        return $this->render_partial('alttext_field', array('image'=>$image), TRUE);
+        return $this->render_partial('description_field', array('image'=>$image, 'order' => $order), TRUE);
     }
 }
 

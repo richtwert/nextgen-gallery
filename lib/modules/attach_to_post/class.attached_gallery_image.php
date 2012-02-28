@@ -28,7 +28,7 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
             // We've opted option #3 for efficent querying capabilities
             $properties = $this->object->properties;
             $properties['post_title'] = $this->object->alttext;
-            $properties['post_content'] = serialize($this->object->properties);
+            $properties['post_content'] = $this->object->try_serialize($this->object->properties);
             $properties['post_excerpt'] = $this->object->alttext;
 
             if (($id = wp_insert_post($properties))) {
@@ -80,7 +80,7 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
             $custom['properties'] = array($post['post_content']);
             $properties = array();
             foreach ($custom as $meta_key => $meta_value) {
-                $property = unserialize($meta_value[0]);
+                $property = $this->object->try_unserialize($meta_value[0]);
                 if (is_array($property)) {
                     $properties = array_merge($properties, $property);
                 }
@@ -142,8 +142,8 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
             
         // Iterate through results
         foreach($wpdb->get_results($sql, ARRAY_A) as $post) {
-            $properties = unserialize($post['properties']);;
-            $properties['meta_data'] = unserialize($properties['meta_data']);
+            $properties = $this->object->try_unserialize($post['properties']);;
+            $properties['meta_data'] = $this->object->try_unserialize($properties['meta_data']);
             unset($post['properties']);
             $post = array_merge($post, $properties);
             $post['post_id'] = $post['ID'];
