@@ -63,8 +63,6 @@ class C_Photocrati_Admin extends C_Base_Admin_Controller
     {
         $tabs = array();
         
-        die(print_r($this->_get_other_options_forms()));
-        
         foreach ($this->_get_other_options_forms() as $name => $klass) {
             $tabs[$name] = $this->_render_tab($klass);
         }
