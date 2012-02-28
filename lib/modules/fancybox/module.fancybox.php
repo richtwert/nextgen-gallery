@@ -23,9 +23,9 @@ define('PHOTOCRATI_GALLERY_JQUERY_FANCYBOX_CSS_URL', path_join(
 
 class M_Fancybox extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-fancybox-1x',
             'FancyBox 1.x',
             'Provides integration with the FancyBox JQuery lightbox library (1.x series)',
@@ -34,6 +34,11 @@ class M_Fancybox extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     function _register_hooks()
