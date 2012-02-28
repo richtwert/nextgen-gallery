@@ -9,9 +9,9 @@
 
 class M_NextGen_Slideshow_Gallery extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-nextgen_slideshow',
             'NextGen Basic Slideshow',
             'JQuery Cycle and JW Image Rotator-based Slideshow',
@@ -27,6 +27,11 @@ class M_NextGen_Slideshow_Gallery extends C_Base_Module
 //            'C_NextGen_Slideshow_Gallery_Settings',
 //            'C_NextGen_Slideshow_Gallery_View'
 //        );
+    }
+    
+    
+    function initialize()
+    {
     }
 }
 
