@@ -15,9 +15,9 @@ class M_AutoUpdate_Admin extends C_Base_Module
 		var $_updater = null;
 		var $_update_list = null;
 		
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-auto_update-admin',
             'Photocrati Auto Update Admin',
             "Provides an AJAX admin interface to sequentially and progressively download and install updates",
@@ -26,7 +26,11 @@ class M_AutoUpdate_Admin extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
-        
+    }
+    
+    
+    function initialize()
+    {
         $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('autoupdate_admin_controller');
     }
