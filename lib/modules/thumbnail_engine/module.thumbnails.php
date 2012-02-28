@@ -9,9 +9,9 @@
 
 class M_Thumbnails extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
         		'photocrati-thumbnail_engine',
             'Thumbnails',
             'Provides a mechanism for adjusting the thumbnail configuration',
@@ -20,6 +20,11 @@ class M_Thumbnails extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     
