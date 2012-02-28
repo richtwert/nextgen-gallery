@@ -23,9 +23,9 @@ define('PHOTOCRATI_GALLERY_MOD_HIGHSLIDE_GRAPHICS_DIR', path_join(
 
 class M_Highslide extends C_Base_Module
 {
-    function initialize()
+    function define()
     {
-        parent::initialize(
+        parent::define(
             'photocrati-highslide',
             'Highslide',
             'Adds integration with the Highslide lightbox plugin',
@@ -34,6 +34,11 @@ class M_Highslide extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     
