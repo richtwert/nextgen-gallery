@@ -16,34 +16,29 @@ class Mixin_Attached_Gallery_Image_Persistence extends Mixin
         $this->validate();
         
         if (($retval = $this->object->is_valid())) {
-            
-            // Are we to create a new post?
-            if (!$this->object->id()) {
-            
-                // Temporarily set some fake properties needed to by-pass the
-                // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
-                // For users that don't have WordPress 3.3.1
-                //
-                // We can store our properties in one of three ways:
-                // 1) Store each property as a single postmeta entry
-                // 2) Store properties as a single serialized postmeta entry
-                // 3) Store properties as a serialized value in post_content
-                //
-                // We've opted option #3 for efficent querying capabilities
-                $properties = $this->object->properties;
-                $properties['post_title'] = $this->object->alttext;
-                $properties['post_content'] = serialize($this->object->properties);
-                $properties['post_excerpt'] = $this->object->alttext;
+            // Temporarily set some fake properties needed to by-pass the
+            // wp_insert_post function limitation: http://core.trac.wordpress.org/ticket/18891
+            // For users that don't have WordPress 3.3.1
+            //
+            // We can store our properties in one of three ways:
+            // 1) Store each property as a single postmeta entry
+            // 2) Store properties as a single serialized postmeta entry
+            // 3) Store properties as a serialized value in post_content
+            //
+            // We've opted option #3 for efficent querying capabilities
+            $properties = $this->object->properties;
+            $properties['post_title'] = $this->object->alttext;
+            $properties['post_content'] = serialize($this->object->properties);
+            $properties['post_excerpt'] = $this->object->alttext;
 
-                if (($id = wp_insert_post($properties))) {
-                    $retval = $id;
-                    
-                    // Set commonly used IDs
-                    $this->object->__set('ID', $retval);
-                    $this->object->__set('post_id', $retval);
-                    $this->object->__set('attached_gallery_image_id', $retval);
-                    $this->object->__set('attached_gal_image_id', $retval);
-                }
+            if (($id = wp_insert_post($properties))) {
+                $retval = $id;
+
+                // Set commonly used IDs
+                $this->object->__set('ID', $retval);
+                $this->object->__set('post_id', $retval);
+                $this->object->__set('attached_gallery_image_id', $retval);
+                $this->object->__set('attached_gal_image_id', $retval);
             }
                             
             // Get real meta data
@@ -78,22 +73,30 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
     {
         $retval = NULL;
         
+        // Get properties
         $custom = get_post_custom($id);
         $post = (array)get_post($id);
         if ($post && isset($post['post_content'])) {
             $custom['properties'] = array($post['post_content']);
-        }
-        $properties = array();
-        foreach ($custom as $meta_key => $meta_value) {
-            $property = unserialize($meta_value[0]);
-            if (is_array($property)) {
-                $properties = array_merge($properties, $property);
+            $properties = array();
+            foreach ($custom as $meta_key => $meta_value) {
+                $property = unserialize($meta_value[0]);
+                if (is_array($property)) {
+                    $properties = array_merge($properties, $property);
+                }
+                else {
+                    $properties[$meta_key] = $property;
+                }
             }
-            else {
-                $properties[$meta_key] = $property;
-            }
+
+            // Ensure that IDs are set
+            $properties['ID'] = $post['ID'];
+            $properties['post_id'] = $post['ID'];
+            $properties['attached_gallery_image_id'] = $post['ID'];
+
+            $retval = $this->object->factory->create('attached_gallery_image', $properties);
         }
-        $retval = $this->object->factory->create('attached_gallery_image', $properties);
+        
         
         return $retval;
     }
