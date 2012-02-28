@@ -234,6 +234,8 @@ class C_NextGen_Gallery extends C_Active_Record
      */
     function get_images($page=FALSE, $num_per_page=-1, $legacy=FALSE, $context=FALSE)
     {
+        $images = array();
+        
         /**
          * @var $component C_NextGen_Gallery_Image
          */
@@ -243,6 +245,11 @@ class C_NextGen_Gallery extends C_Active_Record
         // Calculate start. start = (limit+1)*(page-1)
         $start = $page == 1 ? $page : ($num_per_page+1)*($page-1);
         if ($start == -1) $start=0;
-        return $component->find_by(self::IMAGE_GALLERY_ID." = %s", array($this->id()), '', $start, $num_per_page, $context);
+        
+        $results = $component->find_by(self::IMAGE_GALLERY_ID." = %s", array($this->id()), '', $start, $num_per_page, $context);
+        if ($legacy = TRUE) foreach ($results as $image) $images[] = $image->to_nggImage();
+        else $images = $results;
+        
+        return $images;
     }
 }
