@@ -9,9 +9,9 @@
 
 class M_NextGen_ImageBrowser_Gallery extends C_Base_Module
 {
-    function initialize($context=FALSE)
+    function define($context=FALSE)
     {
-        parent::initialize(
+        parent::define(
             'photocrati-nextgen_imagebrowser',
             'NextGen Basic ImageBrowser',
             "Provides the NextGen Basic ImageBrowser gallery type",
@@ -29,6 +29,11 @@ class M_NextGen_ImageBrowser_Gallery extends C_Base_Module
             'C_NextGen_ImageBrowser_View',
             'C_NextGen_ImageBrowser_Config'
         );
+    }
+    
+    
+    function initialize()
+    {
     }
     
     
