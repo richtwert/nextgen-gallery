@@ -2,8 +2,7 @@
 
 /***
 	{
-		Module: photocrati-thumbnail_engine,
-                Depends: { photocrati-attach_from_post_type }
+		Module: photocrati-thumbnail_engine
 	}
 ***/
 
