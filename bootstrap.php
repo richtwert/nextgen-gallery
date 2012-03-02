@@ -3,7 +3,7 @@
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
 /**
- * Plugin Name: Photocrati Gallery
+ * Plugin Name: NextGEN by Photocrati
  * Description: Providing you the best gallery management for WordPress
  * Version: 0.1
  * Plugin URI: http://www.photocrati.com
