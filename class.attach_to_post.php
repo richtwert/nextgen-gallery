@@ -14,7 +14,7 @@ class Mixin_Attach_To_Post_Preview_Image extends Mixin
             
             $image = $this->attached_gallery->get_images(1,1);
             if ($image && ($image = array_shift($image))) {
-                $filename = $image->get_thumbnail_filename($attached_gallery->settings);
+                $filename = $image->get_thumbnail_filename($this->attached_gallery->settings);
             }
         }
         
