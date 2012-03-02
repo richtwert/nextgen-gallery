@@ -18,12 +18,10 @@ define('PHOTOCRATI_GALLERY_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR,
 define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'modules'));
 define('PHOTOCRATI_GALLERY_PRODUCT_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'products'));
 define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'class.photocrati_gallery_plugin.php'));
-define('PHOTOCRATI_GALLERY_PLUGIN_OPTION_PREFIX', 'photocrati_gallery_');
 define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
-define('PHOTOCRATI_GALLERY_LEGACY_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'legacy'));
 $upload_paths = wp_upload_dir();
 define('PHOTOCRATI_GALLERY_STORAGE_PATH', $upload_paths['basedir']);
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL);
 @ini_set('display_errors', 'On');
 
 
@@ -103,7 +101,7 @@ function photocrati_gallery_plugin_path_uri($path = null, $url_encode = false)
 	{
 		$theme_uri = get_stylesheet_directory_uri();
 		
-		$uri = $theme_uri . '/photocrati-gallery';
+		$uri = $theme_uri . 'nextgen';
 		
 		if ($path != null)
 		{
@@ -115,10 +113,10 @@ function photocrati_gallery_plugin_path_uri($path = null, $url_encode = false)
 		// XXX Note, paths could not match but STILL being contained in the theme (i.e. WordPress returns the wrong path for the theme directory, either with wrong formatting or wrong encoding)
 		$base = basename(dirname(__FILE__));
 		
-		if ($base != 'photocrati-gallery')
+		if ($base != 'nextgen')
 		{
 			// XXX this is needed when using symlinks, if the user renames the plugin folder everything will break though
-			$base = 'photocrati-gallery';
+			$base = 'nextgen';
 		}
 		
 		if ($path != null)
@@ -141,7 +139,7 @@ function photocrati_gallery_plugin_file_uri($file_name = null)
 add_action('init', 'photocrati_gallery_init', 100);
 function photocrati_gallery_init() {
     // Include NextGen Legacy
-    include_once(path_join(PHOTOCRATI_GALLERY_LEGACY_DIR, 'nggallery.php');
+    include_once('nggallery.php');
     
     // Include pope framework
     include_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
