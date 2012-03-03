@@ -236,7 +236,7 @@ abstract class C_Active_Record extends C_Component
      */
     function try_unserialize($value)
     {   
-        if (is_string($value) && strlen($value) > 1) {
+        if (is_string($value) && strlen($value) > 1 && !is_numeric($value)) {
             // I've been having an issue with the first character being a binary
             // value. Not sure why. Need to investigate further. This is just a
             // hack as haven't determined root cause.
