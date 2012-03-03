@@ -11,11 +11,12 @@ class C_NextGen_Thumbnail_Gallery_Config extends C_Thumbnail_Config
             'thumbnail_quality'     =>  100,
             'images_per_page'       =>  0,
             'num_of_columns'        =>  0,
-            'piclens_link_text'     =>  _('Show as PicLens'),
-            'thumbnail_link_text'   =>  _('Show as Thumbnails'),
-            'slideshow_link_text'   =>  _('Show as Slideshow'),
+            'piclens_link_text'     =>  _('[Show as PicLens]'),
+            'thumbnail_link_text'   =>  _('[Show as Thumbnails]'),
+            'slideshow_link_text'   =>  _('[Show as Slideshow]'),
             'show_thumbnail_link'   =>  1,
             'show_slideshow_link'   =>  0,
+            'show_piclens_link'     =>  0,
         ));
         parent::set_defaults();
     }

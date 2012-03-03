@@ -18,4 +18,11 @@ class A_NextGen_Thumbnail_Gallery_Resources extends Mixin
             'js', 'ngg.slideshow.js'
         ))));
     }
+    
+    function nextgen_thumbnail_gallery_css()
+    {
+        readfile(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array(
+            'css', 'nggallery.css'
+        ))));
+    }
 }
