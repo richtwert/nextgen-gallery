@@ -68,7 +68,7 @@ class Mixin_NextGen_Gallery_Storage extends Mixin
             
             // For whatever reason, this file is not always available multisite features, so we make sure that 
             // it's loaded
-            if( $error = upload_is_user_over_quota( false ) ) {
+            if(($error = upload_is_user_over_quota( false ) )) {
                 $retval = FALSE;
                 delete_transient('dirsize_cache');
                 throw new Exception(_("Sorry, you have used your space allocation. Please delete some files to upload more files"));
