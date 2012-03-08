@@ -21,8 +21,8 @@ define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DI
 define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 $upload_paths = wp_upload_dir();
 define('PHOTOCRATI_GALLERY_STORAGE_PATH', $upload_paths['basedir']);
-error_reporting(E_ALL);
-@ini_set('display_errors', 'On');
+//error_reporting(E_ALL);
+//@ini_set('display_errors', 'On');
 
 
 function photocrati_gallery_plugin_location()
@@ -133,6 +133,18 @@ function photocrati_gallery_plugin_path_uri($path = null, $url_encode = false)
 function photocrati_gallery_plugin_file_uri($file_name = null)
 {
 	return photocrati_gallery_plugin_path_uri($file_name);
+}
+
+// Using json_encode here because PHP's serialize is not Unicode safe
+function photocrati_gallery_plugin_serialize($value)
+{
+	return json_encode($value);
+}
+
+// Using json_decode here because PHP's unserialize is not Unicode safe
+function photocrati_gallery_plugin_unserialize($value)
+{
+	return json_decode($value);
 }
 
 // Instantiate plugin on init
