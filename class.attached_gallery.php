@@ -174,11 +174,29 @@ class Mixin_Attached_Gallery_Methods extends Mixin
     
     function get_images($page=FALSE, $num_per_page=FALSE, $legacy=FALSE, $include_exclusions=FALSE, $context=FALSE)
     {
+        $source = $this->object->properties['gallery_source'];
+        $find_list = null;
         $images = array();
         
-        // Needed to create images
-        $image_factory      = $this->object->factory->create('attached_gallery_image');
-        foreach ($image_factory->find_by('attached_gallery_id', $this->object->id(), $page, $num_per_page, $include_exclusions, $context) as $gallery_image) {
+        if (in_array($source, array('recent_images', 'random_images'))) {
+        	$legacy = false;
+					$factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+					$component = $factory->create('gallery_image');
+					$total = 10;
+					$gal_total = 2; // XXX Not implemented 
+					$only_attached = true; // XXX Not implemented 
+			
+					//$images = $component->find_by(C_NextGen_Gallery_Image::IMAGE_DATE . " = %s", array($this->id()), '', $start, $num_per_page, $context);
+					$find_list = $component->find_by('', array(), C_NextGen_Gallery_Image::IMAGE_ID, 0, $total);
+        }
+        else {
+		      // Needed to create images
+		      $image_factory = $this->object->factory->create('attached_gallery_image');
+		      
+		      $find_list = $image_factory->find_by('attached_gallery_id', $this->object->id(), $page, $num_per_page, $include_exclusions, $context);
+        }
+        
+	      foreach ($find_list as $gallery_image) {
             
             // Override image to use gallery instance properties
             $thumbnail = $gallery_image->get_thumbnail_url(

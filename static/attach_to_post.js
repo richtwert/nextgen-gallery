@@ -358,6 +358,10 @@ jQuery(function($){
             $('#gallery_id').trigger('change', [no_images]);
         }
         
+        // XXX Image sources that don't upload anything need this
+        if (!$this.val().match(/new_gallery|existing_gallery/)) {
+        	$.fn.NextGen_AttachToPost.populate_images();
+        }
     };
     
     /**
@@ -388,19 +392,26 @@ jQuery(function($){
        // While images are loading, "Attach Gallery" button should temporarily
        // be disabled
        $('#save_button').attr('disabled','disabled').val('Loading images...');
-        
+       
+     	 var source = $('#gallery_source').val();
        var obj = $.fn.NextGen_AttachToPost.get_obj();
         
        // Populate the images for this gallery
        obj.action = '_get_image_forms';
-       if (obj.attached_gallery_id) {
-           obj.source = 'attached_gallery';
-           obj.id = obj.attached_gallery_id;
-       }
-       else {
-           obj.source = 'gallery';
-           obj.id = obj.gallery_id;
-       }
+       
+       if (source.match(/new_gallery|existing_gallery/)) {
+		     if (obj.attached_gallery_id) {
+		         obj.source = 'attached_gallery';
+		         obj.id = obj.attached_gallery_id;
+		     }
+		     else {
+		         obj.source = 'gallery';
+		         obj.id = obj.gallery_id;
+		     }
+		   }
+		   else {
+		     obj.source = source;
+		   }
        
        // Get the images from the server
        $.post(obj.ajax_url, obj, function(data, status, xhr){
