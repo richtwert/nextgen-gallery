@@ -438,7 +438,7 @@ jQuery(function($){
     $.fn.NextGen_AttachToPost.file_uploaded = function(uploader, file, info)
     {
         // Parse response
-        var response = gettype(info.response) == 'object' ? 
+        var response = typeof(info.response) == 'object' ? 
             info.response : $.parseJSON(info.response);
         
         // Did a server error occur?

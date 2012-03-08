@@ -46,8 +46,10 @@ class Mixin_Attached_Gallery_Queries extends Mixin
         // We do this so that we can include any new default values into
         // the attached gallery
         $settings = $config->settings;
-        foreach ($properties['settings'] as $key => $value) {
-            $settings[$key] = $value;
+        if (isset($properties['settings'])) {
+		      foreach ($properties['settings'] as $key => $value) {
+		          $settings[$key] = $value;
+		      }
         }
         $properties['settings'] = $settings;
         

@@ -142,7 +142,7 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
             
         // Iterate through results
         foreach($wpdb->get_results($sql, ARRAY_A) as $post) {
-            $properties = $this->object->try_unserialize($post['properties']);;
+            $properties = $this->object->try_unserialize($post['properties']);
             $properties['meta_data'] = $this->object->try_unserialize($properties['meta_data']);
             unset($post['properties']);
             $post = array_merge($post, $properties);
