@@ -68,50 +68,54 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                     $attached_gallery->save();
                     
                     // Ensure that we have images
+                    $source = $this->object->param('gallery_source');
                     $images = $this->object->param('images');
-                    if ($images) {
-                        foreach ($images as $order => $overrides) {
-                            $attached_gallery_image = FALSE;
+                    
+                    if ($images || in_array($source, array('recent_images', 'random_images'))) {
+                        if ($images) {
+		                    foreach ($images as $order => $overrides) {
+		                        $attached_gallery_image = FALSE;
 
-                            // Is this an existing attached gallery image id ?
-                            if (isset($overrides['attached_gallery_image_id']) && $overrides['attached_gallery_image_id']) {
-                                $image_factory = $this->object->factory->create('attached_gallery_image');
-                                $attached_gallery_image = $image_factory->find($overrides['attached_gallery_image_id']);
-                                unset($image_factory);
-                            }
+		                        // Is this an existing attached gallery image id ?
+		                        if (isset($overrides['attached_gallery_image_id']) && $overrides['attached_gallery_image_id']) {
+		                            $image_factory = $this->object->factory->create('attached_gallery_image');
+		                            $attached_gallery_image = $image_factory->find($overrides['attached_gallery_image_id']);
+		                            unset($image_factory);
+		                        }
 
-                            // We need to create a new attached gallery image, based
-                            // on an existing gallery image
-                            elseif(isset($overrides['gallery_image_id']) && $overrides['gallery_image_id']) {
-                                $gallery_image = $this->object->factory->create('gallery_image');
-                                $gallery_image = $gallery_image->find($overrides['gallery_image_id']);
-                                $overrides['attached_gallery_id'] = $attached_gallery->id();
-                                $overrides = $this->array_merge_assoc($gallery_image->properties, $overrides);
-                                $attached_gallery_image = $this->object->factory->create('attached_gallery_image', $overrides);
-                            }
+		                        // We need to create a new attached gallery image, based
+		                        // on an existing gallery image
+		                        elseif(isset($overrides['gallery_image_id']) && $overrides['gallery_image_id']) {
+		                            $gallery_image = $this->object->factory->create('gallery_image');
+		                            $gallery_image = $gallery_image->find($overrides['gallery_image_id']);
+		                            $overrides['attached_gallery_id'] = $attached_gallery->id();
+		                            $overrides = $this->array_merge_assoc($gallery_image->properties, $overrides);
+		                            $attached_gallery_image = $this->object->factory->create('attached_gallery_image', $overrides);
+		                        }
 
-                            // If we have an image and it saved successfully
-                            if ($attached_gallery_image) {
-                                if  ($attached_gallery_image->save($overrides)) {
+		                        // If we have an image and it saved successfully
+		                        if ($attached_gallery_image) {
+		                            if  ($attached_gallery_image->save($overrides)) {
 
 
-                                    // Return the new image id
-                                    if (!isset($retval['attached_gallery_image_ids'])) {
-                                        $retval['attached_gallery_image_ids'] = array();
-                                    }
-                                    $retval['attached_gallery_image_ids'][] = $attached_gallery_image->id();
-                                }    
+		                                // Return the new image id
+		                                if (!isset($retval['attached_gallery_image_ids'])) {
+		                                    $retval['attached_gallery_image_ids'] = array();
+		                                }
+		                                $retval['attached_gallery_image_ids'][] = $attached_gallery_image->id();
+		                            }    
 
-                                // The image was not saved successfully. Return the validation errors
-                                else {
-                                    if (!isset($retval['image_validation_errors'])) {
-                                        $retval['image_validation_errors'] = array();
-                                    }
-                                    $retval['image_validation_errors'][] = $attached_gallery_image->get_errors();
-                                }
-                            }
-                            else $retval['error'] = _("Gallery image does NOT exist");
-                        }                        
+		                            // The image was not saved successfully. Return the validation errors
+		                            else {
+		                                if (!isset($retval['image_validation_errors'])) {
+		                                    $retval['image_validation_errors'] = array();
+		                                }
+		                                $retval['image_validation_errors'][] = $attached_gallery_image->get_errors();
+		                            }
+		                        }
+		                        else $retval['error'] = _("Gallery image does NOT exist");
+		                    }
+		                }
                         // Include the new attached gallery id in the response
                         $retval['attached_gallery_id'] = $attached_gallery->id();
                     }
@@ -262,55 +266,77 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     function _get_image_forms()
     {
         $retval = array();
+        $source = $this->object->param('source');
+        $id = $this->object->param('id');
+        $forms = array();
         
-        if (($source = $this->object->param('source')) && ($id = $this->object->param('id'))) {
-            $forms = array();
-            
-            // Create source object
-            $obj = $this->object->factory->create($source);
-            $obj = $obj->find($id);
-            
-            // Create arguments for get_images() call
-            $args = array(
-                $this->object->param('page', FALSE),
-                $this->object->param('num_per_age', FALSE),
-                FALSE, // legacy 
-            );
-            
-            // Include exclusions for attached galleries
-            if ($source == 'attached_gallery') $args[] = TRUE;
-            
-            // Include a context
-            $args[] = 'attach_to_post';
-            
-            // Get image forms
-            $order = 1;
-            foreach ($obj->call_method('get_images', $args) as $image) {
-                
-                // Rendering an attached gallery image
-                if ($source == 'attached_gallery') {
-                    $forms[] = $this->object->render_image_form(
-                        $image,
-                        $image->gallery_image_id,
-                        $image->id(),
-                        $order
-                    );
-                }
-                
-                // Rendering a gallery image
-                else {
-                    $image->included = TRUE;
-                    $forms[] = $this->object->render_image_form(
-                        $image,
-                        $image->id(),
-                        '',
-                        $order
-                    );
-                }
-                
-                $order++;
+#        ob_start();
+#        print($this->object->param('source'));
+#        file_put_contents('/tmp/xdebug/dump.txt', ob_get_clean());        
+        
+        switch ($source) {
+            case 'gallery':
+            case 'attached_gallery':
+            {
+            	if ($id != null)
+            	{
+				    // Create source object
+				    $obj = $this->object->factory->create($source);
+				    $obj = $obj->find($id);
+				    
+				    // Create arguments for get_images() call
+				    $args = array(
+				        $this->object->param('page', FALSE),
+				        $this->object->param('num_per_age', FALSE),
+				        FALSE, // legacy 
+				    );
+				    
+				    // Include exclusions for attached galleries
+				    if ($source == 'attached_gallery') $args[] = TRUE;
+				    
+				    // Include a context
+				    $args[] = 'attach_to_post';
+				    
+				    // Get image forms
+				    $order = 1;
+				    foreach ($obj->call_method('get_images', $args) as $image) {
+				        
+				        // Rendering an attached gallery image
+				        if ($source == 'attached_gallery') {
+				            $forms[] = $this->object->render_image_form(
+				                $image,
+				                $image->gallery_image_id,
+				                $image->id(),
+				                $order
+				            );
+				        }
+				        
+				        // Rendering a gallery image
+				        else {
+				            $image->included = TRUE;
+				            $forms[] = $this->object->render_image_form(
+				                $image,
+				                $image->id(),
+				                '',
+				                $order
+				            );
+				        }
+				        
+				        $order++;
+				    }
+				}
+				
+				break;
+			}
+            case 'recent_images':
+            {
+            	// XXX return thumbnails for previewing
+        
+            	break;
             }
+        }
         
+        if ($forms != null) {
             // Render the image options tab
             $retval['html'] = $this->render_partial('image_options_tab', array(
                'images' =>  $forms 
@@ -647,7 +673,16 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
     
     function render_recent_images_fields()
     {
-    
+        return $this->render_partial('recent_images_gallery_source', array(
+            'gallery_name'          =>  $this->object->_get_value(
+                                            $this->object->attached_gallery,
+                                            'gallery_name'    
+                                        ),
+            'gallery_description'   =>  $this->object->_get_value(
+                                            $this->object->attached_gallery,
+                                            'gallery_desc'
+                                        ),
+        ), TRUE);
     }
 }
 
