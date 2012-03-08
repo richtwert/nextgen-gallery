@@ -23,7 +23,7 @@ class A_Thumbnail_Paths extends Mixin
                 // A gallery instance might have been given, but we still have
                 // to check if thumbnail settings are part of it
                 if (isset($config->generate_thumbnails)) 
-                    $retval = path_join($retval, $key = hash('md5', serialize($config)));
+                    $retval = path_join($retval, $key = hash('md5', photocrati_gallery_plugin_serialize($config)));
             }
         }
         
