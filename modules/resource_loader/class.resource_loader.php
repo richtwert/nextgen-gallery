@@ -33,7 +33,7 @@ class Mixin_Resource_Loader extends Mixin
         // Ensure that we're bootstrapped
         $request_id = $this->object->ensure_session($type);
         
-        $resource = serialize(array($name, $properties));
+        $resource = photocrati_gallery_plugin_serialize(array($name, $properties));
         
         if (!in_array($resource, $_SESSION[$type][$request_id])) {
             $_SESSION[$type][$request_id][] = $resource;
@@ -93,7 +93,7 @@ class Mixin_Resource_Loader extends Mixin
         
         // Load all enqueued resources
         foreach ($_SESSION[$type][$id] as $resource) {
-            $resource = unserialize($resource);
+            $resource = photocrati_gallery_plugin_unserialize($resource);
             $name = $resource[0];
             extract($resource[1]);
             $load = FALSE;

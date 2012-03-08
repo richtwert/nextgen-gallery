@@ -20,7 +20,7 @@ define('PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_SCRIPTS_URL', path_join(
     site_url(), 'resource_loader/dynamic_scripts'
 ));
 
-define('PHOTOCRATI_GALLERY_MOD_RESOURCE_LOADER_ID', hash('md5', serialize(array(
+define('PHOTOCRATI_GALLERY_MOD_RESOURCE_LOADER_ID', hash('md5', photocrati_gallery_plugin_serialize(array(
     $_SERVER['REQUEST_URI'], $_REQUEST
 ))));
 
