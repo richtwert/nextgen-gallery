@@ -247,7 +247,7 @@ class C_NextGen_Gallery extends C_Active_Record
         if ($start == -1) $start=0;
         
         $results = $component->find_by(self::IMAGE_GALLERY_ID." = %s", array($this->id()), '', $start, $num_per_page, $context);
-        if ($legacy = TRUE) foreach ($results as $image) $images[] = $image->to_nggImage();
+        if ($legacy == TRUE) foreach ($results as $image) $images[] = $image->to_nggImage();
         else $images = $results;
         
         return $images;

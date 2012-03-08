@@ -19,4 +19,8 @@ class C_nggImage_Wrapper extends C_Component
         return $obj;
     }
     
+    function id()
+    {
+    	return $this->pid;
+    }
 }
