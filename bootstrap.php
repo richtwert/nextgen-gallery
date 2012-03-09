@@ -138,30 +138,21 @@ function photocrati_gallery_plugin_file_uri($file_name = null)
 // Using json_encode here because PHP's serialize is not Unicode safe
 function photocrati_gallery_plugin_serialize($value)
 {
-#	$type = gettype($value);
-#	$value = array('type' => $type, 'data' => $value);
-	
 	return json_encode($value);
 }
 
 // Using json_decode here because PHP's unserialize is not Unicode safe
 function photocrati_gallery_plugin_unserialize($value)
 {
-	$value = json_decode($value, true);
-#	$type = isset($value['type']) ? $value['type'] : null;
-#	$data = isset($value['data']) ? $value['data'] : $value;
-#	
-#	switch ($type)
-#	{
-#		case 'object':
-#		{
-#			return (object) $data;
-#		}
-#		default:
-#		{
-#			return $data;
-#		}
-#	}
+	if (strlen($value) > 1)
+	{
+		$value_dec = json_decode($value, true);
+		
+		if ($value_dec !== NULL)
+		{
+			return $value_dec;
+		}
+	}
 	
 	return $value;
 }
