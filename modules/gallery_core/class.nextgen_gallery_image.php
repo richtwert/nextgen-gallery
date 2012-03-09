@@ -71,9 +71,9 @@ class Mixin_NextGen_Gallery_Image_Persistence extends Mixin
     function save($updates=array())
     {   
         $this->update_properties($updates);
-        $this->object->meta_data = $this->try_serialize($this->object->meta_data);
+        //$this->object->meta_data = $this->try_serialize($this->object->meta_data);
         $retval = $this->call_parent();
-        $this->object->meta_data = $this->try_unserialize($this->object->meta_data);
+        //$this->object->meta_data = $this->try_unserialize($this->object->meta_data);
         return $retval;
     }
 }
@@ -103,7 +103,7 @@ class Mixin_NextGen_Gallery_Image_Conversion extends Mixin
             $p = (object) $p;
             
             // An nggImage also expects the meta_data serialized by default
-            $p->meta_data = $this->object->try_serialize($p->meta_data);
+            $p->meta_data = serialize($p->meta_data);
             $retval = $factory->create('nggImage', $p);
         }
         
