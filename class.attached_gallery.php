@@ -13,17 +13,16 @@ class Mixin_Attached_Gallery_Queries extends Mixin
             
             // Ensure that properties is unserialized
             $arr = $custom['post_content'];
-            if (is_string($arr) && strpos($arr, "a:") !== FALSE) {
+            //if (is_string($arr) && strpos($arr, "a:") !== FALSE) {
                 $arr = $this->object->try_unserialize($arr);
-            }
+            //}
             
             // Get each property
             foreach ($arr as $key => $value) {
-
                 // If the value is serialized, then we need to unserialize it
-                if (is_string($value) && strpos($value, "a:") !== FALSE) {
-                    $value = $this->object->try_unserialize($value);
-                }
+                //if (is_string($value) && strpos($value, "a:") !== FALSE) {
+                    //$value = $this->object->try_unserialize($value);
+                //}
 
                 // Assign the property
                 $properties[$key] = $value;
