@@ -240,7 +240,7 @@ abstract class C_Active_Record extends C_Component
             // I've been having an issue with the first character being a binary
             // value. Not sure why. Need to investigate further. This is just a
             // hack as haven't determined root cause.
-            if ($value[0] != 'a') $value[0] = 'a';
+            // if ($value[0] != 'a') $value[0] = 'a';
             return photocrati_gallery_plugin_unserialize($value);
         }
         else
@@ -255,8 +255,9 @@ abstract class C_Active_Record extends C_Component
     function try_serialize($value)
     {
     	// XXX probably best to always serialize for consistence?
-        if (is_array($value) || is_object($value))
+        if (is_array($value) || is_object($value)) {
             return photocrati_gallery_plugin_serialize($value);
+        }
         else
             return $value;
     }
