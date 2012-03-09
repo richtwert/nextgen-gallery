@@ -54,13 +54,8 @@ class Mixin_Active_Record_Persistence extends Mixin
      * Updates the existing record in the db
      */
     function _update()
-    {   
-        $props = array();
-        foreach ($this->object->properties as $key => $value) {
-            $props[$key] = $this->object->try_serialize($value);
-        }
-        
-        return $this->db->update($this->object->table_name, $props, array(
+    {
+        return $this->db->update($this->object->table_name, $this->object->properties, array(
             $this->object->id_field => $this->object->id()
         ));
     }
