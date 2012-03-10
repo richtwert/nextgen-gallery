@@ -221,15 +221,9 @@ jQuery(function($){
         
         
         /*** Set defaults for all tabs *************************************/
-        if (!attached_gallery_id) {
-
-            // "New Gallery" as default source
-            $('#gallery_source').val('new_gallery').change();
-        }
         
-        else {
-            $('#gallery_source').val('existing_gallery').trigger('change', [true]);
-        }
+        // Note the HTML already selects the correct source value, just trigger a change for new/existing sources
+        $('#gallery_source').change()
     };
     
     
