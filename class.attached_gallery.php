@@ -178,15 +178,26 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         $images = array();
         
         if (in_array($source, array('recent_images', 'random_images'))) {
-        	$legacy = false;
 					$factory = $this->_registry->get_singleton_utility('I_Component_Factory');
 					$component = $factory->create('gallery_image');
-					$total = 10;
 					$gal_total = 2; // XXX Not implemented 
 					$only_attached = true; // XXX Not implemented 
+					
+					//print_r($this->object->properties);
 			
 					//$images = $component->find_by(C_NextGen_Gallery_Image::IMAGE_DATE . " = %s", array($this->id()), '', $start, $num_per_page, $context);
-					$find_list = $component->find_by('', array(), C_NextGen_Gallery_Image::IMAGE_ID, 0, $total);
+					if ($source == 'recent_images') {
+						$total = $this->object->properties['gallery_recent_image_total'];
+						
+						$find_list = $component->find_by('', array(), C_NextGen_Gallery_Image::IMAGE_ID . ' DESC', 0, $total);
+					}
+					else if ($source == 'random_images') {
+						$total = $this->object->properties['gallery_random_image_total'];
+						$rand_max = ((int) ($total + ($total * 0.2) + 1));
+						
+						// XXX This query is a bit of a hack but seems necessary at the moment
+						$find_list = $component->find_by('RAND() <= (' . $rand_max . ' / (select COUNT(*) from `' . $component->table_name . '`))', array(), '', 0, $total);
+					}
         }
         else {
 		      // Needed to create images

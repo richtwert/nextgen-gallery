@@ -671,16 +671,22 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
         ), TRUE);
     }
     
+    function render_random_images_fields()
+    {
+        return $this->render_partial('random_images_gallery_source', array(
+            'gallery_random_image_total'          =>  $this->object->_get_value(
+                                            $this->object->attached_gallery,
+                                            'gallery_random_image_total'    
+                                        ),
+        ), TRUE);
+    }
+    
     function render_recent_images_fields()
     {
         return $this->render_partial('recent_images_gallery_source', array(
-            'gallery_name'          =>  $this->object->_get_value(
+            'gallery_recent_image_total'          =>  $this->object->_get_value(
                                             $this->object->attached_gallery,
-                                            'gallery_name'    
-                                        ),
-            'gallery_description'   =>  $this->object->_get_value(
-                                            $this->object->attached_gallery,
-                                            'gallery_desc'
+                                            'gallery_recent_image_total'    
                                         ),
         ), TRUE);
     }
