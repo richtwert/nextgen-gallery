@@ -10,9 +10,9 @@ class Mixin_NextGen_Gallery_Image_Defaults extends Mixin
         
         if ($this->is_empty($properties, 'meta_data'))
             $properties['meta_data'] = array('saved' => FALSE);
-
         // Unserialize metadata, if it's still in string (serialized) form
-        else $this->object->try_unserialize($properties['meta_data']);
+        else 
+        	$properties['meta_data'] = $this->object->try_unserialize($properties['meta_data']);
         
         return $properties;
     }
