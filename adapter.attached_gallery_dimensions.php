@@ -15,22 +15,18 @@ class A_Attached_Gallery_Dimensions extends Hook
     
     function calculate_dimensions()
     {
-        if ($this->object->has_errors() or !isset($this->object->image)) return;
+        if ($this->object->has_errors()) 
+        	return;
         
         $longest = 0;
         $widest = 0;
         $average_width = 0;
         $average_height = 0;
         $count = 0;
-        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
-        $gallery_image = $factory->create('gallery_image');
         
-        foreach ($this->object->image as $id => $properties) {
-            $gallery_image = $gallery_image->find($id);
-            $meta_data = $this->object->try_unserialize(
-                $gallery_image->meta_data
-            );
-            $count ++;
+        foreach ($this->object->get_images() as $gallery_image) {
+            $meta_data = $gallery_image->meta_data;
+            $count++;
             $average_width += $meta_data['width'];
             $average_height += $meta_data['height'];
             
@@ -45,15 +41,19 @@ class A_Attached_Gallery_Dimensions extends Hook
             } 
         }
         
-        // Calculate averages
-        $average_height = $average_height/$count;
-        $average_width  = $average_width/$count;
+        if ($count > 0)
+        {
+		      // Calculate averages
+		      $average_height = $average_height/$count;
+		      $average_width  = $average_width/$count;
+		      
+		      // Update gallery instance properties
+		      $this->object->longest_image = $longest;
+		      $this->object->widest_image  = $widest;
+		      $this->object->average_width = $average_width;
+		      $this->object->average_height = $average_height;
         
-        // Update gallery instance properties
-        $this->object->longest_image = $longest;
-        $this->object->widest_image  = $widest;
-        $this->object->average_width = $average_width;
-        $this->object->average_height = $average_height;
-        $this->call_anchor();
+        	$this->call_anchor();
+        }
     }
 }

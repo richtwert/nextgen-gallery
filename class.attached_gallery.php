@@ -239,10 +239,13 @@ class C_Attached_Gallery extends C_Active_Record
     function define()
     {
         parent::define();
+        
         $this->remove_mixin('Mixin_Active_Record_Persistence');
         $this->add_mixin('Mixin_Attached_Gallery_Methods');
         $this->add_mixin('Mixin_Attached_Gallery_Persistence');
         $this->add_mixin('Mixin_Attached_Gallery_Queries');
+        
+        $this->implement('I_Attached_Gallery');
     }
     
     function initialize($metadata = array(), $context = FALSE)
