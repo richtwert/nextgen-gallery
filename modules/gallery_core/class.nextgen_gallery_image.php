@@ -61,7 +61,10 @@ class Mixin_NextGen_Gallery_Image_Paths
         $height = h($meta['height']);
         $title = h($this->object->description);
         $alt = h($this->object->alttext);
-        return "<img src='{$src}' width='{$width}' height='{$height}' alt='{$alt}' title='{$title}'/>";
+        $width = $width ? (' width="' . $width . '"') : '';
+        $height = $height ? (' height="' . $height . '"') : '';
+        
+        return "<img src='{$src}'{$width}{$height} alt='{$alt}' title='{$title}'/>";
     }
 }
 
