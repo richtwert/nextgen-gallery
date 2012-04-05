@@ -56,7 +56,7 @@ class M_Attach_to_Post extends C_Base_Module
     
     function _register_routes()
     {
-        $router = $this->_registry->get_singleton_utility('I_Router');
+        $router = $this->_get_registry()->get_singleton_utility('I_Router');
         $router->add_route(__CLASS__, 'C_Attach_to_Post', array(
             'uri'=>PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_ROUTING_PATTERN
         ));
@@ -65,8 +65,8 @@ class M_Attach_to_Post extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
-        $this->_registry->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
+        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
+        $this->_get_registry()->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
     }
     
     

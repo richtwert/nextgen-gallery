@@ -749,7 +749,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
     function initialize($context = FALSE)
     {
         parent::initialize($context);
-        $this->factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $this->factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
     }
     
     

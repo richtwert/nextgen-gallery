@@ -107,7 +107,7 @@ class Mixin_Attached_Gallery_Image_Query extends Mixin
         $results = array();
         
         // Create factory need to hatch images
-        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
         
 //        $query = new WP_Query("post_type=any");
 //        $query->post_type = 'attached_gal_image';
@@ -174,7 +174,7 @@ class C_Attached_Gallery_Image extends C_NextGen_Gallery_Image
     function initialize($properties = array(), $context = FALSE)
     {
         parent::initialize($properties, $context);
-        $this->factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $this->factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
     }
   
     

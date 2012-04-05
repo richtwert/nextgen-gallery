@@ -178,7 +178,7 @@ class Mixin_Attached_Gallery_Methods extends Mixin
         $images = array();
         
         if (in_array($source, array('recent_images', 'random_images'))) {
-					$factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+					$factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
 					$component = $factory->create('gallery_image');
 					$gal_total = 2; // XXX Not implemented 
 					$only_attached = true; // XXX Not implemented 
@@ -255,7 +255,7 @@ class C_Attached_Gallery extends C_Active_Record
         parent::initialize($metadata, $context);
         $this->table_name = $this->db->get_table_name('posts');
         $this->id_field = 'ID';
-        $this->factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $this->factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->object_name = 'attached_gallery';
     }
     
