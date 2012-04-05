@@ -30,7 +30,7 @@ class M_Active_Record extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter('I_MVC_Controller', 'A_MVC_Controller_Helpers');
+        $this->_get_registry()->add_adapter('I_MVC_Controller', 'A_MVC_Controller_Helpers');
     }
 }
 new M_Active_Record();

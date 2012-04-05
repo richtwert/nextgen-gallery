@@ -113,7 +113,7 @@ class Mixin_Active_Record_Query extends Mixin
         if ($start && $start != -1)     $sql[] = $this->db->prepare("OFFSET %d", $start);
         $sql = $this->db->_substitute_id_for_id_field(implode(' ', $sql), $this->object->id_field);
         
-        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
         
         // Convert each row to it's corresponding component
         foreach ($this->object->db->get_results($sql, ARRAY_A) as $row) {
@@ -168,7 +168,7 @@ abstract class C_Active_Record extends C_Component
     {   
         parent::initialize($context);
         $this->update_properties($metadata);
-        $this->db = $this->_registry->get_utility('I_Db', NULL, $context);
+        $this->db = $this->_get_registry()->get_utility('I_Db', NULL, $context);
     }
     
     /**
