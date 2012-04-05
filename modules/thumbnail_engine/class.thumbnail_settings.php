@@ -43,7 +43,7 @@ class C_Thumbnail_Settings extends C_Base_Gallery_Settings_Controller
     
     function get_config()
     {
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         return $this->config = $factory->create(
             'thumbnail_config',
             $this->handle_this_form()? $this->param('settings') : array()

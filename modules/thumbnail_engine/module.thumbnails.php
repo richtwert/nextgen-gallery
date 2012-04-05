@@ -29,10 +29,10 @@ class M_Thumbnails extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter('I_Component_Factory', 'A_Thumbnail_Factory');
-        $this->_registry->add_adapter('I_Gallery_Image', 'A_Thumbnail_Paths');
-        $this->_registry->add_adapter('I_Gallery_Image', 'A_Generate_Thumbnails', 'imported_image');
-        $this->_registry->add_adapter('I_Attached_Gallery', 'A_Attached_Gallery_Thumbnails');
+        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Thumbnail_Factory');
+        $this->_get_registry()->add_adapter('I_Gallery_Image', 'A_Thumbnail_Paths');
+        $this->_get_registry()->add_adapter('I_Gallery_Image', 'A_Generate_Thumbnails', 'imported_image');
+        $this->_get_registry()->add_adapter('I_Attached_Gallery', 'A_Attached_Gallery_Thumbnails');
     }
 }
 
