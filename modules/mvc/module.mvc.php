@@ -43,12 +43,12 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
         set_exception_handler(array(&$this, 'handle_exit'));
-        $this->_router = $this->_registry->get_singleton_utility('I_Router');
+        $this->_router = $this->_get_registry()->get_singleton_utility('I_Router');
     }
     
     function _register_utilities()
     {
-        $this->_registry->add_utility('I_Router', 'C_Router');
+        $this->_get_registry()->add_utility('I_Router', 'C_Router');
     }
     
     function _register_hooks()
