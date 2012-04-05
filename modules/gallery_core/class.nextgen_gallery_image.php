@@ -93,7 +93,7 @@ class Mixin_NextGen_Gallery_Image_Conversion extends Mixin
         
         // We actually have a wrapper for nggImage, that makes it behave
         // like any other component. So, we need a factory
-        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
         
         // An nggImage sucks. It expects to be passed a single object
         // which contains both the image and gallery properties set.
@@ -163,7 +163,7 @@ class C_NextGen_Gallery_Image extends C_Active_Record
     
     function get_gallery()
     {
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $gallery = $factory->create('gallery');
         return $gallery->find($this->gallery_id());
     }

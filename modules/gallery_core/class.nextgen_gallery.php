@@ -15,7 +15,7 @@ class Mixin_NextGen_Gallery_Persistence extends Mixin
         
         // Get the default gallery storage path
         $name = $this->object->name;
-        $pc_options = $this->object->_registry->get_singleton_utility('I_Photocrati_Options');
+        $pc_options = $this->object->_get_registry()->get_singleton_utility('I_Photocrati_Options');
         $storage_dir = $pc_options->storage_dir;
         unset($pc_options);
         $gallery_dir = path_join(ABSPATH, path_join($storage_dir, $name));
@@ -106,7 +106,7 @@ class Mixin_NextGen_Gallery_Storage extends Mixin
             $image_path = apply_filters('ngg_pre_add_new_image', $image_path, $this->object->id());
             
             // Create the image record
-            $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory', FALSE, 'imported_image');
+            $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory', FALSE, 'imported_image');
             $path_parts = pathinfo( $image_path );
             $alt_text = ( !isset($path_parts['filename']) ) ? substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) : $path_parts['filename'];
             $gallery_image = $factory->create('gallery_image', array(
@@ -239,7 +239,7 @@ class C_NextGen_Gallery extends C_Active_Record
         /**
          * @var $component C_NextGen_Gallery_Image
          */
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $component = $factory->create('gallery_image');
         
         // Calculate start. start = (limit+1)*(page-1)

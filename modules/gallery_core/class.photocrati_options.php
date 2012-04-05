@@ -79,7 +79,7 @@ class C_Photocrati_Options extends C_Component
     function initialize($context=FALSE)
     {
         parent::initialize($context);
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->_internal_options = $factory->create('photocrati_options');
         unset($factory);        
     }

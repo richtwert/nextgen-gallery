@@ -69,7 +69,7 @@ class Mixin_Lightbox_Library extends Mixin
             $properties = $libraries[$library_name];
             
             // Create a factory to hatch C_Lightbox_Library objects
-            $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+            $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
             
             // Return an object
             return $this->object->_hatch_lightbox_library($factory, $library_name, $properties);
@@ -91,7 +91,7 @@ class Mixin_Lightbox_Library extends Mixin
         if ($libraries && isset($libraries['default']) && $libraries['default']) {
             
             // Create a factory to hatch C_Lightbox_Library objects
-            $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+            $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
         
             // Get the name of the default library
             $library_name = $libraries['default'];
@@ -113,7 +113,7 @@ class Mixin_Lightbox_Library extends Mixin
         $libraries = $this->object->_load_libraries();
         
         // Create a factory to hatch C_Lightbox_Library objects
-        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
         
         // Iterate through the results and hatch new objects
         foreach ($libraries as $library_name => $properties) {
@@ -133,7 +133,7 @@ class Mixin_Lightbox_Library extends Mixin
         if ($libraries) {
             
             // Create a factory to hatch C_Lightbox_Library objects
-            $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+            $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
             
             foreach ($libraries as $library_name => $properties) {
                 $retval = $this->object->_hatch_lightbox_library(

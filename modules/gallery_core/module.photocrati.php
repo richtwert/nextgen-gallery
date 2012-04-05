@@ -16,7 +16,7 @@ class Mixin_Load_Lightbox_Library extends Mixin
         if (is_backend()) return;
         
         // Create a factory to hatch C_Lightbox_Library objects
-        $factory = $this->object->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
         
         // Find the default
         $lightbox = $factory->create('lightbox_library');
@@ -82,16 +82,16 @@ class M_Photocrati extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter('I_Component_Factory', 'A_Photocrati_Factory');   
-        $this->_registry->add_adapter('I_Gallery_Image',     'A_Parse_Image_Metadata', 'imported_image');
-        $this->_registry->add_adapter('I_Gallery_Image',     'A_Auto_Rotate_Image', 'imported_image');
-        $this->_registry->add_adapter('I_Gallery_Image',     'A_Auto_Resize_Image', 'imported_image');
+        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Photocrati_Factory');   
+        $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Parse_Image_Metadata', 'imported_image');
+        $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Auto_Rotate_Image', 'imported_image');
+        $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Auto_Resize_Image', 'imported_image');
     }
     
     
     function _register_utilities()
     {
-        $this->_registry->add_utility('I_Photocrati_Options','C_Photocrati_Options');
+        $this->_get_registry()->add_utility('I_Photocrati_Options','C_Photocrati_Options');
     }
 }
 new M_Photocrati();
