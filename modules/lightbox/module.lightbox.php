@@ -82,7 +82,7 @@ class M_Lightbox extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter(
+        $this->_get_registry()->add_adapter(
             'I_Lightbox_Library',
             'A_JQuery_Lightbox_Library'
         );
