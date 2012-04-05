@@ -77,14 +77,14 @@ class M_Photocrati_Admin extends C_Base_Module
     
     function initialize()
     {
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('admin_controller');
         $this->_add_routes();
     }
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter('I_Component_Factory', 'A_Admin_Factory');
+        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Admin_Factory');
     }
     
 
@@ -97,7 +97,7 @@ class M_Photocrati_Admin extends C_Base_Module
     
     function _add_routes()
     {
-        $router = $this->_registry->get_singleton_utility('I_Router');
+        $router = $this->_get_registry()->get_singleton_utility('I_Router');
         $router->add_route(__CLASS__, 'C_Ajax_Handler', array(
             'uri'=>PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN
         ));

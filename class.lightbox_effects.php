@@ -14,7 +14,7 @@ class C_Lightbox_Effects extends C_Base_Form_Handler
     
     function get_config()
     {
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         return $this->config = $factory->create(
             $this->factory_method,
             $this->handle_this_form() ? $this->param('settings') : array()

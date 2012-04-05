@@ -37,7 +37,7 @@ class C_Photocrati_Admin extends C_Base_Admin_Controller
     {
         ob_start();
         $controller = new $klass($context);
-        $this->_registry->apply_adapters($controller);
+        $this->_get_registry()->apply_adapters($controller);
         call_user_func(array($controller, 'index'));
         $tab = ob_get_contents();
         ob_end_clean();

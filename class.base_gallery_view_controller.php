@@ -16,7 +16,7 @@ class Mixin_Base_Gallery_View_Lightbox extends Mixin
     function get_lightbox_html()
     {
         $retval = '';
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $lightbox = $factory->create('lightbox_library');
         $lightbox = $lightbox->find_default();
         if ($lightbox) {
@@ -58,6 +58,6 @@ class C_Base_Gallery_View_Controller extends C_MVC_Controller
     function initialize($context=FALSE)
     {
         parent::initialize();
-        $this->resource_loader = $this->_registry->get_utility('I_Resource_Loader');
+        $this->resource_loader = $this->_get_registry()->get_utility('I_Resource_Loader');
     }
 }
