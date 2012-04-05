@@ -4,7 +4,7 @@ class Mixin_NextGen_ImageBrowser_Settings extends Mixin
 {   
     function get_config()
     {
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         return $factory->create(
             'nextgen_imagebrowser_config',
             $this->handle_this_form()? $this->param('settings') : array()
