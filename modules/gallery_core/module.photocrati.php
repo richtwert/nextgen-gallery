@@ -44,7 +44,7 @@ class Mixin_Dequeue_NextGen_Legacy_Scripts extends Mixin
             global $wp_scripts;
             
             $wp_scripts->remove('ngg_slideshow');
-            $wp_scripts->remove('jquery-cycle');
+            //$wp_scripts->remove('jquery-cycle');
         }
     }
 }
