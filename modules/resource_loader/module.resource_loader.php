@@ -51,7 +51,7 @@ class M_Resource_Loader extends C_Base_Module
     
     function _add_routes()
     {
-        $router = $this->_registry->get_singleton_utility('I_Router');
+        $router = $this->_get_registry()->get_singleton_utility('I_Router');
         $router->add_route(
             __CLASS__,
             'C_Resource_Loader', array(
@@ -63,33 +63,12 @@ class M_Resource_Loader extends C_Base_Module
     
     function _register_hooks()
     {
-        $id = PHOTOCRATI_GALLERY_MOD_RESOURCE_LOADER_ID;
-        
-        wp_register_script(
-            'dynamic_scripts',
-            PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_SCRIPTS_URL.'?id='.$id,
-            array('jquery')
-        );
-        
-        wp_register_style(
-           'dynamic_styles',
-           PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_STYLES_URL.'?id='.$id
-        );
-        
-        // If the request is NOT for the dynamic stylesheet or scripts, then
-        // enqueue these resources. They'll be blank for things that aren't posts
-        // or pages anyhow.
-        if ((strpos($_SERVER['REQUEST_URI'], PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_STYLES_URL) === FALSE) AND
-             strpos($_SERVER['REQUEST_URI'], PHOTOCRATI_GALLERY_MOD_RESOURCE_LOAD_DYNAMIC_SCRIPTS_URL) == FALSE) {
-            wp_enqueue_script('dynamic_scripts');
-            wp_enqueue_style('dynamic_styles');
-        }   
     }
     
     
     function _register_utilities()
     {
-        $this->_registry->add_utility('I_Resource_Loader', 'C_Resource_Loader');
+        $this->_get_registry()->add_utility('I_Resource_Loader', 'C_Resource_Loader');
     }
 }
 
