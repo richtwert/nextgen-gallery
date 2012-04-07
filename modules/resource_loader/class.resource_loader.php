@@ -46,16 +46,6 @@ class Mixin_Resource_Loader extends Mixin
     		$dependency = array($dependency);
     	}
     	
-    	$resource_list = $this->object->resources;
-    	
-    	// XXX Leaving this as reminder and future debugging
-#    	var_dump($type . ' - ' . $name);
-#    	var_dump(isset($this->object->resources[$type]));
-#    	var_dump(isset($resource_list[$type]));
-#    	var_dump(count($resource_list));
-#    	//var_dump($this->object->resources);
-#    	//var_dump($resource_list);
-    	
     	if (!isset($this->object->resources)) {
     		$this->object->resources = array();
     	}
@@ -150,7 +140,9 @@ class Mixin_Resource_Loader extends Mixin
     	}
     	
     	if ($object != null) {
-			foreach ($object->$property as $key => $handle) {
+    		$list = &$object->$property;
+    		
+			foreach ($list as $key => $handle) {
 				if (!in_array($handle, $object->done, true)) {
 					$dep = $object->registered[$handle];
 					
@@ -194,8 +186,8 @@ class Mixin_Resource_Loader extends Mixin
 							
 								$object->done[] = $handle;
 								
-								if (isset($object->$property[$key])) {
-									unset($object->$property[$key]);
+								if (isset($list[$key])) {
+									unset($list[$key]);
 								}
 							}
 						}
@@ -208,7 +200,17 @@ class Mixin_Resource_Loader extends Mixin
 
 
 class C_Resource_Loader extends C_MVC_Controller
-{   
+{
+    static $_instance = NULL;
+    
+    static function get_instance()
+    {
+        if (!self::$_instance) 
+        	self::$_instance = new C_Resource_Loader();
+        
+        return self::$_instance;
+    }
+    
     function define()
     {
         parent::define();
