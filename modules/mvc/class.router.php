@@ -41,6 +41,8 @@ class Mixin_Router extends Mixin
         $https  = isset($_SERVER['HTTPS']) ? TRUE: FALSE;
         $protocol = $https ? 'https' : 'http';
         
+        $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
+        
         if ($this->object->is_cached($domain, $uri, $protocol)) {
             $this->object->call_cached_route($domain, $uri, $protocol);
         }
@@ -65,7 +67,6 @@ class Mixin_Router extends Mixin
             
             // Every pattern must specify a uri pattern
             if ($continue && preg_match($pattern['uri'], $uri, $match)) {
-                
                 // We've found a matching pattern!!!
                 
                 // A pattern can specify which matched set is the name of the action
