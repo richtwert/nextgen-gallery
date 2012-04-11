@@ -8,8 +8,8 @@
 ***/
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL', path_join(PHOTOCRATI_GALLERY_ADMIN_MOD_URL, 'static'));
-define('PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN', "/\/wp-admin\/ajax_handler\/?([^\?]*)/");
-define('PHOTOCRATI_GALLERY_ADMIN_AJAX_URL', admin_url('ajax_handler'));
+define('PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN', photocrati_gallery_plugin_routing_pattern('photocrati_admin/ajax'));
+define('PHOTOCRATI_GALLERY_ADMIN_AJAX_URL', photocrati_gallery_plugin_routing_uri('photocrati_admin/ajax'));
 
 
 class M_Photocrati_Admin_Menu extends Mixin
@@ -45,10 +45,13 @@ class M_Photocrati_Admin_Menu extends Mixin
         //add_submenu_page(NGGFOLDER, $galleries_menu, $galleries_menu, 'NextGEN Manage gallery', 'pc-galleries', array($this->_controller, 'galleries'));
         //add_submenu_page(NGGFOLDER, $add_galleries_menu, $add_galleries_menu, 'NextGEN Upload images', 'pc-add-gallery');
         add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, 'NextGEN Change options', 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
-        add_submenu_page(NGGFOLDER, $albums_menu, $albums_menu, 'NextGEN Edit album', 'pc-albums');
+        // XXX add handler
+        //add_submenu_page(NGGFOLDER, $albums_menu, $albums_menu, 'NextGEN Edit album', 'pc-albums');
         add_submenu_page(NGGFOLDER, $other_options_menu, $other_options_menu, 'NextGEN Change options', 'pc-other-options', array($this->_controller, 'other_options'));
-        add_submenu_page(NGGFOLDER, $upgrade_menu, $upgrade_menu, 'Administrator', 'pc-upgrade');
-        add_submenu_page(NGGFOLDER, $upgrade_menu, $upgrade_menu, 'NextGen Upgrade', 'nextgen-upgrade');
+        // XXX add handler
+        //add_submenu_page(NGGFOLDER, $upgrade_menu, $upgrade_menu, 'Administrator', 'pc-upgrade');
+        // XXX add handler
+        //add_submenu_page(NGGFOLDER, $upgrade_menu, $upgrade_menu, 'NextGen Upgrade', 'nextgen-upgrade');
     }
 }
 
