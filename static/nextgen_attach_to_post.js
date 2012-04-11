@@ -12,9 +12,9 @@
                 
                         // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
                         ed.addCommand('attach_gallery', function(attached_gallery_id) {
-                                var post_id = vars.post_id;
+                                var post_id = tinymce_nextgen.post_id;
 //                                var post_id = window.location.search.match(/post=(\d+)/)[1];
-                                var attach_gallery_url = url.replace(/wp-content.*/, 'wp-admin/attach_to_post/?post_id=') +post_id;
+                                var attach_gallery_url = tinymce_nextgen.attach_url + '?post_id=' + post_id;
                                 if (attached_gallery_id) attach_gallery_url += "&attached_gallery_id="+attached_gallery_id;
                                 ed.windowManager.open({
                                         title: "Attach Gallery",

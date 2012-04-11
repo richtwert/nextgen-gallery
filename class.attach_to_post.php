@@ -270,10 +270,6 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         $id = $this->object->param('id');
         $forms = array();
         
-#        ob_start();
-#        print($this->object->param('source'));
-#        file_put_contents('/tmp/xdebug/dump.txt', ob_get_clean());        
-        
         switch ($source) {
             case 'gallery':
             case 'attached_gallery':
@@ -287,7 +283,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
 				    // Create arguments for get_images() call
 				    $args = array(
 				        $this->object->param('page', FALSE),
-				        $this->object->param('num_per_age', FALSE),
+				        $this->object->param('num_per_page', FALSE),
 				        FALSE, // legacy 
 				    );
 				    
@@ -418,7 +414,7 @@ class Mixin_Attach_To_Post_Resources extends Mixin
         wp_enqueue_script('nextgen_attach_to_post');
         wp_localize_script(
             'nextgen_attach_to_post',
-            'vars',
+            'nextgen_attach_settings',
             $this->object->get_js_vars()
         );
         do_action('admin_print_styles');

@@ -17,7 +17,7 @@ jQuery(function($){
        
        var title = htmlentities(title);
        
-       var snippet = "<img class='nggallery_stub' src='"+vars.preview_url+"?attached_gallery_id="+
+       var snippet = "<img class='nggallery_stub' src='"+tinymce_nextgen.preview_url+"?attached_gallery_id="+
            attached_gallery_id+"' title='"+title+"' alt='"+title+"'/>";
        
        // Add the snippet if the gallery hasn't already been attached

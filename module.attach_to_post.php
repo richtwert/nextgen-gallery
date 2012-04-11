@@ -9,7 +9,7 @@
 
 define(
     'PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_ROUTING_PATTERN', 
-    '/\/wp-admin\/attach_to_post\/?([^\?]*)/'
+    photocrati_gallery_plugin_routing_pattern('attach_to_post')
 );
 
 define(
@@ -23,7 +23,7 @@ define('PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_URL', path_join(
     basename(dirname(__FILE__))
 ));
 
-define('PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_AJAX_URL', admin_url('/attach_to_post/ajax'));
+define('PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_AJAX_URL', photocrati_gallery_plugin_routing_uri('attach_to_post/ajax'));
 
 class M_Attach_to_Post extends C_Base_Module
 {
@@ -128,8 +128,9 @@ class M_Attach_to_Post extends C_Base_Module
         // Enqueue the tinymce helpers script
         wp_register_script('tinymce_helpers', $this->static_url('tinymce_helpers.js'));
         wp_enqueue_script('tinymce_helpers');
-        wp_localize_script('tinymce_helpers', 'vars', array(
-           'preview_url'    =>  admin_url('attach_to_post/preview'),
+        wp_localize_script('tinymce_helpers', 'tinymce_nextgen', array(
+           'preview_url'    =>  photocrati_gallery_plugin_routing_uri('attach_to_post/preview'),
+           'attach_url'    =>  photocrati_gallery_plugin_routing_uri('attach_to_post'),
            'post_id'        =>  $post_ID
         ));
     }

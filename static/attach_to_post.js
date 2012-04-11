@@ -59,10 +59,10 @@ jQuery(function($){
         var obj = {
             attached_gallery_id: attached_gallery_id,
             post_id:             post_id,
-            ajax_url:            vars.ajax_url,
-            max_file_size:       vars.max_file_size,
-            plupload_swf_url:    vars.plupload_swf_url,
-            plupload_xap_url:    vars.plupload_xap_url,
+            ajax_url:            nextgen_attach_settings.ajax_url,
+            max_file_size:       nextgen_attach_settings.max_file_size,
+            plupload_swf_url:    nextgen_attach_settings.plupload_swf_url,
+            plupload_xap_url:    nextgen_attach_settings.plupload_xap_url,
             gallery_id:          $('#gallery_id').val(),
             gallery_name:        $('#gallery_name').val(),
             gallery_description: $('#gallery_description').val()
