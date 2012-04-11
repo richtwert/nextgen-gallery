@@ -135,6 +135,39 @@ function photocrati_gallery_plugin_file_uri($file_name = null)
 	return photocrati_gallery_plugin_path_uri($file_name);
 }
 
+function photocrati_gallery_plugin_routing_uri($route = null, $only_path = null, $use_pathinfo = null)
+{
+	if ($use_pathinfo === null) {
+		$permalink_struct = get_option('permalink_structure');
+		$use_pathinfo = preg_match('/^\\/?index\\.php\\//i', $permalink_struct);
+	}
+	
+	$uri = '/' . $route . '/';
+	
+	if ($use_pathinfo) {
+		$uri = '/index.php' . $uri; 
+	}
+	
+	if ($only_path) {
+		return $uri;
+	}
+	
+	return site_url($uri);
+}
+
+function photocrati_gallery_plugin_routing_pattern($route = null, $pattern = null)
+{
+	if ($pattern == null) {
+		$pattern = '(\\w*)';
+	}
+	
+	$uri = photocrati_gallery_plugin_routing_uri($route, true, false);
+	
+	$pattern = '/' . preg_quote($uri, '/') . $pattern . '/';
+	
+	return $pattern;
+}
+
 // Using json_encode here because PHP's serialize is not Unicode safe
 function photocrati_gallery_plugin_serialize($value)
 {
