@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: NextGEN Gallery
-Plugin URI: http://alexrabe.de/?page_id=80
+Plugin URI: http://www.nextgen-gallery.com/
 Description: A NextGENeration Photo Gallery for WordPress
-Author: Alex Rabe
+Author: Photocrati
+Author URI: http://www.photocrati.com/
 Version: 1.9.3
 
-Author URI: http://alexrabe.de/
-
-Copyright 2007-2012 by Alex Rabe & NextGEN DEV-Team
+Copyright (c) 2007-2011 by Alex Rabe & NextGEN DEV-Team
+Copyright (c) 2012 Photocrati Media
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
 */ 
 
 // Stop direct call
