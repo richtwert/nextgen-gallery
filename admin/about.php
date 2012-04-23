@@ -12,14 +12,14 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 		<div class="postbox">
 		    <h3 class="hndle"><span><?php _e('NextGEN DEV Team', 'nggallery'); ?></span></h3>
 		    <div class="inside">
-				<p><?php _e('This plugin is primarily developed, maintained, supported, documented by', 'nggallery'); ?> <a href="http://alexrabe.de" target="_blank">Alex Rabe</a>. <?php _e('There are many other folks who have made contributions to this project :', 'nggallery') ;?></p>
+				<p><?php _e('NextGEN Gallery is primarily developed, maintained, supported and documented by <a href="http://www.photocrati.com">Photocrati Media</a>. We\'d like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011. There are many others who have made contributions:', 'nggallery') ;?></p>
 				<p><?php ngg_list_contributors(); ?></p>
 			</div>
 		</div>
 		<div class="postbox">
 			<h3 class="hndle"><span><?php _e('Contributors / Tribute to', 'nggallery'); ?></span></h3>
 		    <div class="inside">
-				<p><?php _e('If you study the code of this plugin, you will find out that we mixed a lot of good already existing code and ideas together.', 'nggallery') ;?>
+				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?>
 				<?php _e('So, we would like to thank the following people for their pioneer work (without this work it\'s impossible to create such a plugin so fast)', 'nggallery') ;?></p>		
 				<ul class="ngg-list">
 				<li><a href="http://wordpress.org" target="_blank">The WordPress Team</a> <?php _e('for their great documented code', 'nggallery') ;?></li>
@@ -31,39 +31,24 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 				<li><a href="http://field2.com" target="_blank">Ben Dunkle</a> <?php _e('for the Gallery Icon', 'nggallery') ;?></li>
 				<li><a href="http://watermark.malcherek.com/" target="_blank">Marek Malcherek</a> <?php _e('for the Watermark plugin', 'nggallery') ;?></li>
 				</ul>
-				<p><?php _e('If you didn\'t find your name on this list and there is some code which I integrate in my plugin, don\'t hesitate to send me a mail.', 'nggallery') ;?></p>		
+				<p><?php _e('If you don\'t see your name on this list and we\'ve integrated some of your code into the plugin, don\'t hesitate to email us.', 'nggallery') ;?></p>		
 			</div>
 		</div>
 		<div class="postbox">
 			<h3 class="hndle"><span><?php _e('How to support ?', 'nggallery'); ?></span></h3>
 			<div class="inside">
-				<p><?php _e('There exist several ways to contribute, help or support us in this work. Non of them are mandatory.', 'nggallery') ;?></p>
+				<p><?php _e('There are several ways to contribute:', 'nggallery') ;?></p>
 				<ul class="ngg-list">
 					<li><strong><?php _e('Send us bugfixes / code changes', 'nggallery') ;?></strong><br /><?php _e('The most motivated support for this plugin are your ideas and brain work', 'nggallery') ;?></li>
-					<li><strong><?php _e('Translate the plugin', 'nggallery') ;?></strong><br /><?php _e('To help people to work with this plugin, I would like to have it in all available languages', 'nggallery') ;?></li>
-					<li><strong><?php _e('Donate the work via paypal', 'nggallery') ;?></strong><br />
-						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" >
-						<input type="hidden" name="cmd" value="_xclick"/>
-						<input type="hidden" name="business" value="alter.ego@boelinger.com"/>
-						<input type="hidden" name="item_name" value="NextGEN Gallery plugin"/>
-						<input type="hidden" name="no_shipping" value="1"/>
-						<input type="hidden" name="return" value="http://alexrabe.de/" />
-						<input type="hidden" name="cancel_return" value="http://alexrabe.de/"/>
-						<input type="hidden" name="lc" value="US" /> 
-						<input type="hidden" name="currency_code" value="EUR"/>
-						<input type="hidden" name="tax" value="0"/>
-						<input type="hidden" name="bn" value="PP-DonationsBF"/>
-						<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" name="submit" alt="Make payments with PayPal - it's fast, free and secure!" style="border: none;"/>
-						</form><?php _e('No doubt a very useful and easy motivation :-)', 'nggallery') ;?>
-					</li>
-					<li><strong><?php _e('Place a link to the plugin in your blog/webpage', 'nggallery') ;?></strong><br /><?php _e('Yes, share and trackback is also a good support for this work ', 'nggallery') ;?></li>
+					<li><strong><?php _e('Translate the plugin', 'nggallery') ;?></strong><br /><?php _e('To help people to work with this plugin, we would like to have it in all available languages', 'nggallery') ;?></li>
+					<li><strong><?php _e('Place a link to the plugin in your blog/webpage', 'nggallery') ;?></strong><br /><?php _e('Yes, sharing and linking are also supportive and helpful', 'nggallery') ;?></li>
 				</ul>
 			</div>
 		</div>
 		<div class="postbox" id="donators">
 			<h3 class="hndle"><span><?php _e('Thanks!', 'nggallery'); ?></span></h3>
 			<div class="inside">
-				<p><?php _e('We would like to thank this people which support us in the work :', 'nggallery'); ?></p>
+				<p><?php _e('We would like to thank the following people who have supported the NextGEN Gallery plugin:', 'nggallery'); ?></p>
 				<p><a href="http://www.boelinger.com/heike/" target="_blank">HEIKE</a>, <?php ngg_list_support(); ?></p>
 			</div>
 		</div>

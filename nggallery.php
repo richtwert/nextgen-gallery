@@ -36,7 +36,7 @@ class nggLoader {
 	var $version     = '1.9.3';
 	var $dbversion   = '1.8.0';
 	var $minimum_WP  = '3.2';
-	var $donators    = 'http://nextgen.boelinger.com/donators.php';
+	var $donators    = 'http://www.nextgen-gallery.com/donators.php';
 	var $options     = '';
 	var $manage_page;
 	var $add_PHP5_notice = false;

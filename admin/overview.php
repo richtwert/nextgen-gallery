@@ -88,7 +88,7 @@ add_meta_box('ngg_meta_box', __('Do you like this Plugin?', 'nggallery'), 'ngg_l
 if ( !(get_locale() == 'en_US') )
 	add_meta_box('ngg_locale', __('Translation', 'nggallery'), 'ngg_widget_locale', 'ngg_overview', 'right', 'core');
 add_meta_box('dashboard_primary', __('Latest News', 'nggallery'), 'ngg_widget_overview_news', 'ngg_overview', 'left', 'core');
-add_meta_box('ngg_lastdonators', __('Recent donators', 'nggallery'), 'ngg_widget_overview_donators', 'ngg_overview', 'right', 'core');
+//add_meta_box('ngg_lastdonators', __('Recent donators', 'nggallery'), 'ngg_widget_overview_donators', 'ngg_overview', 'right', 'core');
 if ( !is_multisite() || is_super_admin() ) {			
     add_meta_box('ngg_plugin_check', __('Plugin Check', 'nggallery'), 'ngg_plugin_check', 'ngg_overview', 'right', 'core');
     add_meta_box('ngg_server', __('Server Settings', 'nggallery'), 'ngg_overview_server', 'ngg_overview', 'right', 'core');
@@ -98,25 +98,28 @@ if ( !is_multisite() || is_super_admin() ) {
 function ngg_likeThisMetaBox() {
 
 	echo '<p>';
-    echo sprintf(__('This plugin is primarily developed, maintained, supported and documented by <a href="%s">Alex Rabe</a> with a lot of love & effort. Any kind of contribution would be highly appreciated. Thanks!', 'nggallery'), 'http://alexrabe.de/');
+    echo sprintf(__('This plugin is primarily developed, maintained, supported and documented by <a href="%s">Photocrati Media</a> with a lot of love & effort. Any kind of contribution would be highly appreciated. Thanks!', 'nggallery'), 'http://www.photocrati.com/');
 	echo '</p><ul>';
 
 	$url = 'http://wordpress.org/extend/plugins/nextgen-gallery/' ;
 	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/icon-rating.png ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}' target='_blank'>";
-	_e('Give it a good rating on WordPress.org.', 'nggallery');
+	_e('Give it a good rating on WordPress.org', 'nggallery');
 	echo "</a></li>";
 
-	$url = 'http://alexrabe.de/donation/';
-	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/icon-paypal.gif ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}' target='_blank'>";
-	_e("Donate the work via paypal.", 'nggallery');
+	$url = 'http://www.nextgen-gallery.com';
+	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/nextgen.png ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}' target='_blank'>";
+	_e("Visit the plugin homepage", 'nggallery');
 	echo "</a></li>";
 
-	$url = 'http://alexrabe.de/wordpress-plugins/wordtube/translation-of-plugins/';
+	$url = 'http://www.nextgen-gallery.com/translating-nextgen-gallery/';
 	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/icon-translate.png ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}'>";
-	_e("Help translating it.", 'nggallery');
+	_e("Help translating it", 'nggallery');
 	echo "</a></li>";
 
 	echo '</ul>';
+	
+	echo '
+	<div class="social" style="text-align:center;margin:15px 0 10px 0;"><span class="social" style="margin-right:5px;"><a target="_blank" href="http://twitter.com/NextGENGallery"><img title="Follow NextGEN on Twitter" alt="Twitter" src="' . NGGALLERY_URLPATH . 'admin/images/twitter.png"></a></span><span class="social" style="margin-right:5px;"><a target="_blank" href="http://www.facebook.com/NextGENGallery"><img title="Like NextGEN on Facebook" alt="Facebook" src="' . NGGALLERY_URLPATH . 'admin/images/facebook.png"></a></span><span class="social"><a target="_blank" href="http://plus.google.com/101643895780935290171"><img title="Add NextGEN to your circles" alt="GooglePlus" src="' . NGGALLERY_URLPATH . 'admin/images/googleplus.png"></a></span></div>';
 }
 
 /**
@@ -408,12 +411,12 @@ function ngg_overview_news(){
 ?>
 <div class="rss-widget">
     <?php
-    $rss = @fetch_feed( 'http://feeds.feedburner.com/alexrabe' );
+    $rss = @fetch_feed( 'http://feeds.feedburner.com/nextgen-gallery' );
       
     if ( is_object($rss) ) {
 
         if ( is_wp_error($rss) ) {
-            echo '<p>' . sprintf(__('Newsfeed could not be loaded.  Check the <a href="%s">front page</a> to check for updates.', 'nggallery'), 'http://alexrabe.de/') . '</p>';
+            echo '<p>' . sprintf(__('Newsfeed could not be loaded.  Check the <a href="%s">front page</a> to check for updates.', 'nggallery'), 'http://www.nextgen-gallery.com/') . '</p>';
     		return;
         }
         
@@ -625,7 +628,7 @@ function ngg_locale() {
 
 	
 	if ($result == 'not_exist')
-		echo '<p class="hint">'. sprintf( '<strong>Would you like to help to translate this plugin ?</strong> <a target="_blank" href="%s">Download</a> the current pot file and read <a href="http://alexrabe.de/wordpress-plugins/wordtube/translation-of-plugins/">here</a> how you can translate the plugin.', NGGALLERY_URLPATH . 'lang/nggallery.pot').'</p>';
+		echo '<p class="hint">'. sprintf( '<strong>Would you like to help translating this plugin?</strong> <a target="_blank" href="%s">Download</a> the current pot file and read <a href="http://www.nextgen-gallery.com/translating-nextgen-gallery/">here</a> how you can translate the plugin.', NGGALLERY_URLPATH . 'lang/nggallery.pot').'</p>';
 
 }
 
@@ -792,6 +795,8 @@ function ngg_related_plugins() {
                   
         set_transient( 'ngg_related_plugins', $api, 60*60*24 ); 
     }
+    
+  echo '<div style="margin-bottom:10px;padding:8px;font-size:110%;background:#eebbaa;"><b>Note</b>: these plugins are provided by third parties and are <b>NOT</b> supported by Photocrati Media in any way</div>';
 	
 	// don't show my own plugin :-) and some other plugins, which come up with the search result
 	$blacklist = array(
