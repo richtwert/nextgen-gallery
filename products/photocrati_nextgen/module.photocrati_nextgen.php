@@ -20,7 +20,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 			'http://www.photocrati.com'
 		);
 	  
-		$this->_get_registry()->add_module_path(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'modules', true, true);
+		$module_path = path_join(dirname(__FILE__), 'modules');
+		$this->_get_registry()->set_product_module_path($this->module_id, $module_path);
+		$this->_get_registry()->add_module_path($module_path, true, true);
 	}
 }
 
