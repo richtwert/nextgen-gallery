@@ -93,9 +93,15 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         $patterns = array(
             $this->object->get_class_definition_dir(),
             $this->object->get_class_definition_dir(TRUE),
-            MVC_MODULE_DIR,
-            path_join(PHOTOCRATI_GALLERY_MODULE_DIR, '*')
+            MVC_MODULE_DIR
         );
+        
+				$products = $this->_get_registry()->get_product_list();
+				
+				foreach ($products as $product) {
+					$module_path = $this->_get_registry()->get_product_module_path($product);
+					$patterns[] = path_join($module_path, '*');
+				}
         
         foreach($patterns as $glob) {
             $found = glob(path_join($glob, "templates/{$name}.php"));
@@ -121,9 +127,15 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         
         $patterns = array(
             $this->object->get_class_definition_dir(),
-            MVC_MODULE_DIR,
-            path_join(PHOTOCRATI_GALLERY_MODULE_DIR, '*')
+            MVC_MODULE_DIR
         );
+        
+				$products = $this->_get_registry()->get_product_list();
+				
+				foreach ($products as $product) {
+					$module_path = $this->_get_registry()->get_product_module_path($product);
+					$patterns[] = path_join($module_path, '*');
+				}
         
         foreach($patterns as $glob) {
             $found = glob(path_join($glob, "static/{$name}"));
@@ -143,8 +155,8 @@ class Mixin_MVC_Controller_Rendering extends Mixin
     {   
         $path = $this->find_static_file($resource);
         return str_replace(
-            realpath(PHOTOCRATI_GALLERY_MODULE_DIR),
-            PHOTOCRATI_GALLERY_MODULE_URL,
+            realpath(PHOTOCRATI_GALLERY_PLUGIN_DIR),
+            PHOTOCRATI_GALLERY_PLUGIN_URL,
             $path
         );
     }
