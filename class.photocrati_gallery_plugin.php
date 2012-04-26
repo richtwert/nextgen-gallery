@@ -29,7 +29,6 @@ class C_Photocrati_Gallery_Plugin extends C_Base_Module
      */
     function _load_modules()
     {
-    	$this->_get_registry()->add_module_path(PHOTOCRATI_GALLERY_MODULE_DIR, true, true);
     	$this->_get_registry()->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, true);
     	
     	$this->_get_registry()->initialize_all_modules();

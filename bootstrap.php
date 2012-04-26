@@ -14,9 +14,10 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 define('PHOTOCRATI_GALLERY_PLUGIN_DIR', photocrati_gallery_plugin_directory());
 define('PHOTOCRATI_GALLERY_PLUGIN_URL', photocrati_gallery_plugin_path_uri());
 define('PHOTOCRATI_GALLERY_I8N_DOMAIN', 'pc');
-define('PHOTOCRATI_GALLERY_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'modules'));
-define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'modules'));
 define('PHOTOCRATI_GALLERY_PRODUCT_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'products'));
+define('PHOTOCRATI_GALLERY_PRODUCT_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'products'));
+define('PHOTOCRATI_GALLERY_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PRODUCT_DIR, 'photocrati_nextgen/modules'));
+define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
 define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'class.photocrati_gallery_plugin.php'));
 define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 $upload_paths = wp_upload_dir();
@@ -101,7 +102,7 @@ function photocrati_gallery_plugin_path_uri($path = null, $url_encode = false)
 	{
 		$theme_uri = get_stylesheet_directory_uri();
 
-		$uri = $theme_uri . 'nextgen';
+		$uri = $theme_uri . 'nextgen-gallery';
 
 		if ($path != null)
 		{
@@ -113,10 +114,10 @@ function photocrati_gallery_plugin_path_uri($path = null, $url_encode = false)
 		// XXX Note, paths could not match but STILL being contained in the theme (i.e. WordPress returns the wrong path for the theme directory, either with wrong formatting or wrong encoding)
 		$base = basename(dirname(__FILE__));
 
-		if ($base != 'nextgen')
+		if ($base != 'nextgen-gallery')
 		{
 			// XXX this is needed when using symlinks, if the user renames the plugin folder everything will break though
-			$base = 'nextgen';
+			$base = 'nextgen-gallery';
 		}
 
 		if ($path != null)
