@@ -2,12 +2,12 @@
 
 /***
 	{
-		Module: photocrati-simple_html_dom,
-                Depends: { photocrati-base }
+		Module: photocrati-simple_html_dom
 	}
 ***/
 
 if (!function_exists(('file_get_html'))) include_once('simplehtmldom/simple_html_dom.php');
+
 class M_Simple_Html_Dom extends C_Base_Module
 {
     function define()
