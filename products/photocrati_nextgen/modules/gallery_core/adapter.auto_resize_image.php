@@ -16,7 +16,7 @@ class A_Auto_Resize_Image extends Hook
     {
         global $ngg;
         
-        if ($this->object->has_errors()) return;
+        if (!$this->object->is_valid()) return;
         
         // Resize
         if ($ngg->options['imgAutoResize']) {

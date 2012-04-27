@@ -8,7 +8,7 @@ class Mixin_NextGen_Options extends Mixin
     var $nextgen_options = array(
         'storage_dir'
     );
-    
+
     /**
      * Gets or sets a NextGen option
      */
@@ -18,7 +18,7 @@ class Mixin_NextGen_Options extends Mixin
         global $ngg;
         $args = func_get_args();
         $property = $args[0];
-        
+
         switch ($property) {
             case 'storage_dir':
                 $property = 'gallerypath';
@@ -30,11 +30,11 @@ class Mixin_NextGen_Options extends Mixin
                 $retval = $ngg->options[$property];
                 break;
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     function is_nextgen_option($property)
     {
         return in_array($property, $this->nextgen_options);
@@ -47,14 +47,14 @@ class Mixin_NextGen_Options extends Mixin
  * wrapper for this class and provides integration with NextGen Legacy
  */
 class C_Photocrati_Internal_Options extends C_Base_Component_Config
-{   
+{
     function initialize($settings=FALSE, $context=FALSE)
     {
-        
+
         parent::initialize($settings, $context);
         if (!$this->settings) {
-            // Set defaults    
-        }       
+            // Set defaults
+        }
     }
 }
 
@@ -66,92 +66,91 @@ class C_Photocrati_Options extends C_Component
 {
     static $_instance = NULL;
     var $_internal_options = NULL;
-    
+
     function define()
     {
-    		parent::define();
-    		
+		parent::define();
         $this->implement('I_Photocrati_Options');
         $this->add_mixin('Mixin_NextGen_Options');
     }
-    
-    
+
+
     function initialize($context=FALSE)
     {
         parent::initialize($context);
         $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->_internal_options = $factory->create('photocrati_options');
-        unset($factory);        
+        unset($factory);
     }
-    
-    
+
+
     /**
      * This is a method that shouldn't need to be called directly
      */
     function _save()
     {
         $retval = TRUE;
-        
+
         if (!$this->_batch) $retval = $this->_internal_options->save();
-        
+
         return $retval;
     }
-    
-    
+
+
     /*
-     * Provides an abstraction between NextGen and Photocrati options. 
+     * Provides an abstraction between NextGen and Photocrati options.
      */
     function __get($property)
     {
         $retval = NULL;
-        
+
         // An extension might have provided a way of retrieving this propery
         // from NextGen
         if ($this->is_nextgen_option($property)) {
             $retval = $this->call_method('get_or_set_option', array($property));
         }
-        
+
         // Must be a Photocrati option. Get from the internal options
         else {
             $retval = $this->_internal_options->$property;
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Provides an abstraction between NextGen and Photocrati options
      */
     function __set($property, $value)
     {
         $retval = NULL;
-        
+
         // An extension might have provided a way of setting this propery
         if ($this->is_nextgen_option($property)) {
             $retval = $this->call_method('get_or_set_option', array($property, $value));
         }
-        
+
         // Must be a Photocrati option. Set the internal option
         else {
             $this->_internal_options->$property = $value;
             $this->_save();
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Provides a means to set multiple options at once, which is more efficient
      * than setting individual options since the save method is
-     * @param type $properties 
+     * @param type $properties
      */
     function set($properties=array())
     {
         $retval = NULL;
         $this->batch = TRUE;
-        
+
         try {
             // Iterate through each property, and set
             // the option.
@@ -168,11 +167,11 @@ class C_Photocrati_Options extends C_Component
             // the batch flag is set below
         }
         $this->batch = FALSE;
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Returns an instantation of the C_Photocrati_Options class
      */

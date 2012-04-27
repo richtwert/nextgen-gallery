@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-base,
-                Depends: { photocrati-mvc, photocrati-active_record, photocrati-simple_html_dom, photocrati-fancybox-1x, photocrati-thickbox, photocrati-shutter-reloaded, photocrati-highslide, photocrati-jquery-lightbox }
+		Depends: { photocrati-mvc, photocrati-datamapper, photocrati-active_record, photocrati-simple_html_dom, photocrati-fancybox-1x, photocrati-thickbox, photocrati-shutter-reloaded, photocrati-highslide, photocrati-jquery-lightbox }
 	}
 ***/
 
@@ -82,16 +82,21 @@ class M_Photocrati extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Photocrati_Factory');   
+        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Photocrati_Factory');
         $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Parse_Image_Metadata', 'imported_image');
         $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Auto_Rotate_Image', 'imported_image');
         $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Auto_Resize_Image', 'imported_image');
+		$this->_get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
+		$this->_get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_CustomPost_Gallery_Mapper_Path', 'gallery');
+		$this->_get_registry()->add_adapter('I_CustomTable_DataMapper', 'A_CustomTable_Gallery_Mapper_Path', 'gallery');
     }
     
     
     function _register_utilities()
     {
         $this->_get_registry()->add_utility('I_Photocrati_Options','C_Photocrati_Options');
+		$this->_get_registry()->add_utility('I_Gallery_Mapper', 'C_Gallery_Mapper');
+		$this->_get_registry()->add_utility('I_Gallery_Image_Mapper', 'C_Gallery_Image_Mapper');
     }
 }
 new M_Photocrati();

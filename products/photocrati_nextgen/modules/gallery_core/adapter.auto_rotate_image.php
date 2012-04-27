@@ -14,7 +14,7 @@ class A_Auto_Rotate_Image extends Hook
     
     function rotate_image()
     {
-        if ($this->object->has_errors()) return;
+        if (!$this->object->is_valid()) return;
         include_once(path_join(NGGALLERY_ABSPATH, 'admin/functions.php'));
         nggAdmin::rotate_image($this->object->id());
     }
