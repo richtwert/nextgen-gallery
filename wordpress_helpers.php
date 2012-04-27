@@ -8,13 +8,13 @@
 function real_site_url($path="", $scheme=NULL, $admin_url=FALSE)
 {
     $site_url = $admin_url? admin_url($path,$scheme) : site_url($path,$scheme);
-    
+
     if (preg_match("/http(s)?:\/\/([^\/]*)/", $site_url, $match)) {
         $user_domain = $_SERVER['SERVER_NAME'];
         $site_domain = $match[2];
         $site_url = str_replace($site_domain, $user_domain, $site_url);
     }
-    
+
     return $site_url;
 }
 
