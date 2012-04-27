@@ -21,9 +21,6 @@ define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PRODUCT_URL
 define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'class.photocrati_gallery_plugin.php'));
 define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 $upload_paths = wp_upload_dir();
-define('PHOTOCRATI_GALLERY_STORAGE_PATH', $upload_paths['basedir']);
-//error_reporting(E_ALL);
-//@ini_set('display_errors', 'On');
 
 
 function photocrati_gallery_plugin_location()
@@ -178,17 +175,21 @@ function photocrati_gallery_plugin_serialize($value)
 // Using json_decode here because PHP's unserialize is not Unicode safe
 function photocrati_gallery_plugin_unserialize($value)
 {
+	$retval = stripcslashes($value);
+
 	if (strlen($value) > 1)
 	{
-		$value_dec = json_decode($value, true);
-		
-		if ($value_dec !== NULL)
-		{
-			return $value_dec;
+		$retval = json_decode($retval, TRUE);
+
+		// JSON Decoding failed. Perhaps it's PHP serialized data?
+		if ($retval == NULL) {
+			$er = error_reporting(0);
+			$retval = unserialize($value);
+			error_reporting($er);
 		}
 	}
-	
-	return $value;
+
+	return $retval;
 }
 
 // Instantiate plugin on init
