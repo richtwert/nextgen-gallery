@@ -28,11 +28,7 @@ class A_Attached_Gallery_Thumbnails extends Mixin
             $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
             
             // Iterate through each image of the instance and generate a thumbnail for it
-            foreach ($this->object->image as $id => $props) {
-                $image = $factory->create('gallery_image');
-                $image = $image->find($id);
-                $image->update_properties($props);
-                
+            foreach ($this->object->get_images(FALSE, FALSE, FALSE, TRUE) as $image) {
                 // Instantiate thumbnail generator
                 $generator = $factory->create('thumbnail_generator', $image, (object)$this->object->settings);
                 $generator->process();
