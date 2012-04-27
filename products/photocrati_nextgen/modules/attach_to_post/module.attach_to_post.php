@@ -68,6 +68,12 @@ class M_Attach_to_Post extends C_Base_Module
         $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
         $this->_get_registry()->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
     }
+
+
+	function _register_utilities()
+	{
+		$this->_get_registry()->add_utility('I_Attached_Gallery_Mapper', 'C_Attached_Gallery_Mapper');
+	}
     
     
     function _register_hooks()
