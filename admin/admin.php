@@ -124,22 +124,6 @@ class nggAdminPanel{
 			update_option('ngg_options', $ngg->options);			
 		}
 		
-		if( !isset ( $ngg->options['hideDonation']) ||  $ngg->options['hideDonation'] !== true ) {
-			if ( time() > ( $ngg->options['installDate'] + ( 60 * 60 * 24 * 30 ) ) ) {
-			?>	
-				<div id="donator_message">
-					<p><?php echo str_replace('%s', 'http://alexrabe.de/donation', __('Thanks for using this plugin, I hope you are satisfied ! If you would like to support the further development, please consider a <strong><a href="%s">donation</a></strong>! If you still need some help, please post your questions <a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10">here</a> .', 'nggallery')); ?>
-						<span>
-							<a href="<?php echo add_query_arg( array( 'hide_donation' => 'true') ); ?>" >
-								<small><?php _e('OK, hide this message now !', 'nggallery'); ?></small>
-							</a>
-						<span>
-					</p>
-				</div>
-			<?php
-			}
-		}
-		
   		switch ($_GET['page']){
 			case "nggallery-add-gallery" :
 				include_once ( dirname (__FILE__) . '/functions.php' );		// admin functions
@@ -345,45 +329,10 @@ class nggAdminPanel{
 
 		switch ($screen) {
 			case 'toplevel_page_' . NGGFOLDER :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Introduction</a>', 'nggallery');
-			break;
-			case "{$i18n}_page_nggallery-setup" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Setup</a>', 'nggallery');
+				$link  = __('<a href="http://www.nextgen-gallery.com" target="_blank">Introduction</a>', 'nggallery');
 			break;
 			case "{$i18n}_page_nggallery-about" :
-				$link  = __('<a href="http://alexrabe.de/wordpress-plugins/nextgen-gallery/languages/" target="_blank">Translation by alex rabe</a>', 'nggallery');
-			break;
-			case "{$i18n}_page_nggallery-roles" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Roles / Capabilities</a>', 'nggallery');
-			break;
-			case "{$i18n}_page_nggallery-style" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Styles</a>', 'nggallery');
-				$link .= ' | <a href="http://nextgen-gallery.com/templates/" target="_blank">' . __('Templates', 'nggallery') . '</a>';
-			break;
-			case "{$i18n}_page_nggallery-gallery" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Gallery management</a>', 'nggallery');
-				$link .= ' | <a href="http://nextgen-gallery.com/gallery-page/" target="_blank">' . __('Gallery example', 'nggallery') . '</a>';
-			break;
-			case "{$i18n}_page_nggallery-manage-gallery" :
-			case "nggallery-manage-gallery":
-			case "nggallery-manage-images":
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Gallery management</a>', 'nggallery');
-				$link .= ' | <a href="http://nextgen-gallery.com/gallery-tags/" target="_blank">' . __('Gallery tags', 'nggallery') . '</a>';
-			break;
-			case "{$i18n}_page_nggallery-manage-album" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Album management</a>', 'nggallery');
-				$link .= ' | <a href="http://nextgen-gallery.com/album/" target="_blank">' . __('Album example', 'nggallery') . '</a>';
-				$link .= ' | <a href="http://nextgen-gallery.com/albumtags/" target="_blank">' . __('Album tags', 'nggallery') . '</a>';
-			break;
-			case "{$i18n}_page_nggallery-tags" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-introduction/" target="_blank">Gallery tags</a>', 'nggallery');
-				$link .= ' | <a href="http://nextgen-gallery.com/related-images/" target="_blank">' . __('Related images', 'nggallery') . '</a>';
-				$link .= ' | <a href="http://nextgen-gallery.com/gallery-tags/" target="_blank">' . __('Gallery tags', 'nggallery') . '</a>';
-				$link .= ' | <a href="http://nextgen-gallery.com/albumtags/" target="_blank">' . __('Album tags', 'nggallery') . '</a>';
-			break;
-			case "{$i18n}_page_nggallery-options" :
-				$link  = __('<a href="http://dpotter.net/Technical/2008/03/nextgen-gallery-review-image-management/" target="_blank">Image management</a>', 'nggallery');
-				$link .= ' | <a href="http://nextgen-gallery.com/custom-fields/" target="_blank">' . __('Custom fields', 'nggallery') . '</a>';
+				$link  = __('<a href="http://www.nextgen-gallery.com/languages" target="_blank">Languages</a>', 'nggallery');
 			break;
 		}
 		
@@ -395,10 +344,10 @@ class nggAdminPanel{
 			$help .= '<h5>' . __('More Help & Info', 'nggallery') . '</h5>';
 			$help .= '<div class="metabox-prefs">';
 			$help .= __('<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10" target="_blank">Support Forums</a>', 'nggallery');
-			$help .= ' | <a href="http://alexrabe.de/wordpress-plugins/nextgen-gallery/faq/" target="_blank">' . __('FAQ', 'nggallery') . '</a>';
-			$help .= ' | <a href="http://code.google.com/p/nextgen-gallery/issues/list" target="_blank">' . __('Feature request', 'nggallery') . '</a>';
-			$help .= ' | <a href="http://alexrabe.de/wordpress-plugins/nextgen-gallery/languages/" target="_blank">' . __('Get your language pack', 'nggallery') . '</a>';
-			$help .= ' | <a href="http://code.google.com/p/nextgen-gallery/" target="_blank">' . __('Contribute development', 'nggallery') . '</a>';
+			$help .= ' | <a href="http://www.nextgen-gallery.com/faq/" target="_blank">' . __('FAQ', 'nggallery') . '</a>';
+			$help .= ' | <a href="https://bitbucket.org/photocrati/nextgen-gallery/issues" target="_blank">' . __('Feature request', 'nggallery') . '</a>';
+			$help .= ' | <a href="http://www.nextgen-gallery.com/languages" target="_blank">' . __('Get your language pack', 'nggallery') . '</a>';
+			$help .= ' | <a href="https://bitbucket.org/photocrati/nextgen-gallery" target="_blank">' . __('Contribute development', 'nggallery') . '</a>';
 			$help .= ' | <a href="http://wordpress.org/extend/plugins/nextgen-gallery" target="_blank">' . __('Download latest version', 'nggallery') . '</a>';
 			$help .= "</div>\n";
 		} 
