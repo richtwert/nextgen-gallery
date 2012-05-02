@@ -515,8 +515,7 @@ class nggLoader {
 		if ( $file == $this->plugin_name ) {
 			$links[] = '<a href="admin.php?page=nextgen-gallery">' . __('Overview', 'nggallery') . '</a>';
 			$links[] = '<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10">' . __('Get help', 'nggallery') . '</a>';
-			$links[] = '<a href="http://code.google.com/p/nextgen-gallery/">' . __('Contribute', 'nggallery') . '</a>';
-			$links[] = '<a href="http://alexrabe.de/donation/">' . __('Donate', 'nggallery') . '</a>';
+			$links[] = '<a href="https://bitbucket.org/photocrati/nextgen-gallery">' . __('Contribute', 'nggallery') . '</a>';
 		}
 		return $links;
 	}
