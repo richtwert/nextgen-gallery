@@ -223,7 +223,6 @@ class nggAdminPanel{
     	) );        
 		wp_register_script('ngg-progressbar', NGGALLERY_URLPATH .'admin/js/ngg.progressbar.js', array('jquery'), '2.0.1');
         wp_register_script('jquery-ui-autocomplete', NGGALLERY_URLPATH .'admin/js/jquery.ui.autocomplete.min.js', array('jquery-ui-core', 'jquery-ui-widget'), '1.8.15');
-		wp_register_script('swfupload_f10', NGGALLERY_URLPATH .'admin/js/swfupload.js', array('jquery'), '2.2.0');
        		
 		switch ($_GET['page']) {
 			case NGGFOLDER : 
@@ -259,7 +258,7 @@ class nggAdminPanel{
                 if ( defined('IS_WP_3_3') )
                     wp_enqueue_script( 'ngg-plupload-handler' );
                 else
-				    wp_enqueue_script( 'ngg-swfupload-handler', NGGALLERY_URLPATH .'admin/js/swfupload.handler.js', array('swfupload_f10'), '1.0.3' );
+				    wp_enqueue_script( 'ngg-swfupload-handler', NGGALLERY_URLPATH .'admin/js/swfupload.handler.js', array('jquery', 'swfupload'), '1.0.3' );
 				wp_enqueue_script( 'ngg-ajax' );
 				wp_enqueue_script( 'ngg-progressbar' );
                 wp_enqueue_script( 'jquery-ui-dialog' );
