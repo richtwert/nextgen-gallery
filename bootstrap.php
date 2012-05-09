@@ -139,17 +139,17 @@ function photocrati_gallery_plugin_routing_uri($route = null, $only_path = null,
 		$permalink_struct = get_option('permalink_structure');
 		$use_pathinfo = preg_match('/^\\/?index\\.php\\//i', $permalink_struct);
 	}
-	
+
 	$uri = '/' . $route . '/';
-	
+
 	if ($use_pathinfo) {
-		$uri = '/index.php' . $uri; 
+		$uri = '/index.php' . $uri;
 	}
-	
+
 	if ($only_path) {
 		return $uri;
 	}
-	
+
 	return site_url($uri);
 }
 
@@ -158,11 +158,11 @@ function photocrati_gallery_plugin_routing_pattern($route = null, $pattern = nul
 	if ($pattern == null) {
 		$pattern = '(\\w*)';
 	}
-	
+
 	$uri = photocrati_gallery_plugin_routing_uri($route, true, false);
-	
+
 	$pattern = '/' . preg_quote($uri, '/') . $pattern . '/';
-	
+
 	return $pattern;
 }
 
@@ -191,6 +191,24 @@ function photocrati_gallery_plugin_unserialize($value)
 
 	return $retval;
 }
+
+// Defines a  SimpleTest test suite for NextGEN
+function add_nextgen_testsuite($suites=array())
+{
+	// Define Test Directory
+	$tests_dir = path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'tests');
+
+	// Include mock objects
+	include_once(path_join($tests_dir, 'mocks.php'));
+
+	// Define the NextGEN Test Suite
+	$suites['nextgen'] = array(
+		path_join($tests_dir, 'datamapper'),
+	);
+
+	return $suites;
+}
+add_filter('simpletest_suites', 'add_nextgen_testsuite');
 
 // Instantiate plugin on init
 add_action('init', 'photocrati_gallery_init', 100);
