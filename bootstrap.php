@@ -198,13 +198,15 @@ function add_nextgen_testsuite($suites=array())
 	// Define Test Directory
 	$tests_dir = path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'tests');
 
-	// Include mock objects
-	include_once(path_join($tests_dir, 'mocks.php'));
+	if (file_exists($tests_dir)) {
+		// Include mock objects
+		include_once(path_join($tests_dir, 'mocks.php'));
 
-	// Define the NextGEN Test Suite
-	$suites['nextgen'] = array(
-		path_join($tests_dir, 'datamapper'),
-	);
+		// Define the NextGEN Test Suite
+		$suites['nextgen'] = array(
+			path_join($tests_dir, 'datamapper'),
+		);
+	}
 
 	return $suites;
 }
