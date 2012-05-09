@@ -9,4 +9,14 @@ if (!class_exists('Mock_DataMapper_Driver')) {
 		}
 	}
 }
+
+if (!class_exists('Mock_DataMapper_Model_Validations')) {
+	class Mock_Mixin_DataMapper_Model_Validations extends Mixin
+	{
+		function validation()
+		{
+			$this->object->validates_presence_of('post_title');
+		}
+	}
+}
 ?>

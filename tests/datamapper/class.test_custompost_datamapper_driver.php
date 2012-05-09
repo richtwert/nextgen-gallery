@@ -14,8 +14,9 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		$this->post_title = "Mike's Test Post";
 		$this->post_type = 'posts';
 		$this->model_factory_method = 'my_model';
-		$this->post_id = wp_insert_post(array('post_title' => $this->post_title, 'post_type' => $this->post_type));
-		if ($this->post_id === 0) $this->fail("Could not create temporary post to work with");
+		$this->mapper = $this->assert_creation_of_new_datamapper();
+		$this->post_id = $this->assert_create_and_update_operations();
+		$this->ids_to_cleanup = array();
 	}
 
 	/**
@@ -23,14 +24,19 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 	 */
 	function tearDown()
 	{
-		@wp_delete_post($this->post_id, TRUE);
+		foreach (array_merge($this->ids_to_cleanup, array($this->post_id)) as $id) {
+			if (($index = array_search($id, $this->ids_to_cleanup)) !== FALSE) {
+				unset($this->ids_to_cleanup[$index]);
+				$this->mapper->destroy($id);
+			}
+		}
 	}
 
 	/**
 	 * Creates a datamapper for WordPress 'posts'
 	 * @return C_CustomPost_DataMapper
 	 */
-	function test_create_new_datamapper()
+	function assert_creation_of_new_datamapper()
 	{
 		$retval = FALSE;
 
@@ -55,10 +61,8 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 	/**
 	 * Tests creating new entities using the data mapper
 	 */
-	function test_create_entities()
+	function assert_create_and_update_operations()
 	{
-		$mapper = $this->test_create_new_datamapper();
-
 		// You can create a new entity by using the save() method
 		// of the data mapper.
 		//
@@ -66,8 +70,31 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		// The save method will always return the ID of the new entity
 		// or FALSE if there was a problem
 		$entity = (object) array('post_title' => $this->post_title);
-		$result = $mapper->save($entity);
+		$this->ids_to_cleanup[] = $result = $this->mapper->save($entity);
 		$this->assert_valid_entity($entity, $result, TRUE);
+
+		// The save method is also used to save an existing entity
+		$entity->post_name = "foobar";
+		$this->mapper->save($entity);
+		$this->assertEqual($entity->post_name, "foobar");
+
+		// You can also pass a model (subclass of C_DataMapper_Model) to the
+		// save method
+		$entity = new C_DataMapper_Model($this->mapper, array('post_title' => $this->post_title));
+		$result = $this->mapper->save($entity);
+		$this->assert_valid_entity($entity, $result, TRUE);
+
+		// A model allows you to incorporate business logic for entities, such
+		// as validation. We'll add a mixin that adds validation to ensure
+		// that all posts have a post_title field set
+		$entity->add_mixin('Mock_Mixin_DataMapper_Model_Validations');
+		$entity->post_title = NULL;
+		$this->assertFalse($this->mapper->save($entity));
+		$this->assertTrue(count($entity->errors_for('post_title')>0));
+		$this->assertTrue($entity->is_invalid());
+		$this->assertFalse($entity->is_valid());
+
+		return $result;
 	}
 
 
@@ -82,19 +109,17 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 	 */
 	function test_model_factory_methods()
 	{
-		$mapper = $this->test_create_new_datamapper();
-
 		// By default, datamappers are not associated with any model class
-		$this->assertEqual(FALSE, $mapper->get_model_factory_method());
+		$this->assertEqual(FALSE, $this->mapper->get_model_factory_method());
 
 		// Set a fake factory method
-		$mapper->set_model_factory_method($this->model_factory_method);
+		$this->mapper->set_model_factory_method($this->model_factory_method);
 		$this->assertEqual(
 			$this->model_factory_method,
-			$mapper->get_model_factory_method()
+			$this->mapper->get_model_factory_method()
 		);
 
-		return $mapper;
+		return $this->mapper;
 	}
 
 	/**
@@ -102,38 +127,41 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 	 */
 	function test_find_methods()
 	{
-		// Create a new data mapper for posts.
-		$mapper = $this->test_model_factory_methods();
-
 		// To find an existing post, just use the find() method and pass the
 		// ID of the record you wish to retrieve
-		$entity = $mapper->find($this->post_id);
+		$entity = $this->mapper->find($this->post_id);
 		$this->assertIsA($entity, 'stdClass');
 		$this->assert_valid_entity($entity);
 
 		// You may also optionally ask for a model class to be returned
 		// See @test_model_factory_methods()
-		$entity = $mapper->find($this->post_id, TRUE);
+		$entity = $this->mapper->find($this->post_id, TRUE);
 		$this->assertIsA($entity, 'C_DataMapper_Model');
 		$this->assert_valid_entity($entity);
 
 		// When attempting to find a record that doesn't exist, NULL will be
 		// returned
-		$entity = $mapper->find(PHP_INT_MAX); // highly unlikely that this exists
+		$entity = $this->mapper->find(PHP_INT_MAX);
 		$this->assertNull($entity);
 
 		// You can also try finding a post based on other conditions
-		$entity = $mapper->find_first(array('post_title IN (%s)', $this->post_title));
+		$entity = $this->mapper->find_first(
+			array('post_title IN (%s)', $this->post_title)
+		);
 		$this->assertIsA($entity, 'stdClass');
 		$this->assertEqual($entity->post_title, $this->post_title);
 
 		// Like the find() method, find_first() will return NULL if no record
 		// is found
-		$entity = $mapper->find_first(array('post_title = %s', $this->random_string()));
+		$entity = $this->mapper->find_first(
+			array('post_title = %s', $this->random_string())
+		);
 		$this->assertNull($entity);
 
 		// Like the find() method, find_first() can also return a model
-		$entity = $mapper->find_first(array('post_title IN (%s)', $this->post_title),TRUE);
+		$entity = $this->mapper->find_first(
+			array('post_title IN (%s)', $this->post_title),TRUE
+		);
 		$this->assertIsA($entity, 'C_DataMapper_Model');
 		$this->assertEqual($entity->post_title, $this->post_title);
 	}
@@ -146,19 +174,23 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 	**************************************************************************/
 
 	/**
-	 * Compares an entity with our test post created in the setUp() method
+	 * Asserts that an entity using the datamapper is valid
 	 * @param stdClass $entity
 	 */
 	function assert_valid_entity($entity, $retval=FALSE, $test_retval=FALSE)
 	{
-		$this->assertEqual($entity->id_field, 'ID');
 		if ($test_retval) {
 			$this->assertTrue((is_int($retval) && $retval>0), "save() did not return a valid record ID");
 			$this->assertEqual($retval, $entity->ID);
 		}
+		$this->assertEqual($entity->id_field, 'ID');
 		$this->assertTrue((is_int($entity->ID) && $entity->ID>0), "save() did not return a valid record ID");
 		$this->assertEqual($entity->post_type, $this->post_type);
 		$this->assertEqual($entity->post_title, $this->post_title);
+		$this->assertTrue(isset($entity->post_author));
+		$this->assertTrue(isset($entity->post_content_filtered));
+		$this->assertTrue(isset($entity->post_date));
+		$this->assertTrue(isset($entity->post_name));
 	}
 
 	/**

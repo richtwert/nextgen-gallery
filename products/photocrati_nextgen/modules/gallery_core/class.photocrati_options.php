@@ -141,6 +141,12 @@ class C_Photocrati_Options extends C_Component
     }
 
 
+	function __isset($name)
+	{
+		return (is_nextgen_option($name) OR isset($this->_internal_options->$name));
+	}
+
+
     /**
      * Provides a means to set multiple options at once, which is more efficient
      * than setting individual options since the save method is
