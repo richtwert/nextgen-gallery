@@ -20,4 +20,5 @@ interface I_DataMapper_Driver
 	function get_model_factory_method();
 	function set_model_factory_method($method_name);
 	function count();
+	function convert_to_model($stdObject, $context=FALSE);
 }

@@ -269,6 +269,32 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		if ($results) {
 			$this->assertEqual($results[0]->post_title, 'A Title');
 		}
+
+		// The where() method is an alias for where_and()
+		$results = $this->mapper->select()->where_and(array(
+			array('custom_value = %s', 'foobar'),
+			array('post_title = %s', 'A Title')
+		))->run_query();
+		$this->assertEqual(count($results), 1);
+		if ($results) {
+			$this->assertEqual($results[0]->post_title, 'A Title');
+		}
+
+		// There is also a where_or() method
+		// TODO: Is there any way we can add where_or() support to
+		// C_CustomPost_DataMapper_Driver ?
+		/**
+		$results = $this->mapper->select()->where_or(array(
+			array('post_title = %s', 'A Title'),
+			array('post_title = $s', 'Za Title')
+		))->run_query();
+		$this->assertEqual(count($results), 2);
+		foreach ($results as $entity) {
+			$this->assertTrue(in_array(
+				$entity->post_title, array('A Title', 'Za Title')
+			));
+		}
+		**/
 	}
 
 
