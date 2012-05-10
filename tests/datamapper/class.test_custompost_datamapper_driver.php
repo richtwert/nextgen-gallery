@@ -5,54 +5,46 @@
  */
 class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 {
+	public $post_title = "Mike's Test Post";
+	public $post_type = 'posts';
+	public $model_factory_method = 'my_model';
+	public $post_id = 0;
+	public $mapper;
+
 	/**
-	 * Before each test, we insert a temporary new post into WordPress to
-	 * test with
+	 * Setup test data
 	 */
-	function setUp()
+	function __construct()
 	{
+		parent::__construct('C_CustomPost_DataMapper_Driver Test Case');
 		$this->post_title = "Mike's Test Post";
 		$this->post_type = 'posts';
 		$this->model_factory_method = 'my_model';
-		$this->mapper = $this->assert_creation_of_new_datamapper();
-		$this->post_id = $this->assert_create_and_update_operations();
 		$this->ids_to_cleanup = array();
 	}
 
-	/**
-	 * After each test, delete the temporary WordPress post
-	 */
-	function tearDown()
-	{
-		foreach (array_merge($this->ids_to_cleanup, array($this->post_id)) as $id) {
-			if (($index = array_search($id, $this->ids_to_cleanup)) !== FALSE) {
-				unset($this->ids_to_cleanup[$index]);
-				$this->mapper->destroy($id);
-			}
-		}
-	}
 
 	/**
 	 * Creates a datamapper for WordPress 'posts'
 	 * @return C_CustomPost_DataMapper
 	 */
-	function assert_creation_of_new_datamapper()
+	function test_creation_of_new_datamapper()
 	{
 		$retval = FALSE;
 
 		// Create a valid data mapper for 'posts' using a factory
-		$mapper = $this->get_factory()->create('custom_post_datamapper', $this->post_type);
-		$this->assert_valid_datamapper($mapper);
+		$this->mapper = $this->get_factory()->create('custom_post_datamapper', $this->post_type);
+		$this->assert_valid_datamapper($this->mapper);
 
 		// Create a valid data mapper for 'posts' without a factory
 		// This is necessary for unit testing, as we want to test the
 		// datamapper not the factory class"
-		$retval = $mapper = new C_CustomPost_DataMapper_Driver($this->post_type);
-		$this->assert_valid_datamapper($mapper);
+		$this->mapper = new C_CustomPost_DataMapper_Driver($this->post_type);
+		$this->assert_valid_datamapper($this->mapper);
 
 		// For testing purposes, we'll add some mocking capabilities to the
 		// mapper
-		$mapper->add_mixin('Mock_Mixin_DataMapper_Driver');
+		$this->mapper->add_mixin('Mock_Mixin_DataMapper_Driver');
 
 		return $retval;
 	}
@@ -61,7 +53,7 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 	/**
 	 * Tests creating new entities using the data mapper
 	 */
-	function assert_create_and_update_operations()
+	function test_crud_operations()
 	{
 		// You can create a new entity by using the save() method
 		// of the data mapper.
@@ -70,18 +62,27 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		// The save method will always return the ID of the new entity
 		// or FALSE if there was a problem
 		$entity = (object) array('post_title' => $this->post_title);
-		$this->ids_to_cleanup[] = $result = $this->mapper->save($entity);
+		$result = $this->mapper->save($entity);
 		$this->assert_valid_entity($entity, $result, TRUE);
 
+
 		// The save method is also used to save an existing entity
+		$number_of_posts = $this->mapper->count();
 		$entity->post_name = "foobar";
 		$this->mapper->save($entity);
 		$this->assertEqual($entity->post_name, "foobar");
+		$this->assertEqual($number_of_posts, $this->mapper->count());
+
+		// The destroy method is used to delete an entity. The destroy()
+		// method can be passed the ID of the record, or an entity object
+		// The following example passes in an entire entity object, but
+		// the ID is tested in @see tearDown()
+		$this->assertTrue($this->mapper->destroy($entity));
 
 		// You can also pass a model (subclass of C_DataMapper_Model) to the
 		// save method
 		$entity = new C_DataMapper_Model($this->mapper, array('post_title' => $this->post_title));
-		$result = $this->mapper->save($entity);
+		$this->post_id = $result = $this->mapper->save($entity);
 		$this->assert_valid_entity($entity, $result, TRUE);
 
 		// A model allows you to incorporate business logic for entities, such
@@ -90,11 +91,24 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		$entity->add_mixin('Mock_Mixin_DataMapper_Model_Validations');
 		$entity->post_title = NULL;
 		$this->assertFalse($this->mapper->save($entity));
-		$this->assertTrue(count($entity->errors_for('post_title')>0));
+		$this->assertTrue(count($entity->errors_for('post_title')==2));
 		$this->assertTrue($entity->is_invalid());
 		$this->assertFalse($entity->is_valid());
 
-		return $result;
+		// One of the type of entities we'd like to support in the future
+		// is associative arrays/hashes. The problem with using them is that
+		// we have to use references, as the entity passed to save() gets
+		// modified to include other data (such as IDs).
+		//
+		// For now, if an associative array is attempted, then we throw an
+		// exception
+		try {
+			$this->mapper->save(array('post_title' => $this->post_title));
+		}
+		catch (E_InvalidEntityException $ex) {
+			$this->pass("Caught E_InvalidEntityException when trying to use array");
+		}
+
 	}
 
 
@@ -118,8 +132,6 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 			$this->model_factory_method,
 			$this->mapper->get_model_factory_method()
 		);
-
-		return $this->mapper;
 	}
 
 	/**
@@ -164,6 +176,58 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		);
 		$this->assertIsA($entity, 'C_DataMapper_Model');
 		$this->assertEqual($entity->post_title, $this->post_title);
+	}
+
+
+	function test_custom_queries()
+	{
+		$key = $this->mapper->get_primary_key_column();
+
+		// Create some test entries
+		$ids = array();
+		$this->ids_to_cleanup[]= $retval = $this->mapper->save((object)array(
+			'post_name'		=> 'test_123',
+			'custom_value'	=> 'foobar'
+		));
+		$this->assertTrue($retval > 0);
+		$this->ids_to_cleanup[] = $retval = $this->mapper->save((object)array(
+			'post_name' => 'test_321',
+			'custom_value'	=> 'foobar'
+		));
+		$this->assertTrue($retval > 0);
+
+		// Find the above entities using custom queries
+		$results = $this->mapper->select($key)->where(
+			array('custom_value = %s', 'foobar')
+		)->run_query();
+		$this->assertTrue(count($results) == 2);
+		foreach ($results as $entity) {
+			$this->assertTrue(in_array($entity->$key, $this->ids_to_cleanup));
+		}
+
+		// The C_CustomTable_DataMapper_Driver does NOT support multiple
+		// conditions. But, we can test for multiple values
+		$results = $this->mapper->select('post_name')->where(
+			array('post_name IN (%s, %s)', 'test_123', 'test_321')
+		)->run_query();
+		print_r($results);
+		$this->assertTrue(count($results) == 2);
+	}
+
+
+	/**
+	 * After each test, delete the temporary WordPress post
+	 */
+	function test_delete()
+	{
+		foreach (array_merge($this->ids_to_cleanup, array($this->post_id)) as $id) {
+			if (($index = array_search($id, $this->ids_to_cleanup)) !== FALSE) {
+				unset($this->ids_to_cleanup[$index]);
+
+				// The destroy method can be used to delete entities by ID
+				$this->assertTrue($this->mapper->destroy($id));
+			}
+		}
 	}
 
 

@@ -16,6 +16,7 @@ if (!class_exists('Mock_DataMapper_Model_Validations')) {
 		function validation()
 		{
 			$this->object->validates_presence_of('post_title');
+			$this->object->validates_length_of('post_title', 3, '>');
 		}
 	}
 }
