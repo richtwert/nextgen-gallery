@@ -160,8 +160,7 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		$entity = $this->mapper->find_first(
 			array('post_title IN (%s)', $this->post_title)
 		);
-		$this->assertIsA($entity, 'stdClass');
-		$this->assertEqual($entity->post_title, $this->post_title);
+		$this->assert_valid_entity($entity);
 
 		// Like the find() method, find_first() will return NULL if no record
 		// is found
@@ -176,6 +175,43 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		);
 		$this->assertIsA($entity, 'C_DataMapper_Model');
 		$this->assertEqual($entity->post_title, $this->post_title);
+
+		// Create a new entity
+		$another_post_name = 'foo-123';
+		$this->ids_to_cleanup[]= $retval = $this->mapper->save((object)array(
+			'post_name'		=> $another_post_name,
+		));
+		$this->assertTrue($retval > 0);
+
+		// Use the find_all() method to find all known entities
+		$results = $this->mapper->find_all();
+		$key = $this->mapper->get_primary_key_column();
+		$this->assertTrue(count($results) >= 2);
+
+		// Test to ensure that the results contain the two posts that we know
+		// about
+		$found_ids = array();
+		foreach ($results as $entity) $found_ids[] = $entity->$key;
+		$matches = array_intersect(
+			$found_ids,
+			array_merge($this->ids_to_cleanup, array($this->post_id))
+		);
+		$this->assertEqual(count($matches), 2);
+
+		// The find_all() method can also accept a where clause
+		$results = $this->mapper->find_all(array('post_name = %s', $another_post_name));
+		$this->assertEqual(count($results), 1);
+		if ($results) {
+			$this->assertEqual($results[0]->post_name, $another_post_name);
+		}
+
+		// The find_all() method can also return models
+		$results = $this->mapper->find_all(array('post_name = %s', $another_post_name), TRUE);
+		$this->assertEqual(count($results), 1);
+		if ($results) {
+			$this->assertEqual($results[0]->post_name, $another_post_name);
+			$this->assertIsA($results[0], 'C_DataMapper_Model');
+		}
 	}
 
 
@@ -184,15 +220,16 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		$key = $this->mapper->get_primary_key_column();
 
 		// Create some test entries
-		$ids = array();
 		$this->ids_to_cleanup[]= $retval = $this->mapper->save((object)array(
 			'post_name'		=> 'test_123',
-			'custom_value'	=> 'foobar'
+			'custom_value'	=> 'foobar',
+			'post_title'	=> 'A Title'
 		));
 		$this->assertTrue($retval > 0);
 		$this->ids_to_cleanup[] = $retval = $this->mapper->save((object)array(
-			'post_name' => 'test_321',
-			'custom_value'	=> 'foobar'
+			'post_name'		=> 'test_321',
+			'custom_value'	=> 'foobar',
+			'post_title'	=> 'Za Title'
 		));
 		$this->assertTrue($retval > 0);
 
@@ -205,12 +242,23 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 			$this->assertTrue(in_array($entity->$key, $this->ids_to_cleanup));
 		}
 
-		// The C_CustomTable_DataMapper_Driver does NOT support multiple
-		// conditions. But, we can test for multiple values
-		$results = $this->mapper->select('post_name')->where(
+		// Find the above entries using multiple values in the where clause,
+		// and order the results
+		$results = $this->mapper->select('post_name, post_title')->where(
 			array('post_name IN (%s, %s)', 'test_123', 'test_321')
-		)->run_query();
+		)->order_by('post_title', 'DESC')->run_query();
 		$this->assertTrue(count($results) == 2);
+		foreach ($results as $entity) {
+			$this->assertTrue(in_array($entity->post_name, array('test_123', 'test_321')));
+		}
+		if ($results) $this->assertEqual($results[0]->post_title, 'Za Title');
+
+		// You can also limit the results
+		$results = $this->mapper->select('post_name, post_title')->where(
+			array('post_name IN (%s, %s)', 'test_123', 'test_321')
+		)->order_by('post_title', 'DESC')->limit(1)->run_query();
+		$this->assertEqual(count($results), 1);
+		if ($results) $this->assertEqual($results[0]->post_title, 'Za Title');
 	}
 
 

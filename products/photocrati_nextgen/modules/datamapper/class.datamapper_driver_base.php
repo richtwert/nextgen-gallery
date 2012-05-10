@@ -85,7 +85,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	function find_all($conditions=array(), $model=FALSE)
 	{
 		$results = $this->object->select()->where_and($conditions)->run_query();
-		if ($results) {
+		if ($results && $model) {
 			foreach ($results as &$r) {
 				$r = $this->object->convert_to_model($r);
 			}
