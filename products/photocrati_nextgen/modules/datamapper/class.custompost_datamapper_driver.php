@@ -151,10 +151,8 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 						$this->object->_query_args['page_name__like'] = $clause['value'];
 					elseif ($clause['compare'] == '=')
 						$this->object->_query_args['pagename'] = $clause['value'];
-					elseif ($clause['compare'] == 'IN') {
-						error_log("PAGE NAMES: ".print_r($clause['value'], TRUE));
+					elseif ($clause['compare'] == 'IN')
 						$this->object->_query_args['page_name__in'] = $clause['value'];
-					}
 					break;
 				case 'post_title':
 					// Post title uses custom WHERE clause

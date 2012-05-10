@@ -259,6 +259,16 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		)->order_by('post_title', 'DESC')->limit(1)->run_query();
 		$this->assertEqual(count($results), 1);
 		if ($results) $this->assertEqual($results[0]->post_title, 'Za Title');
+
+		// You can also specify multiple where conditions
+		$results = $this->mapper->select()->where(array(
+			array('custom_value = %s', 'foobar'),
+			array('post_title = %s', 'A Title')
+		))->run_query();
+		$this->assertEqual(count($results), 1);
+		if ($results) {
+			$this->assertEqual($results[0]->post_title, 'A Title');
+		}
 	}
 
 
