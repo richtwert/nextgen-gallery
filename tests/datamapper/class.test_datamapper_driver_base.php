@@ -172,7 +172,7 @@ abstract class C_Test_DataMapper_Driver extends UnitTestCase
 			$found_ids,
 			array_merge($this->ids_to_cleanup, array($this->post_id))
 		);
-		$this->assertEqual(count($matches), 2);
+		$this->assertTrue(count($matches)>=2);
 
 		// The find_all() method can also accept a where clause
 		$results = $this->mapper->find_all(array('post_name = %s', $another_post_name));
@@ -287,18 +287,8 @@ abstract class C_Test_DataMapper_Driver extends UnitTestCase
 				unset($this->ids_to_cleanup[$index]);
 
 				// The destroy method can be used to delete entities by ID
-				$exception_throw = FALSE;
 				$this->assertTrue($this->mapper->destroy($id));
-				try
-				{
-					$this->mapper->find($id);
-				}
-				catch (E_EntityNotFoundException $ex)
-				{
-					$this->pass("Caught E_EntityNotFoundException after successful deletion");
-					$exception_throw = TRUE;
-				}
-				if (!$exception_thrown) $this->fail("destroy() said that it deleted entity #{$id} when infact it still exists");
+				$this->assertNull($this->mapper->find($id));
 			}
 		}
 	}
