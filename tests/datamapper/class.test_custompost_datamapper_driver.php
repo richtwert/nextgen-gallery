@@ -210,7 +210,6 @@ class C_Test_CustomPost_DataMapper_Driver extends UnitTestCase
 		$results = $this->mapper->select('post_name')->where(
 			array('post_name IN (%s, %s)', 'test_123', 'test_321')
 		)->run_query();
-		print_r($results);
 		$this->assertTrue(count($results) == 2);
 	}
 
