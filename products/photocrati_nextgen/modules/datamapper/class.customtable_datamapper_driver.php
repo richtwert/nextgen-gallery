@@ -84,6 +84,14 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		foreach ($where_clauses as $clause) {
 			extract($clause);
 			if ($this->object->has_column($column)) $column = "`{$column}`";
+			if (!is_array($value)) $value = array($value);
+			foreach ($value as $index => $v) {
+				$v = $clause['type'] == 'numeric' ? $v : "'{$v}'";
+				$value[$index] = $v;
+			}
+			$value = implode(', ', $value);
+			if ($compare == 'IN') $value = "({$value})";
+
 			$clauses[] = "{$column} {$compare} {$value}";
 		}
 
@@ -155,36 +163,44 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	 * Stores the entity
 	 * @param stdClass $entity
 	 */
-	function _save_entity(&$entity)
+	function _save_entity($entity)
 	{
-		$key = $this->get_primary_key_column();
-		if (property_exists($entity, $key) && $entity->$key)
-			return $this->_update($entity);
-		else
-			return $this->_create($entity);
+		$retval = FALSE;
+		$key = $this->object->get_primary_key_column();
+		if (isset($entity->$key)) {
+			if($this->object->_update($entity)) $retval = $entity->$key;
+		}
+		else {
+			$retval = $this->object->_create($entity);
+			if ($retval) {
+				$new_entity = $this->object->find($retval);
+				foreach ($new_entity as $key => $value) $entity->$key = $value;
+			}
+		}
+
+		return $retval;
 	}
 
 	/**
 	 * Destroys/deletes an entity
 	 * @param stdObject|C_DataMapper_Model|int $entity
-	 * @return int
-	 * @throws E_EntityNotFoundException
+	 * @return boolean
 	 */
 	function destroy($entity)
 	{
 		$retval = FALSE;
-		$key = $this->get_primary_key_column();
+		$key = $this->object->get_primary_key_column();
 		$id = FALSE;
 
 		// Find the id of the entity
 		if (is_object($entity) && isset($entity->$key)) {
-			$id = $entity->$key;
+			$id = (int)$entity->$key;
 		}
 		else {
 			$id = (int)$entity;
 		}
 
-		// If we have an id, delete the record
+		// If we have an ID, then delete the post
 		if (is_integer($id)) {
 			$sql = $this->object->_wpdb()->prepare(
 		      "DELETE FROM `{$this->object->get_table_name()}` WHERE {$key} = %s",
@@ -192,7 +208,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 			);
 			$retval = $this->object->_wpdb()->query($sql);
 		}
-		else throw new E_EntityNotFoundException();
 
 		return $retval;
 	}
@@ -202,13 +217,12 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	 * @param stdObject $entity
 	 * @return boolean
 	 */
-	function _create(&$entity)
+	function _create($entity)
 	{
 		$retval = FALSE;
 		if ($this->object->_wpdb()->insert($this->object->get_table_name(), (array)$entity)) {
-			$retval = TRUE;
 			$key = $this->object->get_primary_key_column();
-			$entity->$key = $this->object->_wpdb()->insert_id;
+			$retval = $entity->$key = $this->object->_wpdb()->insert_id;
 		}
 		return $retval;
 	}
