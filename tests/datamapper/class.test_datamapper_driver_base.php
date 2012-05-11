@@ -3,7 +3,7 @@
 /**
  * Tests the interface for DataMapper Drivers
  */
-abstract class C_Test_DataMapper_Driver extends UnitTestCase
+abstract class C_Test_DataMapper_Driver_Base extends UnitTestCase
 {
 	public $post_title = "Mike's Test Post";
 	public $post_type = 'posts';
