@@ -47,7 +47,7 @@ class nggAddGallery {
     			nggAdmin::create_gallery($newgallery, $defaultpath);
     	}
     	
-    	if ( isset($_POST['zipupload']) ){
+    	if ( isset($_POST['zipupload']) && wpmu_enable_function('wpmuZipUpload') ){
     		check_admin_referer('ngg_addgallery');
     
     		if ( !nggGallery::current_user_can( 'NextGEN Upload a zip' ))
@@ -59,7 +59,7 @@ class nggAddGallery {
     			nggGallery::show_error( __('Upload failed!','nggallery') );
     	}
     	
-    	if ( isset($_POST['importfolder']) ){
+    	if ( isset($_POST['importfolder']) && wpmu_enable_function('wpmuImportFolder') ){
     		check_admin_referer('ngg_addgallery');
     
     		if ( !nggGallery::current_user_can( 'NextGEN Import image folder' ))

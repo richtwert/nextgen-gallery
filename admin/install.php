@@ -228,6 +228,12 @@ function ngg_default_options() {
 		if (!is_array($ngg_wpmu_options)) {
 			$ngg_wpmu_options['gallerypath'] = 'wp-content/blogs.dir/%BLOG_ID%/files/';
 			$ngg_wpmu_options['wpmuCSSfile'] = 'nggallery.css';
+			$ngg_wpmu_options['wpmuQuotaCheck'] = false;
+			$ngg_wpmu_options['wpmuZipUpload'] = false;
+			$ngg_wpmu_options['wpmuImportFolder'] = false;
+			$ngg_wpmu_options['wpmuRoles'] = false;
+			$ngg_wpmu_options['wpmuScanFolder'] = false;
+			$ngg_wpmu_options['wpmuStyle'] = false;
 			update_site_option('ngg_options', $ngg_wpmu_options);
 		}
 		

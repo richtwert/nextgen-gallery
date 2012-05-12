@@ -62,7 +62,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 		<h2><?php _e('Network Options','nggallery'); ?></h2>
 		<form name="generaloptions" method="post">
 		<?php wp_nonce_field('ngg_wpmu_settings') ?>
-		<input type="hidden" name="page_options" value="gallerypath,wpmuQuotaCheck,wpmuZipUpload,wpmuImportFolder,wpmuStyle,wpmuRoles,wpmuCSSfile" />
+		<input type="hidden" name="page_options" value="gallerypath,wpmuQuotaCheck,wpmuZipUpload,wpmuImportFolder,wpmuScanFolder,wpmuStyle,wpmuRoles,wpmuCSSfile" />
 			<table class="form-table">
 				<tr valign="top">
 					<th align="left"><?php _e('Gallery path','nggallery') ?></th>
@@ -87,6 +87,12 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 					<th valign="top"><?php _e('Enable import function','nggallery') ?>:</th>
 					<td><input name="wpmuImportFolder" type="checkbox" value="1" <?php checked('1', $ngg_options['wpmuImportFolder']); ?> />
 					<?php _e('Allow users to import images folders from the server.','nggallery') ?>
+					</td>
+				</tr>
+				<tr>
+					<th valign="top"><?php _e('Enable scan folder function','nggallery') ?>:</th>
+					<td><input name="wpmuScanFolder" type="checkbox" value="1" <?php checked('1', $ngg_options['wpmuScanFolder']); ?> />
+					<?php _e('Allow users to scan for new images in gallery folders from the server.','nggallery') ?>
 					</td>
 				</tr>
 				<tr>

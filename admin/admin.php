@@ -520,10 +520,13 @@ function wpmu_site_admin() {
 }
 
 function wpmu_enable_function($value) {
+	// if this is not WPMU, enable by default
+	$return = true;
+	
 	if (is_multisite()) {
 		$ngg_options = get_site_option('ngg_options');
-		return $ngg_options[$value];
+		$return = $ngg_options[$value];
 	}
-	// if this is not WPMU, enable it !
-	return true;
+	
+	return apply_filters('ngg_enable_function', apply_filters('ngg_enable_function_' . $value, $return), $value);
 }

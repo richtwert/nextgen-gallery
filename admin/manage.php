@@ -402,7 +402,7 @@ class nggManageGallery {
 			nggGallery::show_message(__('Update successful',"nggallery"));
 		}
 	
-		if (isset ($_POST['scanfolder']))  {
+		if (isset ($_POST['scanfolder']) && wpmu_enable_function('wpmuScanFolder') && nggGallery::current_user_can( 'NextGEN Scan folder' )) {
 		// Rescan folder
 			check_admin_referer('ngg_updategallery');
 		
