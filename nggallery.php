@@ -384,7 +384,7 @@ class nggLoader {
 	
 	function load_thickbox_images() {
 		// WP core reference relative to the images. Bad idea
-		echo "\n" . '<script type="text/javascript">tb_pathToImage = "' . site_url() . '/wp-includes/js/thickbox/loadingAnimation.gif";tb_closeImage = "' . site_url() . '/wp-includes/js/thickbox/tb-close.png";</script>'. "\n";			
+		echo "\n" . '<script type="text/javascript">tb_pathToImage = "' . includes_url('js/thickbox/loadingAnimation.gif') . '";tb_closeImage = "' . includes_url('js/thickbox/tb-close.png') . '";</script>'. "\n";
 	}
 	
 	function load_styles() {
