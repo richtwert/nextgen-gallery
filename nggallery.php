@@ -358,7 +358,7 @@ class nggLoader {
 		
 		// required for the slideshow
 		if ( NGGALLERY_IREXIST == true && $this->options['enableIR'] == '1' && nggGallery::detect_mobile_phone() === false ) 
-			wp_enqueue_script('swfobject', NGGALLERY_URLPATH .'admin/js/swfobject.js', FALSE, '2.2');
+			wp_enqueue_script('swfobject');
         else {
             wp_register_script('jquery-cycle', NGGALLERY_URLPATH .'js/jquery.cycle.all.min.js', array('jquery'), '2.9995');
             wp_enqueue_script('ngg-slideshow', NGGALLERY_URLPATH .'js/ngg.slideshow.min.js', array('jquery-cycle'), '1.06'); 
@@ -515,8 +515,7 @@ class nggLoader {
 		if ( $file == $this->plugin_name ) {
 			$links[] = '<a href="admin.php?page=nextgen-gallery">' . __('Overview', 'nggallery') . '</a>';
 			$links[] = '<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10">' . __('Get help', 'nggallery') . '</a>';
-			$links[] = '<a href="http://code.google.com/p/nextgen-gallery/">' . __('Contribute', 'nggallery') . '</a>';
-			$links[] = '<a href="http://alexrabe.de/donation/">' . __('Donate', 'nggallery') . '</a>';
+			$links[] = '<a href="https://bitbucket.org/photocrati/nextgen-gallery">' . __('Contribute', 'nggallery') . '</a>';
 		}
 		return $links;
 	}

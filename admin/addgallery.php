@@ -245,12 +245,13 @@ class nggAddGallery {
 			ngg_swf_upload = new SWFUpload({
 				// Backend settings
 				upload_url : "<?php echo esc_js( $swf_upload_link ); ?>",
-				flash_url : "<?php echo NGGALLERY_URLPATH; ?>admin/js/swfupload.swf",
+				flash_url : "<?php echo esc_js( includes_url('js/swfupload/swfupload.swf') ); ?>",
 				
 				// Button Settings
 				button_placeholder_id : "spanButtonPlaceholder",
 				button_width: 300,
 				button_height: 27,
+			  button_text_top_padding: 3,
 				button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
 				button_cursor: SWFUpload.CURSOR.HAND,
 								
