@@ -25,7 +25,7 @@ class M_Photocrati_Admin_Menu extends Mixin
     function admin_menu()
     {
         remove_submenu_page(NGGFOLDER, NGGFOLDER);
-        remove_submenu_page(NGGFOLDER, 'nggallery-add-gallery');
+        //remove_submenu_page(NGGFOLDER, 'nggallery-add-gallery');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-manage-gallery');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-manage-album');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-tags');
@@ -110,7 +110,7 @@ class M_Photocrati_Admin extends C_Base_Module
     function _enqueue()
     {
         $dequeue = array(
-            'jquery',
+            //'jquery',
             'jquery-ui-core',
             'jquery-ui-tabs',
             'jquery-ui-sortable',
@@ -137,14 +137,14 @@ class M_Photocrati_Admin extends C_Base_Module
             ),
             array('jquery')
         );
-        
-        wp_register_script(
-            'jquery',
-            path_join(
-                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
-                'jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js'
-            )
-        );
+#        
+#        wp_register_script(
+#            'jquery',
+#            path_join(
+#                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
+#                'jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js'
+#            )
+#        );
         
         wp_register_script(
             'pc-admin', 
