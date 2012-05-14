@@ -19,8 +19,10 @@ function ngg_ajax_operation()
 		die('-1');
 
 	// check for correct NextGEN capability
-	if ( !current_user_can('NextGEN Upload images') && !current_user_can('NextGEN Manage gallery') )
+	if (!(current_user_can(PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP) OR
+			current_user_can(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP))) {
 		die('-1');
+	}
 
 	// include the ngg function
 	include_once (dirname (__FILE__) . '/functions.php');
@@ -28,29 +30,28 @@ function ngg_ajax_operation()
 	// Get the image id
 	if ( isset($_POST['image'])) {
 		$id = (int) $_POST['image'];
-		// let's get the image data
-		$picture = nggdb::find_image( $id );
+
 		// what do you want to do ?
 		switch ( $_POST['operation'] ) {
 			case 'create_thumbnail' :
-				$result = nggAdmin::create_thumbnail($picture);
+				$result = nggAdmin::create_thumbnail($id);
 			break;
 			case 'resize_image' :
-				$result = nggAdmin::resize_image($picture);
+				$result = nggAdmin::resize_image($id);
 			break;
 			case 'rotate_cw' :
-				$result = nggAdmin::rotate_image($picture, 'CW');
-				nggAdmin::create_thumbnail($picture);
+				$result = nggAdmin::rotate_image($id, 'CW');
+				nggAdmin::create_thumbnail($id);
 			break;
 			case 'rotate_ccw' :
-				$result = nggAdmin::rotate_image($picture, 'CCW');
-				nggAdmin::create_thumbnail($picture);
+				$result = nggAdmin::rotate_image($id, 'CCW');
+				nggAdmin::create_thumbnail($id);
 			break;
 			case 'set_watermark' :
-				$result = nggAdmin::set_watermark($picture);
+				$result = nggAdmin::set_watermark($id);
 			break;
 			case 'recover_image' :
-				$result = nggAdmin::recover_image($picture);
+				$result = nggAdmin::recover_image($id);
 			break;
 			case 'import_metadata' :
 				$result = nggAdmin::import_MetaData( $id );
@@ -80,60 +81,23 @@ function createNewThumb()
 		die('-1');
 
 	// check for correct NextGEN capability
-	if ( !current_user_can('NextGEN Manage gallery') )
+	if ( !current_user_can(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP) )
 		die('-1');
 
 	// Get component registry
 	$registry = C_Component_Registry::get_instance();
 
-	// Get plugin options
-	$options = $registry->get_utility('I_Photocrati_Options');
+	// Get gallery storage
+	$storage = $registry->get_utility('I_Gallery_Storage');
 
-	include_once( nggGallery::graphic_library() );
-
-	$id 	 = (int) $_POST['id'];
-	$picture = nggdb::find_image( $id );
-
+	// Generate new thumbnail
+	// TODO: Do we need to pass these extra croppping parameters
+	// or can we just let the global thumbnail options do their job?
 	$x = round( $_POST['x'] * $_POST['rr'], 0);
 	$y = round( $_POST['y'] * $_POST['rr'], 0);
 	$w = round( $_POST['w'] * $_POST['rr'], 0);
 	$h = round( $_POST['h'] * $_POST['rr'], 0);
-
-	$thumb = new ngg_Thumbnail($picture->imagePath, TRUE);
-
-	$thumb->crop($x, $y, $w, $h);
-
-    // Note : the routine is a bit different to create_thumbnail(), due to rounding it's resized in the other way
-	if ($options->thumbfix)  {
-		// check for portrait format
-		if ($thumb->currentDimensions['height'] > $thumb->currentDimensions['width']) {
-			// first resize to the wanted height, here changed to create_thumbnail()
-			$thumb->resize(0, $options->thumbheight);
-			// get optimal y startpos
-			$ypos = ($thumb->currentDimensions['height'] - $options->thumbheight) / 2;
-			$thumb->crop(0, $ypos, $options->thumbwidth,$options->thumbheight);
-		} else {
-			// first resize to the wanted width, here changed to create_thumbnail()
-            $thumb->resize($options->thumbwidth, 0);
-			//
-			// get optimal x startpos
-			$xpos = ($thumb->currentDimensions['width'] - $options->thumbwidth) / 2;
-			$thumb->crop($xpos, 0, $options->thumbwidth,$options->thumbheight);
-		}
-	//this create a thumbnail but keep ratio settings
-	} else {
-		$thumb->resize($options->thumbwidth, $options->thumbheight);
-	}
-
-	if ( $thumb->save($picture->thumbPath, 100)) {
-
-		//read the new sizes
-		$new_size = @getimagesize ( $picture->thumbPath );
-		$size['width'] = $new_size[0];
-		$size['height'] = $new_size[1];
-
-		// add them to the database
-		nggdb::update_image_meta($picture->pid, array( 'thumbnail' => $size) );
+	$storage->create_thumbnail($id, $x, $y, $w, $h);
 
 		echo "OK";
 	} else {
@@ -154,34 +118,38 @@ function ngg_rotateImage() {
 		die('-1');
 
 	// check for correct NextGEN capability
-	if ( !current_user_can('NextGEN Manage gallery') )
+	if ( !current_user_can(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP) )
 		die('-1');
 
 	require_once( dirname( dirname(__FILE__) ) . '/ngg-config.php');
 
-	// include the ngg function
-	include_once (dirname (__FILE__). '/functions.php');
+	// Get component registry
+	$registry = C_Component_Registry::get_instance();
+
+	// Get gallery storage
+	$storage = $registry->get_utility('I_Gallery_Storage');
 
 	$id = (int) $_POST['id'];
 	$result = '-1';
 
+	// TODO: I'm assuming that the rotate_image() function will
+	// belong to the C_Gallery_Storage class. Perhaps it should
+	// belong to the C_Gallery_Image_Mapper class instead?
 	switch ( $_POST['ra'] ) {
 		case 'cw' :
-			$result = nggAdmin::rotate_image($id, 'CW');
+			$result = $storage->rotate_image($id, 'CW');
 		break;
 		case 'ccw' :
-			$result = nggAdmin::rotate_image($id, 'CCW');
+			$result = $storage->rotate_image($id, 'CCW');
 		break;
 		case 'fv' :
-			$result = nggAdmin::rotate_image($id, 0, 'V');
+			$result = $storage->rotate_image($id, 0, 'V');
 		break;
 		case 'fh' :
-			$result = nggAdmin::rotate_image($id, 0, 'H');
+			$result = $storage->rotate_image($id, 0, 'H');
 		break;
 	}
-
-    // recreate the thumbnail
-    nggAdmin::create_thumbnail($id);
+	$storage->create_thumbnail($id);
 
 	if ( $result == 1 )
 		die('1');
@@ -198,7 +166,7 @@ function ngg_ajax_dashboard() {
    	require_once( dirname( dirname(__FILE__) ) . '/admin/admin.php');
 	require_once( dirname( dirname(__FILE__) ) . '/admin/overview.php');
 
-   	if ( !current_user_can('NextGEN Gallery overview') )
+   	if ( !current_user_can(PHOTOCRATI_GALLERY_OVERVIEW_CAP) )
 		die('-1');
 
     @header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
@@ -238,8 +206,10 @@ add_action('wp_ajax_ngg_file_browser', 'ngg_ajax_file_browser');
 function ngg_ajax_file_browser()
 {
 	// check for correct NextGEN capability
-	if ( !current_user_can('NextGEN Upload images') && !current_user_can('NextGEN Manage gallery') )
+	if (!(current_user_can(PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP) OR
+			current_user_can(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP))) {
 		die('No access');
+	}
 
     if ( !defined('ABSPATH') )
         die('No access');
@@ -324,21 +294,18 @@ add_action( 'wp_ajax_ngg_rebuild_unique_slugs', 'ngg_ajax_rebuild_unique_slugs' 
 function ngg_ajax_rebuild_unique_slugs()
 {
     // check for correct NextGEN capability
-	if ( !current_user_can('NextGEN Change options') )
+	if ( !current_user_can(PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP) )
 		die('No access');
 
 	// Get component registry
 	$registry = C_Component_Registry::get_instance();
-
-	// Get factory
-	$factory = $registry->get_singleton_utility('I_Component_Factory');
 
 	$action = $_POST['_action'];
     $offset = (int) $_POST['offset'];
 
     switch ($action) {
         case 'images':
-			$image_mapper	= $factory->create('gallery_image_mapper');
+			$image_mapper = $registry->get_utility('I_Gallery_Image_Mapper');
 			$images = $image_mapper->select()->limit(50, $offset)->run_query();
 			$pid = $image_mapper->get_primary_key_column();
 			foreach ($images as $image) {
@@ -348,7 +315,7 @@ function ngg_ajax_rebuild_unique_slugs()
 			}
         break;
         case 'gallery':
-			$gallery_mapper = $factory->create('gallery_mapper');
+			$gallery_mapper = $registry->get_utility('I_Gallery_Mapper');
 			$galleries = $gallery_mapper->select()->limit(50, $offset)->run_query();
 			$gid = $gallery_mapper->get_primary_key_column();
 			foreach ($galleries as $gallery) {
@@ -358,7 +325,7 @@ function ngg_ajax_rebuild_unique_slugs()
 			}
         break;
         case 'album':
-			$album_mapper = $factory->create('album_mapper');
+			$album_mapper = $registry->get_utility('I_Album_Mapper');
 			$aid = $album_mapper->get_primary_key_column();
 			$albumlist = $album_mapper->select()->limit(50, $offset)->run_query();
 			foreach ($albumlist as $album) {
@@ -381,7 +348,7 @@ add_action('wp_ajax_ngg_image_check', 'ngg_ajax_image_check');
 function ngg_ajax_image_check() {
 
     // check for correct NextGEN capability
-	if ( !current_user_can('NextGEN Upload images') )
+	if ( !current_user_can(PHOTOCRAT_GALLERY_UPLOAD_IMAGE_CAP) )
 		die('No access');
 
     if ( !defined('ABSPATH') )

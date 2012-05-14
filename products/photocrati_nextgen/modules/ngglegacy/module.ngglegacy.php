@@ -139,6 +139,12 @@ class M_NggLegacy extends C_Base_Module
 			'NextGEN Manage gallery',
 			'PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP'		=>
 			'NextGEN Edit album',
+			'PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP'		=>
+			'NextGEN Manage tags',
+			'PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP'		=>
+			'NextGEN Change options',
+			'PHOTOCRATI_GALLERY_OVERVIEW_CAP'			=>
+			'NextGEN Gallery overview'
 		);
 		foreach ($caps as $constant => $value) {
 			define($constant, $value);
