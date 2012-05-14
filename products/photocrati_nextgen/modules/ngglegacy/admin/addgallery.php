@@ -309,10 +309,10 @@ class nggAddGallery extends C_Component
         if ( nggGallery::current_user_can( 'NextGEN Add new gallery' ))
     	   $tabs['addgallery'] = __('Add new gallery', 'nggallery');
 
-        if ( wpmu_enable_function('wpmuZipUpload') && current_user_can(PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAPABILITY) )
+        if ( wpmu_enable_function('wpmuZipUpload') && current_user_can(PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAP) )
             $tabs['zipupload'] = __('Upload a Zip-File', 'nggallery');
 
-        if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAPABILITY ) )
+        if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAP ) )
             $tabs['importfolder'] = __('Import image folder', 'nggallery');
 
     	$tabs = apply_filters('ngg_addgallery_tabs', $tabs);

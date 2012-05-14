@@ -125,14 +125,20 @@ class M_NggLegacy extends C_Base_Module
 
 		// Define capabilities
 		$caps = array(
-			'PHOTOCRATI_GALLERY_ADD_GALLERY_CAPABILITY'		=>
+			'PHOTOCRATI_GALLERY_ADD_GALLERY_CAP'		=>
 			'NextGEN Add new gallery',
-			'PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAPABILITY'		=>
+			'PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAP'			=>
 			'NextGEN Upload a zip',
-			'PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAPABILITY'	=>
+			'PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAP'		=>
 			'NextGEN Import image folder',
-			'PHOTOCRATI_GALLERY_UPLOAD_IMAGE'				=>
-			'NextGEN Upload in all galleries'
+			'PHOTOCRATI_GALLERY_MANAGE_ANY_GALLERY_CAP'	=>
+			'NextGEN Upload in all galleries',
+			'PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP'		=>
+			'NextGEN Upload images',
+			'PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP'		=>
+			'NextGEN Manage gallery',
+			'PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP'		=>
+			'NextGEN Edit album',
 		);
 		foreach ($caps as $constant => $value) {
 			define($constant, $value);
