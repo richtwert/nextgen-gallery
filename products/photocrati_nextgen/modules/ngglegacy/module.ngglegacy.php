@@ -122,6 +122,21 @@ class M_NggLegacy extends C_Base_Module
             define('IS_WP_3_3', TRUE);
 
 		define('NGGALLERY_DONATORS_URL', 'http://www.nextgen-gallery.com/donators.php');
+
+		// Define capabilities
+		$caps = array(
+			'PHOTOCRATI_GALLERY_ADD_GALLERY_CAPABILITY'		=>
+			'NextGEN Add new gallery',
+			'PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAPABILITY'		=>
+			'NextGEN Upload a zip',
+			'PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAPABILITY'	=>
+			'NextGEN Import image folder',
+			'PHOTOCRATI_GALLERY_UPLOAD_IMAGE'				=>
+			'NextGEN Upload in all galleries'
+		);
+		foreach ($caps as $constant => $value) {
+			define($constant, $value);
+		}
 	}
 
 

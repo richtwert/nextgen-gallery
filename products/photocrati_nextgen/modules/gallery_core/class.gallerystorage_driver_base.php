@@ -190,6 +190,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		if (isset($_FILES['file'])) {
 			$img = $_FILES['file'];
 
+			// TODO: Check if it's a zip and the user has the capabilities
+			// of uploading a zip
+
 			// Was there a problem uploading?
 			if ($img['error']) {
                 $error_msg = _("There was a problem uploading the image, ").

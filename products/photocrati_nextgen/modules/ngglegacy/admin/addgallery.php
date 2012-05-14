@@ -31,10 +31,20 @@ class nggAddGallery extends C_Component
 
 	/**
 	 * Gets the component factory
+	 * @return C_Component_Factory
 	 */
 	function _get_factory()
 	{
-		$factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
+		return $this->_get_registry()->get_singleton_utility('I_Component_Factory');
+	}
+
+
+	/**
+	 * Gets the gallery datamapper
+	 */
+	function _get_gallery_mapper()
+	{
+		return $this->_get_registry()->get_utility('I_Gallery_Mapper');
 	}
 
 	/**
@@ -42,77 +52,65 @@ class nggAddGallery extends C_Component
 	 *
 	 * @return void
 	 */
-	function processor() {
-
-    	$defaultpath = $this->_storage->get_upload_path();
-
+	function processor()
+	{
     	if ( isset($_POST['addgallery']) ){
     		check_admin_referer('ngg_addgallery');
 
-    		if ( !nggGallery::current_user_can( 'NextGEN Add new gallery' ))
-    			wp_die(__('Cheatin&#8217; uh?'));
-
-    		$newgallery = esc_attr( $_POST['galleryname']);
-    		if ( !empty($newgallery) )
-    			nggAdmin::create_gallery($newgallery, $defaultpath);
+			$gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
+			$gallery = $this->_get_factory()->create('gallery', array(
+				'name'	=>	esc_attr($_POST['galleryname'])
+			));
+			$gallery_mapper->save($gallery);
+			if ($gallery->is_invalid()) {
+				// TODO: display errors
+			}
     	}
 
     	if ( isset($_POST['zipupload']) ){
     		check_admin_referer('ngg_addgallery');
-
-    		if ( !nggGallery::current_user_can( 'NextGEN Upload a zip' ))
-    			wp_die(__('Cheatin&#8217; uh?'));
-
-    		if ($_FILES['zipfile']['error'] == 0 || (!empty($_POST['zipurl'])))
-    			nggAdmin::import_zipfile( intval( $_POST['zipgalselect'] ) );
-    		else
-    			nggGallery::show_error( __('Upload failed!','nggallery') );
+			if (!$this->_storage->upload_image(intval( $_POST['zipgalselect'])) {
+				// TODO: display errors
+			}
     	}
 
     	if ( isset($_POST['importfolder']) ){
     		check_admin_referer('ngg_addgallery');
-
-    		if ( !nggGallery::current_user_can( 'NextGEN Import image folder' ))
-    			wp_die(__('Cheatin&#8217; uh?'));
-
-    		$galleryfolder = $_POST['galleryfolder'];
-    		if ( ( !empty($galleryfolder) ) AND ($defaultpath != $galleryfolder) )
-    			nggAdmin::import_gallery($galleryfolder);
+			if (!$this->_storage->import_folder($_POST['galleryfolder'])) {
+				// TODO: display errors
+			}
     	}
 
     	if ( isset($_POST['uploadimage']) ){
     		check_admin_referer('ngg_addgallery');
-
-    		if ( !nggGallery::current_user_can( 'NextGEN Upload in all galleries' ))
-    			wp_die(__('Cheatin&#8217; uh?'));
-
-    		if ( $_FILES['imagefiles']['error'][0] == 0 )
-    			$messagetext = nggAdmin::upload_images();
-    		else
-    			nggGallery::show_error( __('Upload failed! ' . nggAdmin::decode_upload_error( $_FILES['imagefiles']['error'][0]),'nggallery') );
+			if (!$this->_storage->upload_image((int) $_POST['galleryselect'])) {
+				// TODO: display errors
+			}
     	}
 
-    	if ( isset($_POST['swf_callback']) ){
-    		if ($_POST['galleryselect'] == '0' )
-    			nggGallery::show_error(__('No gallery selected !','nggallery'));
-    		else {
-                if ($_POST['swf_callback'] == '-1' )
-                    nggGallery::show_error( __('Upload failed! ','nggallery') );
-                else {
-					$gallery_id = (int) $_POST['galleryselect'];
-					$gallery_path = $this->get_gallery_path($gallery_id);
-                    nggAdmin::import_gallery( $gallery_path );
-                }
-            }
-    	}
+		// TODO: WE'll remove swfuploading and just use Plupload. If we're not
+		// using WP 3.3, then we'll include our own Plupload libraries
+//    	if ( isset($_POST['swf_callback']) ){
+//    		if ($_POST['galleryselect'] == '0' )
+//    			nggGallery::show_error(__('No gallery selected !','nggallery'));
+//    		else {
+//                if ($_POST['swf_callback'] == '-1' )
+//                    nggGallery::show_error( __('Upload failed! ','nggallery') );
+//                else {
+//					$gallery_id = (int) $_POST['galleryselect'];
+//					$gallery_path = $this->get_gallery_path($gallery_id);
+//                    nggAdmin::import_gallery( $gallery_path );
+//                }
+//            }
+//    	}
 
+		// TODO: Is this still needed given that we don't use swfUpload any more?
     	if ( isset($_POST['disable_flash']) ){
     		check_admin_referer('ngg_addgallery');
     		$this->_options->swfUpload = FALSE;
 			$this->_options->save();
     	}
-
-    	if ( isset($_POST['enable_flash']) ){
+    	elseif ( isset($_POST['enable_flash']) ){
     		check_admin_referer('ngg_addgallery');
     		$this->_options->swfUpload = TRUE;
 			$this->_options->save();
@@ -130,11 +128,13 @@ class nggAddGallery extends C_Component
     function controller() {
 
     	// check for the max image size
-    	$this->maxsize    = nggGallery::check_memory_limit();
+    	$this->maxsize    = @ini_get('upload_max_filesize')
 
-    	//get all galleries (after we added new ones)
-		$mapper = $this->_get_factory()->create('gallery_mapper');
-		$this->gallerylist = $mapper->select()->order('gid', 'DESC')->run_query();
+    	// get all galleries, newest first
+		$mapper = $this->_get_gallery_mapper();
+		$this->gallerylist = $mapper->select()->order(
+			$mapper->get_primary_key_column(), 'DESC'
+		)->run_query();
 
 		// get the upload path
         $this->defaultpath = $this->_storage->get_upload_path();
@@ -166,8 +166,7 @@ class nggAddGallery extends C_Component
 
 	?>
 
-	<?php if($this->_options->swfUpload && !empty ($this->gallerylist) ) { ?>
-    <?php if ( defined('IS_WP_3_3') ) { ?>
+	<?php if(!empty ($this->gallerylist) ) { ?>
     <!-- plupload script -->
     <script type="text/javascript">
     //<![CDATA[
@@ -248,83 +247,6 @@ class nggAddGallery extends C_Component
     });
     //]]>
     </script>
-    <?php } else { ?>
-	<!-- SWFUpload script -->
-	<script type="text/javascript">
-		var ngg_swf_upload;
-
-		window.onload = function () {
-			ngg_swf_upload = new SWFUpload({
-				// Backend settings
-				upload_url : "<?php echo esc_js( $swf_upload_link ); ?>",
-				flash_url : "<?php echo NGGALLERY_URLPATH; ?>admin/js/swfupload.swf",
-
-				// Button Settings
-				button_placeholder_id : "spanButtonPlaceholder",
-				button_width: 300,
-				button_height: 27,
-				button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-				button_cursor: SWFUpload.CURSOR.HAND,
-
-				// File Upload Settings
-				file_size_limit : "<?php echo wp_max_upload_size(); ?>b",
-				file_types : "<?php echo $file_types; ?>",
-				file_types_description : "<?php _e('Image Files', 'nggallery') ;?>",
-
-				// Queue handler
-				file_queued_handler : fileQueued,
-
-				// Upload handler
-				upload_start_handler : uploadStart,
-				upload_progress_handler : uploadProgress,
-				upload_error_handler : uploadError,
-				upload_success_handler : uploadSuccess,
-				upload_complete_handler : uploadComplete,
-
-				post_params : {
-					"auth_cookie" : "<?php echo (is_ssl() ? $_COOKIE[SECURE_AUTH_COOKIE] : $_COOKIE[AUTH_COOKIE]); ?>",
-                    "logged_in_cookie": "<?php echo $_COOKIE[LOGGED_IN_COOKIE]; ?>",
-                    "_wpnonce" : "<?php echo wp_create_nonce('ngg_swfupload'); ?>",
-					"galleryselect" : "0"
-				},
-
-				// i18names
-				custom_settings : {
-					"remove" : "<?php _e('remove', 'nggallery') ;?>",
-					"browse" : "<?php _e('Browse...', 'nggallery') ;?>",
-					"upload" : "<?php _e('Upload images', 'nggallery') ;?>"
-				},
-
-				// Debug settings
-				debug: false
-
-			});
-
-			// on load change the upload to swfupload
-			initSWFUpload();
-
-			nggAjaxOptions = {
-			  	header: "<?php _e('Upload images', 'nggallery') ;?>",
-			  	maxStep: 100
-			};
-
-		};
-	</script>
-    <?php } ?>
-	<?php } else { ?>
-	<!-- MultiFile script -->
-	<script type="text/javascript">
-	/* <![CDATA[ */
-		jQuery(document).ready(function(){
-			jQuery('#imagefiles').MultiFile({
-				STRING: {
-			    	remove:'[<?php _e('remove', 'nggallery') ;?>]'
-  				}
-		 	});
-		});
-	/* ]]> */
-	</script>
-	<?php } ?>
 	<!-- jQuery Tabs script -->
 	<script type="text/javascript">
 	/* <![CDATA[ */
@@ -387,10 +309,10 @@ class nggAddGallery extends C_Component
         if ( nggGallery::current_user_can( 'NextGEN Add new gallery' ))
     	   $tabs['addgallery'] = __('Add new gallery', 'nggallery');
 
-        if ( wpmu_enable_function('wpmuZipUpload') && nggGallery::current_user_can( 'NextGEN Upload a zip' ) )
+        if ( wpmu_enable_function('wpmuZipUpload') && current_user_can(PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAPABILITY) )
             $tabs['zipupload'] = __('Upload a Zip-File', 'nggallery');
 
-        if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( 'NextGEN Import image folder' ) )
+        if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAPABILITY ) )
             $tabs['importfolder'] = __('Import image folder', 'nggallery');
 
     	$tabs = apply_filters('ngg_addgallery_tabs', $tabs);
@@ -409,9 +331,6 @@ class nggAddGallery extends C_Component
 			<tr valign="top">
 				<th scope="row"><?php _e('New Gallery', 'nggallery') ;?>:</th>
 				<td><input type="text" size="35" name="galleryname" value="" /><br />
-				<?php if(!is_multisite()) { ?>
-				<?php _e('Create a new , empty gallery below the folder', 'nggallery') ;?>  <strong><?php echo $this->defaultpath ?></strong><br />
-				<?php } ?>
 				<i>( <?php _e('Allowed characters for file and folder names are', 'nggallery') ;?>: a-z, A-Z, 0-9, -, _ )</i></td>
 			</tr>
 			<?php do_action('ngg_add_new_gallery_form'); ?>
@@ -445,16 +364,18 @@ class nggAddGallery extends C_Component
 				<td><select name="zipgalselect">
 				<option value="0" ><?php _e('a new gallery', 'nggallery') ?></option>
 				<?php
+					$gallery_mapper = $this->_get_gallery_mapper();
+					$gallery_key = $gallery_mapper->get_primary_key_column();
 					foreach($this->gallerylist as $gallery) {
-						if ( !nggAdmin::can_manage_this_gallery($gallery->author) )
+						if (! $gallery_mapper->can_manage_this_manage($gallery->author))
 							continue;
 						$name = ( empty($gallery->title) ) ? $gallery->name : $gallery->title;
-						echo '<option value="' . $gallery->gid . '" >' . $gallery->gid . ' - ' . esc_attr( $name ). '</option>' . "\n";
+						echo '<option value="' . $gallery->$gallery_key . '" >' . $gallery->$gallery_key . ' - ' . esc_attr( $name ). '</option>' . "\n";
 					}
 				?>
 				</select>
 				<br /><?php echo $this->maxsize; ?>
-				<br /><?php echo _e('Note : The upload limit on your server is ','nggallery') . "<strong>" . ini_get('upload_max_filesize') . "Byte</strong>\n"; ?>
+				<br /><?php echo _e('Note : The upload limit on your server is ','nggallery') . "<strong>" . echo $maxsize . "Byte</strong>\n"; ?>
 				<br /><?php if ( (is_multisite()) && wpmu_enable_function('wpmuQuotaCheck') ) display_space_usage(); ?></td>
 			</tr>
 			</table>
@@ -487,7 +408,6 @@ class nggAddGallery extends C_Component
     function tab_uploadimage() {
 		$img_width	= (int)$this->_options->imgWidth;
 		$img_height = (int)$this->_options->imgHeight;
-		$swf_upload = $this->_options->swfUpload;
 
         // check the cookie for the current setting
         $checked = get_user_setting('ngg_upload_resize') ? ' checked="true"' : '';
@@ -500,7 +420,6 @@ class nggAddGallery extends C_Component
 
 			<tr valign="top">
 				<th scope="row"><?php _e('Upload image', 'nggallery') ;?></th>
-                <?php if ($ngg->options['swfUpload'] && defined('IS_WP_3_3') ) { ?>
 				<td>
                 <div id="plupload-upload-ui">
                 	<div>
@@ -517,24 +436,23 @@ class nggAddGallery extends C_Component
 
                  </div>
                 </td>
-                <?php } else { ?>
-				<td><span id='spanButtonPlaceholder'></span><input type="file" name="imagefiles[]" id="imagefiles" size="35" class="imagefiles"/></td>
-                <?php } ?>
             </tr>
 			<tr valign="top">
 				<th scope="row"><?php _e('in to', 'nggallery') ;?></th>
 				<td><select name="galleryselect" id="galleryselect">
 				<option value="0" ><?php _e('Choose gallery', 'nggallery') ?></option>
 				<?php
+					$gallery_mapper = $this->_get_gallery_mapper();
+					$gallery_key    = $gallery_mapper->get_primary_key_column();
 					foreach($this->gallerylist as $gallery) {
 
 						//special case : we check if a user has this cap, then we override the second cap check
-						if ( !current_user_can( 'NextGEN Upload in all galleries' ) )
-							if ( !nggAdmin::can_manage_this_gallery($gallery->author) )
+						if ( !current_user_can( PHOTOCRATI_GALLERY_UPLOAD_IMAGE ) )
+							if ( !$gallery_mapper->can_manage_this_gallery($gallery->author) )
 								continue;
 
 						$name = ( empty($gallery->title) ) ? $gallery->name : $gallery->title;
-						echo '<option value="' . $gallery->gid . '" >' . $gallery->gid . ' - ' . esc_attr( $name ) . '</option>' . "\n";
+						echo '<option value="' . $gallery->$gallery_key. '" >' . $gallery->$gallery_key . ' - ' . esc_attr( $name ) . '</option>' . "\n";
 					}					?>
 				</select>
 				<br /><?php echo $this->maxsize; ?>
@@ -542,11 +460,6 @@ class nggAddGallery extends C_Component
 			</tr>
 			</table>
 			<div class="submit">
-				<?php if ($ngg$swf_upload) { ?>
-				<input type="submit" name="disable_flash" id="disable_flash" title="<?php _e('The batch upload requires Adobe Flash 10, disable it if you have problems','nggallery') ?>" value="<?php _e('Disable flash upload', 'nggallery') ;?>" />
-				<?php } else { ?>
-				<input type="submit" name="enable_flash" id="enable_flash" title="<?php _e('Upload multiple files at once by ctrl/shift-selecting in dialog','nggallery') ?>" value="<?php _e('Enable flash based upload', 'nggallery') ;?>" />
-				<?php } ?>
 				<input class="button-primary" type="submit" name="uploadimage" id="uploadimage_btn" value="<?php _e('Upload images', 'nggallery') ;?>" />
 			</div>
 		</form>

@@ -1,5 +1,22 @@
 <?php
 
+class Mixin_Gallery_Mapper extends Mixin
+{
+	/**
+	 * Saves a gallery
+	 * @param stdClass|int|C_NextGen_Gallery $gallery
+	 */
+	function save($gallery)
+	{
+		// TODO: Should this be in a prehook instead of a mixin?
+		$retval = FALSE;
+		if (nggGallery::current_user_can(PHOTOCRATI_GALLERY_ADD_GALLERY_CAPABILITY)) {
+			$retval = $this->call_parent();
+		}
+		return $retval;
+	}
+}
+
 class C_Gallery_Mapper extends C_DataMapper
 {
 	function define($context=FALSE)
