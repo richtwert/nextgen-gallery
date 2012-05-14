@@ -125,17 +125,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	{
 		return $this->object->_to_url($this->object->get_thumbnail_path($image));
 	}
-
-
-	/**
-	 * Gets the upload directory for the image
-	 * @param int $gallery_id
-	 * @return string
-	 */
-	function _get_upload_directory($gallery_id)
-	{
-		return $this->_get_gallery_path($gallery_id);
-	}
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base

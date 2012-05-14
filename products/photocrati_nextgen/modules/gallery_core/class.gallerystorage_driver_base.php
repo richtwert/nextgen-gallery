@@ -257,6 +257,25 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		else throw new Exception(_("No image specified to upload"));
 		return $retval;
 	}
+
+
+	/**
+	 * Set correct file permissions (taken from wp core). Should be called
+	 * after writing any file
+	 *
+	 * @class nggAdmin
+	 * @param string $filename
+	 * @return bool $result
+	 */
+	function _chmod($filename = '')
+	{
+		$stat = @ stat( dirname($filename) );
+		$perms = $stat['mode'] & 0000666; // Remove execute bits for files
+		if ( @chmod($filename, $perms) )
+			return TRUE;
+
+		return FALSE;
+	}
 }
 
 class C_GalleryStorage_Driver_Base extends C_Component

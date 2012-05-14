@@ -3,21 +3,6 @@
 interface I_Gallery_Mapper
 {
 	/**
-	 * Copies images (both database entries and files) to another gallery
-	 * @param Array $images array of images or images ids
-	 * @param int|stdClass|C_NextGen_Gallery $desintation_gallery
-	 */
-	function copy_images($images, $destination_gallery);
-
-
-	/**
-	 * Moves images (both database entries and files) to another gallery
-	 * @param Array $images array of images or images ids
-	 * @param int|stdClass|C_NextGen_Gallery $desintation_gallery
-	 */
-	function move_images($images, $destination_gallery);
-
-	/**
 	 * Returns TRUE if the specified user (defaults to current logged in user)
 	 * can manage this gallery by checking the 'NextGEN Manage others gallery'
 	 * capability

@@ -1120,23 +1120,6 @@ class nggAdmin extends C_Component
 	}
 
 	/**
-	 * Set correct file permissions (taken from wp core)
-	 *
-	 * @class nggAdmin
-	 * @param string $filename
-	 * @return bool $result
-	 */
-	function chmod($filename = '') {
-
-		$stat = @ stat( dirname($filename) );
-		$perms = $stat['mode'] & 0000666; // Remove execute bits for files
-		if ( @chmod($filename, $perms) )
-			return true;
-
-		return false;
-	}
-
-	/**
 	 * Check UID in folder and Script
 	 * Read http://www.php.net/manual/en/features.safe-mode.php to understand safe_mode
 	 *
