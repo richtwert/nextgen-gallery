@@ -26,7 +26,7 @@ class Mixin_Component_Config extends Mixin
     }
 
 
-    function load()
+    function _load()
     {
         return $this->object->settings = array_merge(
             $this->object->settings,
@@ -34,10 +34,10 @@ class Mixin_Component_Config extends Mixin
         );
     }
 
-    function set_defaults()
-    {
+	function _set_defaults()
+	{
 
-    }
+	}
 }
 
 
@@ -47,18 +47,18 @@ class C_Base_Component_Config extends C_Component
 
     function define()
     {
-    		parent::define();
+		parent::define();
 
         $this->implement('I_Component_Config');
         $this->add_mixin('Mixin_Component_Config');
-        $this->add_mixin('Mixin_Active_Record_Validation');
+//        $this->add_mixin('Mixin_Active_Record_Validation');
     }
 
     function initialize($settings=FALSE, $context=FALSE)
     {
         if (!$settings) $settings = array();
-        if ($this->has_method('set_defaults'))  $this->set_defaults();
-        if ($this->has_method('load'))          $this->load();
+        if ($this->has_method('_set_defaults'))  $this->_set_defaults();
+        if ($this->has_method('_load'))          $this->_load();
 
         $this->settings = array_merge($this->settings, $settings);
         parent::initialize($context);

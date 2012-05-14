@@ -1,5 +1,5 @@
 <?php
-include_once('class.test_customtable_datamapper_base.php');
+require_once('class.test_customtable_datamapper_base.php');
 
 //SimpleTest::ignore('C_Test_DataMapper_Using_CustomTable_Driver');
 

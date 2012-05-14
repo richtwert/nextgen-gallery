@@ -3,13 +3,11 @@
 /***
 	{
 		Module: photocrati-admin,
-                Depends: { photocrati-mvc, photocrati-resource_loader, photocrati-base }
+		Depends: { photocrati-mvc, photocrati-resource_loader, photocrati-base }
 	}
 ***/
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL', path_join(PHOTOCRATI_GALLERY_ADMIN_MOD_URL, 'static'));
-define('PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN', photocrati_gallery_plugin_routing_pattern('photocrati_admin/ajax'));
-define('PHOTOCRATI_GALLERY_ADMIN_AJAX_URL', photocrati_gallery_plugin_routing_uri('photocrati_admin/ajax'));
 
 
 class M_Photocrati_Admin_Menu extends Mixin
@@ -24,8 +22,8 @@ class M_Photocrati_Admin_Menu extends Mixin
      */
     function admin_menu()
     {
-        remove_submenu_page(NGGFOLDER, NGGFOLDER);
-        remove_submenu_page(NGGFOLDER, 'nggallery-add-gallery');
+//        remove_submenu_page(NGGFOLDER, NGGFOLDER);
+//        remove_submenu_page(NGGFOLDER, 'nggallery-add-gallery');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-manage-gallery');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-manage-album');
 //        remove_submenu_page(NGGFOLDER, 'nggallery-tags');
@@ -34,14 +32,14 @@ class M_Photocrati_Admin_Menu extends Mixin
         //remove_submenu_page(NGGFOLDER, 'nggallery-roles');
         //remove_submenu_page(NGGFOLDER, 'nggallery-about');
         //remove_submenu_page(NGGFOLDER, 'nggallery-setup');
-        
+
         $galleries_menu         = __('Galleries', PHOTOCRATI_GALLERY_I8N_DOMAIN);
         $add_galleries_menu     = __('Add Gallery / Images', PHOTOCRATI_GALLERY_I8N_DOMAIN);
         $gallery_settings_menu  = __('Gallery Settings', PHOTOCRATI_GALLERY_I8N_DOMAIN);
         $albums_menu            = __('Albums', PHOTOCRATI_GALLERY_I8N_DOMAIN);
         $other_options_menu     = __('Other Options', PHOTOCRATI_GALLERY_I8N_DOMAIN);
         $upgrade_menu           = __('Upgrade', PHOTOCRATI_GALLERY_I8N_DOMAIN);
-        
+
         //add_submenu_page(NGGFOLDER, $galleries_menu, $galleries_menu, 'NextGEN Manage gallery', 'pc-galleries', array($this->_controller, 'galleries'));
         //add_submenu_page(NGGFOLDER, $add_galleries_menu, $add_galleries_menu, 'NextGEN Upload images', 'pc-add-gallery');
         add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, 'NextGEN Change options', 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
@@ -72,41 +70,41 @@ class M_Photocrati_Admin extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
-        
+
         $this->add_mixin('M_Photocrati_Admin_Menu');
         $this->implement('I_Photocrati_Admin_Module');
     }
-    
-    
+
+
     function initialize()
     {
         $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('admin_controller');
         $this->_add_routes();
     }
-    
+
     function _register_adapters()
     {
         $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Admin_Factory');
     }
-    
+
 
     function _register_hooks()
     {
         add_action('admin_menu', array(&$this, 'admin_menu'));
         $this->_enqueue();
     }
-    
-    
+
+
     function _add_routes()
     {
         $router = $this->_get_registry()->get_singleton_utility('I_Router');
         $router->add_route(__CLASS__, 'C_Ajax_Handler', array(
-            'uri'=>PHOTOCRATI_GALLERY_ADMIN_AJAX_ROUTING_PATTERN
+            'uri'=>$router->routing_pattern('photocrati_admin/ajax')
         ));
     }
-    
-    
+
+
     function _enqueue()
     {
         $dequeue = array(
@@ -120,24 +118,24 @@ class M_Photocrati_Admin extends C_Base_Module
             'jquery-ui-resizable',
             'jquery-ui-dialog'
         );
-        
+
         foreach ($dequeue as $script) {
             if (in_array($script, array('jquery', 'jquery-ui-core'))) {
                 wp_deregister_script($script);
             }
             wp_dequeue_script($script);
         }
-        
-        
+
+
         wp_register_script(
-            'jquery-ui-core', 
+            'jquery-ui-core',
             path_join(
-                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL, 
+                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
                 'jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js'
             ),
             array('jquery')
         );
-        
+
         wp_register_script(
             'jquery',
             path_join(
@@ -145,17 +143,17 @@ class M_Photocrati_Admin extends C_Base_Module
                 'jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js'
             )
         );
-        
+
         wp_register_script(
-            'pc-admin', 
+            'pc-admin',
             path_join(
                 PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
                 'admin.js'
             ),
             array('jquery-ui-core')
         );
-        
-        
+
+
         wp_register_style(
             'pc-admin',
             path_join(
@@ -163,7 +161,7 @@ class M_Photocrati_Admin extends C_Base_Module
                 'admin.css'
             )
         );
-        
+
         wp_deregister_script('tiptip');
         wp_register_script(
            'tiptip',
@@ -173,8 +171,8 @@ class M_Photocrati_Admin extends C_Base_Module
            ),
            array('jquery')
         );
-        
-        
+
+
         wp_register_style(
            'tiptip',
            path_join(
@@ -182,7 +180,7 @@ class M_Photocrati_Admin extends C_Base_Module
                 'tiptip/tipTip.css'
            )
         );
-        
+
         wp_register_script(
             'jquery-colorpicker',
             path_join(
@@ -191,7 +189,7 @@ class M_Photocrati_Admin extends C_Base_Module
            ),
            array('jquery')
         );
-        
+
         wp_register_style(
             'jquery-colorpicker',
             path_join(
@@ -199,8 +197,8 @@ class M_Photocrati_Admin extends C_Base_Module
                 'colorpicker/css/colorpicker.css'
            )
         );
-        
-        
+
+
         wp_deregister_style('jquery-ui-core');
         wp_register_style(
             'jquery-ui-core',
@@ -209,7 +207,7 @@ class M_Photocrati_Admin extends C_Base_Module
                 'jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css'
             )
         );
-        
+
         wp_enqueue_script('jquery');
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('pc-admin');

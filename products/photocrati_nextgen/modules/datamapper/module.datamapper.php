@@ -23,6 +23,13 @@ class M_DataMapper extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->_get_registry()->add_adapter('I_Component_Factory', 'A_DataMapper_Factory');
+		$this->_get_registry()->add_adapter('I_Component_Factory', 'A_GalleryStorage_Factory');
+	}
+
+
+	function _registry_utilities()
+	{
+		$this->_get_registry()->add_utility('I_Gallery_Storage', 'C_Gallery_Storage');
 	}
 
 

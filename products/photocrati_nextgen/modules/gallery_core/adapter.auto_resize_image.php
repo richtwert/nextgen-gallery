@@ -5,30 +5,33 @@ class A_Auto_Resize_Image extends Hook
     function initialize()
     {
         $this->object->add_post_hook(
-            'save', 
+            'save',
             'auto_resize_image',
             get_class($this),
             'auto_resize_image'
         );
     }
-    
+
     function auto_resize_image()
     {
-        global $ngg;
-        
-        if (!$this->object->is_valid()) return;
-        
+
+		// If the model isn't valid, then don't even attempt resizing images
+		if (!$this->object->is_valid()) return;
+
+		// Get plugin options
+        $options = $this->_get_registry()->get_utility('I_Photocrati_Options');
+
         // Resize
-        if ($ngg->options['imgAutoResize']) {
+        if (options->imgAutoResize) {
             $sizetmp = @getimagesize ( $this->object->get_filename());
-            $widthtmp  = $ngg->options['imgWidth'];
-            $heighttmp = $ngg->options['imgHeight'];
+            $widthtmp  = $options->imgWidth;
+            $heighttmp = $options->imgHeight;
             if (($sizetmp[0] > $widthtmp && $widthtmp) || ($sizetmp[1] > $heighttmp && $heighttmp)) {
-                include_once(path_join(NGGALLERY_ABSPATH, 'admin/functions.php'));
+                require_once(path_join(NGGALLERY_ABSPATH, 'admin/functions.php'));
                 nggAdmin::resize_image($this->object->id());
             }
         }
-        
+
         // Update the size in the meta data
         $size = @getimagesize ( $this->object->get_filename());
         $meta = array('width' => $size[0] ,'height' => $size[1]);

@@ -1,6 +1,6 @@
 <?php
 
-include_once('class.test_datamapper_driver_base.php');
+require_once('class.test_datamapper_driver_base.php');
 abstract class C_Test_CustomPost_DataMapper_Base extends C_Test_DataMapper_Driver_Base
 {
 		/**
@@ -55,7 +55,7 @@ abstract class C_Test_CustomPost_DataMapper_Base extends C_Test_DataMapper_Drive
 			'post_title'	=> 'A Title Test'
 		));
 		$this->assertTrue($retval > 0);
-		
+
 		$this->ids_to_cleanup[] = $retval = $this->mapper->save((object)array(
 			'custom_value'	=> 'foobar',
 			'custom_sort'	=> 'xyz',

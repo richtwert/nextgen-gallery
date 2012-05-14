@@ -1,6 +1,6 @@
 <?php
 
-include_once('class.test_customtable_datamapper_base.php');
+require_once('class.test_customtable_datamapper_base.php');
 
 /**
  * Provides a test case for the CustomTable DataMapper Driver

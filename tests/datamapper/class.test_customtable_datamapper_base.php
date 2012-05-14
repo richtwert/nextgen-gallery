@@ -1,5 +1,5 @@
 <?php
-include_once('class.test_datamapper_driver_base.php');
+require_once('class.test_datamapper_driver_base.php');
 
 /**
  * Provides a base class for test cases attempting to test the CustomTable

@@ -5,20 +5,20 @@ class Mixin_Attach_To_Post_Preview_Image extends Mixin
     function preview($return=FALSE)
     {
         $filename = $this->find_static_file('blank.gif');
-        
+
         // If we're editing an existing gallery instance, populate it
         if ($this->param('attached_gallery_id')) {
             $this->object->_get_attached_gallery(
                 $this->param('attached_gallery_id')
             );
-            
+
             // Get the first image of the attached gallery
 			$image = $this->attached_gallery->get_first_image();
 
 			// Get the thumbnail filename
 			$filename = $this->_get_storage()->get_thumbnail_path($image);
         }
-        
+
         // Render!
         $content_type = filetype($filename);
         header('Content-Type: image/gif');
@@ -34,11 +34,11 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     function _save_attached_gallery()
     {
         $retval = array();
-        
+
         try {
             $params = $this->object->_params;
             $params['ID'] = $params['attached_gallery_id'];
-            
+
             // Create attached gallery with the parameters
             $attached_gallery = $this->object->_get_factory()->create(
                 'attached_gallery',
@@ -51,27 +51,27 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                 $this->object->param('gallery_type'),
                 $this->object->param('settings')
             );
-            
+
             // Validate the gallery settings config. If it's valid,
             // then we can create an attached gallery.
             $gallery_config->validate();
             if ($gallery_config->is_valid()) {
-                
+
                 // If the attached gallery is valid, then we can create
                 // images for the attached gallery
-                
+
                 if (!(($retval['saved'] = $attached_gallery->is_valid()))) {
                     $retval['validation_errors'] = $attached_gallery->get_errors();
                 }
-                    
+
                 // Create the attached gallery images
                 else {
                     $attached_gallery->save();
-                    
+
                     // Ensure that we have images
                     $source = $this->object->param('gallery_source');
                     $images = $this->object->param('images');
-                    
+
                     if ($images || in_array($source, array('recent_images', 'random_images'))) {
                         if ($images) {
 		                    // TODO Save any changes made to the image
@@ -83,10 +83,10 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                         $retval['error'] = _("No images selected. You must at least choose one image to display.");
                         $attached_gallery->delete();
                     }
-                    
+
                 }
             }
-            
+
             // The gallery settings are not valid
             else {
                 $retval['gallery_setting_validation_errors'] = $gallery_config->get_errors();
@@ -95,12 +95,12 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         catch (Exception $ex) {
             $retval['error'] = $ex->getMessage();
             $retval['stack'] = $ex->getTraceAsString();
-        }        
-        
+        }
+
         // Perform any clean up if errors occured
         foreach (array('error','image_validation_errors') as $field) {
             if (isset($retval[$field])) {
-                
+
                 // TODO: When an attached gallery is deleted, the attached
                 // gallery images should be deleted as well
                 $attached_gallery->delete();
@@ -108,11 +108,11 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                 unset($retval['attached_gallery_id']);
             }
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Validates an image before saving
      * @return array
@@ -120,15 +120,15 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     function _validate_image()
     {
         $reval = array();
-        
+
         if (($image_id = $this->object->param('image_id'))) {
-            
+
             // Get gallery image and set new properties
 			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
             $gallery_image = $mapper->find($image_id);
 			unset($mapper);
             $overrides = $this->array_merge_assoc($gallery_image->properties, $this->object->_params);
-            
+
             // Verify that the overrides are valid
             $gallery_image->validate();
             if ($gallery_image->is_valid()) $retval['success'] = TRUE;
@@ -137,10 +137,10 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         else {
             $retval['error'] = "Missing image id";
         }
-        
+
         return $retval;
     }
-    
+
     /**
      * Gets the gallery display settings form for the specified
      * gallery type.
@@ -148,20 +148,20 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     function _get_gallery_display_settings_form()
     {
         $retval = array();
-        
+
         if (($gallery_type = $this->param('gallery_type'))) {
             $controller = $this->object->_instantiate_gallery_settings_controller($gallery_type);
-            
+
             $retval['html'] = $controller->index(TRUE);
         }
         else {
             $retval['error'] = _('No gallery type selected');
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Params:
      * - Filename
@@ -172,10 +172,10 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     function _upload_image()
     {
         $retval = array();
-        
+
         // the gallery object
         $gallery = FALSE;
-        
+
         // Is this an existing gallery?
         if ($this->param('gallery_source') == 'existing_gallery') {
             $mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
@@ -192,7 +192,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
             $gallery->save();
 
         }
-        
+
         // If the image is valid and saved, then we'll import the image
         if ($gallery && $gallery->is_valid() && !$gallery->is_new()) {
             try {
@@ -217,11 +217,11 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         else {
             $retval['validation_errors'] = $this->object->show_errors_for($gallery, TRUE);
         }
-        
+
         return $retval;
-            
+
     }
-    
+
     /**
      * Gets images for an attached gallery or gallery
      */
@@ -273,21 +273,21 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
      return $retval;
  }
 
-    
+
     function ajax()
     {
         $retval = array('error' => 'Action does not exist');
-        
+
         if ($this->param('action') && $this->has_method($this->param('action'))) {
             $action = $this->param('action');
             unset($this->object->_params[$action]);
             $retval = $this->$action();
         }
-        
+
         // Needed by CGI
         header('Content-Type: application/json');
         flush();
-        
+
         // Output the JSON
         echo json_encode($retval);
     }
@@ -300,7 +300,7 @@ class Mixin_Attach_To_Post_Resources extends Mixin
      */
     function _render_scripts_and_styles()
     {
-        
+
         wp_register_style(
             'jquery.plupload.queue',
             $this->static_url('plupload/jquery.plupload.queue/css/jquery.plupload.queue.css'
@@ -309,12 +309,12 @@ class Mixin_Attach_To_Post_Resources extends Mixin
             'browserplus',
             'http://bp.yahooapis.com/2.4.21/browserplus-min.js'
         );
-        
+
         wp_register_script(
             'form2js',
             $this->static_url('form2js.js')
         );
-        
+
         wp_deregister_script('plupload');
         wp_register_script(
             'plupload',
@@ -328,11 +328,11 @@ class Mixin_Attach_To_Post_Resources extends Mixin
            array('plupload')
         );
         wp_register_style(
-            'nextgen_attach_to_post', 
+            'nextgen_attach_to_post',
             $this->static_url('styles.css')
         );
         wp_register_script(
-            'nextgen_attach_to_post', 
+            'nextgen_attach_to_post',
             $this->static_url('attach_to_post.js'),
             array('jquery.plupload.queue', 'form2js', 'jquery-ui-core')
         );
@@ -353,17 +353,17 @@ class Mixin_Attach_To_Post_Resources extends Mixin
         do_action('admin_head');
         do_action('admin_print_scripts');
     }
-    
-    
+
+
     /**
      * Gets vars to be included in the Attach To Post script
-     * @return array 
+     * @return array
      */
     function get_js_vars()
     {
         return array(
-            'ajax_url'          => PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_AJAX_URL,
-            'max_file_size'     => @ini_get('upload_max_filesize') ? 
+            'ajax_url'          => $this->object->_get_router()->routing_uri('attach_to_post/ajax'),
+            'max_file_size'     => @ini_get('upload_max_filesize') ?
                 strtolower(ini_get('upload_max_filesize').'b') : '50mb',
             'plupload_swf_url'  => $this->static_url('plupload/plupload.flash.swf'),
             'plupload_xap_url'  => $this->static_url('plupload/plupload.silverlight.xap')
@@ -382,7 +382,7 @@ class Mixin_Attach_To_Post_Gallery_Types extends Mixin
             $controller = $this->object->_instantiate_gallery_settings_controller($gallery_type);
             $gallery_types[$gallery_type] = $controller->preview(TRUE);
         }
-        
+
         // Render the gallery types
         return $this->render_partial('gallery_type_tab', array(
             'gallery_types'         =>  $gallery_types,
@@ -401,18 +401,18 @@ class Mixin_Attach_To_Post_Gallery_Display extends Mixin
     function render_gallery_display_tab()
     {
         $retval = '';
-        
+
         // If a gallery type has been selected
         if (($gallery_type = $this->object->_get_value($this->object->attached_gallery,'gallery_type'))) {
             $controller = $this->object->_instantiate_gallery_settings_controller($gallery_type);
             $retval = $controller->index(TRUE);
-            
+
         }
-        
+
         else {
             $retval = $this->render_partial('no_gallery_type_selected', array(), TRUE);
         }
-        
+
         return $retval;
     }
 }
@@ -422,12 +422,12 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
 {
     /**
      * Renders the image options tab
-     * @return string 
+     * @return string
      */
     function render_image_options_tab()
     {
         $retval = '';
-        
+
         // If a gallery instance is being viewed, then we get the gallery images
         // associated with it
         if ($this->object->attached_gallery && !$this->object->attached_gallery->is_new()) {
@@ -447,14 +447,14 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
         else {
             $retval = $this->render_partial('no_images_available', array(), TRUE);
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Returns the callbacks for the image fields to be rendered per image
-     * @return array 
+     * @return array
      */
     function get_image_fields()
     {
@@ -463,11 +463,11 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
             'description'   =>  'render_description_field',
         );
     }
-    
-    
+
+
     /**
      * Renders a form for a single image
-     * @param C_Gallery_Image $gallery_image 
+     * @param C_Gallery_Image $gallery_image
      */
     function render_image_form($image)
     {
@@ -477,7 +477,7 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
                 $fields[] = $this->object->call_method($callback, array($image));
             }
         }
-        
+
 		// Is the image included in the attached gallery ?
 		$included = TRUE;
 		if ($this->attached_gallery) {
@@ -491,8 +491,8 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
 			'order'						=> $image->sortorder,
         ), TRUE);
     }
-    
-    
+
+
     function render_caption_field($image)
     {
         return $this->render_partial('caption_field', array('image'=>$image, 'order' => $image->sortorder), TRUE);
@@ -512,18 +512,18 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
      * Renders the gallery source tab
      */
     function render_gallery_source_tab()
-    {   
+    {
         // Populate sources
         $sources = array();
         $source_views = array();
         foreach ($this->get_gallery_sources() as $source_id => $properties) {
-            if ($source_id && isset($properties['callback']) && 
+            if ($source_id && isset($properties['callback']) &&
                     $this->object->has_method($properties['callback'])) {
                 $source_views[] = $this->object->call_method($properties['callback']);
                 $sources[$source_id] = $properties['label'];
             }
         }
-        
+
         return $this->render_partial('gallery_source_tab', array(
             'sources'       =>  $sources,
             'source_views'  =>  $source_views,
@@ -533,12 +533,12 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
                                 ),
         ), TRUE);
     }
-    
-    
+
+
     /**
      * An associative array of gallery sources. Extensions are expected
      * to override this
-     * @return array 
+     * @return array
      */
     function get_gallery_sources()
     {
@@ -569,18 +569,18 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
                                 )
         );
     }
-    
-    
+
+
     /**
      * Returns the fields needed for the new gallery source
-     * @return string 
+     * @return string
      */
     function render_new_gallery_fields()
     {
         return $this->render_partial('new_gallery_source', array(
             'gallery_name'          =>  $this->object->_get_value(
                                             $this->object->attached_gallery,
-                                            'gallery_name'    
+                                            'gallery_name'
                                         ),
             'gallery_description'   =>  $this->object->_get_value(
                                             $this->object->attached_gallery,
@@ -588,14 +588,14 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
                                         ),
         ), TRUE);
     }
-    
-    
+
+
     function render_existing_gallery_fields()
     {
 		$gallery_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
 		$galleries = $gallery_mapper->find_all();
 		unset($gallery_mapper);
-        
+
         return $this->render_partial('existing_gallery_source', array(
            'selected_gallery_id'        =>  $this->object->_get_value(
                                             $this->object->attached_gallery,
@@ -604,23 +604,23 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
            'galleries'                  =>  $galleries
         ), TRUE);
     }
-    
+
     function render_random_images_fields()
     {
         return $this->render_partial('random_images_gallery_source', array(
             'gallery_random_image_total'          =>  $this->object->_get_value(
                                             $this->object->attached_gallery,
-                                            'gallery_random_image_total'    
+                                            'gallery_random_image_total'
                                         ),
         ), TRUE);
     }
-    
+
     function render_recent_images_fields()
     {
         return $this->render_partial('recent_images_gallery_source', array(
             'gallery_recent_image_total'          =>  $this->object->_get_value(
                                             $this->object->attached_gallery,
-                                            'gallery_recent_image_total'    
+                                            'gallery_recent_image_total'
                                         ),
         ), TRUE);
     }
@@ -629,29 +629,29 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
 
 class Mixin_Attach_To_Post_Tabs extends Mixin
 {
-    
+
     /**
      * Produces a list of tabs to be rendered for the Attach To Post interface
      * Other modules are expected to override this or provide hooks to add/remove
      * tabs
-     * @return array 
+     * @return array
      */
     function get_tabs()
     {
         return array(
           # heading => content
-          _('Gallery Source')   
+          _('Gallery Source')
           => 'render_gallery_source_tab',
-            
+
           _('Gallery Type')
           => 'render_gallery_type_tab',
-            
+
           _('Import (Optional)')
           => 'render_import_tab',
-            
+
           _('Gallery Display (Optional - Post Specific)')
           => 'render_gallery_display_tab',
-            
+
           _('Image Options (Optional - Post Specific)')
           => 'render_image_options_tab'
         );
@@ -662,8 +662,8 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
 {
     var $attached_gallery = NULL;
     var $post_id = '';
-    
-    
+
+
     function define()
     {
         parent::define();
@@ -672,13 +672,13 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
         $this->add_mixin('Mixin_Attach_To_Post_Gallery_Types');
         $this->add_mixin('Mixin_Attach_To_Post_Gallery_Display');
         $this->add_mixin('Mixin_Attach_To_Post_Image_Options');
-        
+
         $this->add_mixin('Mixin_Attach_To_Post_Preview_Image');
         $this->add_mixin('Mixin_Attach_To_Post_Resources');
         $this->add_mixin('Mixin_Attach_To_Post_Ajax');
     }
-    
-    
+
+
     function initialize($context = FALSE)
     {
         parent::initialize($context);
@@ -702,29 +702,35 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
 	{
 		return $this->_get_registry()->get_singleton_utility('I_Component_Factory');
 	}
-    
-    
+
+
+	function _get_router()
+	{
+		return $this->_get_registry()->get_singleton_utility('I_Router');
+	}
+
+
     function index()
     {
         // If we're editing an existing gallery instance, populate it
         $this->_get_attached_gallery(
             $this->param('attached_gallery_id', FALSE)
         );
-        
+
         // Ensure we know what post we're on
         $this->post_id = $this->param('post_id');
-        
-        
+
+
         // Process the tabs
         $tabs = array();
         foreach ($this->get_tabs() as $heading => $callback) {
             if ($heading && $callback && $this->has_method($callback))
                 $tabs[$heading] = $this->call_method($callback);
         }
-        
+
         // Render the accordion
         $accordion = $this->_render_accordion($tabs, TRUE);
-        
+
         // Render the index view
         $this->render_view('index', array(
            'accordion'              =>  $accordion,
@@ -732,8 +738,8 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
            'post_id'                =>  $this->post_id
         ));
     }
-    
-    
+
+
 	/**
 	 * Gets the attached gallery
 	 * @param int $id
@@ -749,8 +755,8 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
 
 		return $this->attached_gallery;
     }
-    
-    
+
+
     /**
      * Returns the value of a key or property of an array or object
      * @param mixed $arr_or_object
@@ -761,35 +767,35 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
     function _get_value($arr_or_object, $key, $default='')
     {
         $retval = $default;
-        
+
         if (is_array($arr_or_object)) {
             if (isset($arr_or_object[$key])) $retval = $arr_or_object[$key];
         }
         elseif (is_object($arr_or_object)) {
             $retval = $arr_or_object->$key;
         }
-        
+
         return $retval;
     }
-    
-    
+
+
     /**
      * Instantiates a gallery settings controller for a particular gallery type
      * @param string $gallery_type
-     * @return C_MVC_Controller 
+     * @return C_MVC_Controller
      */
     function _instantiate_gallery_settings_controller($gallery_type)
-    {   
+    {
         $controller = $this->_get_factory()->create(
             'gallery_type_controller',
             $gallery_type,
             TRUE,
             'attach_gallery_customize_settings'
         );
-        
+
         // Override config with attached gallery
         if ($this->attached_gallery) $controller->config = $this->attached_gallery;
-        
+
         return $controller;
     }
 }

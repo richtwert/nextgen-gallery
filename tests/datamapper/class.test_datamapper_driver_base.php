@@ -1,9 +1,10 @@
 <?php
+require_once(path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
 
 /**
  * Tests the interface for DataMapper Drivers
  */
-abstract class C_Test_DataMapper_Driver_Base extends UnitTestCase
+abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 {
 	public $post_title = "Mike's Test Post";
 	public $post_type = 'posts';
@@ -299,18 +300,6 @@ abstract class C_Test_DataMapper_Driver_Base extends UnitTestCase
 	 * HELPER METHODS
 	**
 	**************************************************************************/
-
-
-	/**
-	 * Provides a convenience method for getting a factory object
-	 * @return C_Component_Factory
-	 */
-	function get_factory()
-	{
-		$registry = C_Component_Registry::get_instance();
-		return $registry->get_singleton_utility('I_Component_Factory');
-	}
-
 
 	/**
 	 * Returns a random string of a particular length

@@ -1,5 +1,5 @@
 <?php
-include_once('class.test_custompost_datamapper_base.php');
+require_once('class.test_custompost_datamapper_base.php');
 
 /**
  * Tests the C_CustomPost_DataMapper_Driver

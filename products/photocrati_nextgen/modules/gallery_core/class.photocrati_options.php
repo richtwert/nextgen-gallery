@@ -1,189 +1,257 @@
 <?php
 
-/**
- * Provides specific ways of setting and getting NextGen properties
- */
-class Mixin_NextGen_Options extends Mixin
+class Mixin_Photocrati_Options extends Mixin
 {
-    var $nextgen_options = array(
-        'storage_dir'
-    );
-
-    /**
-     * Gets or sets a NextGen option
-     */
-    function get_or_set_option()
-    {
-        $retval = NULL;
-        global $ngg;
-        $args = func_get_args();
-        $property = $args[0];
-
-        switch ($property) {
-            case 'storage_dir':
-                $property = 'gallerypath';
-            default:
-                if (isset($args[1])) {
-                    $ngg->options[$property] = $args[1];
-                    update_option('ngg_options', $ngg->options);
-                }
-                $retval = $ngg->options[$property];
-                break;
-        }
-
-        return $retval;
-    }
-
-
-    function is_nextgen_option($property)
-    {
-        return in_array($property, $this->nextgen_options);
-    }
-}
-
-/**
- * This class provides access to internal Photocrati options
- * You should probably use C_Photocrati_Options instead, which is a
- * wrapper for this class and provides integration with NextGen Legacy
- */
-class C_Photocrati_Internal_Options extends C_Base_Component_Config
-{
-    function initialize($settings=FALSE, $context=FALSE)
-    {
-
-        parent::initialize($settings, $context);
-        if (!$this->settings) {
-            // Set defaults
-        }
-    }
-}
-
-
-/**
- * Photocrati Options
- */
-class C_Photocrati_Options extends C_Component
-{
-    static $_instance = NULL;
-    var $_internal_options = NULL;
-
-    function define()
-    {
-		parent::define();
-        $this->implement('I_Photocrati_Options');
-        $this->add_mixin('Mixin_NextGen_Options');
-    }
-
-
-    function initialize($context=FALSE)
-    {
-        parent::initialize($context);
-        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
-        $this->_internal_options = $factory->create('photocrati_options');
-        unset($factory);
-    }
-
-
-    /**
-     * This is a method that shouldn't need to be called directly
-     */
-    function _save()
-    {
-        $retval = TRUE;
-
-        if (!$this->_batch) $retval = $this->_internal_options->save();
-
-        return $retval;
-    }
-
-
-    /*
-     * Provides an abstraction between NextGen and Photocrati options.
-     */
-    function __get($property)
-    {
-        $retval = NULL;
-
-        // An extension might have provided a way of retrieving this propery
-        // from NextGen
-        if ($this->is_nextgen_option($property)) {
-            $retval = $this->call_method('get_or_set_option', array($property));
-        }
-
-        // Must be a Photocrati option. Get from the internal options
-        else {
-            $retval = $this->_internal_options->$property;
-        }
-
-        return $retval;
-    }
-
-
-    /**
-     * Provides an abstraction between NextGen and Photocrati options
-     */
-    function __set($property, $value)
-    {
-        $retval = NULL;
-
-        // An extension might have provided a way of setting this propery
-        if ($this->is_nextgen_option($property)) {
-            $retval = $this->call_method('get_or_set_option', array($property, $value));
-        }
-
-        // Must be a Photocrati option. Set the internal option
-        else {
-            $this->_internal_options->$property = $value;
-            $this->_save();
-        }
-
-        return $retval;
-    }
-
-
-	function __isset($name)
+	/**
+	 * Gets the default options for the plugin
+	 */
+	function _set_defaults()
 	{
-		return (is_nextgen_option($name) OR isset($this->_internal_options->$name));
+		$this->object->settings = array_merge($this->object->settings, array(
+
+			/************** CORE SETTINGS ************************************/
+
+			// determines what version the plugin was initialized with
+			'init_version'				=>	FALSE,
+
+			// DataMapper Driver (factory method)
+			'datamapper_driver'			=>	'custom_post_datamapper',
+
+			// Gallery Storage Driver (factory method)
+			'gallery_storage_driver'	=>	'wordpress_gallery_storage',
+
+			// Default gallery path for NggLegacy Gallery Storage Driver
+			'gallerypath'				=>	(is_multisite() ?
+										'wp-content/blogs.dir/%BLOG_ID%/files/':
+										'wp-content/gallery/'
+										),
+
+			// activate the batch upload functionality
+			'swfUpload'					=>	TRUE,
+
+			// use permalinks
+			'usePermalinks'				=>	FALSE,
+
+			// the default slug for permalinks
+			'permalinkSlug'				=>	'nggallery',
+
+			// default graphics library
+			'graphicLibrary'			=>	'gd',
+
+			// Default path to ImageMagick binaries
+			'imageMagickDir'			=>	'/usr/local/bin',
+
+			// activate the global Media RSS file
+			'useMediaRSS'				=>	FALSE,
+
+			/************** TAGS / CATEGORIES ********************************/
+
+			// append related images
+			'activateTags'				=>	FALSE,
+
+			// look for category or tags
+			'appendType'				=>	'tags',
+
+			// number of images to show
+			'maxImages'					=>	7,
+
+			/************** THUMBNAILS ***************************************/
+
+			// Thumb Width
+			'thumbwidth'				=>	100,
+
+			// Thumb height
+			'thumbheight'				=>	75,
+
+			// Fix the dimension
+			'thumbfix'					=>	TRUE,
+
+			// Thumbnail quality
+			'thumbquality'				=>	100,
+
+			/************** IMAGE SETTINGS ***********************************/
+
+			// Image Width
+			'imgWidth'					=>	800,
+
+			// Image height
+			'imgHeight'					=>	600,
+
+			// Image Quality
+			'imgQuality'				=>	85,
+
+			// Create a backup when an image has been modified
+			'imgBackup'					=>	TRUE,
+
+			// Resize after upload
+			'imgAutoResize'				=>	FALSE,
+
+			/************** GALLERY SETTINGS *********************************/
+
+			// determines whether or not to delete images with galleries
+			'deleteImg'					=>	TRUE,
+
+			// activate the PicLens Link for galleries
+			'usePicLens'				=>	FALSE,
+
+			// Number of images per page
+			'galImages'					=>	'20',
+
+			// Number of galleries per page (in a album)
+			'galPagedGalleries'			=>	0,
+
+			// Number of columns for the gallery
+			'galColumns'				=>	0,
+
+			// Show slideshow
+			'galShowSlide'				=>	TRUE,
+
+			// Text for slideshow
+			'galTextSlide'				=>	__(
+											  '[Show as slideshow]',
+											  PHOTOCRATI_GALLERY_I8N_DOMAIN
+											),
+			// Text for gallery
+			'galTextGallery'			=>	__(
+												'[Show picture list]',
+												PHOTOCRATI_GALLERY_I8N_DOMAIN
+											),
+			// Show order
+			'galShowOrder'				=>	'gallery',
+
+			// Sort order
+			'galSort'					=>	'sortorder',
+
+			// Sort direction
+			'galSortDir'				=>	'ASC',
+
+			// use no subpages for gallery
+			'galNoPages'				=>	TRUE,
+
+			// Show ImageBrowser, instead effect
+			'galImgBrowser'				=>	FALSE,
+
+			// For paged galleries we can hide image
+			'galHiddenImg'				=>	FALSE,
+
+			// AJAX Navigation for Shutter effect
+			'galAjaxNav'				=>	FALSE,
+
+			/************** THUMBNAIL EFFECT *********************************/
+
+			// select effect
+			'thumbEffect'				=>	'shutter',
+			'thumbCode'					=>	'class="shutterset_%GALLERY_NAME%"',
+
+			/************** WATERMARK SETTINGS *******************************/
+
+			// Postion
+			'wmPos'						=>	'botRight',
+
+			// X Pos
+			'wmXpos'					=>	5,
+
+			// Y Pos
+			'wmYpos'					=>	5,
+
+			// Type : 'image' / 'text'
+			'wmType'					=>	'text',
+
+			// Path to image
+			'wmPath'					=>	'',
+
+			// Font type
+			'wmFont'					=>	'arial.ttf',
+
+			// Font size
+			'wmSize'					=>	10,
+
+			// Text
+			'wmText'					=>	get_option('blogname'),
+
+			// Font color
+			'wmColor'					=>	'000000',
+
+			// Font opaque
+			'wmOpaque'					=>	'100',
+
+			/************** IMAGE ROTATOR SETTINGS ***************************/
+
+			// Enable image rotator
+			'enableIR'					=>	FALSE,
+
+			// Slide Effect
+			'slideFx'					=>	'fade',
+
+			// Image Rotator URL
+			'irURL'						=>	'',
+
+			// TODO: Not sure what this does
+			'irXHTMLvalid'				=>	FALSE,
+
+			// TODO: Not sure what this does
+			'irAudio'					=>	'',
+
+			// Width of the image rotator
+			'irWidth'					=>	320,
+
+			// Height of the image rotator
+			'irHeight'					=>	240,
+
+			// Shuffle images
+			'irShuffle'					=>	FALSE,
+
+			// TODO: Not sure what this does
+			'irLinkfromdisplay'			=>	TRUE,
+
+			// Show navigation buttons
+			'irShownavigation'			=>	FALSE,
+
+			// Show icons
+			'irShowicons'				=>	FALSE,
+
+			// Show watermark
+			'irWatermark'				=>	FALSE,
+
+			// Stretch images
+			'irOverstretch'				=>	'true',
+
+			// Image rotation time (in seconds)
+			'irRotatetime'				=>	10,
+
+			// Random type
+			'irTransition'				=>	'random',
+
+			// Use Kenburns Effect
+			'irKenburns'				=>	FALSE,
+
+			// Background color of the image rotator
+			'irBackcolor'				=>	'000000',
+
+			// Foreground color
+			'irFrontcolor'				=>	'FFFFFF',
+
+			// TODO: Not sure what this does
+			'irLightcolor'				=>	'CC0000',
+
+			// TODO: Not sure what this does
+			'irScreencolor'				=>	'000000',
+
+			// Activate custom css
+			'activateCSS'				=>	TRUE,
+
+			// Name of the custom css file
+			'CSSfile'					=>	'nggallery.css',
+		));
 	}
+}
 
-
-    /**
-     * Provides a means to set multiple options at once, which is more efficient
-     * than setting individual options since the save method is
-     * @param type $properties
-     */
-    function set($properties=array())
-    {
-        $retval = NULL;
-        $this->batch = TRUE;
-
-        try {
-            // Iterate through each property, and set
-            // the option.
-            // Continue to set the return value until FALSE
-            // has been returned. Once FALSE, always FALSE.
-            foreach ($properties as $p => $v) {
-                $return = $this->__set($p, $v);
-                if (is_null($retval)) $retval = $return;
-                elseif (retval) $retval = $return;
-            }
-        }
-        catch (Exception $e) {
-            // We only have a try/catch to ensure that
-            // the batch flag is set below
-        }
-        $this->batch = FALSE;
-
-        return $retval;
-    }
-
-
-    /**
-     * Returns an instantation of the C_Photocrati_Options class
-     */
-    static function get_instance()
-    {
-        if (!self::$_instance) self::$_instance = new C_Photocrati_Options();
-        return self::$_instance;
-    }
+class C_Photocrati_Options extends C_Base_Component_Config
+{
+	function define()
+	{
+		parent::define();
+		$this->add_mixin('Mixin_Photocrati_Options');
+		$this->implement('I_Photocrati_Options');
+	}
 }
