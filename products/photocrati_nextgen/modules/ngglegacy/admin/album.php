@@ -73,8 +73,8 @@ class nggManageAlbum extends C_Component
 	function controller()
 	{
 		// Create the necessary datamappers
-		$album_mapper	= $this->_get_factory()->create('album_mapper');
-		$gallery_mapper = $this->_get_factory()->create('gallery_mapper');
+		$album_mapper	= $this->_get_registry()->get_utility('I_Album_Mapper');;
+		$gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');;
 
 		$this->currentID = isset($_REQUEST['act_album']) ? (int) $_REQUEST['act_album'] : 0 ;
 
@@ -115,7 +115,7 @@ class nggManageAlbum extends C_Component
 		if ( isset($_POST['update']) && ($this->currentID > 0) ) {
 
 			// Create album mapper
-			$album_mapper = $this->_get_factory()->create('album_mapper');
+			$album_mapper = $this->_get_registry()->get_utility('I_Album_Mapper');;
 
 			// Fetch the current album
 			$album = $album_mapper->find($this->currentID);
@@ -167,7 +167,7 @@ class nggManageAlbum extends C_Component
 			wp_die(__('Cheatin&#8217; uh?'));
 
 		// Create album datamapper
-		$album_mapper = $this->_get_factory()->create('album_mapper');
+		$album_mapper = $this->_get_registry()->get_utility('I_Album_Mapper');;
 
 		// Fetch album and update it's properties
 		$album = $album_mapper->find($this->currentID);
@@ -513,8 +513,8 @@ function showDialog() {
         $class = '';
 
 		// Create data mappers
-		$image_mapper	= $this->_get_factory()->create('image_mapper');
-		$gallery_mapper = $this->_get_factory()->create('gallery_mapper');
+		$image_mapper	= $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');;
+		$gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');;
 
 		// if the id started with a 'a', then it's a sub album
 		if (substr( $id, 0, 1) == 'a') {

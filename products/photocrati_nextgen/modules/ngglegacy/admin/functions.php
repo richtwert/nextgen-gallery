@@ -33,8 +33,8 @@ class nggAdmin extends C_Component
 	{
 		parent::initialize($context);
 		$this->_options = $this->_get_registry()->get_utility('I_Photocrati_Options');
-		$this->_image_mapper = $this->_get_factory()->create('gallery_image_mapper');
-		$this->_gallery_mapper = $this->_get_factory()->create('gallery_mapper');
+		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');;
+		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');;
 		$this->_image_key = $this->_image_mapper->get_primary_key_column();
 	}
 
