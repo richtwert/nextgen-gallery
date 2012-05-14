@@ -152,9 +152,10 @@ class nggAdminPanel extends C_Component
 				include_once ( dirname (__FILE__) . '/functions.php' );	// admin functions
 				include_once ( dirname (__FILE__) . '/manage.php' );	// nggallery_admin_manage_gallery
 				// Initate the Manage Gallery page
-				$ngg->manage_page = new nggManageGallery ();
+				global $manage_page;
+				$manage_page = new nggManageGallery ();
 				// Render the output now, because you cannot access a object during the constructor is not finished
-				$ngg->manage_page->controller();
+				$manage_page->controller();
 				break;
 			case "nggallery-manage-album" :
 				include_once ( dirname (__FILE__) . '/album.php' );		// nggallery_admin_manage_album

@@ -5,7 +5,17 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { 	die('You
 // *** show main gallery list
 function nggallery_manage_gallery_main() {
 
-	global $ngg, $nggdb, $wp_query;
+	global $wp_query, $manage_page;
+
+	// Get component registry
+	$registry = C_Component_Registry::get_instance();
+
+	// Get gallery mapper
+	$gallery_mapper = $registry->get_utility('I_Gallery_Mapper');
+	$gallery_key = $gallery_mapper->get_primary_key_column();
+
+	// Get photocrati options
+	$options = $registry->get_utility('I_Photocrati_Options');
 
 	//Build the pagination for more than 25 galleries
     $_GET['paged'] = isset($_GET['paged']) && ($_GET['paged'] > 0) ? absint($_GET['paged']) : 1;
@@ -15,9 +25,9 @@ function nggallery_manage_gallery_main() {
 	$start = ( $_GET['paged'] - 1 ) * $items_per_page;
 
     $order = ( isset ( $_GET['order'] ) && $_GET['order'] == 'desc' ) ? 'DESC' : 'ASC';
-    $orderby = ( isset ( $_GET['orderby'] ) && ( in_array( $_GET['orderby'], array('gid', 'title', 'author') )) ) ? $_GET['orderby'] : 'gid';
+    $orderby = ( isset ( $_GET['orderby'] ) && ( in_array( $_GET['orderby'], array($gallery_key, 'title', 'author') )) ) ? $_GET['orderby'] : $gallery_key;
 
-	$gallerylist = $nggdb->find_all_galleries( $orderby, $order , TRUE, $items_per_page, $start, false);
+	$gallerylist = $gallery_mapper->select()->order_by($orderby, $order)->limit($items_per_page, $start);
 	$wp_list_table = new _NGG_Galleries_List_Table('nggallery-manage-gallery');
 
 	?>
@@ -132,7 +142,7 @@ function nggallery_manage_gallery_main() {
 			<input type="submit" value="<?php _e( 'Search Images', 'nggallery' ); ?>" class="button" />
 		</p>
 		</form>
-		<form id="editgalleries" class="nggform" method="POST" action="<?php echo $ngg->manage_page->base_page . '&amp;paged=' . $_GET['paged']; ?>" accept-charset="utf-8">
+		<form id="editgalleries" class="nggform" method="POST" action="<?php echo $manage_page->base_page . '&amp;paged=' . $_GET['paged']; ?>" accept-charset="utf-8">
 		<?php wp_nonce_field('ngg_bulkgallery') ?>
 		<input type="hidden" name="page" value="manage-galleries" />
 
@@ -157,7 +167,7 @@ function nggallery_manage_gallery_main() {
 			</div>
 
 
-        <?php $ngg->manage_page->pagination( 'top', $_GET['paged'], $nggdb->paged['total_objects'], $nggdb->paged['objects_per_page']  ); ?>
+        <?php $manage_page->pagination( 'top', $_GET['paged'], count($gallerylist), $items_per_page  ); ?>
 
 		</div>
 		<table class="wp-list-table widefat fixed" cellspacing="0">
@@ -179,10 +189,11 @@ if($gallerylist) {
 	$gallery_columns = $wp_list_table->get_columns();
 	$hidden_columns  = get_hidden_columns('nggallery-manage-gallery');
 	$num_columns     = count($gallery_columns) - count($hidden_columns);
+	$gallery_key     = $gallery_mapper->get_primary_key_column();
 
 	foreach($gallerylist as $gallery) {
 		$alternate = ( !isset($alternate) || $alternate == 'class="alternate"' ) ? '' : 'class="alternate"';
-		$gid = $gallery->gid;
+		$gid = $gallery->$gallery_key;
 		$name = (empty($gallery->title) ) ? $gallery->name : $gallery->title;
 		$author_user = get_userdata( (int) $gallery->author );
 		?>
@@ -201,7 +212,7 @@ if($gallerylist) {
 				case 'cb' :
 					?>
         			<th scope="row" class="column-cb check-column">
-        				<?php if (nggAdmin::can_manage_this_gallery($gallery->author)) { ?>
+        				<?php if ($gallery_mapper->can_manage_this_gallery($gallery->author)) { ?>
         					<input name="doaction[]" type="checkbox" value="<?php echo $gid ?>" />
         				<?php } ?>
         			</th>
@@ -215,8 +226,8 @@ if($gallerylist) {
     			case 'title' :
     			    ?>
         			<td class="title column-title">
-        				<?php if (nggAdmin::can_manage_this_gallery($gallery->author)) { ?>
-        					<a href="<?php echo wp_nonce_url( $ngg->manage_page->base_page . '&amp;mode=edit&amp;gid=' . $gid, 'ngg_editgallery')?>" class='edit' title="<?php _e('Edit'); ?>" >
+        				<?php if ($gallery_mapper->can_manage_this_gallery($gallery->author)) { ?>
+        					<a href="<?php echo wp_nonce_url( $manage_page->base_page . '&amp;mode=edit&amp;gid=' . $gid, 'ngg_editgallery')?>" class='edit' title="<?php _e('Edit'); ?>" >
         						<?php echo esc_html( nggGallery::i18n($name) ); ?>
         					</a>
         				<?php } else { ?>
@@ -243,7 +254,7 @@ if($gallerylist) {
     			break;
     			case 'quantity' :
     			    ?>
-        			<td <?php echo $attributes ?>><?php echo $gallery->counter; ?></td>
+        			<td <?php echo $attributes ?>><?php echo $gallery->imagecount; ?></td>
         			<?php
     			break;
     			default :
@@ -263,7 +274,7 @@ if($gallerylist) {
 			</tbody>
 		</table>
         <div class="tablenav bottom">
-		<?php $ngg->manage_page->pagination( 'bottom', $_GET['paged'], $nggdb->paged['total_objects'], $nggdb->paged['objects_per_page']  ); ?>
+		<?php $manage_page->pagination( 'bottom', $_GET['paged'], count($gallerylist), $items_per_page  ); ?>
         </div>
 		</form>
 	</div>
@@ -276,9 +287,6 @@ if($gallerylist) {
 		  	<tr>
 		    	<td>
 					<strong><?php _e('New Gallery', 'nggallery') ;?>:</strong> <input type="text" size="35" name="galleryname" value="" /><br />
-					<?php if(!is_multisite()) { ?>
-					<?php _e('Create a new , empty gallery below the folder', 'nggallery') ;?>  <strong><?php echo $ngg->options['gallerypath']; ?></strong><br />
-					<?php } ?>
 					<i>( <?php _e('Allowed characters for file and folder names are', 'nggallery') ;?>: a-z, A-Z, 0-9, -, _ )</i>
 				</td>
 		  	</tr>
@@ -308,7 +316,7 @@ if($gallerylist) {
 					<strong><?php _e('Resize Images to', 'nggallery'); ?>:</strong>
 				</td>
 				<td>
-					<input type="text" size="5" name="imgWidth" value="<?php echo $ngg->options['imgWidth']; ?>" /> x <input type="text" size="5" name="imgHeight" value="<?php echo $ngg->options['imgHeight']; ?>" />
+					<input type="text" size="5" name="imgWidth" value="<?php echo $options->imgWidth; ?>" /> x <input type="text" size="5" name="imgHeight" value="<?php echo $options->imgHeight; ?>" />
 					<br /><small><?php _e('Width x height (in pixel). NextGEN Gallery will keep ratio size','nggallery') ?></small>
 				</td>
 			</tr>
@@ -334,12 +342,12 @@ if($gallerylist) {
 		<table width="100%" border="0" cellspacing="3" cellpadding="3" >
 			<tr valign="top">
 				<th align="left"><?php _e('Width x height (in pixel)','nggallery') ?></th>
-				<td><input type="text" size="5" maxlength="5" name="thumbwidth" value="<?php echo $ngg->options['thumbwidth']; ?>" /> x <input type="text" size="5" maxlength="5" name="thumbheight" value="<?php echo $ngg->options['thumbheight']; ?>" />
+				<td><input type="text" size="5" maxlength="5" name="thumbwidth" value="<?php echo $options->thumbwidth; ?>" /> x <input type="text" size="5" maxlength="5" name="thumbheight" value="<?php echo $options->thumbheight; ?>" />
 				<br /><small><?php _e('These values are maximum values ','nggallery') ?></small></td>
 			</tr>
 			<tr valign="top">
 				<th align="left"><?php _e('Set fix dimension','nggallery') ?></th>
-				<td><input type="checkbox" name="thumbfix" value="1" <?php checked('1', $ngg->options['thumbfix']); ?> />
+				<td><input type="checkbox" name="thumbfix" value="1" <?php checked('1', $options->thumbfix); ?> />
 				<br /><small><?php _e('Ignore the aspect ratio, no portrait thumbnails','nggallery') ?></small></td>
 			</tr>
 		  	<tr align="right">
@@ -416,8 +424,14 @@ class _NGG_Galleries_List_Table extends WP_List_Table {
 	}
 
 	function get_sortable_columns() {
+		// Get component registry
+		$registry = C_Component_Registry::get_instance();
+
+		// Get gallery mapper
+		$gallery_mapper = $registry->get_utility('I_Gallery_Mapper');
+
 		return array(
-			'id'    => array( 'gid', TRUE ),
+			'id'    => array( $gallery_mapper->get_primary_key_column(), TRUE ),
 			'title'   => 'title',
 			'author'   => 'author'
 		);
