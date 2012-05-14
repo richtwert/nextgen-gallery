@@ -57,15 +57,15 @@ class C_NextGEN_Bootstrap
 			// Grant NextGEN capabilities for Administator role
 			$role = get_role('administrator');
 			$caps = array(
-				'NextGEN Gallery overview',
+				PHOTOCRATI_GALLERY_OVERVIEW_CAP,
 				'NextGEN Use TinyMCE',
-				'NextGEN Upload images',
-				'NextGEN Manage gallery',
-				'NextGEN Manage tags',
+				PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP,
+				PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP,
+				PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP,
 				'NextGEN Manage others gallery',
-				'NextGEN Edit album',
+				PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP,
 				'NextGEN Change style',
-				'NextGEN Change options'
+				PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP
 			);
 			foreach ($caps as $cap) $role->add_cap($cap);
 		}

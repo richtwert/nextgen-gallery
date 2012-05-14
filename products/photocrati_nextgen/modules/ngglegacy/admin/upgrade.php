@@ -61,7 +61,7 @@ function ngg_upgrade() {
 			
 			// New capability for administrator role
 			$role = get_role('administrator');
-			$role->add_cap('NextGEN Manage tags');
+			$role->add_cap(PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP);
 			
 			// Add new option
 			$ngg_options = get_option('ngg_options');

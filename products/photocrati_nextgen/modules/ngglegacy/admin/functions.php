@@ -159,94 +159,15 @@ class nggAdmin extends C_Component
 	 * @param string $galleryfolder contains relative path to the gallery itself
 	 * @return void
 	 */
-	function import_gallery($galleryfolder) {
+	function import_gallery($gallery) {
 
-		global $user_ID;
-
-		// get the current user ID
-		get_currentuserinfo();
-
-		$created_msg = '';
-
-		// remove trailing slash at the end, if somebody use it
-		$galleryfolder = untrailingslashit($galleryfolder);
-		$gallerypath = WINABSPATH . $galleryfolder;
-
-		if (!is_dir($gallerypath)) {
-			nggGallery::show_error(__('Directory', 'nggallery').' <strong>' . esc_html( $gallerypath ) .'</strong> '.__('doesn&#96;t exist!', 'nggallery'));
-			return ;
-		}
-
-		// read list of images
-		$new_imageslist = nggAdmin::scandir($gallerypath);
-
-		if (empty($new_imageslist)) {
-			nggGallery::show_message(__('Directory', 'nggallery').' <strong>' . esc_html( $gallerypath ) . '</strong> '.__('contains no pictures', 'nggallery'));
-			return;
-		}
-
-		// check & create thumbnail folder
-		if ( !nggGallery::get_thumbnail_folder($gallerypath) )
-			return;
-
-		// take folder name as gallery name
-		$galleryname = basename($galleryfolder);
-		$galleryname = apply_filters('ngg_gallery_name', $galleryname);
-
-		// check for existing gallery folder
-		// TODO: Need to understand this code before Automattic release, but
-		// here's my attempt to move to the new storage and data tier
-//		$gallery_id = $wpdb->get_var("SELECT gid FROM $wpdb->nggallery WHERE path = '$galleryfolder' ");
-//
-//		if (!$gallery_id) {
-//            // now add the gallery to the database
-//            $gallery_id = nggdb::add_gallery( $galleryname, $galleryfolder, '', 0, 0, $user_ID );
-//			if (!$gallery_id) {
-//				nggGallery::show_error(__('Database error. Could not add gallery!','nggallery'));
-//				return;
-//			}
-//			$created_msg = _n( 'Gallery', 'Galleries', 1, 'nggallery' ) . ' <strong>' . esc_html( $galleryname ) . '</strong> ' . __('successfully created!','nggallery') . '<br />';
-//		}
-		// now add the gallery to the database
-		$gallery_id = nggdb::add_gallery( $galleryname, $galleryfolder, '', 0, 0, $user_ID );
-		if (!$gallery_id) {
-			nggGallery::show_error(__('Database error. Could not add gallery!','nggallery'));
-			return;
-		}
-		$created_msg = _n( 'Gallery', 'Galleries', 1, 'nggallery' ) . ' <strong>' . esc_html( $galleryname ) . '</strong> ' . __('successfully created!','nggallery') . '<br />';
-
-		// Look for existing image list
-		$images = $this->_image_mapper->select()->where(array('galleryid = %d', $gallery_id))->run_query();
-		$old_imageslist = array();
-		foreach ($images as $image) $old_imageslist[] = $this->_get_storage()->get_image_path($image);
-
-		// check difference
-		$new_images = array_diff($new_imageslist, $old_imageslist);
-
-		// all images must be valid files
-		foreach($new_images as $key => $picture) {
-
-            // filter function to rename/change/modify image before
-            $picture = apply_filters('ngg_pre_add_new_image', $picture, $gallery_id);
-            $new_images[$key] = $picture;
-
-			if (!@getimagesize($gallerypath . '/' . $picture) ) {
-				unset($new_images[$key]);
-				@unlink($gallerypath . '/' . $picture);
-			}
-		}
-
-		// add images to database
-		$image_ids = nggAdmin::add_Images($gallery_id, $new_images);
+		$count = $this->_storage->rescan_gallery_for_new_images($gallery);
 
 		//add the preview image if needed
 		nggAdmin::set_gallery_preview ( $gallery_id );
 
-		// now create thumbnails
-		nggAdmin::do_ajax_operation( 'create_thumbnail' , $image_ids, __('Create new thumbnails','nggallery') );
-
 		//TODO:Message will not shown, because AJAX routine require more time, message should be passed to AJAX
-		$message  = $created_msg . count($image_ids) .__(' picture(s) successfully added','nggallery');
+		$message  = $created_msg . $count .__(' picture(s) successfully added','nggallery');
 		$message .= ' [<a href="' . admin_url() . 'admin.php?page=nggallery-manage-gallery&mode=edit&gid=' . $gallery_id . '" >';
 		$message .=  __('Edit gallery','nggallery');
 		$message .= '</a>]';

@@ -10,7 +10,7 @@ class Mixin_Gallery_Mapper extends Mixin
 	{
 		// TODO: Should this be in a prehook instead of a mixin?
 		$retval = FALSE;
-		if (nggGallery::current_user_can(PHOTOCRATI_GALLERY_ADD_GALLERY_CAPABILITY)) {
+		if ( current_user_can(PHOTOCRATI_GALLERY_ADD_GALLERY_CAPABILITY)) {
 			$retval = $this->call_parent();
 		}
 		return $retval;

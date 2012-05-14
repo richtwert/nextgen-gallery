@@ -6,7 +6,7 @@ require_once( NGGALLERY_ABSPATH . '/lib/image.php' );
 if ( !is_user_logged_in() )
 	die(__('Cheatin&#8217; uh?'));
 	
-if ( !current_user_can('NextGEN Manage gallery') ) 
+if ( !current_user_can(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP) ) 
 	die(__('Cheatin&#8217; uh?'));
 
 if ( !current_user_can( 'publish_posts' ) )

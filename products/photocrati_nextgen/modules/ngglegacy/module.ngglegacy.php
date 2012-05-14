@@ -48,7 +48,7 @@ class M_NggLegacy extends C_Base_Module
 	function _register_hooks()
 	{
 		// Show NextGEN version in header
-        add_action('wp_head', array('nggGallery', 'nextgen_version') );
+        add_action('wp_head', array(&$this, 'nextgen_version') );
 
 		// Sanitize gallery names
 		add_filter('ngg_gallery_name', 'sanitize_title');
@@ -137,6 +137,8 @@ class M_NggLegacy extends C_Base_Module
 			'NextGEN Upload images',
 			'PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP'		=>
 			'NextGEN Manage gallery',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_AUTHOR_CAP'=>
+			'NextGEN Edit gallery author',
 			'PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP'		=>
 			'NextGEN Edit album',
 			'PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP'		=>
@@ -144,7 +146,27 @@ class M_NggLegacy extends C_Base_Module
 			'PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP'		=>
 			'NextGEN Change options',
 			'PHOTOCRATI_GALLERY_OVERVIEW_CAP'			=>
-			'NextGEN Gallery overview'
+			'NextGEN Gallery overview',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_OPTIONS_CAP'=>
+			'NextGEN Edit gallery options',
+			'PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP'		=>
+			'NextGEN Add/Delete album',
+			'PHOTOCRATI_GALLERY_CHANGE_ALBUM_OPTIONS_CAP'=>
+			'NextGEN Edit album settings',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_TITLE_CAP'	=>
+			'NextGEN Edit gallery title',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_PATH'		=>
+			'NextGEN Edit gallery path',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_DESC'		=>
+			'NextGEN Edit gallery description',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_PAGE_CAP'=>
+			'NextGEN Edit gallery page id',
+			'PHOTOCRATI_GALLERY_EDIT_GALLERY_PREVIEW_CAP' =>
+			'NextGEN Edit gallery preview pic'
+
+
+
+
 		);
 		foreach ($caps as $constant => $value) {
 			define($constant, $value);
@@ -352,5 +374,11 @@ class M_NggLegacy extends C_Base_Module
 		// stuff that should make use of wp_enqueue_script
 		// WP core reference relative to the images. Bad idea
 		echo "\n" . '<script type="text/javascript">tb_pathToImage = "' . site_url() . '/wp-includes/js/thickbox/loadingAnimation.gif";tb_closeImage = "' . site_url() . '/wp-includes/js/thickbox/tb-close.png";</script>'. "\n";
+	}
+
+
+	function nextgen_version()
+	{
+		echo apply_filters('show_nextgen_version', '<!-- <meta name="NextGEN" version="'. $this->version . '" /> -->' . "\n");
 	}
 }

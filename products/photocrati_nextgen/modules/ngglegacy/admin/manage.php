@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { 	die('You are not allowed to call this page directly.'); }
 
@@ -9,37 +9,37 @@ class nggManageGallery {
 	var $pid = false;
 	var $base_page = 'admin.php?page=nggallery-manage-gallery';
 	var $search_result = false;
-	
+
 	// initiate the manage page
 	function nggManageGallery() {
-        
+
 		// GET variables
 		if( isset($_GET['gid']) )
 			$this->gid  = (int) $_GET['gid'];
 		if( isset($_GET['pid']) )
-			$this->pid  = (int) $_GET['pid'];	
+			$this->pid  = (int) $_GET['pid'];
 		if( isset($_GET['mode']) )
 			$this->mode = trim ($_GET['mode']);
         // Check for pagination request, avoid post process of other submit button, exclude search results
         if ( isset($_POST['post_paged']) && !isset($_GET['s'] ) ) {
-            if ( $_GET['paged'] != $_POST['post_paged'] ) {		
-                $_GET['paged'] = absint( $_POST['post_paged'] );		
-                return;		
-            }		
-        }                        
+            if ( $_GET['paged'] != $_POST['post_paged'] ) {
+                $_GET['paged'] = absint( $_POST['post_paged'] );
+                return;
+            }
+        }
         // Should be only called via manage galleries overview
 		if ( isset($_POST['page']) && $_POST['page'] == 'manage-galleries' )
 			$this->post_processor_galleries();
-		// Should be only called via a edit single gallery page	
+		// Should be only called via a edit single gallery page
 		if ( isset($_POST['page']) && $_POST['page'] == 'manage-images' )
 			$this->post_processor_images();
-		// Should be called via a publish dialog	
+		// Should be called via a publish dialog
 		if ( isset($_POST['page']) && $_POST['page'] == 'publish-post' )
 			$this->publish_post();
 		//Look for other POST process
 		if ( !empty($_POST) || !empty($_GET) )
 			$this->processor();
-	
+
 	}
 
 	function controller() {
@@ -51,7 +51,7 @@ class nggManageGallery {
 			break;
 			case 'edit':
 				include_once (dirname (__FILE__) . '/manage-images.php');
-				nggallery_picturelist();	
+				nggallery_picturelist();
 			break;
 			case 'main':
 			default:
@@ -62,9 +62,9 @@ class nggManageGallery {
 	}
 
 	function processor() {
-	
+
 		global $wpdb, $ngg, $nggdb;
-        
+
 		// Delete a picture
 		if ($this->mode == 'delpic') {
 
@@ -74,20 +74,20 @@ class nggManageGallery {
 			if ($image) {
 				if ($ngg->options['deleteImg']) {
 					@unlink($image->imagePath);
-					@unlink($image->thumbPath);	
+					@unlink($image->thumbPath);
 					@unlink($image->imagePath . '_backup' );
-				} 
+				}
 				do_action('ngg_delete_picture', $this->pid);
                 $result = nggdb::delete_image ( $this->pid );
             }
-                                
+
 			if ($result)
 				nggGallery::show_message( __('Picture','nggallery').' \''.$this->pid.'\' '.__('deleted successfully','nggallery') );
-            
+
 		 	$this->mode = 'edit'; // show pictures
-	
+
 		}
-		
+
 		// Recover picture from backup
 		if ($this->mode == 'recoverpic') {
 
@@ -96,36 +96,36 @@ class nggManageGallery {
             // bring back the old image
 			nggAdmin::recover_image($image);
             nggAdmin::create_thumbnail($image);
-            
+
             nggGallery::show_message(__('Operation successful. Please clear your browser cache.',"nggallery"));
-				
+
 		 	$this->mode = 'edit'; // show pictures
-	
+
 		}
-				
+
 		// will be called after a ajax operation
 		if (isset ($_POST['ajax_callback']))  {
 				if ($_POST['ajax_callback'] == 1)
 					nggGallery::show_message(__('Operation successful. Please clear your browser cache.',"nggallery"));
 		}
-		
+
 		// show sort order
 		if ( isset ($_POST['sortGallery']) )
 			$this->mode = 'sort';
-		
-		if ( isset ($_GET['s']) )	
+
+		if ( isset ($_GET['s']) )
 			$this->search_images();
-		
+
 	}
-	
+
 	function post_processor_galleries() {
 		global $wpdb, $ngg, $nggdb;
-		
+
 		// bulk update in a single gallery
 		if (isset ($_POST['bulkaction']) && isset ($_POST['doaction']))  {
 
 			check_admin_referer('ngg_bulkgallery');
-			
+
 			switch ($_POST['bulkaction']) {
 				case 'no_action';
 				// No action
@@ -168,60 +168,60 @@ class nggManageGallery {
                						@rmdir( WINABSPATH . $gallery->path );
                 				}
                 			}
-                            do_action('ngg_delete_gallery', $id);                	
+                            do_action('ngg_delete_gallery', $id);
                 			$deleted = nggdb::delete_gallery( $id );
   						}
-                        
+
 						if($deleted)
                             nggGallery::show_message(__('Gallery deleted successfully ', 'nggallery'));
-							
+
 					}
 					break;
 			}
 		}
 
 		if (isset ($_POST['addgallery']) && isset ($_POST['galleryname'])){
-			
+
 			check_admin_referer('ngg_addgallery');
 
-			if ( !nggGallery::current_user_can( 'NextGEN Add new gallery' ))
-				wp_die(__('Cheatin&#8217; uh?'));			
+			if ( ! current_user_can( PHOTOCRATI_GALLERY_ADD_GALLERY_CAP ))
+				wp_die(__('Cheatin&#8217; uh?'));
 
 			// get the default path for a new gallery
 			$defaultpath = $ngg->options['gallerypath'];
 			$newgallery = esc_attr( $_POST['galleryname']);
 			if ( !empty($newgallery) )
 				nggAdmin::create_gallery($newgallery, $defaultpath);
-            
+
             do_action( 'ngg_update_addgallery_page' );
 		}
 
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_ResizeImages']))  {
-			
+
 			check_admin_referer('ngg_thickbox_form');
-			
+
 			//save the new values for the next operation
 			$ngg->options['imgWidth']  = (int) $_POST['imgWidth'];
 			$ngg->options['imgHeight'] = (int) $_POST['imgHeight'];
-			// What is in the case the user has no if cap 'NextGEN Change options' ? Check feedback
+			// What is in the case the user has no if cap PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP ? Check feedback
 			update_option('ngg_options', $ngg->options);
-			
+
 			$gallery_ids  = explode(',', $_POST['TB_imagelist']);
 			// A prefix 'gallery_' will first fetch all ids from the selected galleries
 			nggAdmin::do_ajax_operation( 'gallery_resize_image' , $gallery_ids, __('Resize images','nggallery') );
 		}
 
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_NewThumbnail']))  {
-			
+
 			check_admin_referer('ngg_thickbox_form');
-			
+
 			//save the new values for the next operation
 			$ngg->options['thumbwidth']  = (int)  $_POST['thumbwidth'];
 			$ngg->options['thumbheight'] = (int)  $_POST['thumbheight'];
-			$ngg->options['thumbfix']    = isset ($_POST['thumbfix']) ? TRUE : false; 
-			// What is in the case the user has no if cap 'NextGEN Change options' ? Check feedback
+			$ngg->options['thumbfix']    = isset ($_POST['thumbfix']) ? TRUE : false;
+			// What is in the case the user has no if cap PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP ? Check feedback
 			update_option('ngg_options', $ngg->options);
-			
+
 			$gallery_ids  = explode(',', $_POST['TB_imagelist']);
 			// A prefix 'gallery_' will first fetch all ids from the selected galleries
 			nggAdmin::do_ajax_operation( 'gallery_create_thumbnail' , $gallery_ids, __('Create new thumbnails','nggallery') );
@@ -231,12 +231,12 @@ class nggManageGallery {
 
 	function post_processor_images() {
 		global $wpdb, $ngg, $nggdb;
-		
+
 		// bulk update in a single gallery
 		if (isset ($_POST['bulkaction']) && isset ($_POST['doaction']))  {
-			
+
 			check_admin_referer('ngg_updategallery');
-			
+
 			switch ($_POST['bulkaction']) {
 				case 'no_action';
 					break;
@@ -245,7 +245,7 @@ class nggManageGallery {
 					break;
 				case 'rotate_ccw':
 					nggAdmin::do_ajax_operation( 'rotate_ccw' , $_POST['doaction'], __('Rotate images', 'nggallery') );
-					break;			
+					break;
 				case 'recover_images':
 					nggAdmin::do_ajax_operation( 'recover_image' , $_POST['doaction'], __('Recover from backup', 'nggallery') );
 					break;
@@ -260,8 +260,8 @@ class nggManageGallery {
 								if ($ngg->options['deleteImg']) {
 									@unlink($image->imagePath);
 									@unlink($image->thumbPath);
-									@unlink($image->imagePath."_backup");	
-								} 
+									@unlink($image->imagePath."_backup");
+								}
                                 do_action('ngg_delete_picture', $image->pid);
 								$delete_pic = nggdb::delete_image( $image->pid );
 							}
@@ -277,40 +277,40 @@ class nggManageGallery {
 		}
 
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_ResizeImages']))  {
-			
+
 			check_admin_referer('ngg_thickbox_form');
-			
+
 			//save the new values for the next operation
 			$ngg->options['imgWidth']  = (int) $_POST['imgWidth'];
 			$ngg->options['imgHeight'] = (int) $_POST['imgHeight'];
-			
+
 			update_option('ngg_options', $ngg->options);
-			
+
 			$pic_ids  = explode(',', $_POST['TB_imagelist']);
 			nggAdmin::do_ajax_operation( 'resize_image' , $pic_ids, __('Resize images','nggallery') );
 		}
 
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_NewThumbnail']))  {
-			
+
 			check_admin_referer('ngg_thickbox_form');
-			
+
 			//save the new values for the next operation
 			$ngg->options['thumbwidth']  = (int) $_POST['thumbwidth'];
 			$ngg->options['thumbheight'] = (int) $_POST['thumbheight'];
-			$ngg->options['thumbfix']    = isset ( $_POST['thumbfix'] ) ? TRUE : false; 
+			$ngg->options['thumbfix']    = isset ( $_POST['thumbfix'] ) ? TRUE : false;
 			update_option('ngg_options', $ngg->options);
-			
+
 			$pic_ids  = explode(',', $_POST['TB_imagelist']);
 			nggAdmin::do_ajax_operation( 'create_thumbnail' , $pic_ids, __('Create new thumbnails','nggallery') );
 		}
-		
+
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_SelectGallery']))  {
-			
+
 			check_admin_referer('ngg_thickbox_form');
-			
+
 			$pic_ids  = explode(',', $_POST['TB_imagelist']);
 			$dest_gid = (int) $_POST['dest_gid'];
-			
+
 			switch ($_POST['TB_bulkaction']) {
 				case 'copy_to':
 				// Copy images
@@ -322,21 +322,21 @@ class nggManageGallery {
 					break;
 			}
 		}
-		
+
 		if (isset ($_POST['TB_bulkaction']) && isset ($_POST['TB_EditTags']))  {
 			// do tags update
-	
+
 			check_admin_referer('ngg_thickbox_form');
-	
-			// get the images list		
+
+			// get the images list
 			$pic_ids = explode(',', $_POST['TB_imagelist']);
 			$taglist = explode(',', $_POST['taglist']);
 			$taglist = array_map('trim', $taglist);
-			
+
 			if (is_array($pic_ids)) {
 
 				foreach($pic_ids as $pic_id) {
-					
+
 					// which action should be performed ?
 					switch ($_POST['TB_bulkaction']) {
 						case 'no_action';
@@ -345,7 +345,7 @@ class nggManageGallery {
 						case 'overwrite_tags':
 						// Overwrite tags
 							wp_set_object_terms($pic_id, $taglist, 'ngg_tag');
-							break;					
+							break;
 						case 'add_tags':
 						// Add / append tags
 							wp_set_object_terms($pic_id, $taglist, 'ngg_tag', TRUE);
@@ -362,66 +362,64 @@ class nggManageGallery {
 							break;
 					}
 				}
-		
+
 				nggGallery::show_message( __('Tags changed', 'nggallery') );
 			}
 		}
-	
+
 		if (isset ($_POST['updatepictures']) )  {
-		// Update pictures	
-		
+		// Update pictures
+
 			check_admin_referer('ngg_updategallery');
-			
-			if ( nggGallery::current_user_can( 'NextGEN Edit gallery options' )  && !isset ($_GET['s']) ) {
-				
-				if ( nggGallery::current_user_can( 'NextGEN Edit gallery title' )) {
+
+			if (  current_user_can( PHOTOCRATI_GALLERY_EDIT_GALLERY_OPTIONS_CAP )  && !isset ($_GET['s']) ) {
+
+				if (  current_user_can( PHOTOCRATI_GALLERY_EDIT_GALLERY_TITLE_CAP )) {
 				    // don't forget to update the slug
 				    $slug = nggdb::get_unique_slug( sanitize_title( $_POST['title'] ), 'gallery', $this->gid );
-				    $wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET title= '%s', slug= '%s' WHERE gid = %d", esc_attr($_POST['title']), $slug, $this->gid) );				    
+				    $wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET title= '%s', slug= '%s' WHERE gid = %d", esc_attr($_POST['title']), $slug, $this->gid) );
 				}
-				if ( nggGallery::current_user_can( 'NextGEN Edit gallery path' ))
+				if (  current_user_can( PHOTOCRATI_GALLERY_EDIT_GALLERY_PATH_CAP ))
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET path= '%s' WHERE gid = %d", untrailingslashit ( str_replace('\\', '/', trim( stripslashes($_POST['path']) )) ), $this->gid ) );
-				if ( nggGallery::current_user_can( 'NextGEN Edit gallery description' ))
+				if (  current_user_can( PHOTOCRATI_GALLERY_EDIT_GALLERY_DESC_CAP ))
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET galdesc= '%s' WHERE gid = %d", esc_attr( $_POST['gallerydesc'] ), $this->gid) );
-				if ( nggGallery::current_user_can( 'NextGEN Edit gallery page id' ))	
+				if (  current_user_can( PHOTOCRATI_GALLERY_EDIT_GALLERY_PAGE_CAP ))
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET pageid= '%d' WHERE gid = %d", (int) $_POST['pageid'], $this->gid) );
-				if ( nggGallery::current_user_can( 'NextGEN Edit gallery preview pic' ))
+				if (  current_user_can( PHOTOCRATI_GALLERY_EDIT_GALLERY_PREVIEW_CAP ))
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET previewpic= '%d' WHERE gid = %d", (int) $_POST['previewpic'], $this->gid) );
-				if ( isset ($_POST['author']) && nggGallery::current_user_can( 'NextGEN Edit gallery author' ) ) 
+				if ( current_user_can($_POST['author']) &&  FALSE ( 'NextGEN Edit gallery author' ) )
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET author= '%d' WHERE gid = %d", (int) $_POST['author'], $this->gid) );
-                
-                wp_cache_delete($this->gid, 'ngg_gallery');                    
-		
+
+                wp_cache_delete($this->gid, 'ngg_gallery');
+
 			}
-		
+
 			$this->update_pictures();
-	
+
 			//hook for other plugin to update the fields
 			do_action('ngg_update_gallery', $this->gid, $_POST);
-	
+
 			nggGallery::show_message(__('Update successful',"nggallery"));
 		}
-	
+
 		if (isset ($_POST['scanfolder']))  {
 		// Rescan folder
 			check_admin_referer('ngg_updategallery');
-		
-			$gallerypath = $wpdb->get_var("SELECT path FROM $wpdb->nggallery WHERE gid = '$this->gid' ");
-			nggAdmin::import_gallery($gallerypath);
+			nggAdmin::import_gallery($this->gid);
 		}
-	
+
 		if (isset ($_POST['addnewpage']))  {
 		// Add a new page
-		
+
 			check_admin_referer('ngg_updategallery');
-			
+
 			$parent_id      = esc_attr($_POST['parent_id']);
 			$gallery_title  = esc_attr($_POST['title']);
 			$gallery_name   = $wpdb->get_var("SELECT name FROM $wpdb->nggallery WHERE gid = '$this->gid' ");
-			
+
 			// Create a WP page
 			global $user_ID;
-	
+
 			$page['post_type']    = 'page';
 			$page['post_content'] = '[nggallery id=' . $this->gid . ']';
 			$page['post_parent']  = $parent_id;
@@ -429,35 +427,35 @@ class nggManageGallery {
 			$page['post_status']  = 'publish';
 			$page['post_title']   = $gallery_title == '' ? $gallery_name : $gallery_title;
 			$page = apply_filters('ngg_add_new_page', $page, $this->gid);
-	
+
 			$gallery_pageid = wp_insert_post ($page);
 			if ($gallery_pageid != 0) {
 				$result = $wpdb->query("UPDATE $wpdb->nggallery SET title= '$gallery_title', pageid = '$gallery_pageid' WHERE gid = '$this->gid'");
 				wp_cache_delete($this->gid, 'ngg_gallery');
                 nggGallery::show_message( __('New gallery page ID','nggallery'). ' ' . $gallery_pageid . ' -> <strong>' . $gallery_title . '</strong> ' .__('created','nggallery') );
 			}
-            
+
             do_action('ngg_gallery_addnewpage', $this->gid);
 		}
 	}
-    
+
    	/**
    	 * Publish a new post with the shortcode from the selected image
-     * 
+     *
    	 * @since 1.7.0
    	 * @return void
    	 */
    	function publish_post() {
-   	    
+
    	    check_admin_referer('publish-post');
 
 		// Create a WP page
 		global $user_ID, $ngg;
-        
+
 		$ngg->options['publish_width']  = (int) $_POST['width'];
 		$ngg->options['publish_height'] = (int) $_POST['height'];
 		$ngg->options['publish_align'] = $_POST['align'];
-        $align = ( $ngg->options['publish_align'] == 'none') ? '' : 'float='.$ngg->options['publish_align']; 
+        $align = ( $ngg->options['publish_align'] == 'none') ? '' : 'float='.$ngg->options['publish_align'];
 
 		//save the new values for the next operation
 		update_option('ngg_options', $ngg->options);
@@ -470,17 +468,17 @@ class nggManageGallery {
 		$post = apply_filters('ngg_add_new_post', $post, $_POST['pid']);
 
 		$post_id = wp_insert_post ($post);
-        
+
 		if ($post_id != 0)
             nggGallery::show_message( __('Published a new post','nggallery') );
 
     }
-	
+
 	function update_pictures() {
 		global $wpdb, $nggdb;
 
 		//TODO:Error message when update failed
-		
+
 		$description = 	isset ( $_POST['description'] ) ? $_POST['description'] : array();
 		$alttext = 		isset ( $_POST['alttext'] ) ? $_POST['alttext'] : array();
 		$exclude = 		isset ( $_POST['exclude'] ) ? $_POST['exclude'] : false;
@@ -493,32 +491,32 @@ class nggManageGallery {
                 if ($image) {
                     // description field
                     $image->description = $description[$image->pid];
-                    
+
                     // only uptade this field if someone change the alttext
                     if ( $image->alttext != $alttext[$image->pid] ) {
                         $image->alttext = $alttext[$image->pid];
-                        $image->image_slug = nggdb::get_unique_slug( sanitize_title( $image->alttext ), 'image', $image->pid );                        
+                        $image->image_slug = nggdb::get_unique_slug( sanitize_title( $image->alttext ), 'image', $image->pid );
                     }
-                    
+
                     // set exclude flag
                     if ( is_array($exclude) )
     					$image->exclude = ( array_key_exists($image->pid, $exclude) )? 1 : 0;
     				else
     					$image->exclude = 0;
-                        
+
                     // update the database
-                    $wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggpictures SET image_slug = '%s', alttext = '%s', description = '%s', exclude = %d WHERE pid = %d", 
-                                                                                 $image->image_slug, $image->alttext, $image->description, $image->exclude, $image->pid) );    
-                    // remove from cache    
+                    $wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggpictures SET image_slug = '%s', alttext = '%s', description = '%s', exclude = %d WHERE pid = %d",
+                                                                                 $image->image_slug, $image->alttext, $image->description, $image->exclude, $image->pid) );
+                    // remove from cache
                     wp_cache_delete($image->pid, 'ngg_image');
-                    
+
                     // hook for other plugins after image is updated
-                    do_action('ngg_image_updated', $image); 
+                    do_action('ngg_image_updated', $image);
                 }
-                
+
             }
         }
-        
+
         //TODO: This produce 300-400 queries !
 		if ( is_array($taglist) ){
 			foreach($taglist as $key=>$value) {
@@ -526,40 +524,40 @@ class nggManageGallery {
 				wp_set_object_terms($key, $tags, 'ngg_tag');
 			}
 		}
-        
+
 		return;
 	}
 
 	// Check if user can select a author
 	function get_editable_user_ids( $user_id, $exclude_zeros = TRUE ) {
 		global $wpdb;
-	
+
 		$user = new WP_User( $user_id );
-	
+
 		if ( ! $user->has_cap('NextGEN Manage others gallery') ) {
-			if ( $user->has_cap('NextGEN Manage gallery') || $exclude_zeros == FALSE )
+			if ( $user->has_cap(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP) || $exclude_zeros == FALSE )
 				return array($user->id);
 			else
 				return false;
 		}
-	
+
 		$level_key = $wpdb->prefix . 'user_level';
 		$query = "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '$level_key'";
 		if ( $exclude_zeros )
 			$query .= " AND meta_value != '0'";
-	
+
 		return $wpdb->get_col( $query );
 	}
 
 	function search_images() {
 		global $nggdb;
-		
+
 		if ( empty($_GET['s']) )
 			return;
 		//on what ever reason I need to set again the query var
 		set_query_var('s', $_GET['s']);
 		$request = get_search_query();
-		
+
         // look now for the images
         $search_for_images = (array) $nggdb->search_for_images( $request );
         $search_for_tags   = (array) nggTags::find_images_for_tags( $request , 'ASC' );
@@ -569,12 +567,12 @@ class nggManageGallery {
 
         // TODO: Currently we didn't support a proper pagination
         $nggdb->paged['total_objects'] = $nggdb->paged['objects_per_page'] = count ($this->search_result) ;
-        $nggdb->paged['max_objects_per_page'] = 1;        
-        
+        $nggdb->paged['max_objects_per_page'] = 1;
+
 		// show pictures page
-		$this->mode = 'edit'; 
+		$this->mode = 'edit';
 	}
-    
+
 	/**
 	 * Display the pagination.
 	 *

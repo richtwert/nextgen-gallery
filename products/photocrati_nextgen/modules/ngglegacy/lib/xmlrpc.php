@@ -4,21 +4,21 @@
  *
  * @package NextGEN Gallery
  * @author Alex Rabe
- * 
+ *
  */
 class nggXMLRPC{
-	
+
 	/**
 	 * Init the methods for the XMLRPC hook
-	 * 
-	 */	
+	 *
+	 */
 	function __construct() {
-		
+
 		add_filter('xmlrpc_methods', array(&$this, 'add_methods') );
 	}
-	
+
 	function add_methods($methods) {
-	    
+
 		$methods['ngg.installed'] = array(&$this, 'nggInstalled');
         // Image methods
 	    $methods['ngg.getImage'] = array(&$this, 'getImage');
@@ -44,17 +44,17 @@ class nggXMLRPC{
 
 	/**
 	 * Check if it's an csv string, then serialize it.
-	 * 
+	 *
      * @since 1.9.2
 	 * @param string $data
 	 * @return serialized string
 	 */
 	function is_serialized( $data ) {
-	   
+
         // if it isn't a string, we don't serialize it.
         if ( ! is_string( $data ) )
             return false;
-            
+
         if ($data && !strpos( $data , '{')) {
         	$items = explode(',', $data);
         	return serialize($items);
@@ -65,9 +65,9 @@ class nggXMLRPC{
 
 	/**
 	 * Check if NextGEN Gallery is installed
-	 * 
+	 *
 	 * @since 1.4
-	 * 
+	 *
 	 * @param none
 	 * @return string version number
 	 */
@@ -75,7 +75,7 @@ class nggXMLRPC{
 		global $ngg;
 		return array( 'version' => $ngg->version );
 	}
-	
+
 	/**
 	 * Log user in.
 	 *
@@ -107,7 +107,7 @@ class nggXMLRPC{
 	 * Uploads a image to a gallery
 	 *
 	 * @since 1.4
-	 * 
+	 *
 	 * @copyright addapted from WP Core
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
@@ -116,15 +116,15 @@ class nggXMLRPC{
 	 *	    	- struct data
 	 *	          o string name
 	 *            o string type (optional)
-	 *	          o base64 bits 
+	 *	          o base64 bits
 	 *	          o bool overwrite (optional)
-	 *			  o int gallery 
-	 *			  o int image_id  (optional) 	 
+	 *			  o int gallery
+	 *			  o int image_id  (optional)
 	 * @return array with image meta data
 	 */
 	function uploadImage($args) {
 		global $wpdb;
-		
+
 		require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
 		require_once ( 'meta.php' );			// meta data import
 
@@ -136,11 +136,11 @@ class nggXMLRPC{
 		$name = $data['name'];
 		$type = $data['type'];
 		$bits = $data['bits'];
-		
+
 		// gallery & image id
 		$gid  	= (int) $data['gallery'];  // required field
 		$pid  	= (int) $data['image_id']; // optional but more foolproof of overwrite
-		$image	= false; // container for the image object 
+		$image	= false; // container for the image object
 
 		logIO('O', '(NGG) Received '.strlen($bits).' bytes');
 
@@ -148,48 +148,48 @@ class nggXMLRPC{
 			return $this->error;
 
 		// Check if you have the correct capability for upload
-		if ( !current_user_can('NextGEN Upload images') ) {
+		if ( !current_user_can(PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP) ) {
 			logIO('O', '(NGG) User does not have upload_files capability');
 			$this->error = new IXR_Error(401, __('You are not allowed to upload files to this site.'));
 			return $this->error;
 		}
-		
+
 		// Look for the gallery , could we find it ?
-		if ( !$gallery = nggdb::find_gallery($gid) ) 
+		if ( !$gallery = nggdb::find_gallery($gid) )
 			return new IXR_Error(404, __('Could not find gallery ' . $gid ));
-		
+
 		// Now check if you have the correct capability for this gallery
 		if ( !nggAdmin::can_manage_this_gallery($gallery->author) ) {
 			logIO('O', '(NGG) User does not have upload_files capability');
 			$this->error = new IXR_Error(401, __('You are not allowed to upload files to this gallery.'));
 			return $this->error;
-		}           
-		                                                 
+		}
+
 		//clean filename and extract extension
 		$filepart = nggGallery::fileinfo( $name );
 		$name = $filepart['basename'];
-		
+
 		// check for allowed extension and if it's an image file
-		$ext = array('jpg', 'png', 'gif'); 
-		if ( !in_array($filepart['extension'], $ext) ){ 
+		$ext = array('jpg', 'png', 'gif');
+		if ( !in_array($filepart['extension'], $ext) ){
 			logIO('O', '(NGG) Not allowed file type');
 			$this->error = new IXR_Error(401, __('This is no valid image file.','nggallery'));
 			return $this->error;
-		}	
+		}
 
 		// in the case you would overwrite the image, let's delete the old one first
 		if(!empty($data["overwrite"]) && ($data["overwrite"] == true)) {
-			
+
 			// search for the image based on the filename, if it's not already provided
 			if ($pid == 0)
 				$pid = $wpdb->get_col(" SELECT pid FROM {$wpdb->nggpictures} WHERE filename = '{$name}' AND galleryid = '{$gid}' ");
-			
+
 			if ( !$image = nggdb::find_image( $pid ) )
-				return new IXR_Error(404, __('Could not find image id ' . $pid ));			
+				return new IXR_Error(404, __('Could not find image id ' . $pid ));
 
 			// sync the gallery<->image parameter, otherwise we may copy it to the wrong gallery
 			$gallery = $image;
-			
+
 			// delete now the image
 			if ( !@unlink( $image->imagePath ) ) {
 				$errorString = sprintf(__('Failed to delete image %1$s ','nggallery'), $image->imagePath);
@@ -205,10 +205,10 @@ class nggXMLRPC{
 			logIO('O', '(NGG) ' . $errorString);
 			return new IXR_Error(500, $errorString);
 		}
-		
-		// this is the dir to the gallery		
+
+		// this is the dir to the gallery
 		$path = WINABSPATH . $gallery->path;
-		
+
 		// check if the filename already exist, if not add a counter index
 		$filename = wp_unique_filename( $path, $name );
 		$destination = $path . '/'. $filename;
@@ -219,7 +219,7 @@ class nggXMLRPC{
 			logIO('O', '(NGG) ' . $errorString);
 			return new IXR_Error(500, $errorString);
 		}
-		
+
 		//add to database if it's a new image
 		if(empty($data["overwrite"]) || ($data["overwrite"] == false)) {
 			$pid_array = nggAdmin::add_Images( $gallery->gid, array( $filename ) );
@@ -227,14 +227,14 @@ class nggXMLRPC{
 			if (count($pid_array) == 1)
 				$pid = $pid_array[0];
 		}
-		
+
 		//get all information about the image, in the case it's a new one
 		if (!$image)
 			$image = nggdb::find_image( $pid );
-		
+
 		// create again the thumbnail, should return a '1'
 		nggAdmin::create_thumbnail( $image );
-		
+
 		return apply_filters( 'ngg_upload_image', $image );
 
 	}
@@ -242,20 +242,20 @@ class nggXMLRPC{
 	/**
 	 * Method "ngg.deleteImage"
 	 * Delete a Image from the database and gallery
-	 * 
+	 *
 	 * @since 1.7.3
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
 	 *	    	- string password
-	 *	    	- int image_id 
+	 *	    	- int image_id
 	 * @return true
 	 */
 	function deleteImage($args) {
-		
+
 		global $nggdb, $ngg;
-        
+
         require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
 
         $this->escape($args);
@@ -270,27 +270,27 @@ class nggXMLRPC{
 		if ( !$image = nggdb::find_image($id) )
 			return(new IXR_Error(404, __("Invalid image ID")));
 
-		if ( !current_user_can( 'NextGEN Manage gallery' ) && !nggAdmin::can_manage_this_gallery($image->author) )
+		if ( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) && !nggAdmin::can_manage_this_gallery($image->author) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to edit this image' ) );
 
 		if ($ngg->options['deleteImg']) {
             @unlink($image->imagePath);
-            @unlink($image->thumbPath);	
+            @unlink($image->thumbPath);
             @unlink($image->imagePath . "_backup" );
-        } 
+        }
 
         nggdb::delete_image ( $id );
-		
+
 		return true;
-		
+
 	}
 
 	/**
 	 * Method "ngg.editImage"
 	 * Edit a existing Image
-	 * 
+	 *
 	 * @since 1.7.3
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -302,11 +302,11 @@ class nggXMLRPC{
 	 * @return TRUE if success
 	 */
 	function editImage($args) {
-		
+
 		global $ngg;
 
 		require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
-        
+
         $this->escape($args);
 		$blog_ID    = (int) $args[0];
 		$username	= $args[1];
@@ -322,25 +322,25 @@ class nggXMLRPC{
 		if ( !$image = nggdb::find_image($id)  )
 			return(new IXR_Error(404, __( 'Invalid image ID' )));
 
-        if ( !current_user_can( 'NextGEN Manage gallery' ) && !nggAdmin::can_manage_this_gallery($image->author) )
+        if ( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) && !nggAdmin::can_manage_this_gallery($image->author) )
             return new IXR_Error( 401, __( 'Sorry, you must be able to edit this image' ) );
 
 		if ( !empty( $id ) )
 			$result = nggdb::update_image($id, false, false, $description, $alttext, $exclude);
-		
+
 		if ( !$result )
 			return new IXR_Error(500, __('Sorry, could not update the image'));
 
 		return true;
-		
+
 	}
 
 	/**
 	 * Method "ngg.newGallery"
 	 * Create a new gallery
-	 * 
+	 *
 	 * @since 1.4
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -349,11 +349,11 @@ class nggXMLRPC{
 	 * @return int with new gallery ID
 	 */
 	function newGallery($args) {
-		
+
 		global $ngg;
 
 		require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
-        
+
         $this->escape($args);
 		$blog_ID    = (int) $args[0];
 		$username	= $args[1];
@@ -364,25 +364,25 @@ class nggXMLRPC{
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
 
-		if( !current_user_can( 'NextGEN Manage gallery' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage galleries' ) );
 
 		if ( !empty( $name ) )
 			$id = nggAdmin::create_gallery($name, $ngg->options['gallerypath'], false);
-		
+
 		if ( !$id )
 			return new IXR_Error(500, __('Sorry, could not create the gallery'));
 
 		return($id);
-		
+
 	}
 
 	/**
 	 * Method "ngg.editGallery"
 	 * Edit a existing gallery
-	 * 
+	 *
 	 * @since 1.7.0
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -390,16 +390,16 @@ class nggXMLRPC{
 	 *	    	- int gallery ID
 	 *	    	- string gallery name
 	 *	    	- string title
-	 *	    	- string description 
-     *          - int ID of the preview picture 
+	 *	    	- string description
+     *          - int ID of the preview picture
 	 * @return TRUE if success
 	 */
 	function editGallery($args) {
-		
+
 		global $ngg;
 
 		require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
-        
+
         $this->escape($args);
 		$blog_ID    = (int) $args[0];
 		$username	= $args[1];
@@ -416,25 +416,25 @@ class nggXMLRPC{
 		if ( !$gallery = nggdb::find_gallery($id)  )
 			return(new IXR_Error(404, __("Invalid gallery ID")));
 
-        if ( !current_user_can( 'NextGEN Manage gallery' ) && !nggAdmin::can_manage_this_gallery($gallery->author) )
+        if ( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) && !nggAdmin::can_manage_this_gallery($gallery->author) )
             return new IXR_Error( 401, __( 'Sorry, you must be able to manage this gallery' ) );
 
 		if ( !empty( $name ) )
 			$result = nggdb::update_gallery($id, $name, false, $title, $description, false, $previewpic);
-		
+
 		if ( !$result )
 			return new IXR_Error(500, __('Sorry, could not update the gallery'));
 
 		return true;
-		
+
 	}
 
 	/**
 	 * Method "ngg.newAlbum"
 	 * Create a new album
-	 * 
+	 *
 	 * @since 1.7.0
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -446,7 +446,7 @@ class nggXMLRPC{
 	 * @return int with new album ID
 	 */
 	function newAlbum($args) {
-		
+
 		global $ngg;
 
         $this->escape($args);
@@ -462,25 +462,25 @@ class nggXMLRPC{
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
 
-		if( !current_user_can( 'NextGEN Edit album' ) || !nggGallery::current_user_can( 'NextGEN Add/Delete album' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP ) || ! current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage albums' ) );
 
 		if ( !empty( $name ) )
 			$id = $result = nggdb::add_album( $name, $preview, $description, $galleries );
-		
+
 		if ( !$id )
 			return new IXR_Error(500, __('Sorry, could not create the album'));
 
 		return($id);
-		
+
 	}
 
 	/**
 	 * Method "ngg.editAlbum"
 	 * Edit a existing Album
-	 * 
+	 *
 	 * @since 1.7.0
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -493,11 +493,11 @@ class nggXMLRPC{
 	 * @return TRUE if success
 	 */
 	function editAlbum($args) {
-		
+
 		global $ngg;
 
 		require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
-        
+
         $this->escape($args);
 		$blog_ID    = (int) $args[0];
 		$username	= $args[1];
@@ -514,34 +514,34 @@ class nggXMLRPC{
 		if ( !$album = nggdb::find_album($id) )
 			return(new IXR_Error(404, __("Invalid album ID")));
 
-		if( !current_user_can( 'NextGEN Edit album' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage albums' ) );
 
 		if ( !empty( $name ) )
 			$result = nggdb::update_album($id, $name, $preview, $description, $galleries);
-		
+
 		if ( !$result )
 			return new IXR_Error(500, __('Sorry, could not update the album'));
 
 		return true;
-		
+
 	}
 
 	/**
 	 * Method "ngg.deleteAlbum"
 	 * Delete a album from the database
-	 * 
+	 *
 	 * @since 1.7.0
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
 	 *	    	- string password
-	 *	    	- int album id 
+	 *	    	- int album id
 	 * @return true
 	 */
 	function deleteAlbum($args) {
-		
+
 		global $nggdb;
 
         $this->escape($args);
@@ -556,30 +556,30 @@ class nggXMLRPC{
 		if ( !$album = nggdb::find_album($id) )
 			return(new IXR_Error(404, __("Invalid album ID")));
 
-		if( !current_user_can( 'NextGEN Edit album' ) && !nggGallery::current_user_can( 'NextGEN Add/Delete album' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP ) && ! current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage albums' ) );
-		
+
 		$nggdb->delete_album($id);
-		
+
 		return true;
-		
+
 	}
 
 	/**
 	 * Method "ngg.deleteGallery"
 	 * Delete a gallery from the database, including all images
-	 * 
+	 *
 	 * @since 1.7.0
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
 	 *	    	- string password
-	 *	    	- int gallery_id 
+	 *	    	- int gallery_id
 	 * @return true
 	 */
 	function deleteGallery($args) {
-		
+
 		global $nggdb;
 
         require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
@@ -596,21 +596,21 @@ class nggXMLRPC{
 		if ( !$gallery = nggdb::find_gallery($id) )
 			return(new IXR_Error(404, __("Invalid gallery ID")));
 
-		if ( !current_user_can( 'NextGEN Manage gallery' ) && !nggAdmin::can_manage_this_gallery($gallery->author) )
+		if ( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) && !nggAdmin::can_manage_this_gallery($gallery->author) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage galleries' ) );
-		
+
 		$nggdb->delete_gallery($id);
-		
+
 		return true;
-		
+
 	}
 
 	/**
 	 * Method "ngg.getAlbums"
 	 * Return the list of all albums
-	 * 
+	 *
 	 * @since 1.7.0
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -618,7 +618,7 @@ class nggXMLRPC{
 	 * @return array with all galleries
 	 */
 	function getAlbums($args) {
-		
+
 		global $nggdb;
 
         $this->escape($args);
@@ -629,13 +629,13 @@ class nggXMLRPC{
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
 
-		if( !current_user_can( 'NextGEN Edit album' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage albums' ) );
-		
+
 		$album_list = $nggdb->find_all_album('id', 'ASC', 0, 0 );
-		
+
 		return($album_list);
-		
+
 	}
 
 	/**
@@ -664,7 +664,7 @@ class nggXMLRPC{
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
 
-		if( !current_user_can( 'NextGEN Edit album' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage albums' ) );
 
 		$album = $nggdb->find_album( $id );
@@ -676,9 +676,9 @@ class nggXMLRPC{
 	/**
 	 * Method "ngg.getGalleries"
 	 * Return the list of all galleries
-	 * 
+	 *
 	 * @since 1.4
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
@@ -686,7 +686,7 @@ class nggXMLRPC{
 	 * @return array with all galleries
 	 */
 	function getGalleries($args) {
-		
+
 		global $nggdb;
 
         $this->escape($args);
@@ -697,13 +697,13 @@ class nggXMLRPC{
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
 
-		if( !current_user_can( 'NextGEN Manage gallery' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage galleries' ) );
-		
+
 		$gallery_list = $nggdb->find_all_galleries('gid', 'asc', true, 0, 0, false);
-		
+
 		return($gallery_list);
-		
+
 	}
 
 	/**
@@ -732,7 +732,7 @@ class nggXMLRPC{
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
 
-		if( !current_user_can( 'NextGEN Manage gallery' ) )
+		if( !current_user_can( PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP ) )
 			return new IXR_Error( 401, __( 'Sorry, you must be able to manage galleries' ) );
 
 		$gallery = $nggdb->find_gallery($gid);
@@ -744,22 +744,22 @@ class nggXMLRPC{
 	/**
 	 * Method "ngg.getImages"
 	 * Return the list of all images inside a gallery
-	 * 
+	 *
 	 * @since 1.4
-	 * 
+	 *
 	 * @param array $args Method parameters.
 	 * 			- int blog_id
 	 *	    	- string username
 	 *	    	- string password
-	 *	    	- int gallery_id 
+	 *	    	- int gallery_id
 	 * @return array with all images
 	 */
 	function getImages($args) {
-		
+
 		global $nggdb;
 
 		require_once ( dirname ( dirname( __FILE__ ) ). '/admin/functions.php' );	// admin functions
-        
+
         $this->escape($args);
 		$blog_ID    = (int) $args[0];
 		$username	= $args[1];
@@ -770,7 +770,7 @@ class nggXMLRPC{
 			return $this->error;
 
 		// Look for the gallery , could we find it ?
-		if ( !$gallery = nggdb::find_gallery( $gid ) ) 
+		if ( !$gallery = nggdb::find_gallery( $gid ) )
 			return new IXR_Error(404, __('Could not find gallery ' . $gid ));
 
 		// Now check if you have the correct capability for this gallery
@@ -779,12 +779,12 @@ class nggXMLRPC{
 			$this->error = new IXR_Error(401, __('You are not allowed to upload files to this gallery.'));
 			return $this->error;
 		}
-		
+
 		// get picture values
 		$picture_list = $nggdb->get_gallery( $gid, 'pid', 'ASC', FALSE );
-		
+
 		return($picture_list);
-		
+
 	}
 
 	/**
@@ -871,7 +871,7 @@ class nggXMLRPC{
 	 * @return bool Always true
 	 */
 	function __destruct() {
-		
+
 	}
 }
 

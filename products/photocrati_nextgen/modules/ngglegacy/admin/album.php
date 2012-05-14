@@ -99,7 +99,7 @@ class nggManageAlbum extends C_Component
 
 		if ( isset($_POST['add']) && isset ($_POST['newalbum']) ) {
 
-			if (!nggGallery::current_user_can( 'NextGEN Add/Delete album' ))
+			if (! current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP ))
 				wp_die(__('Cheatin&#8217; uh?'));
 
 			$result = nggdb::add_album( $_POST['newalbum'] );
@@ -142,7 +142,7 @@ class nggManageAlbum extends C_Component
 
 		if ( isset($_POST['delete']) ) {
 
-			if (!nggGallery::current_user_can( 'NextGEN Add/Delete album' ))
+			if (! current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP ))
 				wp_die(__('Cheatin&#8217; uh?'));
 
 			$result = nggdb::delete_album( $this->currentID );
@@ -163,7 +163,7 @@ class nggManageAlbum extends C_Component
 	{
 		check_admin_referer('ngg_thickbox_form');
 
-		if (!nggGallery::current_user_can( 'NextGEN Edit album settings' ))
+		if (! current_user_can( PHOTOCRATI_GALLERY_CHANGE_ALBUM_OPTIONS_CAP ))
 			wp_die(__('Cheatin&#8217; uh?'));
 
 		// Create album datamapper
@@ -326,14 +326,14 @@ function showDialog() {
 				</select>
 				<?php if ($this->currentID > 0){ ?>
 					<input class="button-primary" type="submit" name="update" value="<?php esc_attr_e('Update', 'nggallery'); ?>"/>
-					<?php if(nggGallery::current_user_can( 'NextGEN Edit album settings' )) { ?>
+					<?php if( current_user_can( PHOTOCRATI_GALLERY_CHANGE_ALBUM_OPTIONS_CAP )) { ?>
 					<input class="button-secondary" type="submit" name="showThickbox" value="<?php esc_attr_e( 'Edit album', 'nggallery'); ?>" onclick="showDialog(); return false;" />
 					<?php } ?>
-					<?php if(nggGallery::current_user_can( 'NextGEN Add/Delete album' )) { ?>
+					<?php if( current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP )) { ?>
 					<input class="button-secondary action "type="submit" name="delete" value="<?php esc_attr_e('Delete', 'nggallery'); ?>" onclick="javascript:check=confirm('<?php echo esc_js('Delete album ?','nggallery'); ?>');if(check==false) return false;"/>
 					<?php } ?>
 				<?php } else { ?>
-					<?php if(nggGallery::current_user_can( 'NextGEN Add/Delete album' )) { ?>
+					<?php if( current_user_can( PHOTOCRATI_GALLERY_MANAGE_ALBUMS_CAP )) { ?>
 					<span><?php esc_html_e('Add new album', 'nggallery'); ?>&nbsp;</span>
 					<input class="search-input" id="newalbum" name="newalbum" type="text" value="" />
 					<input class="button-secondary action" type="submit" name="add" value="<?php esc_attr_e('Add', 'nggallery'); ?>"/>

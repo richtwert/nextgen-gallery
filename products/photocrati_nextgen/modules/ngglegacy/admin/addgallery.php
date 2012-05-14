@@ -67,21 +67,21 @@ class nggAddGallery extends C_Component
 			}
     	}
 
-    	if ( isset($_POST['zipupload']) ){
+    	elseif ( isset($_POST['zipupload']) ){
     		check_admin_referer('ngg_addgallery');
 			if (!$this->_storage->upload_image(intval( $_POST['zipgalselect'])) {
 				// TODO: display errors
 			}
     	}
 
-    	if ( isset($_POST['importfolder']) ){
+    	elseif ( isset($_POST['importfolder']) ){
     		check_admin_referer('ngg_addgallery');
 			if (!$this->_storage->import_folder($_POST['galleryfolder'])) {
 				// TODO: display errors
 			}
     	}
 
-    	if ( isset($_POST['uploadimage']) ){
+    	elseif ( isset($_POST['uploadimage']) ){
     		check_admin_referer('ngg_addgallery');
 			if (!$this->_storage->upload_image((int) $_POST['galleryselect'])) {
 				// TODO: display errors
@@ -306,13 +306,13 @@ class nggAddGallery extends C_Component
     	if ( !empty ($this->gallerylist) )
     	   $tabs['uploadimage'] = __( 'Upload Images', 'nggallery' );
 
-        if ( nggGallery::current_user_can( 'NextGEN Add new gallery' ))
+        if ( current_user_can( PHOTOCRATI_GALLERY_ADD_GALLERY_CAP ))
     	   $tabs['addgallery'] = __('Add new gallery', 'nggallery');
 
         if ( wpmu_enable_function('wpmuZipUpload') && current_user_can(PHOTOCRATI_GALLERY_UPLOAD_ZIP_CAP) )
             $tabs['zipupload'] = __('Upload a Zip-File', 'nggallery');
 
-        if ( wpmu_enable_function('wpmuImportFolder') && nggGallery::current_user_can( PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAP ) )
+        if ( wpmu_enable_function('wpmuImportFolder') &&  current_user_can( PHOTOCRATI_GALLERY_IMPORT_FOLDER_CAP ) )
             $tabs['importfolder'] = __('Import image folder', 'nggallery');
 
     	$tabs = apply_filters('ngg_addgallery_tabs', $tabs);

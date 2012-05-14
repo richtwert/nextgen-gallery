@@ -41,18 +41,18 @@ class nggAdminPanel extends C_Component
 	// integrate the menu
 	function add_menu()  {
 
-		add_menu_page( _n( 'Gallery', 'Galleries', 1, 'nggallery' ), _n( 'Gallery', 'Galleries', 1, 'nggallery' ), 'NextGEN Gallery overview', NGGFOLDER, array (&$this, 'show_menu'), 'div' );
-	    add_submenu_page( NGGFOLDER , __('Overview', 'nggallery'), __('Overview', 'nggallery'), 'NextGEN Gallery overview', NGGFOLDER, array (&$this, 'show_menu'));
-		add_submenu_page( NGGFOLDER , __('Add Gallery / Images', 'nggallery'), __('Add Gallery / Images', 'nggallery'), 'NextGEN Upload images', 'nggallery-add-gallery', array (&$this, 'show_menu'));
-	    add_submenu_page( NGGFOLDER , __('Manage Gallery', 'nggallery'), __('Manage Gallery', 'nggallery'), 'NextGEN Manage gallery', 'nggallery-manage-gallery', array (&$this, 'show_menu'));
-	    add_submenu_page( NGGFOLDER , _n( 'Album', 'Albums', 1, 'nggallery' ), _n( 'Album', 'Albums', 1, 'nggallery' ), 'NextGEN Edit album', 'nggallery-manage-album', array (&$this, 'show_menu'));
-	    add_submenu_page( NGGFOLDER , __('Tags', 'nggallery'), __('Tags', 'nggallery'), 'NextGEN Manage tags', 'nggallery-tags', array (&$this, 'show_menu'));
-	    add_submenu_page( NGGFOLDER , __('Options', 'nggallery'), __('Options', 'nggallery'), 'NextGEN Change options', 'nggallery-options', array (&$this, 'show_menu'));
+		add_menu_page( _n( 'Gallery', 'Galleries', 1, 'nggallery' ), _n( 'Gallery', 'Galleries', 1, 'nggallery' ), PHOTOCRATI_GALLERY_OVERVIEW_CAP, NGGFOLDER, array (&$this, 'show_menu'), 'div' );
+	    add_submenu_page( NGGFOLDER , __('Overview', 'nggallery'), __('Overview', 'nggallery'), PHOTOCRATI_GALLERY_OVERVIEW_CAP, NGGFOLDER, array (&$this, 'show_menu'));
+		add_submenu_page( NGGFOLDER , __('Add Gallery / Images', 'nggallery'), __('Add Gallery / Images', 'nggallery'), PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP, 'nggallery-add-gallery', array (&$this, 'show_menu'));
+	    add_submenu_page( NGGFOLDER , __('Manage Gallery', 'nggallery'), __('Manage Gallery', 'nggallery'), PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP, 'nggallery-manage-gallery', array (&$this, 'show_menu'));
+	    add_submenu_page( NGGFOLDER , _n( 'Album', 'Albums', 1, 'nggallery' ), _n( 'Album', 'Albums', 1, 'nggallery' ), PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP, 'nggallery-manage-album', array (&$this, 'show_menu'));
+	    add_submenu_page( NGGFOLDER , __('Tags', 'nggallery'), __('Tags', 'nggallery'), PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP, 'nggallery-tags', array (&$this, 'show_menu'));
+	    add_submenu_page( NGGFOLDER , __('Options', 'nggallery'), __('Options', 'nggallery'), PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'nggallery-options', array (&$this, 'show_menu'));
 	    if ( wpmu_enable_function('wpmuStyle') )
 			add_submenu_page( NGGFOLDER , __('Style', 'nggallery'), __('Style', 'nggallery'), 'NextGEN Change style', 'nggallery-style', array (&$this, 'show_menu'));
 	    if ( wpmu_enable_function('wpmuRoles') || wpmu_site_admin() )
 			add_submenu_page( NGGFOLDER , __('Roles', 'nggallery'), __('Roles', 'nggallery'), 'activate_plugins', 'nggallery-roles', array (&$this, 'show_menu'));
-	    add_submenu_page( NGGFOLDER , __('About this Gallery', 'nggallery'), __('About', 'nggallery'), 'NextGEN Gallery overview', 'nggallery-about', array (&$this, 'show_menu'));
+	    add_submenu_page( NGGFOLDER , __('About this Gallery', 'nggallery'), __('About', 'nggallery'), PHOTOCRATI_GALLERY_OVERVIEW_CAP, 'nggallery-about', array (&$this, 'show_menu'));
 
 	    if ( !is_multisite() || wpmu_site_admin() )
             add_submenu_page( NGGFOLDER , __('Reset / Uninstall', 'nggallery'), __('Reset / Uninstall', 'nggallery'), 'activate_plugins', 'nggallery-setup', array (&$this, 'show_menu'));
@@ -78,7 +78,7 @@ class nggAdminPanel extends C_Component
      */
     function admin_bar_menu() {
     	// If the current user can't write posts, this is all of no use, so let's not output an admin menu
-    	if ( !current_user_can('NextGEN Gallery overview') )
+    	if ( !current_user_can(PHOTOCRATI_GALLERY_OVERVIEW_CAP) )
     		return;
 
     	global $wp_admin_bar;
