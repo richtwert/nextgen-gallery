@@ -3,57 +3,32 @@
 class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 {
 	/**
-	 * Gets the name of sizes available for the image
+	 * Returns the named sizes available for images
 	 * @return array
 	 */
 	function get_image_sizes()
 	{
-		return array('thumbnail', 'full', 'original');
-	}
-
-	/**
-	 * Gets the base path for uploads
-	 * @return string
-	 */
-	function get_upload_path($gallery_id=FALSE, $thumbs=FALSE)
-	{
-		$options = $this->object->_get_registry()->get_singleton_utility('I_Photocrati_Options');
-		return $options->storage_dir;
+		return array('full', 'thumbnail');
 	}
 
 
-	function get_thumbnail_upload_path($gallery_id)
+	function get_upload_abspath($gallery=FALSE)
 	{
-		return $this->get_upload_path($gallery_id, TRUE);
-	}
+		// Base upload path
+		$retval = $this->_options->storage_dir;
 
-	/**
-	 * Returns the url to an image
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @param string $size
-	 * @return string
-	 */
-	function get_image_url($image, $size='original')
-	{
-		return $this->object->_get_image_property($image, 'path', $size);
-	}
+		// If a gallery has been specified, then we'll
+		// append the ID
+		if ($gallery) {
 
-
-	/**
-	 * Gets the original image path
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @return string
-	 */
-	function get_original_path($image)
-	{
-		$retval = '';
-
-		if (property_exists($image, 'filename') && $image->filename) {
-			if (property_exists($image, 'galleryid' && $image->galleryid)) {
-				if (($gallery_path = $this->object->_get_gallery_path($image->galleryid))) {
-					$retval = path_join($gallery_path, $image->filename);
-				}
+			// Get the gallery ID
+			$gallery_key = $this->_gallery_mapper->get_primary_key_column();
+			if (is_object($gallery) && isset($gallery->$gallery_key)) {
+				$gallery = $gallery->$gallery_key;
 			}
+
+			// Ensure we have a gallery ID
+			if (is_int($gallery)) $retval = path_join($retval, $gallery);
 		}
 
 		return $retval;
@@ -61,53 +36,32 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 
 	/**
-	 * Gets the url of the original sized image
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @return string
+	 * Get the gallery path persisted in the database for the gallery
+	 * @param type $gallery
 	 */
-	function get_original_url($image)
+	function get_gallery_path($gallery)
 	{
-		return $this->object->_to_url($this->object->get_original_path($image));
-	}
+		$retval = NULL;
 
-	/**
-	 * Gets the path to the full (original) sized image
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @return string
-	 */
-	function get_full_path($image)
-	{
-		return $this->object->get_original_path($image);
-	}
+		// Get the gallery ID
+		$gallery_key = $this->_gallery_mapper->get_primary_key_column();
+		if (is_object($gallery) && isset($gallery->$gallery_key)) {
+			$gallery = $gallery->$gallery_key;
+		}
 
+		// Ensure that we have a gallery ID
+		if (is_int($gallery)) {
+			$retval = ABSPATH;
 
-	/**
-	 * Gets the url of the full (original) sized image
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @return string
-	 */
-	function get_full_url($image)
-	{
-		return $this->object->get_original_url($image);
-	}
+			// Fetch the gallery from the database to ensure we
+			// find the latest path
+			$gallery_object = $this->_gallery_mapper->find($gallery);
+			if ($gallery_object) {
 
-
-	/**
-	 * Gets the path of the thumbnail sized image
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @return string
-	 */
-	function get_thumbnail_path($image)
-	{
-		$retval = '';
-
-		if (property_exists($image, 'filename') && $image->filename) {
-			if (property_exists($image, 'galleryid') && $image->galleryid) {
-				if (($gallery_path = $this->object->_get_gallery_path($image->galleryid))) {
-					$retval = path_join(
-						$gallery_path,
-						path_join('thumbs', 'thumbs_'.$image->filename)
-					);
+				// If the gallery has an associated path with it,
+				// return the absolute path
+				if (isset($gallery_object->path)) {
+					$retval = path_join(ABSPATH, $gallery_object->path);
 				}
 			}
 		}
@@ -115,16 +69,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		return $retval;
 	}
 
-
-	/**
-	 * Gets the url to the thumbnail image
-	 * @param stdObject|stdClass|C_DataMapper_Model $image
-	 * @return string
-	 */
-	function get_thumbnail_url($image)
-	{
-		return $this->object->_to_url($this->object->get_thumbnail_path($image));
-	}
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
@@ -133,5 +77,12 @@ class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
 	{
 		parent::define();
 		$this->add_mixin('Mixin_NggLegacy_GalleryStorage_Driver');
+	}
+
+	function initialize($context)
+	{
+		parent::initialize($context);
+		$this->_options = $this->_get_registry()->get_utility('I_Photocrati_Options');
+		$this->_gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 	}
 }

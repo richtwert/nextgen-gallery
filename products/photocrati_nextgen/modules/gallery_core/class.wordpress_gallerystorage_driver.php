@@ -3,14 +3,44 @@
 class Mixin_WordPress_GalleryStorage_Driver extends Mixin
 {
 	/**
-	 * Returns the name of available image sizes available
+	 * Returns the named sizes available for images
 	 * @global array $_wp_additional_image_sizese
 	 * @return array
 	 */
 	function get_image_sizes()
 	{
 		global $_wp_additional_image_sizes;
-		return array_keys($_wp_additional_image_sizes);
+		return array_merge(array_keys($_wp_additional_image_sizes), array('full', 'thumbnail'));
+	}
+
+
+	/**
+	 * Gets the upload path for new images in this gallery
+	 * This will always be the date-based directory
+	 * @param type $gallery
+	 * @return type
+	 */
+	function get_upload_abspath($gallery=FALSE)
+	{
+		// Gallery is used for this driver, as the upload path is
+		// the same, regardless of what gallery is used
+
+		$retval = FALSE;
+
+		$dir = wp_upload_dir(time());
+		if ($dir) $retval = $dir['path'];
+
+		return $retval;
+	}
+
+
+	/**
+	 * Will always
+	 * @param type $gallery
+	 */
+	function get_gallery_path($gallery=FALSE)
+	{
+
 	}
 
 
@@ -31,20 +61,6 @@ class Mixin_WordPress_GalleryStorage_Driver extends Mixin
 		}
 
 		else $retval = parent::__call ($method, $args);
-
-		return $retval;
-	}
-
-	/**
-	 * Gets the base path for uploads
-	 * @return string
-	 */
-	function get_upload_path()
-	{
-		$retval = FALSE;
-
-		$dir = wp_upload_dir(time());
-		if ($dir) $retval = $dir['path'];
 
 		return $retval;
 	}

@@ -11,8 +11,9 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	{
 		parent::setUp();
 
-		$this->gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
-		$this->image_mapper   = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+		if (!defined('DATAMAPPER_DRIVER')) define('DATAMAPPER_DRIVER', 'custom_post_datamapper');
+		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->image_mapper   = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
 		$this->gallery = (object) array(
 			'title'	=>	'Test Gallery'
 		);
@@ -104,16 +105,17 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		foreach (array($this->gid, $this->gallery) as $gallery) {
 
 			// Get the root upload path. Shouldn't ever be required by API
-			$options = $this->_get_registry()->get_singleton_utility('I_Photocrati_Options');
+			$options = $this->get_registry()->get_singleton_utility('I_Photocrati_Options');
 			$upload_path = $this->storage->get_upload_abspath();
 			$this->assertEqual($options->gallerypath, $upload_path);
 
-			// Get the upload path for a particular gallery. Otherwise, known as
-			// the gallery path
+			// Get the upload path for a particular gallery
 			$gallery_path = $this->storage->get_upload_abspath($gallery);
 			$this->assertEqual(path_join($options->gallerypath, $gallery), $gallerypath);
 
-			// The above method is aliases to get_gallery_abspath()
+			// Let's get the path stored for the gallery in the database. In
+			// this case, it will be the same as the upload directory
+			// for the gallery
 			$gallery_path = $this->storage->get_gallery_abspath($gallery);
 			$this->assertEqual($this->storage->get_upload_abspath($gallery), $gallerypath);
 		}
@@ -235,7 +237,7 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 			$this->assertEqual($html, $this->storage->get_full_html($image));
 
 			// get_original_html() is an alias for get_image_html()
-			$this->assertEqual($html, $this->storage->get_originall_html($image));
+			$this->assertEqual($html, $this->storage->get_original_html($image));
 		}
 	}
 
