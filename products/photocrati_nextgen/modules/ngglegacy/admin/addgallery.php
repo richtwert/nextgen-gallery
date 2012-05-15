@@ -66,15 +66,15 @@ class nggAddGallery extends C_Component
 				// TODO: display errors
 			}
     	}
-
-    	elseif ( isset($_POST['zipupload']) ){
+    	
+    	if ( isset($_POST['zipupload']) && wpmu_enable_function('wpmuZipUpload') ){
     		check_admin_referer('ngg_addgallery');
 			if (!$this->_storage->upload_image(intval( $_POST['zipgalselect'])) {
 				// TODO: display errors
 			}
     	}
-
-    	elseif ( isset($_POST['importfolder']) ){
+    	
+    	if ( isset($_POST['importfolder']) && wpmu_enable_function('wpmuImportFolder') ){
     		check_admin_referer('ngg_addgallery');
 			if (!$this->_storage->import_folder($_POST['galleryfolder'])) {
 				// TODO: display errors

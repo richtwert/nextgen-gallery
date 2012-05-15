@@ -32,12 +32,12 @@ class nggWPMU{
      * @return
      */
     function wpmu_site_admin() {
-
-    	if ( function_exists('is_super_admin') )
-    		if ( is_super_admin() )
-    			return true;
-    			
-    	return false;
+			// Check for site admin
+			if ( function_exists('is_super_admin') )
+				if ( is_super_admin() )
+					return true;
+			
+			return false;
     }
 
     /**
@@ -47,11 +47,14 @@ class nggWPMU{
      * @return value
      */
     function wpmu_enable_function($value) {
-    	if (is_multisite()) {
-    		$ngg_options = get_site_option('ngg_options');
-    		return $ngg_options[$value];
-    	}
-    	// if this is not WPMU, enable it !
-    	return true;
+			// if this is not WPMU, enable by default
+			$return = true;
+	
+			if (is_multisite()) {
+				$ngg_options = get_site_option('ngg_options');
+				$return = $ngg_options[$value];
+			}
+	
+			return apply_filters('ngg_enable_function', $value, apply_filters('ngg_enable_function_' . $value, $return));
     }    
 }
