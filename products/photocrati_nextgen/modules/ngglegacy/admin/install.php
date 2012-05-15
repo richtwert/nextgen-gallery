@@ -24,15 +24,15 @@ function nggallery_install () {
 		return;
 	}
 	
-	$role->add_cap(PHOTOCRATI_GALLERY_OVERVIEW_CAP);
+	$role->add_cap('NextGEN Gallery overview');
 	$role->add_cap('NextGEN Use TinyMCE');
-	$role->add_cap(PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP);
-	$role->add_cap(PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP);
-	$role->add_cap(PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP);
+	$role->add_cap('NextGEN Upload images');
+	$role->add_cap('NextGEN Manage gallery');
+	$role->add_cap('NextGEN Manage tags');
 	$role->add_cap('NextGEN Manage others gallery');
-	$role->add_cap(PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP);
+	$role->add_cap('NextGEN Edit album');
 	$role->add_cap('NextGEN Change style');
-	$role->add_cap(PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP);
+	$role->add_cap('NextGEN Change options');
 	
 	// upgrade function changed in WordPress 2.3	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

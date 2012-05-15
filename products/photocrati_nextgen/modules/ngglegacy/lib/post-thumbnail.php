@@ -44,7 +44,7 @@ class nggPostThumbnail {
         if ( !is_object($post) )
            return $content;
         
-		$thumbnail_id = get_post_meta( $post->ID, '_thumbnail_id', TRUE );
+		$thumbnail_id = get_post_meta( $post->ID, '_thumbnail_id', true );
 
 		// in the case it's a ngg image it return ngg-<imageID>
 		if ( strpos($thumbnail_id, 'ngg-') === false)
@@ -196,7 +196,7 @@ class nggPostThumbnail {
             }
 
 		    // if we didn't use a cached image then we take the on-the-fly mode 
-		    if ( $img_src == FALSE ) 
+		    if ( $img_src == false ) 
 		        $img_src = trailingslashit( home_url() ) . 'index.php?callback=image&amp;pid=' . $image->pid . '&amp;width=' . $width . '&amp;height=' . $height . '&amp;mode=crop';
 			
             $thumbnail_html = '<img width="266" src="'. $img_src . '" alt="'.$image->alttext.'" title="'.$image->alttext.'" />';

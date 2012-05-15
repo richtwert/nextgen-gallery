@@ -16,7 +16,7 @@ class nggTags {
 	function copy_tags($src_pid, $dest_pid) {		
 		$tags = wp_get_object_terms( $src_pid, 'ngg_tag', 'fields=ids' );
 		$tags = array_map('intval', $tags);
-		wp_set_object_terms( $dest_pid, $tags, 'ngg_tag', TRUE );
+		wp_set_object_terms( $dest_pid, $tags, 'ngg_tag', true );
 		
 		return implode(',', $tags);
 	}
@@ -71,7 +71,7 @@ class nggTags {
 				
 				// Set objects to new term ! (Append no replace)
 				foreach ( (array) $objects_id as $object_id ) {
-					wp_set_object_terms( $object_id, $new_name, 'ngg_tag', TRUE );
+					wp_set_object_terms( $object_id, $new_name, 'ngg_tag', true );
 				}
 				
 				// Clean cache
@@ -121,7 +121,7 @@ class nggTags {
 
 			// Set objects to new term ! (Append no replace)
 			foreach ( (array) $objects_id as $object_id ) {
-				wp_set_object_terms( $object_id, $new_tag, 'ngg_tag', TRUE );
+				wp_set_object_terms( $object_id, $new_tag, 'ngg_tag', true );
 				$counter++;
 			}
 
@@ -256,10 +256,10 @@ class nggTags {
 	/**
 	 * 
 	 */
-	function find_tags( $args = '', $skip_cache = FALSE ) {
+	function find_tags( $args = '', $skip_cache = false ) {
 		$taxonomy = 'ngg_tag';
 		
-		if ( $skip_cache == TRUE ) {
+		if ( $skip_cache == true ) {
 			$terms = get_terms( $taxonomy, $args );
 		} else {
 			$key = md5(serialize($args));

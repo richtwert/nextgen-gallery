@@ -47,7 +47,7 @@ class nggMeta{
 
 			// get exif - data
 			if ( is_callable('exif_read_data'))
-                $this->exif_data = @exif_read_data($this->image->imagePath , 0, TRUE );
+                $this->exif_data = @exif_read_data($this->image->imagePath , 0, true );
  			
  			// stop here if we didn't need other meta data
  			if ($onlyEXIF)
@@ -96,7 +96,7 @@ class nggMeta{
 		}
 
         // on request sanitize the output
-		if ( $this->sanitize == TRUE )	
+		if ( $this->sanitize == true )	
             array_walk( $meta , create_function('&$value', '$value = esc_html($value);')); 
 		
 		return $meta;
@@ -176,13 +176,13 @@ class nggMeta{
 		}
 		
 		// return one element if requested	
-		if ( $object == TRUE ) {
+		if ( $object == true ) {
 		  $value = isset($this->exif_array[$object]) ? $this->exif_array[$object] : false;
           return $value;
 		}
         
         // on request sanitize the output
-		if ( $this->sanitize == TRUE )	
+		if ( $this->sanitize == true )	
             array_walk( $this->exif_array , create_function('&$value', '$value = esc_html($value);')); 
                 
 		return $this->exif_array;
@@ -258,7 +258,7 @@ class nggMeta{
 			return (isset($this->iptc_array[$object])) ? $this->iptc_array[$object] : NULL;
 
         // on request sanitize the output
-		if ( $this->sanitize == TRUE )	
+		if ( $this->sanitize == true )	
             array_walk( $this->iptc_array , create_function('&$value', '$value = esc_html($value);'));             		
 		
 		return $this->iptc_array;
@@ -396,11 +396,11 @@ class nggMeta{
 		}
 		
 		// return one element if requested	
-		if ($object != FALSE )
+		if ($object != false )
 			return isset($this->xmp_array[$object]) ? $this->xmp_array[$object] : false;		 
 		
         // on request sanitize the output
-		if ( $this->sanitize == TRUE )	
+		if ( $this->sanitize == true )	
             array_walk( $this->xmp_array , create_function('&$value', '$value = esc_html($value);')); 
         
 		return $this->xmp_array;

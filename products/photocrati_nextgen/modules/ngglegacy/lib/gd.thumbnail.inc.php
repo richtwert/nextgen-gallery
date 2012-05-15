@@ -702,7 +702,7 @@ class ngg_Thumbnail {
 	 * @param bool $horz flip the image in horizontal mode
 	 * @param bool $vert flip the image in vertical mode
 	 */
-	function flipImage( $horz = false, $vert = FALSE ) {
+	function flipImage( $horz = false, $vert = false ) {
 		
 		$sx = $vert ? ($this->currentDimensions['width'] - 1) : 0;
 		$sy = $horz ? ($this->currentDimensions['height'] - 1) : 0;

@@ -82,7 +82,7 @@ class swfobject {
 	 * @param array $attributes (optional) specifies your object's attributes with name:value pairs
 	 * @return string the content
 	 */
-	function swfobject( $swfUrl, $id, $width, $height, $version, $expressInstallSwfurl = false, $flashvars = false, $params = false, $attributes = FALSE ) {
+	function swfobject( $swfUrl, $id, $width, $height, $version, $expressInstallSwfurl = false, $flashvars = false, $params = false, $attributes = false ) {
 	
 		global $swfCounter;
 		

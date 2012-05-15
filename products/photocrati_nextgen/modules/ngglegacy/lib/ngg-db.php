@@ -113,7 +113,7 @@ class nggdb {
      * 
      * @param string $order_by
      * @param string $order_dir
-     * @param bool $counter (optional) Select TRUE  when you need to count the images
+     * @param bool $counter (optional) Select true  when you need to count the images
      * @param int $limit number of paged galleries, 0 shows all galleries
      * @param int $start the start index for paged galleries
      * @param bool $exclude
@@ -492,7 +492,7 @@ class nggdb {
      * @param (optional) int $pageid
      * @return bool result of update query
      */
-    function update_album($id, $name = false, $previewpic = false, $description = false, $sortorder = false, $pageid = FALSE ) {
+    function update_album($id, $name = false, $previewpic = false, $description = false, $sortorder = false, $pageid = false ) {
 
         global $wpdb;
         
@@ -611,7 +611,7 @@ class nggdb {
         $slug = nggdb::get_unique_slug( sanitize_title( $alttext ), 'image' );
 
 		// Add the image
-		if ( FALSE === $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggpictures (image_slug, galleryid, filename, description, alttext, meta_data, post_id, imagedate, exclude, sortorder) 
+		if ( false === $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggpictures (image_slug, galleryid, filename, description, alttext, meta_data, post_id, imagedate, exclude, sortorder) 
 													 VALUES (%s, %d, %s, %s, %s, %s, %d, %s, %d, %d)", $slug, $id, $filename, $description, $alttext, $meta_data, $post_id, $imagedate, $exclude, $sortorder ) ) ) {
 			return false;
 		}
@@ -643,7 +643,7 @@ class nggdb {
         $slug = nggdb::get_unique_slug( sanitize_title( $name ), 'album' );
 			
 		// Add the album
-		if ( FALSE === $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggalbum (name, slug, previewpic, albumdesc, sortorder, pageid) 
+		if ( false === $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggalbum (name, slug, previewpic, albumdesc, sortorder, pageid) 
 													 VALUES (%s, %s, %d, %s, %s, %d)", $name, $slug, $previewpic, $description, $sortorder, $pageid ) ) ) {
 			return false;
 		}
@@ -673,7 +673,7 @@ class nggdb {
         $slug = nggdb::get_unique_slug( sanitize_title( $title ), 'gallery' );
 		
         // Note : The field 'name' is deprecated, it's currently kept only for compat reason with older shortcodes, we copy the slug into this field
-		if ( FALSE === $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggallery (name, slug, path, title, galdesc, pageid, previewpic, author) 
+		if ( false === $wpdb->query( $wpdb->prepare("INSERT INTO $wpdb->nggallery (name, slug, path, title, galdesc, pageid, previewpic, author) 
 													 VALUES (%s, %s, %s, %s, %s, %d, %d, %d)", $slug, $slug, $path, $title, $description, $pageid, $previewpic, $author ) ) ) {
 			return false;
 		}
@@ -995,7 +995,7 @@ class nggdb {
      * @param int (optional) $galleryID
      * @return Array Result of the request
      */
-    function search_for_file( $filename, $galleryID = FALSE ) {
+    function search_for_file( $filename, $galleryID = false ) {
         global $wpdb;
         
         // If a search pattern is specified, load the posts that match

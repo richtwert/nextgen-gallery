@@ -11,7 +11,7 @@ function nggallery_admin_overview()  {
 	?>
 	<div class="wrap ngg-wrap">
         <?php screen_icon( 'nextgen-gallery' ); ?>
-		<h2><?php _e(PHOTOCRATI_GALLERY_OVERVIEW_CAP, 'nggallery') ?></h2>
+		<h2><?php _e('NextGEN Gallery Overview', 'nggallery') ?></h2>
         <?php if (version_compare(PHP_VERSION, '5.0.0', '<')) ngg_check_for_PHP5(); ?>
 		<div id="dashboard-widgets-container" class="ngg-overview">
 		    <div id="dashboard-widgets" class="metabox-holder">
@@ -504,7 +504,7 @@ function ngg_overview_right_now() {
 </div>
 <div class="versions" style="padding-top:14px">
     <p>
-	<?php if(current_user_can(PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP)): ?><a class="button rbutton" href="admin.php?page=nggallery-add-gallery"><?php _e('Upload pictures', 'nggallery') ?></a><?php endif; ?>
+	<?php if(current_user_can('NextGEN Upload images')): ?><a class="button rbutton" href="admin.php?page=nggallery-add-gallery"><?php _e('Upload pictures', 'nggallery') ?></a><?php endif; ?>
 	<?php _e('Here you can control your images, galleries and albums.', 'nggallery') ?>
 	</p>
 <br class="clear" />
@@ -786,7 +786,7 @@ function ngg_widget_related_plugins() {
 function ngg_related_plugins() {
 	include(ABSPATH . 'wp-admin/includes/plugin-install.php');
 
-    if ( FALSE === ( $api = get_transient( 'ngg_related_plugins' ) ) ) {
+    if ( false === ( $api = get_transient( 'ngg_related_plugins' ) ) ) {
     	// this api sucks , tags will not be used in the correct way : nextgen-gallery cannot be searched
     	$api = plugins_api('query_plugins', array('search' => 'nextgen') );
         

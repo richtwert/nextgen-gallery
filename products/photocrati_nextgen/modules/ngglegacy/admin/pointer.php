@@ -47,7 +47,7 @@ class NGG_Pointers {
 		if ( isset( $_GET['ngg_restart_tour'] ) )
             delete_user_meta(get_current_user_id(), 'dismissed_wp_pointers' );
 
-        $dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', TRUE ) );
+        $dismissed = explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) );
         
         // if we are not on the correct page we will notenqueue the pointer scripts         
 		if ( !empty( $this->settings ) ) {

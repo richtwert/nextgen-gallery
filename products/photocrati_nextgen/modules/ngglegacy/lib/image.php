@@ -128,7 +128,7 @@ class nggImage{
 	 * @param int $width
 	 * @param int $height
 	 * @param string $mode could be watermark | web20 | crop
-	 * @return the url for the image or FALSE if failed 
+	 * @return the url for the image or false if failed 
 	 */
 	function cached_singlepic_file($width = '', $height = '', $mode = '' ) {
 

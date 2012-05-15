@@ -71,7 +71,7 @@ if ( $mode == 'last_pictures' ) {
 	}
 
 	// show other galleries if needed
-	$prev_next = ( isset($_GET['prev_next']) && $_GET['prev_next'] == 'true' ) ? TRUE : false;
+	$prev_next = ( isset($_GET['prev_next']) && $_GET['prev_next'] == 'true' ) ? true : false;
 	$prev_gallery = $next_gallery =  null;
 	
 	// Get previous and next galleries if required

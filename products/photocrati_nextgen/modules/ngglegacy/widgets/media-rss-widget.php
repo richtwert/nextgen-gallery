@@ -67,7 +67,7 @@ class nggMediaRssWidget extends WP_Widget {
             'show_global_mrss' => true,
             'mrss_text'  => __('Media RSS', 'nggallery'),
             'mrss_title' => __('Link to the main image feed', 'nggallery'), 
-            'show_icon' => TRUE ) );
+            'show_icon' => true ) );
             
 		$title      = esc_attr( $instance['title'] );
         $mrss_text  = esc_attr( $instance['mrss_text'] );

@@ -25,11 +25,11 @@ function nggShowSlideshow($galleryID, $width, $height) {
     }
 
     //Redirect all calls to the JavaScript slideshow if wanted
-    if ( $ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === TRUE )
+    if ( $ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === true )
         return nggShow_JS_Slideshow($galleryID, $width, $height);
     
     // If the Imagerotator didn't exist, skip the output
-    if ( NGGALLERY_IREXIST == FALSE ) 
+    if ( NGGALLERY_IREXIST == false ) 
         return; 
         
     if (empty($width) ) $width  = (int) $ngg_options['irWidth'];
@@ -49,7 +49,7 @@ function nggShowSlideshow($galleryID, $width, $height) {
     // adding the flash parameter   
     $swfobject->add_flashvars( 'file', urlencode ( trailingslashit ( home_url() ) . 'index.php?callback=imagerotator&gid=' . $galleryID ) );
     $swfobject->add_flashvars( 'shuffle', $ngg_options['irShuffle'], 'true', 'bool');
-    // option has oposite meaning : TRUE should switch to next image
+    // option has oposite meaning : true should switch to next image
     $swfobject->add_flashvars( 'linkfromdisplay', !$ngg_options['irLinkfromdisplay'], 'false', 'bool');
     $swfobject->add_flashvars( 'shownavigation', $ngg_options['irShownavigation'], 'true', 'bool');
     $swfobject->add_flashvars( 'showicons', $ngg_options['irShowicons'], 'true', 'bool');
@@ -146,7 +146,7 @@ function nggShow_JS_Slideshow($galleryID, $width, $height, $class = 'ngg-slidesh
  * @param int $images (optional) number of images per page
  * @return the content
  */
-function nggShowGallery( $galleryID, $template = '', $images = FALSE ) {
+function nggShowGallery( $galleryID, $template = '', $images = false ) {
     
     global $nggRewrite;
 
@@ -236,7 +236,7 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
     $ngg_options = nggGallery::get_option('ngg_options');
 
     //the shortcode parameter will override global settings, TODO: rewrite this to a class
-    $ngg_options['galImages'] = ( $images === FALSE ) ? $ngg_options['galImages'] : (int) $images;  
+    $ngg_options['galImages'] = ( $images === false ) ? $ngg_options['galImages'] : (int) $images;  
     
     $current_pid = false;
         
@@ -347,7 +347,7 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
             $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode(get_the_title());
 
         // create link for imagebrowser and other effects
-        $args ['nggpage'] = empty($nggpage) || ($template != 'carousel') ? FALSE : $nggpage;  // only needed for carousel mode
+        $args ['nggpage'] = empty($nggpage) || ($template != 'carousel') ? false : $nggpage;  // only needed for carousel mode
         $args ['pid']     = ($ngg_options['usePermalinks']) ? $picture->image_slug : $picture->pid;
         $picturelist[$key]->pidlink = $nggRewrite->get_permalink( $args );
         
@@ -388,8 +388,8 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
     $picturelist = apply_filters( 'ngg_picturelist_object', $picturelist, $galleryID );
     
     //additional navigation links
-    $next = ( empty($nggNav->next) ) ? FALSE : $nggNav->next;
-    $prev = ( empty($nggNav->prev) ) ? FALSE : $nggNav->prev;
+    $next = ( empty($nggNav->next) ) ? false : $nggNav->next;
+    $prev = ( empty($nggNav->prev) ) ? false : $nggNav->prev;
 
     // create the output
     $out = nggGallery::capture ( $filename, array ('gallery' => $gallery, 'images' => $picturelist, 'pagination' => $navigation, 'current' => $current_pid, 'next' => $next, 'prev' => $prev) );

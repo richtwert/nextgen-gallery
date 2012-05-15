@@ -51,7 +51,7 @@ class nggSlideshowWidget extends WP_Widget {
 		$ngg_options = get_option('ngg_options');
 
         //Redirect all calls to the JavaScript slideshow if wanted
-        if ( $ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === TRUE || NGGALLERY_IREXIST == FALSE )
+        if ( $ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === true || NGGALLERY_IREXIST == false )
             return nggShow_JS_Slideshow($galleryID, $irWidth, $irHeight, 'ngg-widget-slideshow');
 	
 		if (empty($irWidth) ) $irWidth = (int) $ngg_options['irWidth'];
@@ -189,7 +189,7 @@ class nggWidget extends WP_Widget {
             'width' => '75',
             'exclude' => 'all',
             'list'  =>  '',
-            'webslice'  => TRUE ) );
+            'webslice'  => true ) );
 		$title  = esc_attr( $instance['title'] );
 		$items  = intval  ( $instance['items'] );
         $height = esc_attr( $instance['height'] );
@@ -375,7 +375,7 @@ function nggDisplayRandomImages($number, $width = '75', $height = '50', $exclude
 						'height'   => $height, 
 						'exclude'  => $exclude,
 						'list'     => $list,
-                        'webslice' => FALSE );
+                        'webslice' => false );
                         
 	$ngg_widget = new nggWidget();
 	$ngg_widget->widget($args = array( 'widget_id'=> 'sidebar_1' ), $options);
@@ -397,7 +397,7 @@ function nggDisplayRecentImages($number, $width = '75', $height = '50', $exclude
 						'height'   => $height, 
 						'exclude'  => $exclude,
 						'list'     => $list,
-                        'webslice' => FALSE );
+                        'webslice' => false );
                         
 	$ngg_widget = new nggWidget();
 	$ngg_widget->widget($args = array( 'widget_id'=> 'sidebar_1' ), $options);

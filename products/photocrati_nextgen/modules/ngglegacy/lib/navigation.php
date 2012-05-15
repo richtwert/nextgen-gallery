@@ -94,7 +94,7 @@ class nggNavigation {
 								$args['nggpage'] = ( 1 == $page_num ) ? FALSE : $page_num;
 								$r .= '<a class="page-numbers" href="' . $nggRewrite->get_permalink( $args ) . '">' . ( $page_num ) . '</a>';
 								$in = true;
-							} elseif ( $in == TRUE ) {
+							} elseif ( $in == true ) {
 								$r .= '<span class="more">...</span>';
 								$in = false;
 							}

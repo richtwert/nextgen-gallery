@@ -110,7 +110,7 @@ class ngg_locale {
 	 * Downloads a locale to the plugin folder using the WordPress HTTP Class.
 	 *
 	 * @author taken from WP core 
-	 * @return mixed WP_Error on failure, TRUE on success.
+	 * @return mixed WP_Error on failure, true on success.
 	 */
 	function download_locale() {
 		

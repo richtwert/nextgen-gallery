@@ -29,7 +29,7 @@ if ( !is_user_logged_in() )
 	die('Login failure. -1');
 
 //check for correct capability
-if ( !current_user_can(PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP) ) 
+if ( !current_user_can('NextGEN Upload images') ) 
 	die('You do not have permission to upload files. -2');
 
 //check for correct nonce 
