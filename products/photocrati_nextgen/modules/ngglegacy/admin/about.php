@@ -19,8 +19,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 		<div class="postbox">
 			<h3 class="hndle"><span><?php _e('Contributors / Tribute to', 'nggallery'); ?></span></h3>
 		    <div class="inside">
-				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?>
-				<?php _e('So, we would like to thank the following people for their pioneer work (without this work it\'s impossible to create such a plugin so fast)', 'nggallery') ;?></p>
+				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?></p>		
 				<ul class="ngg-list">
 				<li><a href="http://wordpress.org" target="_blank">The WordPress Team</a> <?php _e('for their great documented code', 'nggallery') ;?></li>
 				<li><a href="http://jquery.com" target="_blank">The jQuery Team</a> <?php _e('for jQuery, which is the best Web2.0 framework', 'nggallery') ;?></li>

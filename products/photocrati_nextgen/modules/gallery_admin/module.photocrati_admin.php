@@ -108,7 +108,7 @@ class M_Photocrati_Admin extends C_Base_Module
     function _enqueue()
     {
         $dequeue = array(
-            'jquery',
+            //'jquery',
             'jquery-ui-core',
             'jquery-ui-tabs',
             'jquery-ui-sortable',
@@ -127,6 +127,14 @@ class M_Photocrati_Admin extends C_Base_Module
         }
 
 
+#        wp_register_script(
+#            'jquery',
+#            path_join(
+#                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
+#                'jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js'
+#            )
+#        );
+
         wp_register_script(
             'jquery-ui-core',
             path_join(
@@ -134,14 +142,6 @@ class M_Photocrati_Admin extends C_Base_Module
                 'jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js'
             ),
             array('jquery')
-        );
-
-        wp_register_script(
-            'jquery',
-            path_join(
-                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
-                'jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js'
-            )
         );
 
         wp_register_script(

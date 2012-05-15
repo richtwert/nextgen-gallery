@@ -321,7 +321,11 @@ jQuery(document).ready( function() {
 			</table>
 
 			<div class="submit">
+				<?php
+        if ( wpmu_enable_function('wpmuScanFolder') && nggGallery::current_user_can( 'NextGEN Scan folder' ) ) :
+				?>
 				<input type="submit" class="button-secondary" name="scanfolder" value="<?php _e("Scan Folder for new images",'nggallery'); ?> " />
+				<?php endif; ?>
 				<input type="submit" class="button-primary action" name="updatepictures" value="<?php _e("Save Changes",'nggallery'); ?>" />
 			</div>
 
