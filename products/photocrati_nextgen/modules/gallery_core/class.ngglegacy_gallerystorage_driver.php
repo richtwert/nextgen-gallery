@@ -39,7 +39,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * Get the gallery path persisted in the database for the gallery
 	 * @param type $gallery
 	 */
-	function get_gallery_path($gallery)
+	function get_gallery_abspath($gallery)
 	{
 		$retval = NULL;
 

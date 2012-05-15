@@ -3,6 +3,16 @@
 class Mixin_Photocrati_Options extends Mixin
 {
 	/**
+	 * Sets the name of the WordPress option used by ngglegacy
+	 * @return string
+	 */
+	function get_option_name()
+	{
+		return 'ngg_options';
+	}
+
+
+	/**
 	 * Gets the default options for the plugin
 	 */
 	function _set_defaults()

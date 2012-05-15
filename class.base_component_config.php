@@ -6,10 +6,23 @@ class Mixin_Component_Config extends Mixin
 {
     function initialize()
     {
-        $this->option_name = get_class($this->object);
+        $this->option_name = $this->object->get_option_name();
     }
 
+	/**
+	 * Returns the name of the option used to store the settings
+	 * @return type
+	 */
+	function get_option_name()
+	{
+		return get_class($this->object);
+	}
 
+
+	/**
+	 * Saves all settings
+	 * @return boolean
+	 */
     function save()
     {
         $this->object->validate();
@@ -20,12 +33,19 @@ class Mixin_Component_Config extends Mixin
     }
 
 
+	/**
+	 * Deletes all settings for the component
+	 * @return type
+	 */
     function delete()
     {
         return update_option($this->option_name, array());
     }
 
 
+	/**
+	 * Loads all settings
+	 */
     function _load()
     {
         return $this->object->settings = array_merge(
@@ -34,6 +54,10 @@ class Mixin_Component_Config extends Mixin
         );
     }
 
+
+	/**
+	 * Sets any defaults missing from the loaded settings
+	 */
 	function _set_defaults()
 	{
 

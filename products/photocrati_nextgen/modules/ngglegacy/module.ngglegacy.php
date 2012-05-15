@@ -221,12 +221,9 @@ class M_NggLegacy extends C_Base_Module
 
 	/**
 	 * Registers a new taxonomy for NextGEN
-	 * @global WP_Rewrite $wp_rewrite
 	 */
 	function _register_taxonomy()
 	{
-		global $wp_rewrite;
-
 		// Register the NextGEN taxonomy
 		$args = array(
  	            'label' => __('Picture tag', 'nggallery'),
