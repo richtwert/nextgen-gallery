@@ -115,6 +115,8 @@ class M_Attach_to_Post extends C_Base_Module
     function load_tinymce_helpers()
     {
         global $post_ID;
+        
+        $router = $this->_get_registry()->get_singleton_utility('I_Router');
 
         // Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
@@ -128,8 +130,8 @@ class M_Attach_to_Post extends C_Base_Module
         wp_register_script('tinymce_helpers', $this->static_url('tinymce_helpers.js'));
         wp_enqueue_script('tinymce_helpers');
         wp_localize_script('tinymce_helpers', 'tinymce_nextgen', array(
-           'preview_url'    =>  photocrati_gallery_plugin_routing_uri('attach_to_post/preview'),
-           'attach_url'    =>  photocrati_gallery_plugin_routing_uri('attach_to_post'),
+           'preview_url'    =>  $router->routing_uri('attach_to_post/preview'),
+           'attach_url'    =>  $router->routing_uri('attach_to_post'),
            'post_id'        =>  $post_ID
         ));
     }
