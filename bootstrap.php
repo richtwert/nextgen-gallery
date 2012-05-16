@@ -87,7 +87,7 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_PRODUCT_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'products'));
 		define('PHOTOCRATI_GALLERY_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PRODUCT_DIR, 'photocrati_nextgen/modules'));
 		define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
-		define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'class.photocrati_gallery_plugin.php'));
+		define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'module.photocrati_gallery_plugin.php'));
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('PHOTOCRATI_GALLERY_OPTION_PREFIX', 'nggallery');
 		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.5');
@@ -133,8 +133,19 @@ class C_NextGEN_Bootstrap
 		// Include some extra helpers
 		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
+		$registry = C_Component_Registry::get_instance();
+		
 		// Include and instantiate the WordPress plugin
-		require_once(PHOTOCRATI_GALLERY_PLUGIN_CLASS);
+		//require_once(PHOTOCRATI_GALLERY_PLUGIN_CLASS);
+		$registry->add_module_path(PHOTOCRATI_GALLERY_PLUGIN_CLASS);
+		
+		add_action('init', array($this, '_wp_init'));
+	}
+	
+	function _wp_init()
+	{
+		C_Component_Registry::get_instance()->load_module('photocrati-gallery-core');
+		
 		new C_Photocrati_Gallery_Plugin();
 	}
 
