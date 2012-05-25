@@ -49,7 +49,7 @@ class M_AutoUpdate extends C_Base_Module
     function get_license()
     {
     	// XXX use Mixin_Component_Config?
-    	$license = get_option('photocrati_gallery_plugin_license');
+    	$license = get_option('photocrati_license_default');
     	
     	if ($license == null)
     	{
@@ -74,12 +74,12 @@ class M_AutoUpdate extends C_Base_Module
     // Returns a product_id -> product_version associative array of all the loaded products
     function get_product_list()
     {
-    	$product_list = $this->_registry->get_product_list();
+    	$product_list = $this->_get_registry()->get_product_list();
     	$version_list = array();
     	
     	foreach ($product_list as $product_id)
     	{
-    		$product = $this->_registry->get_product($product_id);
+    		$product = $this->_get_registry()->get_product($product_id);
     		
     		$version_list[$product_id] = $product->module_version;
     	}
@@ -91,12 +91,12 @@ class M_AutoUpdate extends C_Base_Module
     // Returns a module_id -> module_version associative array of all the loaded modules
     function get_module_list()
     {
-    	$module_list = $this->_registry->get_module_list();
+    	$module_list = $this->_get_registry()->get_module_list();
     	$version_list = array();
     	
     	foreach ($module_list as $module_id)
     	{
-    		$module = $this->_registry->get_module($module_id);
+    		$module = $this->_get_registry()->get_module($module_id);
     		
     		$version_list[$module_id] = $module->module_version;
     	}
@@ -196,7 +196,7 @@ class M_AutoUpdate extends C_Base_Module
     		// XXX transform local relative path to absolute path
     		if (isset($local_path['product']))
     		{
-    			$path = $this->_registry->get_product_module_path($local_path['product']);
+    			$path = $this->_get_registry()->get_product_module_path($local_path['product']);
     			
     			if ($path != null)
     			{
@@ -213,13 +213,13 @@ class M_AutoUpdate extends C_Base_Module
     	}
     	else
     	{
-	    	$install_path = $this->_registry->get_module_dir($module_info['module-id']);
+	    	$install_path = $this->_get_registry()->get_module_dir($module_info['module-id']);
     	}
     	
     	if ($install_path == null)
     	{
     		// XXX pick better default install path?
-    		$path = $this->_registry->get_default_module_path();
+    		$path = $this->_get_registry()->get_default_module_path();
     		
     		if ($path != null)
     		{
