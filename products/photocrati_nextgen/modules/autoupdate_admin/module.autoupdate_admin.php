@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-auto_update-admin,
-		Depends: { photocrati-auto_update, photocrati-admin }
+		Depends: { photocrati-auto_update }
 	}
 ***/
 
@@ -31,15 +31,15 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function initialize()
     {
-        $factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('autoupdate_admin_controller');
     }
     
     
     function _register_adapters()
     {
-        $this->_registry->add_adapter('I_Component_Factory', 'A_AutoUpdate_Admin_Factory');
-        $this->_registry->add_adapter('I_Ajax_Handler', 'A_AutoUpdate_Admin_Ajax');
+        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_AutoUpdate_Admin_Factory');
+        $this->_get_registry()->add_adapter('I_Ajax_Handler', 'A_AutoUpdate_Admin_Ajax');
     }
     
     
@@ -66,7 +66,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
             )
         );
         
-        wp_enqueue_script('pc-autoupdate-admin');
+        //wp_enqueue_script('pc-autoupdate-admin');
         wp_enqueue_style('pc-autoupdate-admin');
     }
     
@@ -75,7 +75,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     {
     	if ($this->_update_list == null)
     	{
-		    $this->_updater = $this->_registry->get_module('photocrati-auto_update');
+		    $this->_updater = $this->_get_registry()->get_module('photocrati-auto_update');
 		    
 		    if ($this->_updater != null)
 		    {
@@ -141,7 +141,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function dashboard_setup()
     {
-   		wp_add_dashboard_widget('photocrati_admin_dashboard_widget', 'Welcome to Photocrati', array($this, 'dashboard_widget'));
+   		wp_add_dashboard_widget('photocrati_admin_dashboard_widget', __('Welcome to Photocrati'), array($this, 'dashboard_widget'));
 
 			global $wp_meta_boxes;
 			
@@ -158,29 +158,32 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function dashboard_widget()
     {
-    	$product_list = $this->_registry->get_product_list();
+    	$product_list = $this->_get_registry()->get_product_list();
     	$product_count = count($product_list);
     	$update_list = $this->_get_update_list();
     	
     	if ($product_count > 0)
     	{
-    		echo '<p>You are using';
+    		echo '<p>';
     	
     		if ($product_count > 1)
     		{
-    			echo ' the following products:';
+    			echo __('You are using the following products:');
+    		}
+    		else {
+    			echo __('You are using');
     		}
     		
     		for ($i = 0; $i < $product_count; $i++)
     		{
-    			$product = $this->_registry->get_product($product_list[$i]);
+    			$product = $this->_get_registry()->get_product($product_list[$i]);
     			
     			if ($i > 0)
     			{
     				echo ',';
     			}
     			
-    			echo ' ' . $product->module_name . ' v' . $product->module_version;
+    			echo ' ' . $product->module_name . ' ' . __('version') . ' ' . $product->module_version;
     		}
     		
     		echo '</p>';
