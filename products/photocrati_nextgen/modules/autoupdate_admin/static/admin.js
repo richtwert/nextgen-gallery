@@ -14,7 +14,7 @@ function photocrati_autoupdate_string_format()
 function photocrati_autoupdate_readable_size(bytes) 
 {
   var sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
-  if (bytes == 0) return 'n/a';
+  if (bytes == 0) return typeof(bytes) == 'number' ? '0 bytes' : 'n/a';
   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
@@ -53,8 +53,11 @@ jQuery(document).ready(function () {
 	
 	if (updateList.length > 0)
 	{
-		var expiredCount = 0;
 		var updateCount = 0;
+		var invalidCount = 0;
+		var expiredCount = 0;
+		var invalidLink = null;
+		var expiredLink = null;
 		var totalSize = 0;
 		var downloadSize = 0;
 		
@@ -63,30 +66,67 @@ jQuery(document).ready(function () {
 			var updateItem = updateList[i];
 			var updateInfo = updateItem['info'];
 			
-			if ('product-expired' in updateInfo)
+			if ('product-invalid-license' in updateInfo)
+			{
+				invalidCount++;
+				
+				if ('product-invalid-license-link' in updateInfo)
+				{
+					var link = updateInfo['product-invalid-license-link'];
+					
+					if (invalidLink == null)
+					{
+						invalidLink = link;
+					}
+					else if (invalidLink != link)
+					{
+						// XXX this is not supported yet! links must be the same for all products
+					}
+				}
+			}
+			else if ('product-expired' in updateInfo)
 			{
 				expiredCount++;
+				
+				if ('product-expired-link' in updateInfo)
+				{
+					var link = updateInfo['product-expired-link'];
+					
+					if (expiredLink == null)
+					{
+						expiredLink = link;
+					}
+					else if (expiredLink != link)
+					{
+						// XXX this is not supported yet! links must be the same for all products
+					}
+				}
 			}
 			else
 			{
-				totalSize += updateInfo['module-package-size'];
 				downloadSize += updateInfo['module-package-size'];
 			}
 			
+			totalSize += updateInfo['module-package-size'];
 			updateCount++;
 		}
 		
 		if (updateCount > 0)
 		{
-			var installCount = updateCount - expiredCount;
+			var installCount = updateCount - (invalidCount + expiredCount);
 			totalSize = photocrati_autoupdate_readable_size(totalSize);
 			downloadSize = photocrati_autoupdate_readable_size(downloadSize);
 			
 			content.append('<div class="details"><span class="message">' + textList['updates_available'].format(updateCount, installCount) + ' ' + textList['updates_sizes'].format(totalSize, downloadSize) + '</span></div>');
 		
+			if (invalidCount > 0)
+			{
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount) + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary">' + textList['updates_license_get'] + '</a></div>');
+			}
+		
 			if (expiredCount > 0)
 			{
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount) + '</span> &nbsp; <a href="http://www.photocrati.com" class="button-secondary">' + textList['updates_renew'] + '</a></div>');
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount) + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary">' + textList['updates_renew'] + '</a></div>');
 			}
 			
 			if (installCount > 0)
@@ -201,7 +241,8 @@ jQuery(document).ready(function () {
 				var submitData = updater.data('form-submit-data') || {};
 				var performingMsg = 'Performing stage "{1}" request for "{0}"...';
 				
-				submitData['action'] = 'autoupdate_admin_handle';
+				submitData['action'] = 'photocrati_autoupdate_admin_handle';
+				submitData['actionSec'] = Photocrati_AutoUpdate_Admin.actionSec;
 				
 				if (updateStage == 'activate')
 				{
@@ -315,6 +356,7 @@ jQuery(document).ready(function () {
 										{
 											updaterLog.append('Canceled.\n');
 											updaterMessage.html(textList['updater_status_cancel']);
+											updaterProgress.progressbar('option', 'value', 0);
 										}
 									}
 								});

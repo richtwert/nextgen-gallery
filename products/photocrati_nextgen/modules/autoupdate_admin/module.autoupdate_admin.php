@@ -48,26 +48,44 @@ class M_AutoUpdate_Admin extends C_Base_Module
         add_action('admin_init', array($this, 'admin_init'));
 				add_action('admin_menu', array($this, 'admin_menu'));
 				add_action('wp_dashboard_setup', array($this, 'dashboard_setup'));
-				
-        wp_register_script(
-            'pc-autoupdate-admin', 
-            path_join(
-                PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
-                'admin.js'
-            ),
-            array('jquery-ui-core')
-        );
-				
-        wp_register_style(
-            'pc-autoupdate-admin', 
-            path_join(
-                PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
-                'admin.css'
-            )
-        );
         
-        //wp_enqueue_script('pc-autoupdate-admin');
-        wp_enqueue_style('pc-autoupdate-admin');
+        if (is_admin())
+        {
+		      if (!interface_exists('I_Ajax_Handler')) {
+		      	$this->_ajax_handler = new C_AutoUpdate_Admin_Ajax();
+		      	
+						add_action('wp_ajax_photocrati_autoupdate_admin_handle', array($this->_ajax_handler, 'handle_ajax'));
+		      }
+				
+		      wp_register_script(
+		          'jquery-ui-progressbar', 
+		          path_join(
+		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
+		              'jqueryUI.progressbar.js'
+		          ),
+		          array('jquery-ui-core')
+		      );
+				
+		      wp_register_script(
+		          'pc-autoupdate-admin', 
+		          path_join(
+		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
+		              'admin.js'
+		          ),
+		          array('jquery-ui-core', 'jquery-ui-progressbar', 'jquery-ui-dialog')
+		      );
+				
+		      wp_register_style(
+		          'pc-autoupdate-admin', 
+		          path_join(
+		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
+		              'admin.css'
+		          )
+		      );
+		      
+		      wp_enqueue_script('pc-autoupdate-admin');
+		      wp_enqueue_style('pc-autoupdate-admin');
+        }
     }
     
     
@@ -109,6 +127,8 @@ class M_AutoUpdate_Admin extends C_Base_Module
     		'no_updates' => __('No updates available.'),
     		'updates_available' => __('Updates available, {1} updates of {0} will be installed.'),
     		'updates_sizes' => __('Update size is {0} and a total of <b>{1}</b> will be downloaded.'),
+    		'updates_license_invalid' => __('Note: {0} of the available updates can\'t be installed because your license seems invalid or no license was installed in this instance.'),
+    		'updates_license_get' => __('Install my license'),
     		'updates_expired' => __('Note: {0} of the available updates can\'t be installed because your subscription is expired.'),
     		'updates_renew' => __('Renew my subscription.'),
     		'updater_status_done' => __('Done.'),
@@ -125,9 +145,19 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function admin_init()
     {
-        // XXX use WP built-in ajax handler?
-        //array('ajaxurl' => admin_url('admin-ajax.php'));
-        wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin', array('ajaxurl' => admin_url('ajax_handler'), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
+			// XXX always use WP built-in ajax handler?
+			$ajaxurl = admin_url('ajax_handler');
+
+			if (!interface_exists('I_Ajax_Handler')) {
+				$ajaxurl = admin_url('admin-ajax.php');
+			}
+
+			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin', array('ajaxurl' => $ajaxurl, 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
+
+			if ((isset($_POST['action']) && $_POST['action'] == 'photocrati_autoupdate_admin_handle'))
+			{
+				ob_start();
+			}
     }
     
     
@@ -161,32 +191,74 @@ class M_AutoUpdate_Admin extends C_Base_Module
     	$product_list = $this->_get_registry()->get_product_list();
     	$product_count = count($product_list);
     	$update_list = $this->_get_update_list();
+    	$out = null;
     	
     	if ($product_count > 0)
     	{
-    		echo '<p>';
-    	
-    		if ($product_count > 1)
-    		{
-    			echo __('You are using the following products:');
-    		}
-    		else {
-    			echo __('You are using');
-    		}
+    		$front_count = 0;
+    		$list_out = null;
+    		$msg_out = null;
     		
-    		for ($i = 0; $i < $product_count; $i++)
+    		for ($i = 0, $l = 0; $i < $product_count; $i++)
     		{
     			$product = $this->_get_registry()->get_product($product_list[$i]);
     			
-    			if ($i > 0)
+    			if (!$product->is_background_product())
     			{
-    				echo ',';
-    			}
+		  			if ($l > 0)
+		  			{
+		  				$list_out .= ',';
+		  			}
     			
-    			echo ' ' . $product->module_name . ' ' . __('version') . ' ' . $product->module_version;
+    				$l++;
+    				$front_count++;
+		  			
+		  			$list_out .= ' ' . $product->module_name . ' ' . __('version') . ' ' . $product->module_version;
+		  			
+		  			$msg_primary = $product->get_dashboard_message('primary');
+		  			$msg_secondary = $product->get_dashboard_message('secondary');
+		  			
+		  			if ($msg_primary != null)
+		  			{
+		  				if ($msg_out != null)
+		  				{
+		  					$msg_out .= '<br/>';
+		  				}
+		  				
+		  				$msg_out .= $msg_primary;
+		  			}
+		  			
+		  			if ($msg_secondary != null)
+		  			{
+		  				if ($msg_out != null)
+		  				{
+		  					$msg_out .= '<br/>';
+		  				}
+		  				
+		  				$msg_out .= $msg_secondary;
+		  			}
+    			}
     		}
     		
-    		echo '</p>';
+    		$out .= '<p><b>';
+    		
+    		if ($front_count > 1)
+    		{
+    			$out .= __('You are using the following products:');
+    		}
+    		else {
+    			$out .= __('You are using');
+    		}
+    		
+    		$out .= $list_out;
+    		
+    		$out .= '</b></p>';
+    		
+    		$out .= '<p>';
+    		$out .= $msg_out;
+    		$out .= '</p>';
+    		
+    		echo $out;
     	}
     	
     	if ($update_list != null)
