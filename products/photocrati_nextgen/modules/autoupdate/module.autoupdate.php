@@ -38,22 +38,102 @@ class M_AutoUpdate extends C_Base_Module
     
     function admin_init()
     {
-    	//$this->check_license();
-    	//$this->check_updates();
-    	
-    	//$this->check_product_list();
+    	if (isset($_GET['pclihs']))
+    	{
+    		if (!current_user_can('manage_options'))
+    		{
+    			wp_die('Permission Denied.');
+    		}
+    		else
+    		{
+    			$license_hash = $_GET['pclihs'];
+    			$product = isset($_GET['pcprd']) ? $_GET['pcprd'] : null;
+    			$license_hash = trim($license_hash);
+    			$product = trim($product);
+    			$hash_decoded = base64_decode($license_hash);
+    			$product_decoded = base64_decode($product);
+    			
+    			if ($hash_decoded !== false)
+    			{
+    				$license_hash = $hash_decoded;
+    			}
+    			
+    			if ($product_decoded !== false)
+    			{
+    				$product = $product_decoded;
+    			}
+    			
+    			// XXX license at the moment is always global, ignore $product
+    			$product = null;
+    			
+    			$license = $this->get_license($product);
+    			$license_new = $this->install_license($license_hash);
+    			
+    			if ($license_new != null && isset($license_new['license-key']))
+    			{
+    				$license_new = $license_new['license-key'];
+    				
+    				if ($license == null || $license != $license_new)
+    				{
+    					$this->set_license($license_new, $product);
+    				}
+    			}
+    			else
+    			{
+    				$error = null;
+    				
+    				if (isset($license_new['error']))
+    				{
+    					$error = $license_new['error'];
+    				}
+    				else if (is_string($license_new))
+    				{
+    					$error = $license_new;
+    				}
+    				
+    				if ($error != null)
+    				{
+    					$error = ': ' . $error;
+    				}
+    				
+    				$error .= '.';
+    				
+    				wp_die('Couldn\'t install new license' . $error);
+    			}
+    		}
+    	}
     }
     
     
     // Returns license key, retrieval from multiple sources
-    function get_license()
+    function get_license($product = null)
     {
     	// XXX use Mixin_Component_Config?
-    	$license = get_option('photocrati_license_default');
+    	$license_default = get_option('photocrati_license_default');
+  		$product_list = $this->_get_registry()->get_product_list();
+  		$path_list = array();
+    	$license = null;
     	
-    	if ($license == null)
+    	if ($product != null) 
     	{
-    		$path = dirname(__FILE__) . '/../../license.key';
+    		$license = get_option('photocrati_license_product_' . $product);
+    		
+    		if (array_search($product, $product_list) !== false)
+    		{
+    			$path_list[] = $this->_get_registry()->get_module_dir($product);
+    		}
+    	}
+    	else
+    	{
+    		foreach ($product_list as $product)
+    		{
+    			$path_list[] = $this->_get_registry()->get_module_dir($product);
+    		}
+    	}
+    	
+  		foreach ($path_list as $path)
+    	{
+    		$path .= '/license.key';
     		$path = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $path);
     		
     		if (!file_exists($path))
@@ -64,10 +144,31 @@ class M_AutoUpdate extends C_Base_Module
     		if (file_exists($path))
     		{
     			$license = file_get_contents($path);
+    			
+    			break;
     		}
     	}
     	
-    	return $license ? $license : null;
+    	if ($license == null)
+    	{
+    		$license = $license_default;
+    	}
+    	
+    	return $license;
+    }
+    
+    function set_license($license, $product = null)
+    {
+    	if ($product != null) 
+    	{
+    		return update_option('photocrati_license_product_' . $product, $license);
+    	}
+    	else
+    	{
+    		return update_option('photocrati_license_default', $license);
+    	}
+    	
+    	return false;
     }
     
     
@@ -119,7 +220,15 @@ class M_AutoUpdate extends C_Base_Module
     
     function check_license()
     {
-    	$this->api_request(self::API_URL, 'cklic');
+    	return $this->api_request(self::API_URL, 'cklic');
+    }
+    
+    
+    function install_license($license_hash)
+    {
+    	$result = $this->api_request(self::API_URL, 'inlic', array('license-hash' => $license_hash));
+    	
+    	return $result;
     }
     
     
@@ -309,6 +418,12 @@ class M_AutoUpdate extends C_Base_Module
     		$parameter_list['license-key'] = $license_key;
     	}
     	
+    	if (!isset($parameter_list['authority-site']))
+    	{
+  			$authority_site = admin_url();
+    		$parameter_list['authority-site'] = $authority_site;
+    	}
+    	
     	if (!isset($parameter_list['product-list']))
     	{
     		$product_list = $this->get_product_list();
@@ -349,6 +464,7 @@ class M_AutoUpdate extends C_Base_Module
   		{
   			if (isset($http_args['filename']))
   			{
+  			 	// XXX FIXME 
   				//if (wp_remote_retrieve_response_code($return) == 200)
   				{
   					return true;
@@ -357,12 +473,7 @@ class M_AutoUpdate extends C_Base_Module
   			else
   			{
 					$return = wp_remote_retrieve_body($return);
-					
-					//echo $return;
-					
 					$return = json_decode($return, true);
-					
-					//var_dump($return);
 					
 					return $return;
   			}
