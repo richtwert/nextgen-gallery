@@ -47,6 +47,9 @@ class nggLoader {
 		if ( ( !$this->required_version() ) || ( !$this->check_memory_limit() ) )
 			return;
 
+		// Set error handler
+		set_exception_handler(array(&$this, 'exception_handler'));
+
 		// Get some constants first
 		$this->load_options();
 		$this->define_constant();
@@ -85,6 +88,9 @@ class nggLoader {
 
         // Show NextGEN version in header
         add_action('wp_head', array('nggGallery', 'nextgen_version') );
+
+		// Handle upload requests
+		add_action('init', array(&$this, 'handle_upload_request'));
 
 	}
 
@@ -535,7 +541,40 @@ class nggLoader {
     		add_action( 'wp_footer', create_function('', 'echo \'<!--wp_footer-->\';'), 99999 );
     }
 
+
+	/**
+	 * Handles upload requests
+	 */
+	function handle_upload_request()
+	{
+		if (isset($_GET['nggupload'])) {
+			require_once(implode(DIRECTORY_SEPARATOR, array(
+				NGGALLERY_ABSPATH,
+				'admin',
+				'upload.php'
+			)));
+			throw new E_Clean_Exit();
+		}
+	}
+
+	/**
+	 * Handles clean exits gracefully. Re-raises anything else
+	 * @param Exception $ex
+	 */
+	function exception_handler($ex)
+	{
+		if (get_class($ex) != 'E_Clean_Exit') throw $ex;
+	}
 }
+
+/**
+ * Indicates that a clean exit occured. Handled by set_exception_handler
+ */
+class E_Clean_Exit extends RuntimeException
+{
+
+}
+
 	// Let's start the holy plugin
 	global $ngg;
 	$ngg = new nggLoader();
