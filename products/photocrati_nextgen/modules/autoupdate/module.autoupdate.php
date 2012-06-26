@@ -266,7 +266,7 @@ class M_AutoUpdate extends C_Base_Module
     }
     
     
-    function download_package($module_info, $timeout = 300)
+    function _download_package($module_info, $timeout = 300)
     {
 			$tmpfname = wp_tempnam($module_info['module-id']);
 			
@@ -294,11 +294,13 @@ class M_AutoUpdate extends C_Base_Module
 			return $tmpfname;
     }
     
-    
-    function install_package($module_info, $package_file)
+    // Install Module package retrieved previously (through _download_package())
+    function _install_package($module_info, $package_file)
     {
-    	$local_path = isset($module_info['local-path']) ? $module_info['local-path'] : null;
+    	$local_path = isset($module_info['module-local-path']) ? $module_info['module-local-path'] : null;
     	$install_path = null;
+    	$current_path = $this->_get_registry()->get_module_dir($module_info['module-id']);
+    	$basename = basename($current_path);
     	
     	if ($local_path != null)
     	{
@@ -315,14 +317,21 @@ class M_AutoUpdate extends C_Base_Module
 						}
 						else
 						{
-							$install_path = $path . DIRECTORY_SEPARATOR . $module_info['module-id'];
+							if ($basename != null)
+							{
+								$install_path = $path . DIRECTORY_SEPARATOR . $basename;
+							}
+							else
+							{
+								$install_path = $path . DIRECTORY_SEPARATOR . $module_info['module-id'];
+							}
 						}
     			}
     		}
     	}
     	else
     	{
-	    	$install_path = $this->_get_registry()->get_module_dir($module_info['module-id']);
+	    	$install_path = $current_path;
     	}
     	
     	if ($install_path == null)
@@ -354,8 +363,8 @@ class M_AutoUpdate extends C_Base_Module
     }
     
     
-    // Activates previously installed module (through install_package(...))
-    function activate_module($module_info, $install_path)
+    // Activates previously installed Module package (through _install_package())
+    function _activate_module($module_info, $install_path)
     {
 			global $wp_filesystem;
   			
@@ -381,6 +390,7 @@ class M_AutoUpdate extends C_Base_Module
     		
     		if ($activate_path != null)
     		{
+    			// XXX __old__ is not used yet, needs fixing and completion
     			if ($other_path != null && is_dir($other_path))
     			{
     				$wp_filesystem->delete($other_path, true);
@@ -388,7 +398,8 @@ class M_AutoUpdate extends C_Base_Module
     			
     			if (is_dir($activate_path))
     			{
-    				$wp_filesystem->delete($activate_path, true);
+    				// XXX for now overwrite and don't replace
+    				//$wp_filesystem->delete($activate_path, true);
     			}
     			
   				$wp_filesystem->move($install_path, $activate_path, true);
@@ -514,7 +525,7 @@ class M_AutoUpdate extends C_Base_Module
 								case 'add':
 								case 'update':
 								{
-									$package_file = $this->download_package($command_info);
+									$package_file = $this->_download_package($command_info);
 									
 									if ($package_file)
 									{
@@ -562,11 +573,11 @@ class M_AutoUpdate extends C_Base_Module
 										
 										if ($stage == 'install')
 										{
-											$new_path = $this->install_package($command_info, $command_info['-command-package-file']);
+											$new_path = $this->_install_package($command_info, $command_info['-command-package-file']);
 										}
 										else if ($stage == 'activate')
 										{
-											$new_path = $this->activate_module($command_info, $command_info['-command-install-path']);
+											$new_path = $this->_activate_module($command_info, $command_info['-command-install-path']);
 										}
 										
 										if ($new_path != null)
