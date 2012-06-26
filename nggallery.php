@@ -351,6 +351,11 @@ class nggLoader {
 
 		}
 
+		// activate jquery.lightbox
+		if ($this->options['thumbEffect'] == 'lightbox') {
+			wp_enqueue_script('jquery');
+		}
+
 		// activate modified Shutter reloaded if not use the Shutter plugin
 		if ( ($this->options['thumbEffect'] == "shutter") && !function_exists('srel_makeshutter') ) {
 			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.js', false ,'1.3.3');
