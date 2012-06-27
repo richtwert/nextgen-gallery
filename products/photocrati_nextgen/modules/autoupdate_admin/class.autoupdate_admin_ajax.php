@@ -75,10 +75,6 @@ class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 					
 					return $return_list;
 				}
-				default:
-				{
-					return null;
-				}
 			}
 		}
 		
@@ -95,11 +91,36 @@ class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 		
 		$action = $_POST['update-action'];
 		$params = $_POST;
-		
-		$response = $this->_handle_action($action, $params);
+
+		if ($action != 'download-log')
+		{
+			$response = $this->_handle_action($action, $params);
+		}
 
 		while (ob_get_level() > 0) {
 			ob_end_clean();
+		}
+		
+		if ($action == 'download-log')
+		{
+			if (current_user_can('upload_files'))
+			{
+				header('Content-type: plain/text');
+				header('Content-Disposition: attachment; filename="update-log.txt"');
+				header('Cache-Control: no-cache, must-revalidate');
+				header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+			
+				$log = isset($params['update-log']) ? $params['update-log'] : null;
+			
+				// XXX for some reason the 'update-log' value gets passed in with quotes escaped, so always unescape
+				if (get_magic_quotes_gpc() || get_magic_quotes_runtime() || true) {
+						$log = stripslashes($log);
+				}
+			
+				echo $log;
+			
+				exit();
+			}
 		}
 		
 		if ($response != null) {

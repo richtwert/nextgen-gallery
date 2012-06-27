@@ -131,14 +131,19 @@ class M_AutoUpdate_Admin extends C_Base_Module
     		'updates_license_get' => __('Install my license'),
     		'updates_expired' => __('Note: {0} of the available updates can\'t be installed because your subscription is expired.'),
     		'updates_renew' => __('Renew my subscription.'),
+    		'updater_button_start' => __('Start Update'),
     		'updater_status_done' => __('Done.'),
+    		// XXX note that because of how json_encode works we need to manually escape double quotes it seems
+    		'updater_status_start' => __('Click \\"Start Update\\" to begin the upgrade process.'),
     		'updater_status_preparing' => __('Preparing upgrade process...'),
     		'updater_status_stage_download' => __('Downloading package {1} of {0}...'),
     		'updater_status_stage_install' => __('Installing package {1} of {0}...'),
     		'updater_status_stage_activate' => __('Activating packages...'),
     		'updater_status_stage_cleanup' => __('Cleaning up...'),
     		'updater_status_cancel' => __('Update was canceled.'),
-    		'updater_status_error' => __('An error occurred during the operation ({0}).')
+    		'updater_status_error' => __('An error occurred during the operation ({0}).'),
+    		'updater_logger_title' => __('Show Update Log'),
+    		'updater_logger_download' => __('Download Update Log')
     	);
     }
     
@@ -152,7 +157,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
 				$ajaxurl = admin_url('admin-ajax.php');
 			}
 
-			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin', array('ajaxurl' => $ajaxurl, 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
+			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin_Settings', array('ajaxurl' => $ajaxurl, 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
 
 			if ((isset($_POST['action']) && $_POST['action'] == 'photocrati_autoupdate_admin_handle'))
 			{
@@ -165,7 +170,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     {
         if ($this->_get_update_list() != null)
         {
-					add_submenu_page('tools.php', __('Update'), __('Update'), 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
+					add_submenu_page('tools.php', __('Photocrati Update'), __('Photocrati Update'), 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
         }
     }
     

@@ -18,5 +18,16 @@ margin:8px 0px;
 font-weight:bold;
 color:#dd3322;
 }
-
-
+#update-content .details .log {
+background:#f8f8f8;
+overflow-y:scroll;
+padding:5px 8px;
+margin-bottom:8px;
+}
+#update-content .details .show-log {
+margin:0;
+}
+button.download-log {
+margin-left:20px;
+margin-bottom:4px;
+}
