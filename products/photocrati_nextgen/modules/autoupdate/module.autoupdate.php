@@ -302,7 +302,7 @@ class M_AutoUpdate extends C_Base_Module
     	$current_path = $this->_get_registry()->get_module_dir($module_info['module-id']);
     	$basename = basename($current_path);
     	
-    	if ($local_path != null)
+    	if ($local_path != null && ($current_path == null || isset($local_path['force'])))
     	{
     		// XXX transform local relative path to absolute path
     		if (isset($local_path['product']))
