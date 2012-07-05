@@ -105,6 +105,9 @@ if (!class_exists('nggLoader')) {
 			// Handle upload requests
 			add_action('init', array(&$this, 'handle_upload_request'));
 
+			// Adds scripts used for social media buttons
+			add_action('admin_init', array(&$this, 'enqueue_social_media_resources'));
+
 			// Display "Photocrati Acquisition Announcement"
 			add_action('admin_init', array(&$this, 'display_update_notice'));
 
@@ -542,11 +545,12 @@ if (!class_exists('nggLoader')) {
 			return $option;
 		}
 
-		// Taken from Google XML Sitemaps from Arne Brachhold
+		// Add links to Plugins page
 		function add_plugin_links($links, $file) {
 
 			if ( $file == $this->plugin_name ) {
-				$links[] = '<a href="admin.php?page=nextgen-gallery">' . __('Overview', 'nggallery') . '</a>';
+				$plugin_name = plugin_basename(NGGALLERY_ABSPATH);
+				$links[] = "<a href='admin.php?page={$plugin_name}'>" . __('Overview', 'nggallery') . '</a>';
 				$links[] = '<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10">' . __('Get help', 'nggallery') . '</a>';
 				$links[] = '<a href="https://bitbucket.org/photocrati/nextgen-gallery">' . __('Contribute', 'nggallery') . '</a>';
 			}
@@ -590,6 +594,26 @@ if (!class_exists('nggLoader')) {
 
 
 		/**
+		 * Enqueues JS required for Social Media Buttons
+		 */
+		function enqueue_social_media_resources()
+		{
+			wp_register_script('ngg_social_media', path_join(
+				NGGALLERY_URLPATH,
+				'admin/js/ngg_social_media.js'
+			), array('jquery'));
+
+			wp_register_style('ngg_social_media', path_join(
+				NGGALLERY_URLPATH,
+				'admin/css/ngg_social_media.css'
+			));
+
+			wp_enqueue_style('ngg_social_media');
+			wp_enqueue_script('ngg_social_media');
+		}
+
+
+		/**
 		* Displays the latest update notice to an Administrator
 		*/
 		function display_update_notice()
@@ -608,7 +632,7 @@ if (!class_exists('nggLoader')) {
 				ob_start();
 				require(path_join(
 					NGGALLERY_ABSPATH,
-					implode(DIRECTORY_SEPARATOR, array('view', 'latest_news_notice.php'))
+					implode(DIRECTORY_SEPARATOR, array('admin', 'templates', 'latest_news_notice.php'))
 				));
 				$content = ob_get_contents();
 				ob_end_clean();
