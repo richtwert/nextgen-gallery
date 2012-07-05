@@ -151,8 +151,9 @@ class nggAddGallery {
         }
 
         $post_params_str = implode( ',', $p ). "\n";
-
 	?>
+
+	<?php include('templates/social_media_buttons.php'); ?>
 
 	<?php if($ngg->options['swfUpload'] && !empty ($this->gallerylist) ) { ?>
     <?php if ( defined('IS_WP_3_3') ) { ?>

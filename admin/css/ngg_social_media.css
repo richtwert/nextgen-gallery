@@ -6,13 +6,19 @@
 	height: 20px;
 }
 
-.gallery_page_nggallery-manage-gallery #ngg_social_media {
+.gallery_page_nggallery-manage-gallery #ngg_social_media,
+.gallery_page_nggallery-manage-album #ngg_social_media,
+.gallery_page_nggallery-tags #ngg_social_media,
+.gallery_page_nggallery-roles #ngg_social_media,
+.gallery_page_nggallery-about #ngg_social_media,
+.toplevel_page_nextgen-gallery #ngg_social_media {
 	float: right;
+	width: 65%;
 }
 
 #ngg_facebook_like {
 	position: absolute;
-	left: 91.5%;
+	right: -374px;
 }
 
 #ngg_social_media .twitter-follow-button {
