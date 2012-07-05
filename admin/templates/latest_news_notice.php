@@ -10,11 +10,5 @@
 	For more on what's included in our first NextGEN Update, see <a target="_blank" href='http://www.nextgen-gallery.com/latest-release-notes'>here</a>.
 </p>
 <p>
-	<a
-		href='https://twitter.com/NextGENGallery'
-		class='twitter-follow-button'
-		data-show-count='false'
-		data-lang='en'>
-		Follow @NextGENGallery
-	</a>
+	<?php include('twitter_follow_link.php'); ?>
 </p>

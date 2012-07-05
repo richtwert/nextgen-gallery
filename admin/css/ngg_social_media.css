@@ -1,0 +1,25 @@
+#ngg_social_media {
+	margin-top: 5px;
+	width: 85%;
+	position: relative;
+	overflow: hidden;
+	height: 20px;
+}
+
+.gallery_page_nggallery-manage-gallery #ngg_social_media {
+	float: right;
+}
+
+#ngg_facebook_like {
+	position: absolute;
+	left: 91.5%;
+}
+
+#ngg_social_media .twitter-follow-button {
+	position: absolute;
+	right: 80px;
+}
+
+#slider {
+	margin-top: 5px !important;
+}
