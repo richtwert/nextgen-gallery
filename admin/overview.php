@@ -112,7 +112,7 @@ function ngg_likeThisMetaBox() {
 	_e("Visit the plugin homepage", 'nggallery');
 	echo "</a></li>";
 
-	$url = 'http://www.nextgen-gallery.com/translating-nextgen-gallery/';
+	$url = 'http://www.nextgen-gallery.com/languages/';
 	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/icon-translate.png ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}'>";
 	_e("Help translating it", 'nggallery');
 	echo "</a></li>";
