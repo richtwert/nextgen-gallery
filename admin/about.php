@@ -1,11 +1,12 @@
-<?php  
+<?php
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
-	function nggallery_admin_about()  {	
+	function nggallery_admin_about()  {
 
 	?>
 
 	<div class="wrap">
+	<?php include('templates/social_media_buttons.php'); ?>
     <?php screen_icon( 'nextgen-gallery' ); ?>
 	<h2><?php _e('Copyright notes / Credits', 'nggallery') ;?></h2>
 	<div id="poststuff">
@@ -19,7 +20,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 		<div class="postbox">
 			<h3 class="hndle"><span><?php _e('Contributors / Tribute to', 'nggallery'); ?></span></h3>
 		    <div class="inside">
-				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?></p>		
+				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?></p>
 				<ul class="ngg-list">
 				<li><a href="http://wordpress.org" target="_blank">The WordPress Team</a> <?php _e('for their great documented code', 'nggallery') ;?></li>
 				<li><a href="http://jquery.com" target="_blank">The jQuery Team</a> <?php _e('for jQuery, which is the best Web2.0 framework', 'nggallery') ;?></li>
@@ -30,7 +31,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 				<li><a href="http://field2.com" target="_blank">Ben Dunkle</a> <?php _e('for the Gallery Icon', 'nggallery') ;?></li>
 				<li><a href="http://watermark.malcherek.com/" target="_blank">Marek Malcherek</a> <?php _e('for the Watermark plugin', 'nggallery') ;?></li>
 				</ul>
-				<p><?php _e('If you don\'t see your name on this list and we\'ve integrated some of your code into the plugin, don\'t hesitate to email us.', 'nggallery') ;?></p>		
+				<p><?php _e('If you don\'t see your name on this list and we\'ve integrated some of your code into the plugin, don\'t hesitate to email us.', 'nggallery') ;?></p>
 			</div>
 		</div>
 		<div class="postbox">
@@ -53,13 +54,13 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 		</div>
 	</div>
 	</div>
-	
+
 	<?php
 }
 
 function ngg_list_contributors()	{
 /* The list of my contributors. Thanks to all of them !*/
-	
+
 	$contributors = array(
 	'Anty (Code contributor)' => 'http://www.anty.at/',
 	'Bjoern von Prollius (Code contributor)' => 'http://www.prollius.de/',
@@ -87,7 +88,7 @@ function ngg_list_contributors()	{
 	'Gil Yaker (Documentation)' => 'http://bamboosoup.com/',
 	'Morten Johansen (Danish Translation)' => 'http://www.fr3ak.dk/',
 	'Vidar Seland (Norwegian Translation)' => 'http://www.viidar.net/',
-	'Emre G&uuml;ler (Turkish Translation)' => 'http://www.emreguler.com/',	
+	'Emre G&uuml;ler (Turkish Translation)' => 'http://www.emreguler.com/',
 	'Emilio Lauretti (Italian Translation)' => '',
 	'Jan Angelovic (Czech Translation)' => 'http://www.angelovic.cz/',
 	'Laki (Slovak Translation)' => 'http://www.laki.sk/',
@@ -121,7 +122,7 @@ function ngg_list_contributors()	{
 	'Luka Komac (Slovenian Translation)' => 'http://www.komac.biz',
     'Dimitris Ikonomou / Nikos Mouratidis (Greek Translation)' => 'http://www.kepik.gr'
 	);
-	
+
 	ksort($contributors);
 	$i = count($contributors);
 	foreach ($contributors as $name => $url)
@@ -135,14 +136,14 @@ function ngg_list_contributors()	{
 			echo " & ";
 		elseif ($i)
 			echo ", ";
-	}	
+	}
 }
 
 function ngg_list_support()	{
 /* The list of my supporters. Thanks to all of them !*/
-	
+
 	global $ngg;
-	
+
 	$supporter = nggAdminPanel::get_remote_array($ngg->donators);
 
 	// Ensure that this is a array
@@ -162,6 +163,6 @@ function ngg_list_support()	{
 			echo " & ";
 		elseif ($i)
 			echo ", ";
-	}	
+	}
 }
 ?>
