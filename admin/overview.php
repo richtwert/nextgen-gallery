@@ -99,7 +99,7 @@ if ( !is_multisite() || is_super_admin() ) {
 function ngg_likeThisMetaBox() {
 
 	echo '<p>';
-    echo sprintf(__('This plugin is primarily developed, maintained, supported and documented by <a href="%s">Photocrati Media</a> with a lot of love & effort. Any kind of contribution would be highly appreciated. Thanks!', 'nggallery'), 'http://www.photocrati.com/');
+    echo sprintf(__('This plugin is primarily developed, maintained, supported and documented by <a href="%s" target="_blank">Photocrati Media</a> with a lot of love & effort. Any kind of contribution would be highly appreciated. Thanks!', 'nggallery'), 'http://www.photocrati.com/');
 	echo '</p><ul>';
 
 	$url = 'http://wordpress.org/extend/plugins/nextgen-gallery/' ;
@@ -113,7 +113,7 @@ function ngg_likeThisMetaBox() {
 	echo "</a></li>";
 
 	$url = 'http://www.nextgen-gallery.com/languages/';
-	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/icon-translate.png ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}'>";
+	echo "<li style='padding-left: 38px; background:transparent url(" . NGGALLERY_URLPATH . "admin/images/icon-translate.png ) no-repeat scroll center left; background-position: 16px 50%; text-decoration: none;'><a href='{$url}' target='_blank'>";
 	_e("Help translating it", 'nggallery');
 	echo "</a></li>";
 
@@ -455,7 +455,7 @@ function ngg_overview_news(){
 					$date = '';
 			}
         ?>
-          <li><a class="rsswidget" title="" href='<?php echo $link; ?>'><?php echo $title; ?></a>
+          <li><a class="rsswidget" title="" target="_blank" href='<?php echo $link; ?>'><?php echo $title; ?></a>
 		  <span class="rss-date"><?php echo $date; ?></span>
           <div class="rssSummary"><strong><?php echo $diff; ?></strong> - <?php echo $desc; ?></div></li>
         <?php
@@ -844,7 +844,7 @@ function ngg_related_plugins() {
 		$ilink = wp_nonce_url('plugin-install.php?tab=plugin-information&plugin=' . $plugin->slug, 'install-plugin_' . $plugin->slug) .
 							'&amp;TB_iframe=true&amp;width=600&amp;height=800';
 
-		echo "<h5><a href='$link'>$title</a></h5>&nbsp;<span>(<a href='$ilink' class='thickbox' title='$title'>" . __( 'Install' ) . "</a>)</span>\n";
+		echo "<h5><a href='{$link}' target='_blank'>{$title}</a></h5>&nbsp;<span>(<a href='$ilink' class='thickbox' title='$title'>" . __( 'Install' ) . "</a>)</span>\n";
 		echo "<p>$description<strong> " . __( 'Author' ) . " : </strong>$plugin->author</p>\n";
 
 		$i++;
