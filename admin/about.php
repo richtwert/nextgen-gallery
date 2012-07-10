@@ -13,7 +13,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 		<div class="postbox">
 		    <h3 class="hndle"><span><?php _e('NextGEN DEV Team', 'nggallery'); ?></span></h3>
 		    <div class="inside">
-				<p><?php _e('NextGEN Gallery is primarily developed, maintained, supported and documented by <a href="http://www.photocrati.com">Photocrati Media</a>. We\'d like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011. There are many others who have made contributions:', 'nggallery') ;?></p>
+				<p><?php _e('NextGEN Gallery is primarily developed, maintained, supported and documented by <a href="http://www.photocrati.com" target="_blank">Photocrati Media</a>. We\'d like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011. There are many others who have made contributions:', 'nggallery') ;?></p>
 				<p><?php ngg_list_contributors(); ?></p>
 			</div>
 		</div>
@@ -128,7 +128,7 @@ function ngg_list_contributors()	{
 	foreach ($contributors as $name => $url)
 	{
 		if ($url)
-			echo "<a href=\"$url\">$name</a>";
+			echo "<a href=\"$url\" target=\"_blank\">$name</a>";
 		else
 			echo $name;
 		$i--;
@@ -155,7 +155,7 @@ function ngg_list_support()	{
 	foreach ($supporter as $name => $url)
 	{
 		if ($url)
-			echo "<a href=\"$url\">$name</a>";
+			echo "<a href=\"$url\" target=\"_blank\">$name</a>";
 		else
 			echo $name;
 		$i--;
