@@ -30,10 +30,14 @@ class C_NextGEN_Bootstrap
 			// Include some extra helpers
 			require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
-			// Load embedded products
+			// Load embedded products. Each product is expected any
+			// modules required
 			$registry = C_Component_Registry::get_instance();
 			$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
 			$registry->load_module('photocrati-nextgen');
+
+			// Initializes all loaded modules
+			$registry->initialize_all_modules();
 		}
 		else add_action('admin_notices', 'render_requirements_not_met');
 	}

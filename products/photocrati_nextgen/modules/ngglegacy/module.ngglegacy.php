@@ -29,7 +29,6 @@ class M_NggLegacy extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->_options = $this->_get_registry()->get_utility('I_Photocrati_Options');
 		include_once(path_join(__DIR__, 'nggallery.php'));
 	}
 }
