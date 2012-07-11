@@ -329,6 +329,4 @@ class C_NextGEN_Bootstrap
 	}
 }
 
-xdebug_start_trace();
 new C_NextGEN_Bootstrap();
-xdebug_stop_trace();
