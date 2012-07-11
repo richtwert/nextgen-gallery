@@ -95,6 +95,7 @@ class C_NextGEN_Bootstrap
 	{
 		// NextGEN by Photocrati Constants
 		define('PHOTOCRATI_GALLERY_PLUGIN', basename($this->directory_path()));
+		define('PHOTOCRATI_GALLERY_PLUGIN_BASENAME', plugin_basename(__FILE__));
 		define('PHOTOCRATI_GALLERY_PLUGIN_DIR', $this->directory_path());
 		define('PHOTOCRATI_GALLERY_PLUGIN_URL', $this->path_uri());
 		define('PHOTOCRATI_GALLERY_I8N_DOMAIN', 'nggallery');
