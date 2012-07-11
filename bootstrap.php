@@ -21,7 +21,19 @@ class C_NextGEN_Bootstrap
 		if ($this->are_requirements_met()) {
 			$this->_define_constants();
 			$this->_register_hooks();
-			$this->init();
+
+			// Include pope framework
+			require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
+				DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')
+			)));
+
+			// Include some extra helpers
+			require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
+
+			// Load embedded products
+			$registry = C_Component_Registry::get_instance();
+			$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
+			$registry->load_module('photocrati-nextgen');
 		}
 		else add_action('admin_notices', 'render_requirements_not_met');
 	}
@@ -117,34 +129,6 @@ class C_NextGEN_Bootstrap
 		}
 
 		return $suites;
-	}
-
-
-	/**
-	 * Initializes the plugin
-	 */
-	function init()
-	{
-		// Include pope framework
-		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
-			DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')
-		)));
-
-		// Include some extra helpers
-		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
-
-		add_action('init', array($this, '_wp_init'));
-	}
-
-	function _wp_init()
-	{
-		$registry = C_Component_Registry::get_instance();
-		$registry->add_module_path(PHOTOCRATI_GALLERY_PLUGIN_DIR);
-
-		C_Component_Registry::get_instance()->load_module(
-			'photocrati-gallery-core',
-			PHOTOCRATI_GALLERY_PLUGIN_DIR
-		);
 	}
 
 
@@ -345,4 +329,6 @@ class C_NextGEN_Bootstrap
 	}
 }
 
+xdebug_start_trace();
 new C_NextGEN_Bootstrap();
+xdebug_stop_trace();

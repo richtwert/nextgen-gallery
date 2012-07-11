@@ -2,8 +2,7 @@
 
 /***
 	{
-		Module: photocrati-nextgen-legacy,
-		Depends: { photocrati-base }
+		Module: photocrati-nextgen-legacy
 	}
  ***/
 class M_NggLegacy extends C_Base_Module
