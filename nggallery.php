@@ -70,7 +70,10 @@ if (!class_exists('nggLoader')) {
 			$this->load_dependencies();
 			$this->start_rewrite_module();
 
-			$this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
+			// Determine plugin basename based on whether NGG is being used in
+			// it's legacy form, or as a Photocrati Gallery
+			if (defined('PHOTOCRATI_GALLERY_PLUGIN_BASENAME')) $this->plugin_name = PHOTOCRATI_GALLERY_PLUGIN_BASENAME;
+			else $this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 
 			// Init options & tables during activation & deregister init option
 			register_activation_hook( $this->plugin_name, array(&$this, 'activate') );
