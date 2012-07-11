@@ -630,10 +630,6 @@ if (!class_exists('nggLoader')) {
 
 				// Get the announcement notice content
 				ob_start();
-				die(path_join(
-					NGGALLERY_ABSPATH,
-					implode(DIRECTORY_SEPARATOR, array('admin', 'templates', 'latest_news_notice.php'))
-				));
 				require(path_join(
 					NGGALLERY_ABSPATH,
 					implode(DIRECTORY_SEPARATOR, array('admin', 'templates', 'latest_news_notice.php'))
