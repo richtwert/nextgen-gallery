@@ -238,20 +238,13 @@ add_action('wp_ajax_ngg_file_browser', 'ngg_ajax_file_browser');
 function ngg_ajax_file_browser() {
     
     global $ngg;
-    
-	// include NGG admin functions
-	include_once (dirname (__FILE__) . '/admin.php');
-  
-  // It seems this ajax call (file_browser) is only ever used for the import folder functionality, so we check if that is enabled
-  if (!wpmu_enable_function('wpmuImportFolder'))
-  	die('Access to resource is forbidden [1].');
 
 	// check for correct NextGEN capability
 	if ( !current_user_can('NextGEN Upload images') && !current_user_can('NextGEN Manage gallery') ) 
-  	die('Access to resource is forbidden [2].');
+		die('No access');	
 
-  if ( !defined('ABSPATH') )
-  	die('Access to resource is forbidden [3].');
+    if ( !defined('ABSPATH') )
+        die('No access');
 
 	// if nonce is not correct it returns -1
 	check_ajax_referer( 'ngg-ajax', 'nonce' );

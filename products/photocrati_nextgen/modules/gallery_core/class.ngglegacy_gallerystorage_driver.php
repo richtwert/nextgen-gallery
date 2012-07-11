@@ -8,7 +8,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 */
 	function get_image_sizes()
 	{
-		return array('full', 'thumbnail');
+		return array('full');
 	}
 
 
@@ -19,16 +19,8 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		// If a gallery has been specified, then we'll
 		// append the ID
-		if ($gallery) {
-
-			// Get the gallery ID
-			$gallery_key = $this->_gallery_mapper->get_primary_key_column();
-			if (is_object($gallery) && isset($gallery->$gallery_key)) {
-				$gallery = $gallery->$gallery_key;
-			}
-
-			// Ensure we have a gallery ID
-			if (is_int($gallery)) $retval = path_join($retval, $gallery);
+		if ($gallery && (($gallery_id = $this->object->_get_gallery_id($gallery)))) {
+			$retval = path_join($retval, $gallery_id);
 		}
 
 		return $retval;
@@ -43,10 +35,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	{
 		$retval = NULL;
 
-		// Get the gallery ID
-		$gallery_key = $this->_gallery_mapper->get_primary_key_column();
-		if (is_object($gallery) && isset($gallery->$gallery_key)) {
-			$gallery = $gallery->$gallery_key;
+		// If a gallery has been specified, then we'll
+		// append the ID
+		if ($gallery && (($gallery_id = $this->object->_get_gallery_id($gallery)))) {
+			$retval = path_join($retval, $gallery_id);
 		}
 
 		// Ensure that we have a gallery ID
@@ -69,6 +61,61 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		return $retval;
 	}
 
+
+	/**
+	 * Gets the absolute path where the image is stored
+	 * Can optionally return the path for a particular sized image
+	 */
+	function get_image_abspath($image, $size='full')
+	{
+		$retval = NULL;
+
+		// Get the image id
+		if ($image && (($image_id = $this->object->_get_image_id($image)))) {
+
+			// Get the gallery path associated with the image
+			$image = $this->object->_image_mapper->find($image_id);
+			if ($image) {
+				if (($gallery_path = $this->object->get_gallery_abspath($image->galleryid))) {
+					switch ($size) {
+
+						# Images are stored in the associated gallery folder
+						case 'full':
+						case 'original':
+							$retval = path_join($gallery_path, $image->filename);
+							break;
+
+						# We assume any other size of image is stored in the a
+						# subdirectory of the same name within the gallery folder
+						# gallery folder, but with the size appended to the filename
+						default:
+							$image_path = path_join($gallery_path, $size);
+							$image_path = path_join($image_path, $image->filename);
+							if (file_exists($image_path)) $retval = $image_path;
+							break;
+					}
+				}
+			}
+		}
+
+		return $retval;
+	}
+
+
+	/**
+	 * Gets the url of a particular-sized image
+	 * @param int|object $image
+	 * @param string $size
+	 * @returns array
+	 */
+	function get_image_url($image, $size='full')
+	{
+		return str_replace(
+			ABSPATH,
+			site_url(),
+			$this->object->get_image_abspath($image, $size)
+		);
+	}
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
@@ -77,12 +124,5 @@ class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
 	{
 		parent::define();
 		$this->add_mixin('Mixin_NggLegacy_GalleryStorage_Driver');
-	}
-
-	function initialize($context)
-	{
-		parent::initialize($context);
-		$this->_options = $this->_get_registry()->get_utility('I_Photocrati_Options');
-		$this->_gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 	}
 }

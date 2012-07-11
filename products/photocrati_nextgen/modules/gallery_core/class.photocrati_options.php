@@ -13,6 +13,16 @@ class Mixin_Photocrati_Options extends Mixin
 
 
 	/**
+	 * The method always returns TRUE
+	 * Note: Required by I_Component_Config
+	 */
+	function is_valid()
+	{
+		return TRUE;
+	}
+
+
+	/**
 	 * Gets the default options for the plugin
 	 */
 	function _set_defaults()

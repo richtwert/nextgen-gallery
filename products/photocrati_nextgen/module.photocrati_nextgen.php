@@ -19,10 +19,13 @@ class P_Photocrati_NextGen extends C_Base_Product
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-	  
+
 		$module_path = path_join(dirname(__FILE__), 'modules');
 		$this->_get_registry()->set_product_module_path($this->module_id, $module_path);
-		$this->_get_registry()->add_module_path($module_path, true, true);
+
+		// TEMPORARY - just load ngglegacy module
+		$this->_get_registry()->add_module_path($module_path, true, false);
+		$this->_get_registry()->load_module('photocrati-nextgen-legacy');
 	}
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-include_once('class.gallerystorage_driver_base.php');
+include_once('class.test_gallerystorage_driver_base.php');
 class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Driver_Base
 {
 
@@ -10,6 +10,9 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	function setUp()
 	{
 		parent::setUp();
+		$this->storage = $this->get_factory()->create('ngglegacy_gallery_storage');
+		die(print_r($this->storage->get_image_abspath(2561)));
+
 
 		if (!defined('DATAMAPPER_DRIVER')) define('DATAMAPPER_DRIVER', 'custom_post_datamapper');
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');

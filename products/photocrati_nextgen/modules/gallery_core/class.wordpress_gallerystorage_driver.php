@@ -10,7 +10,8 @@ class Mixin_WordPress_GalleryStorage_Driver extends Mixin
 	function get_image_sizes()
 	{
 		global $_wp_additional_image_sizes;
-		return array_merge(array_keys($_wp_additional_image_sizes), array('full', 'thumbnail'));
+		$_wp_additional_image_sizes[] = 'full';
+		return $_wp_additional_image_sizes;
 	}
 
 
@@ -35,32 +36,46 @@ class Mixin_WordPress_GalleryStorage_Driver extends Mixin
 
 
 	/**
-	 * Will always
-	 * @param type $gallery
+	 * Will always return the same as get_upload_abspath(), as
+	 * WordPress storage is not organized by gallery but by date
+	 * @param int|object $gallery
 	 */
-	function get_gallery_path($gallery=FALSE)
+	function get_gallery_abspath($gallery=FALSE)
 	{
-
+		return $this->object->get_upload_abspath();
 	}
 
 
 	/**
-	 * Handles calls to get_original_path|url, etc
-	 * @param string $method
-	 * @param array $args
+	 * Gets the absolute path to a particular size of an image
+	 * @param int|object $image
+	 * @param string $size
 	 * @return string
 	 */
-	function __call($method, $args)
+	function get_image_abspath($image, $size='full')
 	{
-		$retval = '';
+		return str_replace(
+			site_url(),
+			ABSPATH,
+			$this->object->get_image_abspath($image, $size)
+		);
+	}
 
-		if (preg_match("/get_(\w+)_(path|url)/", $method, $match)) {
-			$id_field = $image->id_field;
-			$retval = wp_get_attachment_image_src($image->$id_field, $match[1]);
-			if ($match[2] == 'url') $retval = $this->object->_to_url($retval);
+
+	/**
+	 * Gets the url of a particular sized image
+	 * @param int|object $image
+	 * @param type $size
+	 * @return string
+	 */
+	function get_image_url($image=FALSE, $size='full')
+	{
+		$retval = NULL;
+
+		if ($image && (($image_id = $this->object->_get_image_id($image)))) {
+			$parts = wp_get_attachment_image_src($image->$image_key);
+			if ($parts) $retval = $parts['url'];
 		}
-
-		else $retval = parent::__call ($method, $args);
 
 		return $retval;
 	}
@@ -72,5 +87,6 @@ class C_WordPress_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
 	{
 		parent::define();
 		$this->add_mixin('Mixin_WordPress_GalleryStorage_Driver');
+		get_att
 	}
 }

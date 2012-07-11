@@ -11,14 +11,14 @@ global $wpdb, $nggdb;
 <head>
 	<title>NextGEN Gallery</title>
 	<meta http-equiv="Content-Type" content="<?php bloginfo('html_type'); ?>; charset=<?php echo get_option('blog_charset'); ?>" />
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/tinymce/tiny_mce_popup.js'); ?>"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/tinymce/utils/mctabs.js'); ?>"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/tinymce/utils/form_utils.js'); ?>"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/jquery/jquery.js'); ?>"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/jquery/ui/jquery.ui.core.min.js'); ?>"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/jquery/ui/jquery.ui.widget.min.js'); ?>"></script>
-    <script language="javascript" type="text/javascript" src="<?php echo includes_url('js/jquery/ui/jquery.ui.position.min.js'); ?>"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo includes_url('js/jquery/ui/jquery.ui.autocomplete.min.js'); ?>"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/tinymce/tiny_mce_popup.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/tinymce/utils/mctabs.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/tinymce/utils/form_utils.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/jquery/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/jquery/ui/jquery.ui.core.min.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/jquery/ui/jquery.ui.widget.min.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/jquery/ui/jquery.ui.position.min.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo site_url(); ?>/wp-includes/js/jquery/ui/jquery.ui.autocomplete.min.js"></script>
     <script language="javascript" type="text/javascript" src="<?php echo NGGALLERY_URLPATH ?>admin/js/ngg.autocomplete.js"></script>
 	<script language="javascript" type="text/javascript" src="<?php echo NGGALLERY_URLPATH ?>admin/tinymce/tinymce.js"></script>
     <link rel="stylesheet" type="text/css" href="<?php echo NGGALLERY_URLPATH ?>admin/css/jquery.ui.css" media="all" />

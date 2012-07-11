@@ -5,7 +5,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 /**
  * Plugin Name: NextGEN by Photocrati
  * Description: Providing you the best gallery management for WordPress
- * Version: 0.1
+ * Version: 2.0
  * Plugin URI: http://www.photocrati.com
  * Author URI: http://www.photocrati.com
  */
@@ -133,20 +133,18 @@ class C_NextGEN_Bootstrap
 		// Include some extra helpers
 		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
-		$registry = C_Component_Registry::get_instance();
-		
-		// Include and instantiate the WordPress plugin
-		//require_once(PHOTOCRATI_GALLERY_PLUGIN_CLASS);
-		$registry->add_module_path(PHOTOCRATI_GALLERY_PLUGIN_CLASS);
-		
 		add_action('init', array($this, '_wp_init'));
 	}
-	
+
 	function _wp_init()
 	{
-		C_Component_Registry::get_instance()->load_module('photocrati-gallery-core');
-		
-		new C_Photocrati_Gallery_Plugin();
+		$registry = C_Component_Registry::get_instance();
+		$registry->add_module_path(PHOTOCRATI_GALLERY_PLUGIN_DIR);
+
+		C_Component_Registry::get_instance()->load_module(
+			'photocrati-gallery-core',
+			PHOTOCRATI_GALLERY_PLUGIN_DIR
+		);
 	}
 
 

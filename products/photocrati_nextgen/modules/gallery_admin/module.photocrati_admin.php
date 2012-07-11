@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-admin,
-		Depends: { photocrati-mvc, photocrati-resource_loader, photocrati-base }
+		Depends: { photocrati-mvc, photocrati-resource_loader, photocrati-base, photocrati-nextgen-legacy }
 	}
 ***/
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
@@ -42,10 +42,10 @@ class M_Photocrati_Admin_Menu extends Mixin
 
         //add_submenu_page(NGGFOLDER, $galleries_menu, $galleries_menu, PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP, 'pc-galleries', array($this->_controller, 'galleries'));
         //add_submenu_page(NGGFOLDER, $add_galleries_menu, $add_galleries_menu, PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP, 'pc-add-gallery');
-        add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
+        //add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
         // XXX add handler
         //add_submenu_page(NGGFOLDER, $albums_menu, $albums_menu, PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP, 'pc-albums');
-        add_submenu_page(NGGFOLDER, $other_options_menu, $other_options_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-other-options', array($this->_controller, 'other_options'));
+        //add_submenu_page(NGGFOLDER, $other_options_menu, $other_options_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-other-options', array($this->_controller, 'other_options'));
         // XXX add handler
         //add_submenu_page(NGGFOLDER, $upgrade_menu, $upgrade_menu, 'Administrator', 'pc-upgrade');
         // XXX add handler
