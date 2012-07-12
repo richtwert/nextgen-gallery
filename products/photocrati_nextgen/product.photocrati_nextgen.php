@@ -2,7 +2,7 @@
 
 /***
 	{
-		Module: photocrati-nextgen
+		Product: photocrati-nextgen
 	}
 ***/
 

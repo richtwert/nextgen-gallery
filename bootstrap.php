@@ -34,7 +34,7 @@ class C_NextGEN_Bootstrap
 			// modules required
 			$registry = C_Component_Registry::get_instance();
 			$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
-			$registry->load_module('photocrati-nextgen');
+			$registry->load_all_products();
 
 			// Initializes all loaded modules
 			$registry->initialize_all_modules();
