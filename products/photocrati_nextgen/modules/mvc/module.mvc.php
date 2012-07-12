@@ -11,14 +11,13 @@ define('MVC_TEMPLATE_DIR', path_join(MVC_MODULE_DIR, 'templates'));
 require_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
 
 /**
- * Class used to indicate a clean exit occured
+ * Indicates that a clean exit occured. Handled by set_exception_handler
  */
-class CleanExitException extends Exception
-{
-    function __construct()
-    {
-        parent::__construct('Clean exit forced', 0);
-    }
+if (!class_exists('E_Clean_Exit')) {
+	class E_Clean_Exit extends RuntimeException
+	{
+
+	}
 }
 
 
@@ -58,8 +57,8 @@ class M_MVC extends C_Base_Module
 
     function handle_exit($exception)
     {
-        if (!($exception instanceof CleanExitException)) {
-            trigger_error($exception);
+        if (!($exception instanceof E_Clean_Exit)) {
+            throw $exception;
         }
     }
 }
