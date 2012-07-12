@@ -53,6 +53,7 @@ if (!class_exists('nggLoader')) {
 		var $manage_page;
 		var $add_PHP5_notice = false;
 		var $update_notice_setting = 'ngg_show_update_notice';
+		var $plugin_name = '';
 
 		function nggLoader() {
 
@@ -63,14 +64,17 @@ if (!class_exists('nggLoader')) {
 			// Set error handler
 			set_exception_handler(array(&$this, 'exception_handler'));
 
+			// Determine plugin basename based on whether NGG is being used in
+			// it's legacy form, or as a Photocrati Gallery
+			if (defined('PHOTOCRATI_GALLERY_PLUGIN_BASENAME')) $this->plugin_name = PHOTOCRATI_GALLERY_PLUGIN_BASENAME;
+			else $this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
+
 			// Get some constants first
 			$this->load_options();
 			$this->define_constant();
 			$this->define_tables();
 			$this->load_dependencies();
 			$this->start_rewrite_module();
-
-			$this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 
 			// Init options & tables during activation & deregister init option
 			register_activation_hook( $this->plugin_name, array(&$this, 'activate') );
@@ -291,10 +295,21 @@ if (!class_exists('nggLoader')) {
 			define('WINABSPATH', str_replace("\\", "/", ABSPATH) );
 
 			// define URL
-			define('NGGFOLDER', basename( dirname(__FILE__) ) );
+			define('NGGFOLDER', dirname( $this->plugin_name ) );
 
-			define('NGGALLERY_ABSPATH', trailingslashit(dirname(__FILE__)));
-			define('NGGALLERY_URLPATH', trailingslashit( plugins_url( NGGFOLDER ) ) );
+			define(
+				'NGGALLERY_ABSPATH',
+				defined('PHOTOCRATI_GALLERY_NGGLEGACY_MOD_DIR') ?
+					PHOTOCRATI_GALLERY_NGGLEGACY_MOD_DIR :
+					trailingslashit(dirname(__FILE__))
+			);
+
+			define(
+				'NGGALLERY_URLPATH',
+				defined('PHOTOCRATI_GALLERY_NGGLEGACY_MOD_URL') ?
+					PHOTOCRATI_GALLERY_NGGLEGACY_MOD_URL :
+					trailingslashit( plugins_url( NGGFOLDER ) )
+			);
 
 			// look for imagerotator
 			define('NGGALLERY_IREXIST', !empty( $this->options['irURL'] ));
