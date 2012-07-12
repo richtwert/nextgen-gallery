@@ -23,8 +23,6 @@ if (!class_exists('E_Clean_Exit')) {
 
 class M_MVC extends C_Base_Module
 {
-    var $_router;
-
     function define()
     {
         parent::define(
@@ -42,7 +40,6 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
         set_exception_handler(array(&$this, 'handle_exit'));
-        $this->_router = $this->_get_registry()->get_singleton_utility('I_Router');
     }
 
     function _register_utilities()
@@ -52,8 +49,15 @@ class M_MVC extends C_Base_Module
 
     function _register_hooks()
     {
-        add_action('wp_loaded', array(&$this->_router, 'route'), 99);
+        add_action('wp_loaded', array(&$this, 'route'), 99);
     }
+
+
+	function route()
+	{
+		$router = $this->_get_registry()->get_singleton_utility('I_Router');
+		$router->route();
+	}
 
     function handle_exit($exception)
     {

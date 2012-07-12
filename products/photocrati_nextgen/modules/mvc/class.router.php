@@ -14,14 +14,15 @@ class Mixin_Route_Persistence extends Mixin
  */
 class Mixin_Route_Patterns extends Mixin
 {
-	function routing_uri($route = null, $only_path = null, $use_pathinfo = null)
+	function routing_uri($route = null, $only_path = null, $use_pathinfo = null, $add_trailing_slash=FALSE)
 	{
 		if ($use_pathinfo === null) {
 			$permalink_struct = get_option('permalink_structure');
 			$use_pathinfo = preg_match('/^\\/?index\\.php\\//i', $permalink_struct);
 		}
 
-		$uri = '/' . $route . '/';
+		$uri = '/' . $route;
+		if ($add_trailing_slash) $uri .= '/';
 
 		if ($use_pathinfo) {
 			$uri = '/index.php' . $uri;
@@ -40,9 +41,9 @@ class Mixin_Route_Patterns extends Mixin
 			$pattern = '(\\w*)';
 		}
 
-		$uri = $this->object->routing_uri($route, true, false);
+		$uri = $this->object->routing_uri($route, TRUE, FALSE, FALSE);
 
-		$pattern = '/' . preg_quote($uri, '/') . $pattern . '/';
+		$pattern = '/' . preg_quote($uri, '/') . '(\/'.$pattern . ')?/';
 
 		return $pattern;
 	}
@@ -68,13 +69,38 @@ class Mixin_Router extends Mixin
     /**
      * Removes a named route
     **/
-    function remove_route($name, $pattern)
+    function remove_route($name)
     {
         unset($this->object->_routes[$name]);
     }
 
 
-    function route()
+	/**
+	 * Gets all registered named routes
+	 * @param string $name	optionally specify which named route to retrieve
+	 */
+	function get_routes($name=FALSE)
+	{
+		$retval = $this->object->_routes;
+		if ($name) {
+			$retval = isset($retval[$name]) ? $retval[$name] : NULL;
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Gets the metadata associated with a named route
+	 * @param string $name
+	 * @return array
+	 */
+	function get_named_route($name)
+	{
+		return $this->object->get_routes($name);
+	}
+
+
+    function route($exit=TRUE)
     {
         $domain = $_SERVER['SERVER_NAME'];
         $uri    = $_SERVER['REQUEST_URI'];
@@ -84,7 +110,7 @@ class Mixin_Router extends Mixin
         $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
 
         if ($this->object->is_cached($domain, $uri, $protocol)) {
-            $this->object->call_cached_route($domain, $uri, $protocol);
+            $this->object->call_cached_route($domain, $uri, $protocol, $exit);
         }
 
         foreach ($this->object->_route_priorities as $route_name) {
@@ -103,7 +129,7 @@ class Mixin_Router extends Mixin
             // The pattern is specified about a domain requirement
             if ($continue && isset($pattern['domain'])) {
                 if (!preg_match($pattern['domain'], $domain)) $continue = FALSE;
-            }
+			}
 
             // Every pattern must specify a uri pattern
             if ($continue && preg_match($pattern['uri'], $uri, $match)) {
@@ -113,8 +139,8 @@ class Mixin_Router extends Mixin
                 // Otherwise, we assume it's match[1]
                 $action = isset($pattern['action']) ?
                     $match[$pattern['action']] :
-                        (isset($match[1]) && trim(str_replace('&','',$match[1])) ?
-                            $match[1] : 'index');
+                        (isset($match[2]) && trim(str_replace('&','',$match[2])) ?
+                            $match[2] : 'index');
 
                 // Cache the route for next time
                 $this->object->cache_route(
@@ -127,7 +153,8 @@ class Mixin_Router extends Mixin
                 );
 
                 // Call the action
-                $this->object->call_cached_route($domain, $uri, $protocol);
+                $this->object->call_cached_route($domain, $uri, $protocol, $exit);
+				break;
             }
         }
     }
@@ -162,7 +189,7 @@ class Mixin_Router extends Mixin
     /**
      * Returns the cached route
      */
-    function call_cached_route($domain, $uri, $protocol)
+    function call_cached_route($domain, $uri, $protocol, $exit=TRUE)
     {
         $config = $this->object->_route_cache[$domain][$protocol][$uri];
         $klass = $config[0];
@@ -173,14 +200,14 @@ class Mixin_Router extends Mixin
         // most likely we based on the request, so we'll let hooks figure it out
         $context = $this->object->get_context($domain, $uri, $protocol, $klass, $action);
 
-        // We should probably be using a factory method here
+        // TODO: We should probably be using a factory method here
         $controller = $singleton ?
             eval('return '.$klass.'::get_instance($context);') :
             new $klass($context);
         $controller = $this->object->_get_registry()->apply_adapters($controller);
 
         // Call the controller method
-        $this->object->call_action($controller, $action);
+        $this->object->call_action($controller, $action, $exit);
 
         // If debug, show some debugging information
         if ($controller->debug) {
@@ -199,9 +226,7 @@ class Mixin_Router extends Mixin
         // calling exit() but that isn't recommended to do in FastCGI
         // environments. See http://serverfault.com/questions/84962/php-via-fastcgi-terminated-by-calling-exit
         //
-
-        throw new CleanExitException();
-        //exit;
+        if ($exit) throw new E_Clean_Exit();
     }
 
     /**
@@ -217,8 +242,9 @@ class Mixin_Router extends Mixin
      * Calls an action of a controller
      * Hooks should extend this
      */
-    function call_action($controller, $action)
+    function call_action($controller, $action, $exit=FALSE)
     {
+		$controller->exit = $exit;
         call_user_func(array($controller, $action));
     }
 }
@@ -245,7 +271,7 @@ class C_Router extends C_Component
     static function get_instance($context=FALSE)
     {
         if (self::$_instance == NULL) {
-                $klass = __CLASS__;
+			$klass = __CLASS__;
             self::$_instance = new $klass($context);
         }
         return self::$_instance;

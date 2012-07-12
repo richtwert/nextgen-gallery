@@ -10,36 +10,45 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
  * Author URI: http://www.photocrati.com
  */
 
+/**
+ * NextGEN is built on top of the Photocrati Pope Framework:
+ * https://bitbucket.org/photocrati/pope-framework
+ *
+ * Pope constructs applications by assembling modules.
+ *
+ * The Bootstrapper. This class performs the following:
+ * 1) Loads the Pope Framework
+ * 2) Adds a path to the C_Component_Registry instance to search for products
+ * 3) Loads all found Products. A Product is a collection of modules with some
+ * additional meta data. A Product is responsible for loading any modules it
+ * requires.
+ * 4) Once all Products (and their associated modules) have been loaded (or in
+ * otherwords, "included"), the modules are initialized.
+ */
 class C_NextGEN_Bootstrap
 {
-	private $_minimum_wordpress_version  = '3.2';
-	private $_minimum_memory_limit = '16';
-
 	function __construct()
 	{
 		// Boostrap
-		if ($this->are_requirements_met()) {
-			$this->_define_constants();
-			$this->_register_hooks();
+		$this->_define_constants();
+		$this->_register_hooks();
 
-			// Include pope framework
-			require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
-				DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')
-			)));
+		// Include pope framework
+		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
+			DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')
+		)));
 
-			// Include some extra helpers
-			require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
+		// Include some extra helpers
+		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
-			// Load embedded products. Each product is expected any
-			// modules required
-			$registry = C_Component_Registry::get_instance();
-			$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
-			$registry->load_all_products();
+		// Load embedded products. Each product is expected any
+		// modules required
+		$registry = C_Component_Registry::get_instance();
+		$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
+		$registry->load_all_products();
 
-			// Initializes all loaded modules
-			$registry->initialize_all_modules();
-		}
-		else add_action('admin_notices', 'render_requirements_not_met');
+		// Initializes all loaded modules
+		$registry->initialize_all_modules();
 	}
 
 
@@ -127,72 +136,14 @@ class C_NextGEN_Bootstrap
 
 			// Define the NextGEN Test Suite
 			$suites['nextgen'] = array(
-	//			path_join($tests_dir, 'datamapper'),
-	//			path_join($tests_dir, 'gallery_storage'),
-				path_join($tests_dir, 'gallery_core')
+				path_join($tests_dir, 'mvc')
+//				path_join($tests_dir, 'datamapper'),
+//				path_join($tests_dir, 'gallery_storage'),
+//				path_join($tests_dir, 'gallery_core')
 			);
 		}
 
 		return $suites;
-	}
-
-
-	/**
-	 * Checks whether requirements have been met
-	 */
-	function are_requirements_met()
-	{
-		return (($this->has_required_memory_limit() && $this->has_required_software_versions()));
-	}
-
-
-	/**
-	 * Renders a notice that the system requirements are not met
-	 */
-	function render_requirements_not_met()
-	{
-		include(path_join(
-			$this->directory_path('templates'),
-			'requirements_not_met.php'
-		));
-	}
-
-
-	/**
-	 * Ensures that the PHP memory limit is 16MB or above
-	 * @return boolean
-	 */
-	function has_required_memory_limit()
-	{
-		$retval = TRUE;
-
-        // Get the real memory limit before some increase it
-		$this->memory_limit = ini_get('memory_limit');
-
-		// If memory limit is specified in MB
-		if (strtolower( substr($this->memory_limit, -1) ) == 'm') {
-            $this->memory_limit = (int) substr( $this->memory_limit, 0, -1);
-
-    		// Ensure that the memory limit is greater or equal to our minimum
-    		if ( ($this->memory_limit != 0) && ($this->memory_limit < $this->_minimum_memory_limit ) ) {
-				$retval = FALSE;
-    		}
-        }
-
-		return $retval;
-	}
-
-	/**
-	 * Checks whether the required WordPress version has been met
-	 * @global string $wp_version
-	 * @return boolean
-	 */
-	function has_required_software_versions()
-	{
-		global $wp_version;
-
-		// Check for WP version installation
-		return version_compare($wp_version, $this->_minimum_wordpress_version, '>=');
 	}
 
 
