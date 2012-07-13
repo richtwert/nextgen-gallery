@@ -339,7 +339,7 @@ abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 			$this->assertTrue((is_int($retval) && $retval>0), "save() did not return a valid record ID: ".gettype($retval));
 			$this->assertEqual($retval, $entity->$key);
 		}
-		$this->assertEqual($entity->id_field, $key);
+		$this->assertEqual($entity->id_field, $key, "id_field was not set to the primary key");
 		$this->assertTrue((is_int($entity->$key) && $entity->$key>0), "save() did not return a valid record ID: ".gettype($retval));
 		$this->assertEqual($entity->post_title, $this->post_title);
 	}

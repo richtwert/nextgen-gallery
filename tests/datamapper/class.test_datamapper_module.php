@@ -15,7 +15,7 @@ class C_Test_DataMapper_Module extends UnitTestCase
 
 	function test_whether_module_is_loaded()
 	{
-		$this->assertFalse(is_null($this->_registry->get_module('photocrati-datamapper')));
+		$this->assertNotNull($this->_registry->get_module('photocrati-datamapper'));
 	}
 
 	function test_whether_factory_methods_exist()

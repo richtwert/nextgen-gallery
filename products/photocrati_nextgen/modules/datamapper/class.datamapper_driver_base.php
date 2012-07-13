@@ -242,8 +242,13 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	 */
 	function _convert_to_entity($stdObject)
 	{
+		// Add name of the id_field to the entity, and convert
+		// the ID to an integer
 		$stdObject->id_field = $key = $this->object->get_primary_key_column();
-		$stdObject->$key = (int) $stdObject->$key;
+		if (isset($stdObject->$key)) {
+			$stdObject->$key = (int) $stdObject->$key;
+		}
+
 		return $stdObject;
 	}
 

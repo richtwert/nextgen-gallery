@@ -245,6 +245,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function _convert_entity_to_post($entity)
 	{
+		unset($entity->id_field);
 		$post = $entity;
 
 		// Was a model passed instead of an entity?
@@ -295,7 +296,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		/* @var $wpdb wpdb */
 		global $wpdb;
 		if (!is_array($omit)) $omit = array($omit);
-		$wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE post_id = %s", $post_id);
+		$wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->postmeta} WHERE post_id = %s", $post_id));
 		$sql_parts = array();
 		foreach($entity as $key => $value) {
 			if (in_array($key, $omit)) continue;
@@ -313,7 +314,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	{
 		$post_id = FALSE;
 		$post = $this->object->_convert_entity_to_post($entity);
-		$key = $this->object->get_primary_key_column();
+		$primary_key = $this->object->get_primary_key_column();
 
 		if (($post_id = wp_insert_post($post))) {
 
@@ -323,6 +324,8 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			// Save properties as post meta
 			$this->object->_flush_and_update_postmeta($post_id, $entity);
 		}
+
+		$entity->id_field = $primary_key;
 
 		return $post_id;
 	}

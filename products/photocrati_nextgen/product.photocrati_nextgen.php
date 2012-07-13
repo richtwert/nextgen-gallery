@@ -25,6 +25,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->_get_registry()->add_module_path($module_path, TRUE, FALSE);
 		$this->_get_registry()->load_module('photocrati-nextgen-legacy');
 		$this->_get_registry()->load_module('photocrati-mvc');
+		$this->_get_registry()->load_module('photocrati-datamapper');
 	}
 }
 

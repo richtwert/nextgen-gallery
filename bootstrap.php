@@ -41,9 +41,14 @@ class C_NextGEN_Bootstrap
 		// Include some extra helpers
 		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
+		// Get the component registry
+		$registry = C_Component_Registry::get_instance();
+
+		// Add the default Pope factory utility, C_Component_Factory
+		$registry->add_utility('I_Component_Factory', 'C_Component_Factory');
+
 		// Load embedded products. Each product is expected any
 		// modules required
-		$registry = C_Component_Registry::get_instance();
 		$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
 		$registry->load_all_products();
 
@@ -136,8 +141,8 @@ class C_NextGEN_Bootstrap
 
 			// Define the NextGEN Test Suite
 			$suites['nextgen'] = array(
-				path_join($tests_dir, 'mvc')
-//				path_join($tests_dir, 'datamapper'),
+				path_join($tests_dir, 'mvc'),
+				path_join($tests_dir, 'datamapper')
 //				path_join($tests_dir, 'gallery_storage'),
 //				path_join($tests_dir, 'gallery_core')
 			);

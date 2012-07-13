@@ -2,8 +2,7 @@
 
 /***
 	{
-		Module: photocrati-base,
-		Depends: { photocrati-mvc, photocrati-datamapper, photocrati-simple_html_dom, photocrati-fancybox-1x, photocrati-thickbox, photocrati-shutter-reloaded, photocrati-highslide, photocrati-jquery-lightbox, photocrati-nextgen-legacy }
+		Module: photocrati-base
 	}
 ***/
 
@@ -84,6 +83,8 @@ class M_Photocrati extends C_Base_Module
 		$this->_get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
 		$this->_get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_CustomPost_Gallery_Mapper_Path', 'gallery');
 		$this->_get_registry()->add_adapter('I_CustomTable_DataMapper', 'A_CustomTable_Gallery_Mapper_Path', 'gallery');
+		$this->_get_registry()->add_adapter('I_Component_Factory', 'A_GalleryStorage_Factory');
+		$this->_get_registry()->add_utility('I_Gallery_Storage', 'C_Gallery_Storage');
     }
 
 
