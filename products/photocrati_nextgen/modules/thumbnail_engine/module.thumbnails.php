@@ -34,7 +34,7 @@ class M_Thumbnails extends C_Base_Module
 
 	function _register_hooks()
 	{
-		$options = $this->_get_registry()->get_utility('I_Photocrati_Options');
+		$options = $this->_get_registry()->get_utility('I_NextGen_Settings');
 		set_post_thumbnail_size(
 			'thumbnail',
 			$options->thumbwidth,

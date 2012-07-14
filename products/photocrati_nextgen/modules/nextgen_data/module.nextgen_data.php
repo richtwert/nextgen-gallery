@@ -88,7 +88,6 @@ class M_NextGen_Data extends C_Base_Module
     function _register_utilities()
     {
 		$this->_get_registry()->add_utility('I_NextGen_Settings', 'C_NextGen_Settings');
-        $this->_get_registry()->add_utility('I_Photocrati_Options','C_Photocrati_Options');
 		$this->_get_registry()->add_utility('I_Gallery_Mapper', 'C_Gallery_Mapper');
 		$this->_get_registry()->add_utility('I_Gallery_Image_Mapper', 'C_Gallery_Image_Mapper');
     }
