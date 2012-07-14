@@ -2,10 +2,9 @@
 
 /***
 	{
-		Module: photocrati-base
+		Module: photocrati-nextgen-data
 	}
 ***/
-
 
 class Mixin_Load_Lightbox_Library extends Mixin
 {
@@ -40,22 +39,20 @@ class Mixin_Dequeue_NextGen_Legacy_Scripts extends Mixin
     function dequeue_scripts()
     {
         if (!is_admin()) {
-            global $wp_scripts;
-
-            $wp_scripts->remove('ngg_slideshow');
-            //$wp_scripts->remove('jquery-cycle');
+			wp_dequeue_script('ngg_slideshow');
+            //wp_dequeue_script('jquery-cycle');
         }
     }
 }
 
-class M_Photocrati extends C_Base_Module
+class M_NextGen_Data extends C_Base_Module
 {
     function define()
     {
         parent::define(
-            'photocrati-base',
-            'Photocrati Gallery',
-            "Provides Photocrati's abstraction for NextGen Gallery",
+            'photocrati-nextgen-data',
+            'NextGEN Data Tier',
+            "Provides a data tier for NextGEN gallery based on the DataMapper module",
             '0.1',
             'http://www.photocrati.com',
             'Photocrati Media',
@@ -90,9 +87,10 @@ class M_Photocrati extends C_Base_Module
 
     function _register_utilities()
     {
+		$this->_get_registry()->add_utility('I_NextGen_Settings', 'C_NextGen_Settings');
         $this->_get_registry()->add_utility('I_Photocrati_Options','C_Photocrati_Options');
 		$this->_get_registry()->add_utility('I_Gallery_Mapper', 'C_Gallery_Mapper');
 		$this->_get_registry()->add_utility('I_Gallery_Image_Mapper', 'C_Gallery_Image_Mapper');
     }
 }
-new M_Photocrati();
+new M_NextGen_Data();

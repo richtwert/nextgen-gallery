@@ -23,9 +23,26 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$module_path = path_join(dirname(__FILE__), 'modules');
 		$this->_get_registry()->set_product_module_path($this->module_id, $module_path);
 		$this->_get_registry()->add_module_path($module_path, TRUE, FALSE);
-		$this->_get_registry()->load_module('photocrati-nextgen-legacy');
-		$this->_get_registry()->load_module('photocrati-mvc');
+
+		// The datamapper is a library which is required by our data tier
+		// components. This is the first module we load as in the future, the
+		// plan is to refactor the photocrati-nextgen-legacy module to use it
 		$this->_get_registry()->load_module('photocrati-datamapper');
+
+		// We load the data tier module for NextGen. This is built on top of
+		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
+		// module, all other modules require this. Eventually, we will refactor
+		// the photocrati-nextgen-legacy module to make use of this module as
+		// well
+		$this->_get_registry()->load_module('photocrati-nextgen-data');
+
+		// This is Alex Rabe's version of NextGEN, which we built on top of.
+		$this->_get_registry()->load_module('photocrati-nextgen-legacy');
+
+		// The MVC framework is really a templating framework - not MVC.
+		$this->_get_registry()->load_module('photocrati-mvc');
+
+
 	}
 }
 
