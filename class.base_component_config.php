@@ -75,7 +75,7 @@ class C_Base_Component_Config extends C_Component
 
         $this->implement('I_Component_Config');
         $this->add_mixin('Mixin_Component_Config');
-//        $this->add_mixin('Mixin_Active_Record_Validation');
+        $this->add_mixin('Mixin_Validation');
     }
 
     function initialize($settings=FALSE, $context=FALSE)

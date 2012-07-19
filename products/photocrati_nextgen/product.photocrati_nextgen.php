@@ -6,6 +6,8 @@
 	}
 ***/
 
+define('PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP', 'NextGEN Manage gallery');
+
 class P_Photocrati_NextGen extends C_Base_Product
 {
 	function define()
@@ -42,7 +44,11 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// The MVC framework is really a templating framework - not MVC.
 		$this->_get_registry()->load_module('photocrati-mvc');
 
+		// Add the admin area
+		$this->_get_registry()->load_module('photocrati-admin');
 
+		// Load the Ngglegacy ImageBrowser Gallery Type
+		$this->_get_registry()->load_module('photocrati-nextgen_imagebrowser');
 	}
 }
 

@@ -2,8 +2,7 @@
 
 /***
 	{
-		Module: photocrati-admin,
-		Depends: { photocrati-mvc, photocrati-resource_loader, photocrati-base, photocrati-nextgen-legacy }
+		Module: photocrati-admin
 	}
 ***/
 define('PHOTOCRATI_GALLERY_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
@@ -42,7 +41,7 @@ class M_Photocrati_Admin_Menu extends Mixin
 
         //add_submenu_page(NGGFOLDER, $galleries_menu, $galleries_menu, PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP, 'pc-galleries', array($this->_controller, 'galleries'));
         //add_submenu_page(NGGFOLDER, $add_galleries_menu, $add_galleries_menu, PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP, 'pc-add-gallery');
-        //add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
+        add_submenu_page(NGGFOLDER, $gallery_settings_menu, $gallery_settings_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-gallery-settings', array($this->_controller, 'gallery_settings'));
         // XXX add handler
         //add_submenu_page(NGGFOLDER, $albums_menu, $albums_menu, PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP, 'pc-albums');
         //add_submenu_page(NGGFOLDER, $other_options_menu, $other_options_menu, PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP, 'pc-other-options', array($this->_controller, 'other_options'));
@@ -80,19 +79,20 @@ class M_Photocrati_Admin extends C_Base_Module
     {
         $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
         $this->_controller = $factory->create('admin_controller');
-        $this->_add_routes();
+		$this->_add_routes();
     }
 
     function _register_adapters()
     {
         $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Admin_Factory');
+		$this->_get_registry()->add_adapter('I_MVC_Controller', 'A_Display_Validation_Errors');
     }
 
 
     function _register_hooks()
     {
-        add_action('admin_menu', array(&$this, 'admin_menu'));
-        $this->_enqueue();
+        add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+		add_action('admin_menu', array(&$this, 'admin_menu'), 99);
     }
 
 
@@ -105,10 +105,9 @@ class M_Photocrati_Admin extends C_Base_Module
     }
 
 
-    function _enqueue()
+    function enqueue_scripts()
     {
         $dequeue = array(
-            //'jquery',
             'jquery-ui-core',
             'jquery-ui-tabs',
             'jquery-ui-sortable',
@@ -120,20 +119,11 @@ class M_Photocrati_Admin extends C_Base_Module
         );
 
         foreach ($dequeue as $script) {
-            if (in_array($script, array('jquery', 'jquery-ui-core'))) {
+            if (in_array($script, array('jquery-ui-core'))) {
                 wp_deregister_script($script);
             }
             wp_dequeue_script($script);
         }
-
-
-#        wp_register_script(
-#            'jquery',
-#            path_join(
-#                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
-#                'jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js'
-#            )
-#        );
 
         wp_register_script(
             'jquery-ui-core',
