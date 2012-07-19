@@ -87,6 +87,5 @@ class C_WordPress_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
 	{
 		parent::define();
 		$this->add_mixin('Mixin_WordPress_GalleryStorage_Driver');
-		get_att
 	}
 }

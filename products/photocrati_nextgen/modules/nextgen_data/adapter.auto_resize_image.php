@@ -14,15 +14,14 @@ class A_Auto_Resize_Image extends Hook
 
     function auto_resize_image()
     {
-
 		// If the model isn't valid, then don't even attempt resizing images
 		if (!$this->object->is_valid()) return;
 
-		// Get plugin options
-        $options = $this->_get_registry()->get_utility('I_Photocrati_Options');
+		// Get the settings class
+        $options = $this->_get_registry()->get_utility('I_NextGen_Settings');
 
         // Resize
-        if (options->imgAutoResize) {
+        if ($options->imgAutoResize) {
             $sizetmp = @getimagesize ( $this->object->get_filename());
             $widthtmp  = $options->imgWidth;
             $heighttmp = $options->imgHeight;
