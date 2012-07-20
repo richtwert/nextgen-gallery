@@ -2,8 +2,15 @@
 
 class Mixin_Attach_To_Post_Preview_Image extends Mixin
 {
+	/**
+	 * Gets the preview image used by the placeholder
+	 * @param type $return
+	 */
     function preview($return=FALSE)
     {
+		// TODO: This method needs to be refactored to actually
+		// check the database for the previewpic field of the gallery entity
+		// and use that instead of the first image in the gallery
         $filename = $this->find_static_file('blank.gif');
 
         // If we're editing an existing gallery instance, populate it
@@ -301,10 +308,6 @@ class Mixin_Attach_To_Post_Resources extends Mixin
     function _render_scripts_and_styles()
     {
 
-        wp_register_style(
-            'jquery.plupload.queue',
-            $this->static_url('plupload/jquery.plupload.queue/css/jquery.plupload.queue.css'
-        ));
         wp_register_script(
             'browserplus',
             'http://bp.yahooapis.com/2.4.21/browserplus-min.js'
@@ -315,32 +318,35 @@ class Mixin_Attach_To_Post_Resources extends Mixin
             $this->static_url('form2js.js')
         );
 
-        wp_deregister_script('plupload');
-        wp_register_script(
-            'plupload',
-            $this->static_url('plupload/plupload.full.js'),
-            array('jquery', 'browserplus'),
-            '1.5.2'
-        );
         wp_register_script(
            'jquery.plupload.queue',
-           $this->static_url('plupload/jquery.plupload.queue/jquery.plupload.queue.js'),
+           $this->static_url('jquery.plupload.queue/jquery.plupload.queue.js'),
            array('plupload')
         );
+
+		wp_register_style(
+			'jquery.plupload.queue',
+			$this->static_url('jquery.plupload.queue/css/jquery.plupload.queue.css')
+		);
+
         wp_register_style(
             'nextgen_attach_to_post',
-            $this->static_url('styles.css')
+            $this->static_url('styles.css', 'plupload')
         );
+
         wp_register_script(
             'nextgen_attach_to_post',
             $this->static_url('attach_to_post.js'),
-            array('jquery.plupload.queue', 'form2js', 'jquery-ui-core')
+            array('jquery.plupload.queue', 'form2js', 'jquery-ui-accordion', 'plupload-all')
         );
         wp_enqueue_style('global');
         wp_enqueue_style('wp-admin');
+		wp_enqueue_script('jquery');
+		wp_enqueue_style('jquery-ui-smoothness');
         wp_enqueue_style('colors-fresh');
         wp_enqueue_script('tiptip');
         wp_enqueue_style('tiptip');
+		wp_enqueue_script('browserplus');
         wp_enqueue_style('jquery.plupload.queue');
         wp_enqueue_style('nextgen_attach_to_post');
         wp_enqueue_script('nextgen_attach_to_post');
@@ -349,6 +355,7 @@ class Mixin_Attach_To_Post_Resources extends Mixin
             'nextgen_attach_settings',
             $this->object->get_js_vars()
         );
+
         do_action('admin_print_styles');
         do_action('admin_head');
         do_action('admin_print_scripts');

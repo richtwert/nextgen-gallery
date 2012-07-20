@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-attach_to_post,
-		Depends: { photocrati-admin }
+		Depends: { photocrati-simple_html_dom }
 	}
 ***/
 
@@ -72,8 +72,17 @@ class M_Attach_to_Post extends C_Base_Module
     function _register_hooks()
     {
         add_action('admin_enqueue_scripts', array(&$this, 'load_tinymce_helpers'));
+		add_action('init',					array(&$this, 'register_post_types'));
 
-        // Add custom post type for attached galleries
+        // Add hooks to load attached galleries
+        add_filter('posts_results',     array(&$this, 'load_attached_galleries'), 100, 2);
+        remove_filter('the_content',    'wpautop');
+    }
+
+
+	function register_post_types()
+	{
+		        // Add custom post type for attached galleries
         register_post_type('attached_gallery', array(
             'labels'            =>  array(
                 'name'          =>  _('Attached Galleries'),
@@ -105,17 +114,13 @@ class M_Attach_to_Post extends C_Base_Module
             'hierarchical'      =>  FALSE,
             'supports'          =>  array('title')
         ));
-
-        // Add hooks to load attached galleries
-        add_filter('posts_results',     array(&$this, 'load_attached_galleries'), 100, 2);
-        remove_filter('the_content',    'wpautop');
-    }
+	}
 
 
     function load_tinymce_helpers()
     {
         global $post_ID;
-        
+
         $router = $this->_get_registry()->get_singleton_utility('I_Router');
 
         // Registers our tinymce button and plugin for attaching galleries

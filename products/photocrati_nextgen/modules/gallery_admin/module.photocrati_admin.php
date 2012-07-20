@@ -91,7 +91,7 @@ class M_Photocrati_Admin extends C_Base_Module
 
     function _register_hooks()
     {
-        add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+        add_action('init', array(&$this, 'enqueue_scripts'));
 		add_action('admin_menu', array(&$this, 'admin_menu'), 99);
     }
 
@@ -107,42 +107,14 @@ class M_Photocrati_Admin extends C_Base_Module
 
     function enqueue_scripts()
     {
-        $dequeue = array(
-            'jquery-ui-core',
-            'jquery-ui-tabs',
-            'jquery-ui-sortable',
-            'jquery-ui-draggable',
-            'jquery-ui-droppable',
-            'jquery-ui-selectable',
-            'jquery-ui-resizable',
-            'jquery-ui-dialog'
-        );
-
-        foreach ($dequeue as $script) {
-            if (in_array($script, array('jquery-ui-core'))) {
-                wp_deregister_script($script);
-            }
-            wp_dequeue_script($script);
-        }
-
-        wp_register_script(
-            'jquery-ui-core',
-            path_join(
-                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
-                'jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js'
-            ),
-            array('jquery')
-        );
-
-        wp_register_script(
+		wp_register_script(
             'pc-admin',
             path_join(
                 PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
                 'admin.js'
             ),
-            array('jquery-ui-core')
+            array('jquery-ui-accordion')
         );
-
 
         wp_register_style(
             'pc-admin',
@@ -152,7 +124,6 @@ class M_Photocrati_Admin extends C_Base_Module
             )
         );
 
-        wp_deregister_script('tiptip');
         wp_register_script(
            'tiptip',
            path_join(
@@ -188,20 +159,18 @@ class M_Photocrati_Admin extends C_Base_Module
            )
         );
 
+		wp_register_style(
+			'jquery-ui-smoothness',
+			path_join(
+				PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
+				'jquery-ui-smoothness-1.8.16.css'
+			),
+			array(),
+			'1.8.16'
+		);
 
-        wp_deregister_style('jquery-ui-core');
-        wp_register_style(
-            'jquery-ui-core',
-            path_join(
-                PHOTOCRATI_GALLERY_ADMIN_MOD_STATIC_URL,
-                'jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css'
-            )
-        );
-
-        wp_enqueue_script('jquery');
-        wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('pc-admin');
-        wp_enqueue_style('jquery-ui-core');
+		wp_enqueue_style('jquery-ui-smoothness');
+		wp_enqueue_script('pc-admin');
         wp_enqueue_script('tiptip');
         wp_enqueue_style('tiptip');
         wp_enqueue_script('jquery-colorpicker');
