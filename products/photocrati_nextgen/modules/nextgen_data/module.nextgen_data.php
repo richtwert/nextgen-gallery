@@ -11,6 +11,11 @@ define(
 	'NextGEN Manage others gallery'
 );
 
+define(
+	'PHOTOCRATI_GALLERY_PERM_CREATE_GALLERY',
+	'NextGEN Add new gallery'
+);
+
 class Mixin_Load_Lightbox_Library extends Mixin
 {
     function load_lightbox_library()
