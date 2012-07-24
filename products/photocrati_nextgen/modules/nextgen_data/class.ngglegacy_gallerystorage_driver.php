@@ -15,7 +15,8 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_upload_abspath($gallery=FALSE)
 	{
 		// Base upload path
-		$retval = $this->_options->storage_dir;
+		$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGEN_Settings');
+		$retval = $settings->get('gallerypath');
 
 		// If a gallery has been specified, then we'll
 		// append the ID
@@ -115,6 +116,42 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			site_url(),
 			$this->object->get_image_abspath($image, $size)
 		);
+	}
+
+	/**
+	 * Uploads an image for a particular gallerys
+	 * @param int|stdClass|C_NextGEN_Gallery $gallery
+	 * @param type $filename, specifies the name of the file
+	 * @param type $data if specified, expects base64 encoded string of data
+	 */
+	function upload_image($gallery, $filename=FALSE, $data=FALSE)
+	{
+		// Ensure that we have the data present that we require
+		if ((isset($_FILE['file']) && $_FILE['file']['error'] == 0)) {
+
+			//		$_FILES = Array(
+			//		 [file]	=>	Array (
+			//            [name] => Canada_landscape4.jpg
+			//            [type] => image/jpeg
+			//            [tmp_name] => /private/var/tmp/php6KO7Dc
+			//            [error] => 0
+			//            [size] => 64975
+			//         )
+			//
+			$file = $_FILE['file'];
+			$this->object->upload_base64_image(
+				$gallery_id,
+				$filename ? $filename : (isset($file['name']) ? $file['name'] : FALSE),
+				file_get_contents($file['tmp_name'])
+			);
+		}
+		elseif ($data) {
+			$this->object->upload_base64_image(
+				$filename,
+				$data
+			);
+		}
+		else throw new E_UploadException();
 	}
 }
 

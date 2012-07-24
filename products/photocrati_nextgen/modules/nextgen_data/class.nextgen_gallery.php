@@ -18,9 +18,9 @@ class Hook_NextGen_Gallery_Persistence extends Hook
 
         // Get the default gallery storage path
         $name = $this->object->name;
-        $pc_options = $this->object->_get_registry()->get_singleton_utility('I_Photocrati_Options');
-        $storage_dir = $pc_options->storage_dir;
-        unset($pc_options);
+		$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$storage_dir = $settings->get('gallerypath');
+        unset($settings);
         $gallery_dir = path_join(ABSPATH, path_join($storage_dir, $name));
 
         // Check for existing folder
@@ -95,7 +95,7 @@ class C_NextGen_Gallery extends C_DataMapper_Model
     /**
      * Validates whether the gallery can be saved
      */
-    function validation()
+    function validate()
     {
         $this->name = sanitize_file_name( sanitize_title($this->title));
         $this->slug = nggdb::get_unique_slug( sanitize_title($this->title), 'gallery' );

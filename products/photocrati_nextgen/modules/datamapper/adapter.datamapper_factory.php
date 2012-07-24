@@ -2,9 +2,9 @@
 
 class A_DataMapper_Factory extends Mixin
 {
-	function datamapper_model($mapper, $context=FALSE)
+	function datamapper_model($mapper, $properties=array(), $context=FALSE)
 	{
-		return new C_DataMapper_Model($mapper, $context);
+		return new C_DataMapper_Model($mapper, $properties=array(), $context);
 	}
 
 	function datamapper($object_name, $context=FALSE)

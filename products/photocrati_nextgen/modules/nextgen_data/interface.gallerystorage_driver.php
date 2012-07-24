@@ -19,6 +19,6 @@ interface I_GalleryStorage_Driver
 	function get_full_dimensions($image);
 	function backup_image($image);
 	function move_images($images, $gallery, $db_entries=TRUE);
-	function copy_image($images, $gallery, $db_entries=TRUE);
-	function upload_image($gallery_id, $data=FALSE, $not_a_file=FALSE);
+	function copy_images($images, $gallery, $db_entries=TRUE);
+	function upload_image($gallery, $data=FALSE);
 }

@@ -11,8 +11,6 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	{
 		parent::setUp();
 		$this->storage = $this->get_factory()->create('ngglegacy_gallery_storage');
-		die(print_r($this->storage->get_image_abspath(2561)));
-
 
 		if (!defined('DATAMAPPER_DRIVER')) define('DATAMAPPER_DRIVER', 'custom_post_datamapper');
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
@@ -20,7 +18,7 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		$this->gallery = (object) array(
 			'title'	=>	'Test Gallery'
 		);
-		$this->gid = $gallery_mapper->save($gallery);
+		$this->gid = $this->gallery_mapper->save($this->gallery);
 		$this->galleries_to_cleanup = array();
 		$this->images_to_cleanup = array();
 	}
@@ -64,26 +62,29 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		// gallery_id or an object representing the gallery
 		foreach (array($this->gid, $this->gallery) as $gallery) {
 
-			// You can upload an image from $_FILES, a file stored locally
-			$test_img_filename = path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'test.png');
-			$image = $this->storage->upload_image($gallery, $test_img_filename);
+			$test_file_abspath = path_join(dirname(__FILE__), 'test.png');
+
+			// You can upload an image from $_FILES
+			$_FILES['file'] = array(
+				'name'		=>	'test.png',
+				'type'		=>	'type/jpeg',
+				'tmp_name'	=>	$test_file_abspath,
+				'error'		=>	0
+			);
+			$image = $this->storage->upload_image($gallery);
 			$this->assertTrue(is_object($image));
 			$image_key = $this->image_mapper->get_primary_key_column();
 			$this->assertTrue(is_int($image->$image_key));
 			$this->assertTrue($image->$image_key > 0);
 			$this->image_mapper->destroy($image);
 
-			// Or you can upload an image from $_FILE
-			$this->image = $this->storage->upload_image($gallery, file_get_contents($test_img_filename), TRUE);
+			// Or you can upload an image using base64 data
+			$this->image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
 			$image->pid = $this->image->$image_key;
 			$this->images_to_cleanup[] = $this->image->$image_key;
 			$this->assertTrue(is_object($image));
 			$this->assertTrue(is_int($image->$image_key));
 			$this->assertTrue($image->$image_key > 0);
-
-			// Not sure how to test this but, you can upload an image using
-			// plupload and $_FILES
-			// $this->storage->upload_image($this->gid);
 		}
 	}
 

@@ -5,7 +5,7 @@ class Hook_Post_To_Entity extends Hook
 	function _convert_post_to_entity(&$entity)
 	{
 		if (property_exists($entity, 'post_content')) {
-			$post_content = C_Photocrati_Serialization::unserialize($entity->post_content);
+			$post_content = $this->object->unserialize($entity->post_content);
 			foreach ($post_content as $key => $value) $entity->$key = $value;
 			unset($entity->post_content);
 		}
@@ -224,7 +224,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		$entity = new stdClass();
 		foreach ($post as $key => $value) {
 			if ($key == 'post_content') {
-				$post_content = C_Photocrati_Serialization::unserialize($value);
+				$post_content = $this->object->unserialize($value);
 				if ($post_content) {
 					foreach ($post_content as $key => $value) {
 						$entity->$key = $value;
@@ -253,7 +253,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			$post = $entity->get_entity();
 
 		// Create the post content
-		$post->post_content = C_Photocrati_Serialization::serialize($entity);
+		$post->post_content = $this->object->serialize($entity);
 		$post->post_type = $this->object->get_object_name();
 
 		// A post required a title

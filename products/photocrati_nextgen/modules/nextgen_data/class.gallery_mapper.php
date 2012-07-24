@@ -3,41 +3,6 @@
 class Mixin_Gallery_Mapper extends Mixin
 {
 	/**
-	 * Saves a gallery
-	 * @param stdClass|int|C_NextGen_Gallery $gallery
-	 */
-	function save($gallery)
-	{
-		// TODO: Should this be in a prehook instead of a mixin?
-		$retval = FALSE;
-		if ( current_user_can(PHOTOCRATI_GALLERY_PERM_CREATE_GALLERY)) {
-			$retval = $this->call_parent();
-		}
-		return $retval;
-	}
-
-	/**
-	 * Determines whether a user id has permissions to manage this gallery
-	 */
-	function can_manage_this_gallery($gallery, $user=FALSE)
-	{
-		// Ensure we have the gallery id
-		if (!is_int($gallery)) {
-			$pkey = $this->object->get_primary_key_column();
-			$gallery = $gallery->$pkey;
-		}
-
-		// Ensure we have a user ID to compare
-		if (!$user) $user = get_current_user_id ();
-		else if (!is_int($user)) {
-			$user = $user->ID;
-		}
-
-		return user_can($user, PHOTOCRATI_GALLERY_PERM_MANAGE_OTHER_GALLERIES);
-	}
-
-
-	/**
 	 * Sets the preview image for the gallery
 	 * @param int|stdClass|C_NextGen_Gallery $gallery
 	 * @return bool

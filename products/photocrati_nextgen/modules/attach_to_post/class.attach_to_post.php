@@ -64,9 +64,6 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
             $gallery_config->validate();
             if ($gallery_config->is_valid()) {
 
-                // If the attached gallery is valid, then we can create
-                // images for the attached gallery
-
                 if (!(($retval['saved'] = $attached_gallery->is_valid()))) {
                     $retval['validation_errors'] = $attached_gallery->get_errors();
                 }
@@ -81,7 +78,6 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
 
                     if ($images || in_array($source, array('recent_images', 'random_images'))) {
                         if ($images) {
-		                    // TODO Save any changes made to the image
 		                }
                         // Include the new attached gallery id in the response
                         $retval['attached_gallery_id'] = $attached_gallery->id();
@@ -180,25 +176,28 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     {
         $retval = array();
 
+		// Get the gallery mapper
+		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
+
         // the gallery object
         $gallery = FALSE;
 
         // Is this an existing gallery?
         if ($this->param('gallery_source') == 'existing_gallery') {
-            $mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
             $gallery = $mapper->find($this->param('gallery_id'), TRUE);
-			unset($mapper);
         }
 
         // We need to create the gallery first
         else {
-            $gallery = $this->object->_get_factory()->create('gallery', array(
+            $gallery = $this->object->_get_factory()->create('gallery', $mapper, array(
                 'title'      => $this->param('gallery_name'),
                 'galdesc'   => $this->param('gallery_description')
             ));
             $gallery->save();
-
         }
+
+		// No longer require the mapper
+		unset($mapper);
 
         // If the image is valid and saved, then we'll import the image
         if ($gallery && $gallery->is_valid() && !$gallery->is_new()) {
@@ -600,15 +599,17 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
     function render_existing_gallery_fields()
     {
 		$gallery_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
-		$galleries = $gallery_mapper->find_all();
+		$gallery_key	= $gallery_mapper->get_primary_key_column();
+		$galleries		= $gallery_mapper->find_all();
 		unset($gallery_mapper);
 
         return $this->render_partial('existing_gallery_source', array(
-           'selected_gallery_id'        =>  $this->object->_get_value(
-                                            $this->object->attached_gallery,
-                                            'gallery_id'
+			'selected_gallery_id'        =>  $this->object->_get_value(
+												$this->object->attached_gallery,
+												'gallery_id'
                                         ),
-           'galleries'                  =>  $galleries
+			'galleries'                  =>  $galleries,
+			'gallery_key'				 =>	 $gallery_key
         ), TRUE);
     }
 

@@ -44,6 +44,38 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		);
 	}
 
+	/**
+	 * Serializes the data
+	 * @param type $value
+	 * @return type
+	 */
+	function serialize($value)
+	{
+		//Using json_encode here because PHP's serialize is not Unicode safe
+		return json_encode($value);
+	}
+
+
+	function unserialize($value)
+	{
+		$retval = stripcslashes($value);
+
+		if (strlen($value) > 1)
+		{
+			//Using json_decode here because PHP's unserialize is not Unicode safe
+			$retval = json_decode($retval, TRUE);
+
+			// JSON Decoding failed. Perhaps it's PHP serialized data?
+			if ($retval == NULL) {
+				$er = error_reporting(0);
+				$retval = unserialize($value);
+				error_reporting($er);
+			}
+		}
+
+		return $retval;
+	}
+
 
 	/**
 	 * Finds a partiular entry by id
@@ -259,8 +291,28 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	function convert_to_model($stdObject, $context=FALSE)
 	{
 		// Create a factory
-		$factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
-		return $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
+		$retval = NULL;
+
+		try {
+			$factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
+			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
+		}
+		catch (Exception $ex) {
+			throw new E_InvalidEntityException;
+		}
+
+		return $retval;
+	}
+
+
+	/**
+	 * Determines whether an object is actually a model
+	 * @param mixed $obj
+	 * @return bool
+	 */
+	function is_model($obj)
+	{
+		return is_subclass_of($obj, 'C_DataMapper_Model') or get_class($obj) == 'C_DataMapper_Model';
 	}
 
 	/**
@@ -271,25 +323,25 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	function save($entity)
 	{
 		$retval = FALSE;
+		$model  = $entity;
 
 		// Attempt to use something else, most likely an associative array
 		// TODO: Support assocative arrays. The trick is to support references
 		// with dynamic calls using __call() and call_user_func_array().
 		if (is_array($entity)) throw new E_InvalidEntityException();
 
-		// Save stdClass objects. Don't have the ability to provide validation
-		elseif (in_array(strtolower(get_class($entity)), array('stdclass', 'stdobject'))) {
-			$retval = $this->_save_entity($entity);
+		// We can work with what we have. But we need to ensure that we've got
+		// a model
+		elseif (!$this->object->is_model($entity)) {
+			$model = $this->object->convert_to_model($entity);
 		}
 
-		// Save models. First, they must be validated
-		elseif (is_subclass_of($entity, 'C_DataMapper_Model') or get_class($entity) == 'C_DataMapper_Model') {
-			$entity->validate();
-			if ($entity->is_valid()) $retval = $this->_save_entity($entity->get_entity());
-		}
-		else {
-			throw new E_InvalidEntityException();
-		}
+		// Validate the model
+		$model->validate();
+		if ($model->is_valid()) $retval = $this->_save_entity($model->get_entity());
+
+		// We always return the same type of entity that we given
+		if (get_class($entity) == 'stdClass') $entity = $model->get_entity();
 
 		return $retval;
 	}

@@ -33,7 +33,7 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 		if (!isset($properties[$this->id()])) $properties[$this->id()] = 0;
 	}
 
-    function validation()
+    function validate()
     {
         $this->validates_presence_of('galleryid');
         $this->validates_numericality_of('galleryid');

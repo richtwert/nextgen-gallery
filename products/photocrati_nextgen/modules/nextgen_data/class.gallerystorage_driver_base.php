@@ -1,5 +1,20 @@
 <?php
 
+class E_UploadException extends RuntimeException
+{
+
+}
+
+class E_InsufficientWriteAccessException extends RuntimeException
+{
+
+}
+
+class E_NoSpaceAvailableException extends RuntimeException
+{
+
+}
+
 class Mixin_GalleryStorage_Driver_Base extends Mixin
 {
 	/**
@@ -241,6 +256,28 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 
 	/**
+	 * Gets the url to the original-sized image
+	 * @param int|stdClass|C_NextGen_Image $image
+	 * @return string
+	 */
+	function get_original_url($image)
+	{
+		return $this->object->get_image_url($image, 'full');
+	}
+
+
+	/**
+	 * Alias for get_original_url()
+	 * @param int|stdClass|C_NextGen_Image $image
+	 * @return string
+	 */
+	function get_full_url($image)
+	{
+		return $this->object->get_image_url($image, 'full');
+	}
+
+
+	/**
 	 * Gets the id of a gallery, regardless of whether an integer
 	 * or object was passed as an argument
 	 * @param mixed $gallery_obj_or_id
@@ -285,123 +322,65 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		return $retval;
 	}
 
-//
-//
-//	/**
-//	 * Returns the filename of the image
-//	 * @param stdObject|stdClass|C_DataMapper_Model $image
-//	 * @param string $size
-//	 * @return string
-//	 */
-//	function get_image_path($image, $size='original')
-//	{
-//		return $this->object->_get_image_property($image, 'path', $size);
-//	}
-//
-//	/**
-//	 * Uploads an image for a particular gallery. Excepts $_FILES to look like:
-//	 *
-//	 * Array(
-//		 [file]	=>	Array (
-//            [name] => Canada_landscape4.jpg
-//            [type] => image/jpeg
-//            [tmp_name] => /private/var/tmp/php6KO7Dc
-//            [error] => 0
-//            [size] => 64975
-//         )
-//	   )
-//	 * @param int $gallery_id
-//	 * @return C_NextGen_Gallery_Image
-//	 * @throws Exception
-//	 */
-//	function upload_image($gallery_id)
-//	{
-//		$retval = FALSE;
-//
-//		// Ensure that there is enough space first
-//        require_once(implode(DIRECTORY_SEPARATOR, array(ABSPATH, 'wp-admin', 'includes', 'ms.php')));
-//        if ( (is_multisite()) && nggWPMU::wpmu_enable_function('wpmuQuotaCheck')) {
-//			if(($error = upload_is_user_over_quota( FALSE ) )) {
-//                $retval = FALSE;
-//                delete_transient('dirsize_cache');
-//                throw new Exception(_("Sorry, you have used your space allocation. Please delete some files to upload more files"));
-//			}
-//		}
-//
-//		// Has an image been uploaded ?
-//		if (isset($_FILES['file'])) {
-//			$img = $_FILES['file'];
-//
-//			// TODO: Check if it's a zip and the user has the capabilities
-//			// of uploading a zip
-//
-//			// Was there a problem uploading?
-//			if ($img['error']) {
-//                $error_msg = _("There was a problem uploading the image, ").
-//                    (isset($img['name'])? $img['name'] : _('unknown filename')).'. ';
-//                if (in_array($img[error], array(1,2))) {
-//                    $error_msg .= "The file exceeded the maximum size allowed.";
-//                }
-//                throw new Exception($error_msg);
-//            }
-//
-//			// Get the upload directory
-//			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
-//			if (($upload_dir = $mapper->get_gallery_path($gallery_id))) {
-//				$image_path = path_join($upload_dir, str_replace(' ', '_', $img['name']));
-//				$image_path = apply_filters('ngg_pre_add_new_image', $image_path, $gallery_id);
-//
-//				// Create the image record
-//				$factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory', 'imported_image');
-//				$path_parts = pathinfo( $image_path );
-//				$alt_text = ( !isset($path_parts['filename']) ) ? substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) : $path_parts['filename'];
-//				$gallery_image = $factory->create('gallery_image', array(
-//					'filename'   => basename($image_path),
-//					'galleryid'  => $gallery_id,
-//					'alttext'    => $alt_text
-//				), NULL, 'imported_image');
-//				unset($factory);
-//
-//				// If everything is good...
-//				$gallery_image->validate();
-//				if ($gallery_image->is_valid()) {
-//
-//					// Create the storage directory incase it doesn't exist already
-//					if (!file_exists($upload_dir)) wp_mkdir_p($upload_dir);
-//
-//					// Store the image in the gallery directory
-//					if (!move_uploaded_file($img['tmp_name'], $image_path)) {
-//						throw new Exception(_("Could not store the image. Please check directory permissions and try again."));
-//					}
-//
-//					// Save the image to the database
-//					$gallery_image->save();
-//					$retval = $gallery_image;
-//
-//					// Notify other plugins that an image has been added
-//					do_action('ngg_added_new_image', $gallery_image);
-//
-//					// delete dirsize after adding new images
-//					delete_transient( 'dirsize_cache' );
-//
-//					// Seems redundant to above hook. Maintaining for legacy purposes
-//					do_action(
-//						'ngg_after_new_images_added',
-//						$gallery_id,
-//						array($gallery_image->id())
-//					);
-//
-//					//add the preview image if needed
-//					// TODO: Using NextGen legacy class. Should provide an instance method
-//					// that performs this functionality
-//					require_once(path_join(NGGALLERY_ABSPATH, 'admin/functions.php'));
-//					nggAdmin::set_gallery_preview ($gallery_id);
-//				}
-//			}
-//		}
-//		else throw new Exception(_("No image specified to upload"));
-//		return $retval;
-//	}
+
+	/**
+	 * Uploads base64 file to a gallery
+	 * @param int|stdClass|C_NextGEN_Gallery $gallery
+	 * @param $data base64-encoded string of data representing the image
+	 * @param type $filename specifies the name of the file
+	 */
+	function upload_base64_image($gallery, $data, $filename=FALSE)
+	{
+		if (($gallery_id = $this->object->_get_gallery_id($gallery))) {
+
+			// Ensure that there is capacity available
+			if ( (is_multisite()) && nggWPMU::wpmu_enable_function('wpmuQuotaCheck')) {
+				if (upload_is_user_over_quota(FALSE)) {
+					throw new E_NoSpaceAvailableException();
+				}
+			}
+
+			// Get path information. The use of get_upload_abspath() might
+			// not be the best for some drivers. For example, if using the
+			// WordPress Media Library for uploading, then the wp_upload_bits()
+			// function should perhaps be used
+			$upload_dir = get_upload_abspath($gallery);
+			$filename = $filename ? $filename : uniqid('nextgen-gallery');
+			$abs_filename = path_join($upload_dir, $filename);
+
+			// Create the database record
+			$image = new stdClass();
+			$image->title = sanitize_title($filename);
+			$image->galleryid = $this->object->_get_gallery_id($gallery);
+			if ($this->object->_image_mapper->save($image)) {
+
+				try {
+					// Try writing the image
+					if (!file_exists($upload_dir)) wp_mkdir_p($upload_dir);
+					$fp = fopen($abs_filename, 'w');
+					fwrite($fp, $data);
+					fclose($fp);
+
+					// Notify other plugins that an image has been added
+					do_action('ngg_added_new_image', $image);
+
+					// delete dirsize after adding new images
+					delete_transient( 'dirsize_cache' );
+
+					// Seems redundant to above hook. Maintaining for legacy purposes
+					do_action(
+						'ngg_after_new_images_added',
+						$gallery_id,
+						array($image->id())
+					);
+				}
+				catch(Exception $ex) {
+					throw new E_InsufficientWriteAccessException();
+				}
+			}
+		}
+		throw new E_InvalidEntityException();
+	}
 }
 
 class C_GalleryStorage_Driver_Base extends C_Component
@@ -415,9 +394,7 @@ class C_GalleryStorage_Driver_Base extends C_Component
 	function initialize($context)
 	{
 		parent::initialize($context);
-		$this->_options = $this->_get_registry()->get_utility('I_Photocrati_Options');
-		$this->_gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
 		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 	}
-
 }

@@ -44,7 +44,7 @@ class C_Gallery_Storage extends C_Component
 	{
 		$object_name = $args[0];
 		$context = $args[1];
-		$factory_method = $this->get_driver_factory_method();
+		$factory_method = $this->_get_driver_factory_method();
 		$factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
 		return $factory->create($factory_method, $object_name, $context);
 	}
