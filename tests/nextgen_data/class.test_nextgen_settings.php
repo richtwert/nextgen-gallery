@@ -53,7 +53,7 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 		);
 
 		// Test that the gallerypath does NOT get overwritten by the global
-		// option is a non-MU environment
+		// option in a non-MU environment
 		$GLOBALS['NGG_MULTISITE'] = FALSE;
 		$this->settings->reset();
 		$this->assertEqual(
@@ -102,6 +102,8 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	function tearDown()
 	{
 		$this->settings->reset(TRUE);
+		delete_site_option('ngg_options');
+		delete_option('ngg_options');
 	}
 }
 

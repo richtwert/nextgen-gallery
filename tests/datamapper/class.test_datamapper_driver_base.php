@@ -7,7 +7,7 @@ require_once(path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'class.test_component_base.
 abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 {
 	public $post_title = "Mike's Test Post";
-	public $post_type = 'posts';
+	public $post_type = 'post';
 	public $model_factory_method = 'my_model';
 	public $post_id = 0;
 	public $mapper;

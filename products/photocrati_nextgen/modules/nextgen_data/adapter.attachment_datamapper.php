@@ -16,7 +16,7 @@ class A_Attachment_DataMapper extends Mixin
 	 * instead of the wp_insert_post
 	 * @param stdObject $entity
 	 */
-	function _save_entity(&$entity)
+	function _save_entity($entity)
 	{
 		$post_id = FALSE;
 		$post = $this->object->_convert_entity_to_post($entity);

@@ -56,47 +56,47 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	}
 
 
-//	/**
-//	 * Tests uploading an image. When an image has been uploaded, thumbnails
-//	 * get created automatically
-//	 */
-//	function test_upload_image()
-//	{
-//
-//		// We upload files using the upload_image() method of the
-//		// C_Gallery_Storage class. The first parameter is the
-//		// gallery_id or an object representing the gallery
-//		foreach (array($this->gid, $this->gallery) as $gallery) {
-//
-//			// Run upload test if our previous gallery creation tests passed
-//			if ($gallery) {
-//				$test_file_abspath = path_join(dirname(__FILE__), 'test.jpg');
-//
-//				// You can upload an image from $_FILES
-//				$_FILES['file'] = array(
-//					'name'		=>	'test.jpg',
-//					'type'		=>	'type/jpeg',
-//					'tmp_name'	=>	$test_file_abspath,
-//					'error'		=>	0
-//				);
-//				$image = $this->storage->upload_image($gallery);
-//				$this->assertTrue(is_object($image));
-//				$image_key = $this->image_mapper->get_primary_key_column();
-//				$this->assertTrue(is_int($image->$image_key));
-//				$this->assertTrue($image->$image_key > 0);
-//				$this->image_mapper->destroy($image);
-//
-//				// Or you can upload an image using base64 data
-//				$this->image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
-//				$image->pid = $this->image->$image_key;
-//				$this->images_to_cleanup[] = $this->image->$image_key;
-//				$this->assertTrue(is_object($image));
-//				$this->assertTrue(is_int($image->$image_key));
-//				$this->assertTrue($image->$image_key > 0);
-//			}
-//		}
-//	}
-//
+	/**
+	 * Tests uploading an image. When an image has been uploaded, thumbnails
+	 * get created automatically
+	 */
+	function test_upload_image()
+	{
+
+		// We upload files using the upload_image() method of the
+		// C_Gallery_Storage class. The first parameter is the
+		// gallery_id or an object representing the gallery
+		foreach (array($this->gid, $this->gallery) as $gallery) {
+
+			// Run upload test if our previous gallery creation tests passed
+			if ($gallery) {
+				$test_file_abspath = path_join(dirname(__FILE__), 'test.jpg');
+
+				// You can upload an image from $_FILES
+				$_FILES['file'] = array(
+					'name'		=>	'test.jpg',
+					'type'		=>	'type/jpeg',
+					'tmp_name'	=>	$test_file_abspath,
+					'error'		=>	0
+				);
+				$image = $this->storage->upload_image($gallery);
+				$this->assertTrue(is_object($image));
+				$image_key = $this->image_mapper->get_primary_key_column();
+				$this->assertTrue(is_int($image->$image_key));
+				$this->assertTrue($image->$image_key > 0);
+				$this->image_mapper->destroy($image);
+
+				// Or you can upload an image using base64 data
+				$this->image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
+				$image->pid = $this->image->$image_key;
+				$this->images_to_cleanup[] = $this->image->$image_key;
+				$this->assertTrue(is_object($image));
+				$this->assertTrue(is_int($image->$image_key));
+				$this->assertTrue($image->$image_key > 0);
+			}
+		}
+	}
+
 //	/**
 //	 * You can see what image sizes are registered for all gallery images
 //	 * Both driver implementations support a minimum of 'thumbnail' and 'full'.

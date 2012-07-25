@@ -332,9 +332,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	 */
 	function upload_base64_image($gallery, $data, $filename=FALSE)
 	{
-		$retval = NULL;
-
-		if (!($gallery_id = $this->object->_get_gallery_id($gallery))) {
+		$retval		= NULL;
+		if (($gallery_id = $this->object->_get_gallery_id($gallery))) {
 
 			// Ensure that there is capacity available
 			if ( (is_multisite()) && nggWPMU::wpmu_enable_function('wpmuQuotaCheck')) {
@@ -352,10 +351,10 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
-			$image = new stdClass();
-			$image->title = sanitize_title($filename);
-			$image->galleryid = $this->object->_get_gallery_id($gallery);
-			$this->object->_image_mapper->_debug = TRUE;
+			$image				= new stdClass();
+			$image->title		= sanitize_title($filename);
+			$image->galleryid	= $this->object->_get_gallery_id($gallery);
+			$image_key			= $this->object->_image_mapper->get_primary_key_column();
 			if ($this->object->_image_mapper->save($image)) {
 
 				try {
@@ -377,7 +376,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					do_action(
 						'ngg_after_new_images_added',
 						$gallery_id,
-						array($image->id())
+						array($image->$image_key)
 					);
 				}
 				catch(Exception $ex) {

@@ -110,7 +110,6 @@ class Hook_NextGen_Settings_WordPress_MU_Overrides extends Hook
 				case 'gallerypath':
 					$blog_id = get_current_blog_id();
 					$global_value = $this->object->get_global($option_name);
-					$GLOBALS['DEBUG'] = TRUE;
 					$this->call_anchor(
 						$option_name,
 						str_replace('%BLOG_ID%', $blog_id, $global_value),
