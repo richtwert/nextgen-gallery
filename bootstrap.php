@@ -142,11 +142,17 @@ class C_NextGEN_Bootstrap
 			// Define the NextGEN Test Suite
 			$suites['nextgen'] = array(
 				path_join($tests_dir, 'mvc'),
-				path_join($tests_dir, 'datamapper'),
+//				path_join($tests_dir, 'datamapper'),
 				path_join($tests_dir, 'nextgen_data')
-//				path_join($tests_dir, 'gallery_storage'),
-//				path_join($tests_dir, 'gallery_core')
 			);
+
+			// Define the Pope Test Suite
+//			$suites['pope']	= array(
+//				path_join(
+//					PHOTOCRATI_GALLERY_PLUGIN_DIR,
+//					'pope'.DIRECTORY_SEPARATOR.'tests'
+//				)
+//			);
 		}
 
 		return $suites;

@@ -15,7 +15,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_upload_abspath($gallery=FALSE)
 	{
 		// Base upload path
-		$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGEN_Settings');
+		$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
 		$retval = $settings->get('gallerypath');
 
 		// If a gallery has been specified, then we'll
@@ -123,11 +123,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGEN_Gallery $gallery
 	 * @param type $filename, specifies the name of the file
 	 * @param type $data if specified, expects base64 encoded string of data
+	 * @return C_NextGen_Gallery_Image
 	 */
 	function upload_image($gallery, $filename=FALSE, $data=FALSE)
 	{
+		$retval = NULL;
+
 		// Ensure that we have the data present that we require
-		if ((isset($_FILE['file']) && $_FILE['file']['error'] == 0)) {
+		if ((isset($_FILES['file']) && $_FILES['file']['error'] == 0)) {
 
 			//		$_FILES = Array(
 			//		 [file]	=>	Array (
@@ -138,20 +141,22 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			//            [size] => 64975
 			//         )
 			//
-			$file = $_FILE['file'];
-			$this->object->upload_base64_image(
-				$gallery_id,
-				$filename ? $filename : (isset($file['name']) ? $file['name'] : FALSE),
-				file_get_contents($file['tmp_name'])
+			$file = $_FILES['file'];
+			$retval = $this->object->upload_base64_image(
+				$gallery,
+				file_get_contents($file['tmp_name']),
+				$filename ? $filename : (isset($file['name']) ? $file['name'] : FALSE)
 			);
 		}
 		elseif ($data) {
-			$this->object->upload_base64_image(
+			$retval = $this->object->upload_base64_image(
 				$filename,
 				$data
 			);
 		}
 		else throw new E_UploadException();
+
+		return $retval;
 	}
 }
 

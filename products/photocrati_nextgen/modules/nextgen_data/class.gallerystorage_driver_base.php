@@ -257,7 +257,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 	/**
 	 * Gets the url to the original-sized image
-	 * @param int|stdClass|C_NextGen_Image $image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return string
 	 */
 	function get_original_url($image)
@@ -268,7 +268,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 	/**
 	 * Alias for get_original_url()
-	 * @param int|stdClass|C_NextGen_Image $image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return string
 	 */
 	function get_full_url($image)
@@ -328,10 +328,13 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	 * @param int|stdClass|C_NextGEN_Gallery $gallery
 	 * @param $data base64-encoded string of data representing the image
 	 * @param type $filename specifies the name of the file
+	 * @return C_NextGen_Gallery_Image
 	 */
 	function upload_base64_image($gallery, $data, $filename=FALSE)
 	{
-		if (($gallery_id = $this->object->_get_gallery_id($gallery))) {
+		$retval = NULL;
+
+		if (!($gallery_id = $this->object->_get_gallery_id($gallery))) {
 
 			// Ensure that there is capacity available
 			if ( (is_multisite()) && nggWPMU::wpmu_enable_function('wpmuQuotaCheck')) {
@@ -344,7 +347,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			// not be the best for some drivers. For example, if using the
 			// WordPress Media Library for uploading, then the wp_upload_bits()
 			// function should perhaps be used
-			$upload_dir = get_upload_abspath($gallery);
+			$upload_dir = $this->object->get_upload_abspath($gallery);
 			$filename = $filename ? $filename : uniqid('nextgen-gallery');
 			$abs_filename = path_join($upload_dir, $filename);
 
@@ -352,6 +355,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$image = new stdClass();
 			$image->title = sanitize_title($filename);
 			$image->galleryid = $this->object->_get_gallery_id($gallery);
+			$this->object->_image_mapper->_debug = TRUE;
 			if ($this->object->_image_mapper->save($image)) {
 
 				try {
@@ -360,6 +364,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					$fp = fopen($abs_filename, 'w');
 					fwrite($fp, $data);
 					fclose($fp);
+
+					$retval = $image;
 
 					// Notify other plugins that an image has been added
 					do_action('ngg_added_new_image', $image);
@@ -379,7 +385,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				}
 			}
 		}
-		throw new E_InvalidEntityException();
+		else throw new E_InvalidEntityException();
+
+		return $retval;
 	}
 }
 

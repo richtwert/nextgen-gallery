@@ -41,7 +41,12 @@ class C_Gallery_Mapper extends C_DataMapper
 {
 	function define($context=FALSE)
 	{
-		parent::define('ngg_gallery', array('gallery', $context));
+		// Add 'gallery' context
+		if (!is_array($context)) $context = array($context);
+		array_push($context, 'gallery');
+
+		// Continue defining the object
+		parent::define('ngg_gallery', $context);
 		$this->set_model_factory_method('gallery');
 		$this->add_mixin('Mixin_Gallery_Mapper');
 		$this->implement('I_Gallery_Mapper');

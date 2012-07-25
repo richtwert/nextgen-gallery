@@ -28,9 +28,6 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 
 		// Initialize
 		parent::initialize($mapper, $properties, $context);
-
-		// Set defaults
-		if (!isset($properties[$this->id()])) $properties[$this->id()] = 0;
 	}
 
     function validate()

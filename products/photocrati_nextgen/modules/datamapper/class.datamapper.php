@@ -2,7 +2,7 @@
 
 class DataMapperDriverNotSelectedException extends Exception
 {
-	
+
 }
 
 class Mixin_DataMapper extends Mixin
@@ -19,7 +19,10 @@ class Mixin_DataMapper extends Mixin
 		if (!defined('DATAMAPPER_DRIVER')) {
 			$factory_method = get_option(PHOTOCRATI_GALLERY_OPTION_PREFIX.'datamapper_driver');
 			if (!$factory_method) throw new DataMapperDriverNotSelectedException();
-			if ($context != 'SIMPLE_TEST') define('DATAMAPPER_DRIVER', $factory_method);
+			if ($context) {
+				if (!is_array($context)) $context=array($context);
+				if (!in_array($context, 'SIMPLE_TEST')) define('DATAMAPPER_DRIVER', $factory_method);
+			}
 		}
 		else $factory_method = DATAMAPPER_DRIVER;
 
@@ -31,6 +34,7 @@ class C_DataMapper extends C_Component
 {
 	function define($object_name, $context=FALSE)
 	{
+		parent::define($context);
 		$this->add_mixin('Mixin_DataMapper');
 		$this->wrap('I_DataMapper_Driver', array(&$this, '_get_driver'), array($object_name, $context));
 	}

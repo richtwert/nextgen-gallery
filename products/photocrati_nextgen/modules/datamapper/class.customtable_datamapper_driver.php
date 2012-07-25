@@ -359,8 +359,8 @@ class C_CustomTable_DataMapper_Driver extends C_DataMapper_Driver_Base
 
 	function initialize($object_name, $context=FALSE)
 	{
-		parent::initialize($object_name, $primary_key=FALSE, $context=FALSE);
-		$this->_primary_key_column = $primary_key ? $primary_key : $this->_lookup_primary_key_column();
+		parent::initialize($object_name, $context=FALSE);
+		$this->_primary_key_column = $this->_lookup_primary_key_column();
 	}
 
 	/**

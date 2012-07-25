@@ -410,9 +410,9 @@ class C_CustomPost_DataMapper_Driver extends C_DataMapper_Driver_Base
 	var $_post_excerpt_field = FALSE;
 	var $_primary_key_column = 'ID';
 
-	function define()
+	function define($object_name, $context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_CustomPost_DataMapper_Driver');
 		$this->implement('I_CustomPost_DataMapper');
 	}
