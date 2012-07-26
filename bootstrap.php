@@ -135,6 +135,14 @@ class C_NextGEN_Bootstrap
 		// Define Test Directory
 		$tests_dir = PHOTOCRATI_GALLERY_TESTS_DIR;
 
+        // part of the Pope sub-repository
+        $suites['pope'] = array(
+            path_join(
+                PHOTOCRATI_GALLERY_PLUGIN_DIR,
+                'pope' . DIRECTORY_SEPARATOR . 'tests'
+            )
+        );
+
 		if (file_exists($tests_dir)) {
 			// Include mock objects
 			require_once(path_join($tests_dir, 'mocks.php'));
@@ -145,14 +153,6 @@ class C_NextGEN_Bootstrap
 //				path_join($tests_dir, 'datamapper'),
 				path_join($tests_dir, 'nextgen_data')
 			);
-
-			// Define the Pope Test Suite
-//			$suites['pope']	= array(
-//				path_join(
-//					PHOTOCRATI_GALLERY_PLUGIN_DIR,
-//					'pope'.DIRECTORY_SEPARATOR.'tests'
-//				)
-//			);
 		}
 
 		return $suites;
