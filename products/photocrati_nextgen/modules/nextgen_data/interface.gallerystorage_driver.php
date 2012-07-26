@@ -7,6 +7,7 @@ interface I_GalleryStorage_Driver
 	function get_full_abspath($image);
 	function get_original_abspath($image);
 	function get_upload_abspath($gallery=FALSE);
+	function get_upload_relpath($gallery=FALSE);
 	function get_gallery_abspath($gallery);
 	function get_backup_abspath($image);
 	function get_image_url($image, $size=FALSE);
@@ -21,4 +22,5 @@ interface I_GalleryStorage_Driver
 	function move_images($images, $gallery, $db_entries=TRUE);
 	function copy_images($images, $gallery, $db_entries=TRUE);
 	function upload_image($gallery, $data=FALSE);
+	function get_driver_class_name();
 }

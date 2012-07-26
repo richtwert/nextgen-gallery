@@ -11,6 +11,12 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	{
 		parent::setUp();
 
+		// We deregister the gallery storage utility, and replace it with
+		// the ngglegacy driver
+		$this->original = $this->get_registry()->get_utility_class_name('I_Gallery_Storage');
+		$this->get_registry()->del_utility('I_Gallery_Storage');
+		$this->get_registry()->add_utility('I_Gallery_Storage', 'C_NggLegacy_GalleryStorage_Driver');
+
 		// As this is NOT a test for the datamapper, we'll either use the
 		// configured default or specifically select the custom post driver
 		if (!defined('DATAMAPPER_DRIVER')) define('DATAMAPPER_DRIVER', 'custom_post_datamapper');
@@ -33,6 +39,8 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	function tearDown()
 	{
 		parent::tearDown();
+
+		// Delete any temporary galleries and images we might have created
 		$this->gallery_mapper->destroy($this->gid);
 
 		foreach ($this->galleries_to_cleanup as $gid) {
@@ -42,6 +50,10 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		foreach ($this->images_to_cleanup as $pid) {
 			$this->image_mapper->destroy($pid);
 		}
+
+		// Re-register the original gallery storage implementation
+		$this->get_registry()->del_utility('I_Gallery_Storage');
+		$this->get_registry()->add_utility('I_Gallery_Storage', $this->original);
 	}
 
 
@@ -97,44 +109,50 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		}
 	}
 
-//	/**
-//	 * You can see what image sizes are registered for all gallery images
-//	 * Both driver implementations support a minimum of 'thumbnail' and 'full'.
-//	 */
-//	function test_get_images_sizes()
-//	{
-//		$sizes = $this->storage->get_image_sizes();
-//		$this->assertTrue(is_array($sizes));
-//		$this->assertTrue(in_array('thumbnail', $sizes));
-//		$this->assertTrue(in_array('full', $sizes));
-//	}
-//
-//
-//	function test_get_upload_abspath()
-//	{
-//
-//		// The get_upload_abs_path() method accepts the gallery id or an object
-//		// representing the gallery to be passed as the first argument
-//		foreach (array($this->gid, $this->gallery) as $gallery) {
-//
-//			// Get the root upload path. Shouldn't ever be required by API
-//			$options = $this->get_registry()->get_singleton_utility('I_Photocrati_Options');
-//			$upload_path = $this->storage->get_upload_abspath();
-//			$this->assertEqual($options->gallerypath, $upload_path);
-//
-//			// Get the upload path for a particular gallery
-//			$gallery_path = $this->storage->get_upload_abspath($gallery);
-//			$this->assertEqual(path_join($options->gallerypath, $gallery), $gallerypath);
-//
-//			// Let's get the path stored for the gallery in the database. In
-//			// this case, it will be the same as the upload directory
-//			// for the gallery
-//			$gallery_path = $this->storage->get_gallery_abspath($gallery);
-//			$this->assertEqual($this->storage->get_upload_abspath($gallery), $gallerypath);
-//		}
-//	}
-//
-//
+	/**
+	 * You can see what image sizes are registered for all gallery images
+	 * Both driver implementations support a minimum of 'thumbnail' and 'full'.
+	 */
+	function test_get_images_sizes()
+	{
+		$sizes = $this->storage->get_image_sizes();
+		$this->assertTrue(is_array($sizes));
+		$this->assertTrue(in_array('thumbnail', $sizes));
+		$this->assertTrue(in_array('full', $sizes));
+	}
+
+
+	function test_get_upload_abspath()
+	{
+
+		// The get_upload_abs_path() method accepts the gallery id or an object
+		// representing the gallery to be passed as the first argument
+		foreach (array($this->gid, $this->gallery) as $gallery) {
+
+			// Get the gallery
+			if (!is_object($gallery)) $gallery = $this->gallery_mapper->find($gallery);
+			$this->assertTrue(is_object($gallery));
+
+			// We'll need the settings utility to get the configured gallerypath
+			$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+			$rel_upload_dir = $settings->gallerypath;
+
+			// Set some path expectations
+			$abs_upload_dir = path_join(ABSPATH, $rel_upload_dir);
+			$abs_gallery_dir = path_join($abs_upload_dir, $gallery->slug);
+
+			// Test the get_upload_abspath() method
+			$this->assertEqual($this->storage->get_upload_abspath(), $abs_upload_dir);
+			$this->assertEqual($this->storage->get_upload_abspath($gallery), $abs_gallery_dir);
+
+			// Let's get the path stored for the gallery in the database. In
+			// this case, it will be the same as the upload directory
+			// for the gallery
+			$this->assertEqual($this->storage->get_gallery_abspath($gallery), $abs_gallery_dir);
+		}
+	}
+
+
 //	/**
 //	 * Tests getting the absolute path and filename for a gallery image
 //	 */

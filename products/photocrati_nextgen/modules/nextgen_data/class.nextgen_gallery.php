@@ -106,6 +106,11 @@ class C_NextGen_Gallery extends C_DataMapper_Model
             $this->author = get_current_user_id();
         }
 
+		// Set what will be the path to the gallery
+		$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
+		$this->path = $storage->get_upload_relpath($this);
+		unset($storage);
+
         $this->validates_presence_of('title');
 		$this->validates_presence_of('name');
         $this->validates_uniqueness_of('slug');

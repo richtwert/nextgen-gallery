@@ -416,4 +416,14 @@ class C_DataMapper_Driver_Base extends C_Component
 	{
 		return $this->_primary_key_column;
 	}
+
+
+	/**
+	 * Gets the class name of the driver used
+	 * @return string
+	 */
+	function get_driver_class_name()
+	{
+		return get_called_class();
+	}
 }

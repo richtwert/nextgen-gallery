@@ -8,7 +8,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 */
 	function get_image_sizes()
 	{
-		return array('full');
+		return array('full', 'thumbnail');
 	}
 
 
@@ -19,10 +19,21 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$retval = $settings->get('gallerypath');
 
 		// If a gallery has been specified, then we'll
-		// append the ID
-		if ($gallery && (($gallery_id = $this->object->_get_gallery_id($gallery)))) {
-			$retval = path_join($retval, $gallery_id);
+		// append the slug
+		if ($gallery) {
+			if (is_object($gallery) && isset($gallery->slug)) {
+				$retval = path_join($retval, $gallery->slug);
+			}
+			else {
+				$gallery = $this->object->_get_gallery_id($gallery);
+				$gallery = $this->object->_gallery_mapper->find($gallery);
+				if ($gallery) $retval = path_join($retval, $gallery->slug);
+			}
 		}
+
+		// We need to make this an absolute path
+		if (strpos($retval, ABSPATH) === FALSE)
+				$retval = path_join(ABSPATH, $retval);
 
 		return $retval;
 	}
@@ -30,33 +41,22 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Get the gallery path persisted in the database for the gallery
-	 * @param type $gallery
+	 * @param int|stdClass|C_NextGen_Gallery $gallery
 	 */
 	function get_gallery_abspath($gallery)
 	{
 		$retval = NULL;
 
-		// If a gallery has been specified, then we'll
-		// append the ID
-		if ($gallery && (($gallery_id = $this->object->_get_gallery_id($gallery)))) {
-			$retval = path_join($retval, $gallery_id);
+		// Get the gallery entity from the database
+		if ($gallery) {
+			if (is_int($gallery)) {
+				$gallery = $this->object->_gallery_mapper->find($gallery);
+			}
 		}
 
-		// Ensure that we have a gallery ID
-		if (is_int($gallery)) {
-			$retval = ABSPATH;
-
-			// Fetch the gallery from the database to ensure we
-			// find the latest path
-			$gallery_object = $this->_gallery_mapper->find($gallery);
-			if ($gallery_object) {
-
-				// If the gallery has an associated path with it,
-				// return the absolute path
-				if (isset($gallery_object->path)) {
-					$retval = path_join(ABSPATH, $gallery_object->path);
-				}
-			}
+		// If a path was stored in the entity, then use that
+		if ($gallery && isset($gallery->path)) {
+			$retval = path_join(ABSPATH, $gallery->path);
 		}
 
 		return $retval;

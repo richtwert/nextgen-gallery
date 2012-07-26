@@ -2,6 +2,11 @@
 
 class GalleryStorageDriverNotSelectedException extends RuntimeException
 {
+	function __construct($message='', $code=NULL, $previous=NULL)
+	{
+		if (!$message) $message = "No gallery storage driver selected.";
+		parent::__construct($message, $code, $previous);
+	}
 }
 
 class Mixin_GalleryStorage extends Mixin
@@ -11,14 +16,17 @@ class Mixin_GalleryStorage extends Mixin
 	 * implementation
 	 * @return string
 	 */
-	function _get_driver_factory_method()
+	function _get_driver_factory_method($context=FALSE)
 	{
 		$factory_method = '';
 
 		if (!defined('GALLERYSTORAGE_DRIVER')) {
 			$factory_method = get_option(PHOTOCRATI_GALLERY_OPTION_PREFIX.'gallerystorage_driver');
 			if (!$factory_method) throw new GalleryStorageDriverNotSelectedException();
-			define('GALLERYSTORAGE_DRIVER', $factory_method);
+			if ($context) {
+				if (!is_array($context)) $context=array($context);
+				if (!in_array($context, 'SIMPLE_TEST')) define('GALLERYSTORAGE_DRIVER', $factory_method);
+			}
 		}
 		else $factory_method = GALLERYSTORAGE_DRIVER;
 
@@ -44,7 +52,7 @@ class C_Gallery_Storage extends C_Component
 	{
 		$object_name = $args[0];
 		$context = $args[1];
-		$factory_method = $this->_get_driver_factory_method();
+		$factory_method = $this->_get_driver_factory_method($context);
 		$factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
 		return $factory->create($factory_method, $object_name, $context);
 	}

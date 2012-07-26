@@ -2,17 +2,29 @@
 
 class E_UploadException extends RuntimeException
 {
-
+	function __construct($message='', $code=NULL, $previous=NULL)
+	{
+		if (!$message) $message = "There was a problem uploading the file.";
+		parent::__construct($message, $code, $previous);
+	}
 }
 
 class E_InsufficientWriteAccessException extends RuntimeException
 {
-
+	function __construct($message='', $code=NULL, $previous=NULL)
+	{
+		if (!$message) $message = "Could not write to file. Please check filesystem permissions.";
+		parent::__construct($message, $code, $previous);
+	}
 }
 
 class E_NoSpaceAvailableException extends RuntimeException
 {
-
+	function __construct($message='', $code=NULL, $previous=NULL)
+	{
+		if (!$message) $message = "You have exceeded your storage capacity. Please remove some files and try again.";
+		parent::__construct($message, $code, $previous);
+	}
 }
 
 class Mixin_GalleryStorage_Driver_Base extends Mixin
@@ -43,6 +55,16 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	function get_full_abspath($image)
 	{
 		return $this->object->get_image_abspath($image, 'full');
+	}
+
+
+	/**
+	 * Gets the upload path, optionally for a particular gallery
+	 * @param int|C_NextGen_Gallery|stdClass $gallery
+	 */
+	function get_upload_relpath($gallery=FALSE)
+	{
+		return str_replace(ABSPATH, '', $this->object->get_upload_abspath($gallery));
 	}
 
 
@@ -403,5 +425,15 @@ class C_GalleryStorage_Driver_Base extends C_Component
 		parent::initialize($context);
 		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
 		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+	}
+
+
+	/**
+	 * Gets the class name of the driver used
+	 * @return string
+	 */
+	function get_driver_class_name()
+	{
+		return get_called_class();
 	}
 }
