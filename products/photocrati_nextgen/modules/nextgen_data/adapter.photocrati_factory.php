@@ -51,4 +51,10 @@ class A_Photocrati_Factory extends Mixin
     {
         return new C_nggImage_Wrapper($gallery, $context);
     }
+
+
+    function settings($context = False)
+    {
+        return new C_NextGen_Settings($context);
+    }
 }

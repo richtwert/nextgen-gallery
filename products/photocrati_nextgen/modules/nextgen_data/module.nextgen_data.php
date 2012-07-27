@@ -74,6 +74,8 @@ class M_NextGen_Data extends C_Base_Module
     function _register_adapters()
     {
         $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Photocrati_Factory');
+        $this->_get_registry()->add_adapter('I_NextGen_Settings', 'A_NextGen_Settings');
+        $this->_get_registry()->add_adapter('I_NextGen_Settings', 'A_NextGen_Settings_Multisite', 'multisite');
         $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Parse_Image_Metadata', 'imported_image');
         $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Auto_Rotate_Image', 'imported_image');
         $this->_get_registry()->add_adapter('I_Gallery_Image',     'A_Auto_Resize_Image', 'imported_image');
