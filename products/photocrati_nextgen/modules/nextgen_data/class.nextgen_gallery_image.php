@@ -32,7 +32,7 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 
     function validate()
     {
-        $this->validates_presence_of('galleryid');
+        $this->validates_presence_of('galleryid', 'filename');
         $this->validates_numericality_of('galleryid');
         $this->validates_numericality_of($this->id());
     }

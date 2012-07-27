@@ -21,7 +21,7 @@ class Mixin_DataMapper extends Mixin
 			if (!$factory_method) throw new DataMapperDriverNotSelectedException();
 			if ($context) {
 				if (!is_array($context)) $context=array($context);
-				if (!in_array($context, 'SIMPLE_TEST')) define('DATAMAPPER_DRIVER', $factory_method);
+				if (!in_array('SIMPLE_TEST', $context)) define('DATAMAPPER_DRIVER', $factory_method);
 			}
 		}
 		else $factory_method = DATAMAPPER_DRIVER;

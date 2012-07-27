@@ -373,9 +373,10 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
-			$image				= new stdClass();
+			$retval = $image				= new stdClass();
 			$image->title		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
+			$image->filename	= $filename;
 			$image_key			= $this->object->_image_mapper->get_primary_key_column();
 			if ($this->object->_image_mapper->save($image)) {
 
@@ -385,8 +386,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					$fp = fopen($abs_filename, 'w');
 					fwrite($fp, $data);
 					fclose($fp);
-
-					$retval = $image;
 
 					// Notify other plugins that an image has been added
 					do_action('ngg_added_new_image', $image);

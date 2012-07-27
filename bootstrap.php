@@ -132,25 +132,26 @@ class C_NextGEN_Bootstrap
 	 */
 	function add_testsuite($suites=array())
 	{
+        // part of the Pope sub-repository
+//        $suites['pope'] = array(
+//            path_join(
+//                PHOTOCRATI_GALLERY_PLUGIN_DIR,
+//                'pope' . DIRECTORY_SEPARATOR . 'tests'
+//            )
+//        );
+
 		// Define Test Directory
 		$tests_dir = PHOTOCRATI_GALLERY_TESTS_DIR;
 
-        // part of the Pope sub-repository
-        $suites['pope'] = array(
-            path_join(
-                PHOTOCRATI_GALLERY_PLUGIN_DIR,
-                'pope' . DIRECTORY_SEPARATOR . 'tests'
-            )
-        );
-
 		if (file_exists($tests_dir)) {
+
 			// Include mock objects
 			require_once(path_join($tests_dir, 'mocks.php'));
 
 			// Define the NextGEN Test Suite
 			$suites['nextgen'] = array(
 				path_join($tests_dir, 'mvc'),
-//				path_join($tests_dir, 'datamapper'),
+				path_join($tests_dir, 'datamapper'),
 				path_join($tests_dir, 'nextgen_data')
 			);
 		}

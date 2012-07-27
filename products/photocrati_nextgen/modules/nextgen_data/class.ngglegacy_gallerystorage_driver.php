@@ -71,30 +71,31 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	{
 		$retval = NULL;
 
-		// Get the image id
-		if ($image && (($image_id = $this->object->_get_image_id($image)))) {
-
-			// Get the gallery path associated with the image
+		// If we have the id, get the actual image entity
+		if (is_int($image)) {
 			$image = $this->object->_image_mapper->find($image_id);
-			if ($image) {
-				if (($gallery_path = $this->object->get_gallery_abspath($image->galleryid))) {
-					switch ($size) {
+		}
 
-						# Images are stored in the associated gallery folder
-						case 'full':
-						case 'original':
-							$retval = path_join($gallery_path, $image->filename);
-							break;
+		// Ensure we have the image entity - user could have passed in an
+		// incorrect id
+		if (is_object($image)) {
+			if (($gallery_path = $this->object->get_gallery_abspath($image->galleryid))) {
+				switch ($size) {
 
-						# We assume any other size of image is stored in the a
-						# subdirectory of the same name within the gallery folder
-						# gallery folder, but with the size appended to the filename
-						default:
-							$image_path = path_join($gallery_path, $size);
-							$image_path = path_join($image_path, $image->filename);
-							if (file_exists($image_path)) $retval = $image_path;
-							break;
-					}
+					# Images are stored in the associated gallery folder
+					case 'full':
+					case 'original':
+						$retval = path_join($gallery_path, $image->filename);
+						break;
+
+					# We assume any other size of image is stored in the a
+					# subdirectory of the same name within the gallery folder
+					# gallery folder, but with the size appended to the filename
+					default:
+						$image_path = path_join($gallery_path, $size);
+						$image_path = path_join($image_path, $image->filename);
+						if (file_exists($image_path)) $retval = $image_path;
+						break;
 				}
 			}
 		}

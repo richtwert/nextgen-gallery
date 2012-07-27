@@ -3,6 +3,7 @@
 include_once('class.test_gallerystorage_driver_base.php');
 class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Driver_Base
 {
+	var $destroy_gallery = TRUE;
 
 	/**
 	 * Create a gallery and image for testing purposes
@@ -41,7 +42,8 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		parent::tearDown();
 
 		// Delete any temporary galleries and images we might have created
-		$this->gallery_mapper->destroy($this->gid);
+		if ($this->destroy_gallery)
+			$this->gallery_mapper->destroy($this->gid);
 
 		foreach ($this->galleries_to_cleanup as $gid) {
 			$this->gallery_mapper->destroy($gid);
@@ -74,6 +76,7 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	 */
 	function test_upload_image()
 	{
+		$image_key = $this->image_mapper->get_primary_key_column();
 
 		// We upload files using the upload_image() method of the
 		// C_Gallery_Storage class. The first parameter is the
@@ -92,19 +95,13 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 					'error'		=>	0
 				);
 				$image = $this->storage->upload_image($gallery);
-				$this->assertTrue(is_object($image));
-				$image_key = $this->image_mapper->get_primary_key_column();
-				$this->assertTrue(is_int($image->$image_key));
-				$this->assertTrue($image->$image_key > 0);
-				$this->image_mapper->destroy($image);
+				$this->assert_valid_image($image, $image_key);
+				$this->images_to_cleanup[] = $image->$image_key;
 
 				// Or you can upload an image using base64 data
 				$this->image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
-				$image->pid = $this->image->$image_key;
-				$this->images_to_cleanup[] = $this->image->$image_key;
-				$this->assertTrue(is_object($image));
-				$this->assertTrue(is_int($image->$image_key));
-				$this->assertTrue($image->$image_key > 0);
+				$this->pid = $this->image->$image_key;
+				$this->assert_valid_image($this->image, $image_key);
 			}
 		}
 	}
@@ -127,61 +124,64 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 
 		// The get_upload_abs_path() method accepts the gallery id or an object
 		// representing the gallery to be passed as the first argument
-		foreach (array($this->gid, $this->gallery) as $gallery) {
+		$gallery = $this->gallery_mapper->find($this->gid);
+		$this->assertTrue(is_object($gallery));
 
-			// Get the gallery
-			if (!is_object($gallery)) $gallery = $this->gallery_mapper->find($gallery);
-			$this->assertTrue(is_object($gallery));
+		// We'll need the settings utility to get the configured gallerypath
+		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$rel_upload_dir = $settings->gallerypath;
 
-			// We'll need the settings utility to get the configured gallerypath
-			$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
-			$rel_upload_dir = $settings->gallerypath;
+		// Set some path expectations
+		$abs_upload_dir = path_join(ABSPATH, $rel_upload_dir);
+		$abs_gallery_dir = path_join($abs_upload_dir, $gallery->slug);
 
-			// Set some path expectations
-			$abs_upload_dir = path_join(ABSPATH, $rel_upload_dir);
-			$abs_gallery_dir = path_join($abs_upload_dir, $gallery->slug);
+		// Test the get_upload_abspath() method
+		$this->assertEqual($this->storage->get_upload_abspath(), $abs_upload_dir);
+		$this->assertEqual($this->storage->get_upload_abspath($gallery), $abs_gallery_dir);
 
-			// Test the get_upload_abspath() method
-			$this->assertEqual($this->storage->get_upload_abspath(), $abs_upload_dir);
-			$this->assertEqual($this->storage->get_upload_abspath($gallery), $abs_gallery_dir);
-
-			// Let's get the path stored for the gallery in the database. In
-			// this case, it will be the same as the upload directory
-			// for the gallery
-			$this->assertEqual($this->storage->get_gallery_abspath($gallery), $abs_gallery_dir);
-		}
+		// Let's get the path stored for the gallery in the database. In
+		// this case, it will be the same as the upload directory
+		// for the gallery
+		$this->assertEqual($this->storage->get_gallery_abspath($gallery), $abs_gallery_dir);
 	}
 
 
-//	/**
-//	 * Tests getting the absolute path and filename for a gallery image
-//	 */
-//	function test_get_image_abspath()
-//	{
-//		// The get_image_abspath() and related methods accept an image id or
-//		// object representing the image as a parameter
-//		foreach (array($this->pid, $this->image) as $image) {
-//
-//			// Get the absolute path of the image
-//			$image_path = $this->storage->get_image_abspath($image);
-//			$this->assertEqual(
-//				path_join($this->storage->get_gallery_abspath($this->gid), $this->image->filename),
-//				$image_path
-//			);
-//
-//			// get_full_abspath() is an alias to get_image_abspath()
-//			$this->assertEqual(
-//				$this->storage->get_image_abspath($image),
-//				$this->storage->get_full_abspath($image)
-//			);
-//
-//			// get_original_abspath() is an alias to get_image_abspath()
-//			$this->assertEqual(
-//				$this->storage->get_image_abspath($image),
-//				$this->storage->get_original_abspath($image)
-//			);
-//		}
-//	}
+	/**
+	 * Tests getting the absolute path and filename for a gallery image
+	 */
+	function test_get_image_abspath()
+	{
+		// Create a new image for testing
+		$image = new stdClass();
+		$image->title= 'test-image';
+		$image->filename = 'test-image.jpg';
+		$image->galleryid = $this->gid;
+		$pid = $this->image_mapper->save($image);
+		$this->assertTrue(is_int($pid) && $pid > 0);
+		$this->images_to_cleanup[] = $pid;
+		$this->assert_valid_image($image, $this->image_mapper->get_primary_key_column());
+
+		// Set some path assumptions
+		$abs_image_path = $this->storage->get_image_abspath($image);
+
+		// Test get_image_abspath()
+		$this->assertEqual(
+			$abs_image_path,
+			path_join($this->storage->get_gallery_abspath($this->gid), $image->filename)
+		);
+
+		// Test get_full_abspath(), which is an alias to get_image_abspath()
+		$this->assertEqual(
+			$this->storage->get_full_abspath($image),
+			$abs_image_path
+		);
+
+		// Test get_original_abspath(), another alias to get_image_abspath()
+		$this->assertEqual(
+			$this->storage->get_original_abspath($image),
+			$abs_image_path
+		);
+	}
 //
 //	/**
 //	 * Tests getting the absolute path where thumbnails are stored for
@@ -413,6 +413,30 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 //
 //
 //	/*** HELPER METHODS ******************************************************/
+//
+	/**
+	 * Asserts that an image is a valid image
+	 * @param type $image
+	 */
+	function assert_valid_image($image, $image_key)
+	{
+		// Make assertions
+		if (get_class($image) == 'C_Test_NggLegacy_GalleryStorage_Driver') {
+		}
+		$this->assertTrue(
+			in_array(get_class($image), array('stdClass','C_NextGen_Gallery_Image')),
+			"Image is not a stdClass or C_NextGen_Gallery_Image instance"
+		);
+		$this->assertTrue(is_int($image->$image_key), "Image ID is not an integer");
+		$this->assertTrue($image->$image_key > 0, "Image ID is not greater than zero");
+		if (is_a($image, 'stdClass', TRUE)) {
+			$image = $this->image_mapper->convert_to_model($image);
+		}
+		$this->assertTrue($image->is_valid(), "Image is not valid");
+		$this->assertFalse($image->is_invalid(), "Image is invalid");
+		$this->assertNotEmpty($image->galleryid, "Image has no gallery id");
+		$this->assertNotEmpty($image->filename, "Image has no filename");
+	}
 //
 //	function assert_valid_dimensions($dimensions)
 //	{
