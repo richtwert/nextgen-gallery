@@ -5,6 +5,17 @@
  */
 class A_NextGen_Multisite_Settings extends Mixin
 {
+    function initialize()
+    {
+        // This handles WordPress substitutions like the %BLOG_ID placeholder
+        $this->object->add_post_hook(
+            'set',
+            'WordPress Multisite Overrides',
+            'Hook_NextGen_Settings_WordPress_MU_Overrides',
+            '_apply_multisite_overrides'
+        );
+    }
+
     /**
      * Resets NextGEN to it's default settings
      *
@@ -13,6 +24,7 @@ class A_NextGen_Multisite_Settings extends Mixin
      */
     function reset($save = False)
     {
+        $this->object->_global_options = array();
         foreach (C_NextGen_Settings_Defaults::get_defaults(True) as $name => $val)
         {
             $this->object->set($name, $val);
@@ -83,5 +95,34 @@ class A_NextGen_Multisite_Settings extends Mixin
     function to_array()
     {
         return $this->object->_global_options;
+    }
+}
+
+/**
+ *  Hook triggered after a global option has been set()
+ */
+class Hook_NextGen_Settings_WordPress_MU_Overrides extends Hook
+{
+    function _apply_multisite_overrides($option_name, $value)
+    {
+        if (!$this->object->is_multisite())
+        {
+            return Null;
+        }
+
+        switch ($option_name) {
+            case 'gallerypath':
+                $blog_id = get_current_blog_id();
+                $this->call_anchor(
+                    $option_name,
+                    str_replace('%BLOG_ID%', $blog_id, $value)
+                );
+                break;
+        }
+
+        return $this->object->get_method_property(
+            $this->method_called,
+            ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
+        );
     }
 }

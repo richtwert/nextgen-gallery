@@ -198,53 +198,19 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 	 */
 	function is_multisite()
 	{
-		$retval = FALSE;
+        $retval = False;
 
-		if (isset($GLOBALS['NGG_MULTISITE'])) {
-			if ($GLOBALS['NGG_MULTISITE']) $retval = TRUE;
-		}
-		else $retval = is_multisite();
+		if (isset($GLOBALS['NGG_MULTISITE']))
+        {
+			if ($GLOBALS['NGG_MULTISITE'])
+            {
+                $retval = True;
+            }
+		} else {
+            $retval = is_multisite();
+        }
 
 		return $retval;
-	}
-}
-
-/**
- *  Hook triggered after a global option has been set()
- */
-class Hook_NextGen_Settings_WordPress_MU_Overrides extends Hook
-{
-	function _apply_multisite_overrides($option_name, $value)
-	{
-		// If in a multisite environment in a multisite context..
-		if ($this->object->is_multisite()
-            && $this->object->is_global_option($option_name)
-            && 'multisite' == $this->object->context)
-        {
-			switch ($option_name) {
-				case 'CSSFile':
-					$this->call_anchor(
-						$option_name,
-						$this->object->_global_options($option_name),
-						FALSE
-					);
-					break;
-				case 'gallerypath':
-					$blog_id = get_current_blog_id();
-					$global_value = $this->object->_global_options($option_name);
-					$this->call_anchor(
-						$option_name,
-						str_replace('%BLOG_ID%', $blog_id, $global_value),
-						FALSE
-					);
-					break;
-			}
-
-			return $this->object->get_method_property(
-				$this->method_called,
-				ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
-			);
-		}
 	}
 }
 
@@ -261,6 +227,7 @@ class Mixin_NextGen_Settings extends Mixin
 	 */
 	function reset($save = False)
 	{
+        $this->object->_options = array();
         foreach (C_NextGen_Settings_Defaults::get_defaults() as $name => $val)
         {
             $this->object->set($name, $val);
@@ -338,7 +305,10 @@ class Mixin_NextGen_Settings extends Mixin
 class C_NextGen_Settings extends C_Component implements ArrayAccess
 {
     /** @var array Array of multisite option names */
-    public $_global_option_names = array('wpmuCSSfile');
+    public $_global_option_names = array(
+        'wpmuCSSfile',
+        'gallerypath'
+    );
 
     /** @var Internal multisite options array*/
     public $_global_options;
@@ -358,22 +328,14 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
 		// Add persistence layer. Replace if not using WordPress
 		$this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');
 
-		// Add options API.
+		// Default options API
 		$this->add_mixin('Mixin_NextGen_Settings');
-
-		// Add hook for WordPress substitutions. For instance, when the %BLOG_ID% placeholder is used
-		$this->add_post_hook(
-			'set',
-			'WordPress Multisite Overrides',
-			'Hook_NextGen_Settings_WordPress_MU_Overrides',
-			'_apply_multisite_overrides'
-		);
 	}
 
 	function initialize($context = False)
 	{
 		parent::initialize($context);
-		$this->reload();
+		$this->object->reload();
 	}
 
     function __get($option_name)
@@ -416,10 +378,11 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
      */
     static function &get_instance($context = False)
     {
-		if (!isset(self::$_instances[$context])) {
-			self::$_instances[$context] = new C_NextGen_Settings($context);
-		}
-		return self::$_instances[$context];
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_NextGen_Settings($context);
+        }
+        return self::$_instances[$context];
     }
 
     /**

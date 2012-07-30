@@ -26,7 +26,9 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 
         $this->multi_settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings', array('multisite'));
         $this->assertEqual(get_class($this->multi_settings), 'C_NextGen_Settings');
-		var_dump($this->multi_settings->context);
+
+        $this->settings->reset();
+        $this->multi_settings->reset();
 	}
 
     /**
@@ -102,7 +104,7 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	/**
 	 * Test saving a new option
 	 */
-	function test_set()
+	function test_set_del()
 	{
         $str = 'foo bar';
         $this->settings->set('foo_bar', $str);
@@ -127,13 +129,10 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
             $str,
             'settings[foo_bar] = ... did not work'
         );
-    }
 
-    /**
-     * Test deleting options
-     */
-    function test_del()
-    {
+        /*
+         * now test del()
+         */
         $this->settings->del('foo_bar');
         $this->assertFalse(
             $this->settings->is_set('foo_bar'),
@@ -163,7 +162,18 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
         $this->settings->set('foo_bar', 'test');
 		$this->settings->save();
 		$options = get_option('ngg_options', array());
-		$this->assertTrue(in_array('foo_bar', $options));
+		$this->assertTrue(
+            array_key_exists('foo_bar', $options),
+            'foo_bar was not saved to the db'
+        );
+
+        // reset(True) causes a sync of the defaults to the db
+        $this->settings->reset(True);
+        $options = get_option('ngg_options', array());
+        $this->assertFalse(
+            array_key_exists('foo_bar', $options),
+            'foo_bar still in database after reset(True) was called'
+        );
 	}
 
 	/**
@@ -182,7 +192,7 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	{
 		$this->settings->test_setting = True;
 		$this->assertTrue(isset($this->settings->test_setting));
-		$this->settings->reload(True);
+		$this->settings->reload();
 		$this->assertFalse(
             isset($this->settings->test_setting),
             'settings->reload(True) did not remove settings->test_setting'
@@ -222,16 +232,17 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 
         // Test that the gallerypath gets overwritten by the global option in an MU environment
         $GLOBALS['NGG_MULTISITE'] = True;
-        $this->settings->reset(True);
+        $this->multi_settings->reset();
+
         $this->assertEqual(
-            $this->settings->gallerypath,
+            $this->multi_settings->gallerypath,
             'wp-content/blogs.dir/'. get_current_blog_id() . '/files/',
             '_apply_multisite_overrides() did not modify gallerypath correctly'
         );
 
         // Test that the gallerypath does NOT get overwritten by the global option in a non-MU environment
         $GLOBALS['NGG_MULTISITE'] = False;
-        $this->settings->reset(True);
+        $this->settings->reset();
         $this->assertEqual(
             $this->settings->gallerypath,
             'wp-content/gallery/',
@@ -241,7 +252,6 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 
     function tearDown()
     {
-        // $this->settings->reset(True);
         delete_site_option('ngg_options');
         delete_option('ngg_options');
     }
