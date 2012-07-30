@@ -26,6 +26,7 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 
         $this->multi_settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings', array('multisite'));
         $this->assertEqual(get_class($this->multi_settings), 'C_NextGen_Settings');
+		var_dump($this->multi_settings->context);
 	}
 
     /**

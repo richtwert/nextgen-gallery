@@ -347,7 +347,7 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
     public $_options;
 
     /** @var null Singleton instance */
-    public static $_instance = Null;
+    public static $_instances = array();
 
 	function define()
 	{
@@ -414,13 +414,12 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
      * @param bool $context
      * @return null
      */
-    static function get_instance($context = False)
+    static function &get_instance($context = False)
     {
-        if (is_null(self::$_instance))
-        {
-            self::$_instance = new C_NextGen_Settings($context);
-        }
-        return self::$_instance;
+		if (!isset(self::$_instances[$context])) {
+			self::$_instances[$context] = new C_NextGen_Settings($context);
+		}
+		return self::$_instances[$context];
     }
 
     /**

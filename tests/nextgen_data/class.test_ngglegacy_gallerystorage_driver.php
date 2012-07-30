@@ -253,19 +253,19 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	/**
 	 * Tests getting the HTML tag for a thumbnail image
 	 */
-	function test_get_thumbnail_html()
-	{
-		foreach (array($this->image, $this->pid) as $image) {
-
-			// Get the html for the full-sized image
-			$html = $this->storage->get_thumbnail_html($image);
-			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
-
-			// get_thumb_html() is an alias for get_thumbnail_html()
-			$this->assertEqual($html, $this->storage->get_thumb_html($image));
-			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
-		}
-	}
+//	function test_get_thumbnail_html()
+//	{
+//		foreach (array($this->image, $this->pid) as $image) {
+//
+//			// Get the html for the full-sized image
+//			$html = $this->storage->get_thumbnail_html($image);
+//			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
+//
+//			// get_thumb_html() is an alias for get_thumbnail_html()
+//			$this->assertEqual($html, $this->storage->get_thumb_html($image));
+//			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
+//		}
+//	}
 //
 //
 //	/**

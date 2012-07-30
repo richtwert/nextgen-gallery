@@ -255,7 +255,7 @@ class Mixin_Router extends Mixin
  */
 class C_Router extends C_Component
 {
-    static $_instance = NULL;
+    static $_instances = array();
     var $_routes = array();
     var $_route_priorities = array();
     var $_route_cache = array();
@@ -268,12 +268,11 @@ class C_Router extends C_Component
 		$this->implement('I_Router');
     }
 
-    static function get_instance($context=FALSE)
+    static function &get_instance($context = False)
     {
-        if (self::$_instance == NULL) {
-			$klass = __CLASS__;
-            self::$_instance = new $klass($context);
-        }
-        return self::$_instance;
+		if (!isset(self::$_instances[$context])) {
+			self::$_instances[$context] = new C_NextGen_Settings($context);
+		}
+		return self::$_instances[$context];
     }
 }

@@ -3,7 +3,7 @@
 /**
  * Adjusts the C_NextGen_Settings class to manage multisite options
  */
-class A_NextGen_Settings_Multisite extends Mixin
+class A_NextGen_Multisite_Settings extends Mixin
 {
     /**
      * Resets NextGEN to it's default settings
