@@ -206,7 +206,7 @@ class C_Resource_Loader extends C_MVC_Controller
     static function &get_instance($context = False)
     {
 		if (!isset(self::$_instances[$context])) {
-			self::$_instances[$context] = new C_NextGen_Settings($context);
+			self::$_instances[$context] = new C_Resource_Loader($context);
 		}
 		return self::$_instances[$context];
     }

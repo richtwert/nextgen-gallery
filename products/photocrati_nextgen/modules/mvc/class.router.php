@@ -271,7 +271,7 @@ class C_Router extends C_Component
     static function &get_instance($context = False)
     {
 		if (!isset(self::$_instances[$context])) {
-			self::$_instances[$context] = new C_NextGen_Settings($context);
+			self::$_instances[$context] = new C_Router($context);
 		}
 		return self::$_instances[$context];
     }
