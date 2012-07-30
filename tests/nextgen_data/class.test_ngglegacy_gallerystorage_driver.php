@@ -250,22 +250,22 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	}
 
 
-//	/**
-//	 * Tests getting the HTML tag for a thumbnail image
-//	 */
-//	function test_get_thumbnail_html()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//
-//			// Get the html for the full-sized image
-//			$html = $this->storage->get_thumbnail_html($image);
-//			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
-//
-//			// get_thumb_html() is an alias for get_thumbnail_html()
-//			$this->assertEqual($html, $this->storage->get_thumb_html($image));
-//			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
-//		}
-//	}
+	/**
+	 * Tests getting the HTML tag for a thumbnail image
+	 */
+	function test_get_thumbnail_html()
+	{
+		foreach (array($this->image, $this->pid) as $image) {
+
+			// Get the html for the full-sized image
+			$html = $this->storage->get_thumbnail_html($image);
+			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
+
+			// get_thumb_html() is an alias for get_thumbnail_html()
+			$this->assertEqual($html, $this->storage->get_thumb_html($image));
+			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
+		}
+	}
 //
 //
 //	/**
@@ -406,7 +406,7 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		);
 		$this->assertTrue(is_int($image->$image_key), "Image ID is not an integer");
 		$this->assertTrue($image->$image_key > 0, "Image ID is not greater than zero");
-		if (is_a($image, 'stdClass', TRUE)) {
+		if ($image instanceof stdClass) {
 			$image = $this->image_mapper->convert_to_model($image);
 		}
 		$this->assertTrue($image->is_valid(), "Image is not valid");
