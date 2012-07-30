@@ -90,6 +90,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 					case 'thumbnails':
 					case 'thumbnail':
+					case 'thumb':
 						$size = 'thumbs';
 						// deliberately no break here
 
