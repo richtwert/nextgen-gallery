@@ -15,6 +15,8 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	 */
 	function setUp()
 	{
+		$this->ngg_mu_options = get_site_option('ngg_options');
+		$this->ngg_options = get_option('ngg_options');
 		delete_site_option('ngg_options');
 		delete_option('ngg_options');
 
@@ -102,8 +104,8 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	function tearDown()
 	{
 		$this->settings->reset(TRUE);
-		delete_site_option('ngg_options');
-		delete_option('ngg_options');
+		update_option('ngg_options', $this->ngg_options);
+		update_site_option('ngg_options', $this->ngg_mu_options);
 	}
 }
 

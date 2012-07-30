@@ -3,8 +3,6 @@
 include_once('class.test_gallerystorage_driver_base.php');
 class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Driver_Base
 {
-	var $destroy_gallery = TRUE;
-
 	/**
 	 * Create a gallery and image for testing purposes
 	 */
@@ -26,12 +24,22 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$this->image_mapper   = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
 
+		// Create test gallery to work with
 		$this->gallery = (object) array(
 			'title'	=>	'Test Gallery'
 		);
-
 		$this->gid = $this->gallery_mapper->save($this->gallery);
 		$this->assertTrue(is_int($this->gid) && $this->gid > 0, "Could not create new gallery");
+
+		// Create image to work with
+		$this->image = (object) array(
+			'title'		=>	'test-image',
+			'filename'	=>	'test.jpg',
+			'galleryid'	=>	$this->gid
+		);
+		$this->pid = $this->image_mapper->save($this->image);
+		$this->assert_valid_image($this->image, $this->image_mapper->get_primary_key_column());
+
 		$this->galleries_to_cleanup = array();
 		$this->images_to_cleanup = array();
 	}
@@ -42,8 +50,8 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		parent::tearDown();
 
 		// Delete any temporary galleries and images we might have created
-		if ($this->destroy_gallery)
-			$this->gallery_mapper->destroy($this->gid);
+		$this->gallery_mapper->destroy($this->gid);
+		$this->image_mapper->destroy($this->pid);
 
 		foreach ($this->galleries_to_cleanup as $gid) {
 			$this->gallery_mapper->destroy($gid);
@@ -99,9 +107,16 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 				$this->images_to_cleanup[] = $image->$image_key;
 
 				// Or you can upload an image using base64 data
-				$this->image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
-				$this->pid = $this->image->$image_key;
-				$this->assert_valid_image($this->image, $image_key);
+				$image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
+				$this->images_to_cleanup[] = $image->$image_key;
+				$this->assert_valid_image($image, $image_key);
+
+				$this->assertTrue(isset($image->meta_data));
+				$this->assertTrue(isset($image->meta_data['full']));
+				$this->assertTrue(isset($image->meta_data['full']['width']));
+				$this->assertTrue(isset($image->meta_data['full']['height']));
+				$this->assertTrue(is_int($image->meta_data['full']['width']));
+				$this->assertTrue(is_int($image->meta_data['full']['height']));
 			}
 		}
 	}
@@ -151,128 +166,90 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	 */
 	function test_get_image_abspath()
 	{
-		// Create a new image for testing
-		$image = new stdClass();
-		$image->title= 'test-image';
-		$image->filename = 'test-image.jpg';
-		$image->galleryid = $this->gid;
-		$pid = $this->image_mapper->save($image);
-		$this->assertTrue(is_int($pid) && $pid > 0);
-		$this->images_to_cleanup[] = $pid;
-		$this->assert_valid_image($image, $this->image_mapper->get_primary_key_column());
+		foreach (array($this->image, $this->pid) as $image) {
+			// Set some path assumptions
+			$abs_image_path = $this->storage->get_image_abspath($image);
+			$abs_gallery_path = $this->storage->get_gallery_abspath($this->gid);
 
-		// Set some path assumptions
-		$abs_image_path = $this->storage->get_image_abspath($image);
+			// Test get_image_abspath()
+			$copy_of_image = $this->image_mapper->find($image);
+			$this->assertEqual(
+				$abs_image_path,
+				path_join($abs_gallery_path, $copy_of_image->filename)
+			);
 
-		// Test get_image_abspath()
-		$this->assertEqual(
-			$abs_image_path,
-			path_join($this->storage->get_gallery_abspath($this->gid), $image->filename)
-		);
+			// Test get_full_abspath(), which is an alias to get_image_abspath()
+			$this->assertEqual(
+				$this->storage->get_full_abspath($image),
+				$abs_image_path
+			);
 
-		// Test get_full_abspath(), which is an alias to get_image_abspath()
-		$this->assertEqual(
-			$this->storage->get_full_abspath($image),
-			$abs_image_path
-		);
+			// Test get_original_abspath(), another alias to get_image_abspath()
+			$this->assertEqual(
+				$this->storage->get_original_abspath($image),
+				$abs_image_path
+			);
 
-		// Test get_original_abspath(), another alias to get_image_abspath()
-		$this->assertEqual(
-			$this->storage->get_original_abspath($image),
-			$abs_image_path
-		);
+			// Test the get_image_abspath for thumbnails
+			$this->assertTrue(strpos(
+				$this->storage->get_image_abspath($image, 'thumbs'),
+				path_join($abs_gallery_path, 'thumbs')
+			) === 0);
+		}
 	}
-//
-//	/**
-//	 * Tests getting the absolute path where thumbnails are stored for
-//	 * a particular gallery
-//	 */
-//	function test_get_gallery_thumbnail_abspath()
-//	{
-//
-//		foreach (array($this->gallery, $this->gid) as $gallery) {
-//			$gallery_path = $this->storage->get_gallery_path($gallery);
-//			$this->assertEqual(
-//				path_join($gallery_path, 'thumbs'),
-//				$this->storage->get_gallery_thumbnail_abspath($gallery)
-//			);
-//		}
-//	}
-//
-//
-//	/**
-//	 * Tests getting the absolute path of the thumbnail image
-//	 */
-//	function test_get_image_thumbnail_abspath()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//
-//			$gallery_path = $this->storage->get_gallery_path($this->gid);
-//			$thumbnail_path = $this->storage->get_thumbnail_abspath($image);
-//			$this->assertTrue(
-//				strpos($thumbnail_path, path_join($gallery_path, 'thumbs')) !== FALSE
-//			);
-//
-//			// get_thumb_abspath() is an alias to get_thumbnail_abspath()
-//			$this->assertTrue(
-//				$thumbnail_path,
-//				$this->storage->get_thumbs_abspath($image)
-//			);
-//		}
-//	}
-//
-//
-//	/**
-//	 * Tests getting urls for the image
-//	 */
-//	function test_get_image_urls()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//
-//			// Get the url to the full-sized image
-//			$url = $this->storage->get_image_url($image);
-//			$this->assertTrue(strpos($url, $this->image->filename) !== FALSE);
-//
-//			// get_original_url() is an alias to get_image_url()
-//			$this->assertTrue($url, $this->storage->get_original_url($image));
-//
-//			// get_full_url() is an alias to get_image_url()
-//			$this->assertTrue($url, $this->storage->get_full_url($image));
-//
-//			// Get the url to the thumbnail-sized image
-//			$thumb_url = $this->storage->get_thumbnail_url($image);
-//			$this->assertTrue(strpos($url, $this->image->filename) !== FALSE);
-//			$this->assertTrue(strpos($url, 'thumbs') !== FALSE);
-//
-//			// get_thumbs_url() is an alias to get_thumbnail_url()
-//			$this->assertTrue(
-//				$this->storage->get_thumbs_url($image),
-//				$this->storage->get_thumbnail_url($image)
-//			);
-//		}
-//	}
-//
-//
-//	/**
-//	 * Tests getting the HTML tag for an image
-//	 */
-//	function test_get_image_html()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//
-//			// Get the html for the full-sized image
-//			$html = $this->storage->get_image_html($image);
-//			$this->assert_valid_html($html);
-//
-//			// get_full_html() is an alias for get_image_html()
-//			$this->assertEqual($html, $this->storage->get_full_html($image));
-//
-//			// get_original_html() is an alias for get_image_html()
-//			$this->assertEqual($html, $this->storage->get_original_html($image));
-//		}
-//	}
-//
-//
+
+
+	/**
+	 * Tests getting urls for the image
+	 */
+	function test_get_image_urls()
+	{
+		foreach (array($this->image, $this->pid) as $image) {
+
+			// Get the url to the full-sized image
+			$url = $this->storage->get_image_url($image);
+			$this->assertTrue(strpos($url, $this->image->filename) !== FALSE);
+
+			// get_original_url() is an alias to get_image_url()
+			$this->assertTrue($url, $this->storage->get_original_url($image));
+
+			// get_full_url() is an alias to get_image_url()
+			$this->assertTrue($url, $this->storage->get_full_url($image));
+
+			// Get the url to the thumbnail-sized image
+			$thumb_url = $this->storage->get_image_url($image, 'thumbs');
+			$this->assertTrue(strpos($thumb_url, $this->image->filename) !== FALSE);
+			$this->assertTrue(strpos($thumb_url, 'thumbs') !== FALSE);
+
+			// get_thumbs_url() is an alias to get_thumbnail_url()
+			$this->assertTrue(
+				$this->storage->get_image_url($image, 'thumbs'),
+				$this->storage->get_thumbnail_url($image)
+			);
+		}
+	}
+
+
+	/**
+	 * Tests getting the HTML tag for an image
+	 */
+	function test_get_image_html()
+	{
+		foreach (array($this->image, $this->pid) as $image) {
+
+			// Get the html for the full-sized image
+			$html = $this->storage->get_image_html($image);
+			$this->assert_valid_img_tag($html, $image, $this->storage->get_full_url($image));
+
+			// get_full_html() is an alias for get_image_html()
+			$this->assertEqual($html, $this->storage->get_full_html($image));
+
+			// get_original_html() is an alias for get_image_html()
+			$this->assertEqual($html, $this->storage->get_original_html($image));
+		}
+	}
+
+
 //	/**
 //	 * Tests getting the HTML tag for a thumbnail image
 //	 */
@@ -282,11 +259,11 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 //
 //			// Get the html for the full-sized image
 //			$html = $this->storage->get_thumbnail_html($image);
-//			$this->assert_valid_html($html, $this->get_thumbnail_url($image));
+//			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
 //
 //			// get_thumb_html() is an alias for get_thumbnail_html()
 //			$this->assertEqual($html, $this->storage->get_thumb_html($image));
-//			$this->assert_valid_html($html, $this->get_thumbnail_url($image));
+//			$this->assert_valid_img_tag($html, $image, $this->get_thumbnail_url($image));
 //		}
 //	}
 //
@@ -437,26 +414,36 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		$this->assertNotEmpty($image->galleryid, "Image has no gallery id");
 		$this->assertNotEmpty($image->filename, "Image has no filename");
 	}
-//
-//	function assert_valid_dimensions($dimensions)
-//	{
-//		$this->assertTrue(is_array($dimensions));
-//		$this->assertTrue(isset($dimensions['width']));
-//		$this->assertTrue(isset($dimensions['height']));
-//		$this->assertTrue($dimensions['height'] > 0);
-//		$this->assertTrue($dimensions['width'] > 0);
-//	}
-//
-//
-//	function assert_valid_html($html, $url)
-//	{
-//		$url = preg_quote($url, '/');
-//		$alt = preg_quote($this->image->alttext);
-//		$title = preg_quote($this->image->title);
-//		$this->assertTrue(preg_match("/src=['\"]{$url}['\"]/", $html));
-//		$this->assertTrue(preg_match("/alt=['\"]{$alt}['\"]/", $html));
-//		$this->assertTrue(preg_match("/title=['\"]{$title}['\"]/", $html));
-//	}
+
+	/**
+	 * Asserts that an array of dimensions are valid
+	 * @param array $dimensions
+	 */
+	function assert_valid_dimensions($dimensions)
+	{
+		$this->assertTrue(is_array($dimensions));
+		$this->assertTrue(isset($dimensions['width']));
+		$this->assertTrue(isset($dimensions['height']));
+		$this->assertTrue($dimensions['height'] > 0);
+		$this->assertTrue($dimensions['width'] > 0);
+	}
+
+	/**
+	 * Asserts that the string consists of a valid image tag
+	 * @param string $html
+	 * @param string $url
+	 */
+	function assert_valid_img_tag($html, $image, $url)
+	{
+		if (is_int($image)) $image = $this->image_mapper->find($image);
+		$this->assertTrue(is_object($image), "Image is not an object");
+		$url		= preg_quote($url, '/');
+		$alttext	= preg_quote($image->alttext, '/');
+		$title		= preg_quote($image->title, '/');
+		$this->assertPattern("/src=['\"]{$url}['\"]/", $html, "Image tag does not contain the correct 'src' attribute: %s");
+		$this->assertPattern("/alt=['\"]{$alttext}['\"]/", $html, "Image tag does not contain the correct 'alt' attribute: %s");
+		$this->assertPattern("/title=['\"]{$title}['\"]/", $html, "Image tag does not contain the correct 'title' attribute: %s");
+	}
 }
 
 ?>

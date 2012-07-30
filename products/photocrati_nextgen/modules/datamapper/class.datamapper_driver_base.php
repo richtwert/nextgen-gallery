@@ -79,13 +79,16 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 	/**
 	 * Finds a partiular entry by id
-	 * @param int $id
+	 * @param int|stdClass|C_DataMapper_Model $entity
 	 * @return C_DataMapper_Entity
 	 */
-	function find($id, $model=FALSE)
+	function find($entity, $model=FALSE)
 	{
+		$pkey = $this->object->get_primary_key_column();
+		if (!is_int($entity)) $entity = $entity->$pkey;
+
 		$results = $this->object->select()->where_and(
-				array("{$this->object->get_primary_key_column()} = %d", $id)
+				array("{$pkey} = %d", $entity)
 		)->limit(1,0)->run_query();
 
 		if ($results)

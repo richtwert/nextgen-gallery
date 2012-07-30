@@ -245,16 +245,24 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function _convert_entity_to_post($entity)
 	{
-		unset($entity->id_field);
-		$post = $entity;
-
 		// Was a model passed instead of an entity?
+		$post = $entity;
 		if (!in_array(strtolower(get_class($entity)), array('stdclass','stdobject')))
 			$post = $entity->get_entity();
 
 		// Create the post content
+		unset($post->id_field);
 		$post->post_content = $this->object->serialize($entity);
+		$post->post_content_filtered = $post->post_content;
 		$post->post_type = $this->object->get_object_name();
+
+		// Sometimes an entity can contain a data stored in an array or object
+		// Those will be removed from the post, and serialized in the
+		// post_content field
+		foreach ($post as $key => $value) {
+			if (in_array(strtolower(gettype($value)), array('object','array')))
+				unset($post->$key);
+		}
 
 		// A post required a title
 		if (!property_exists($post, 'post_title')) {
@@ -300,6 +308,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		$sql_parts = array();
 		foreach($entity as $key => $value) {
 			if (in_array($key, $omit)) continue;
+			if (is_array($value) or is_object($value)) $value = $this->object->serialize($value);
 			$sql_parts[] = $wpdb->prepare("(%s, %s, %s)", $post_id, $key, $value);
 		}
 		$wpdb->query("INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES ".implode(',', $sql_parts));

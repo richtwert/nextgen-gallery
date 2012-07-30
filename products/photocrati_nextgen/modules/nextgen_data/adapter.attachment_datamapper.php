@@ -20,20 +20,12 @@ class A_Attachment_DataMapper extends Mixin
 	{
 		$post_id = FALSE;
 		$post = $this->object->_convert_entity_to_post($entity);
-		$post->post_content_filtered = $post->post_content;
-		$key = $this->object->get_primary_key_column();
+		$primary_key = $this->object->get_primary_key_column();
 		$filename = property_exists($entity, 'filename') ? $entity->filename : FALSE;
 
-		if (($attachment_id = wp_insert_attachment($entity, $filename))) {
-			// Post was updated.
-			if (property_exists($entity, $key) && $entity->$key) {
-			}
-
-			// Post was just created
-			else {
-				$new_entity = $this->object->find($attachment_id);
-				foreach ($new_entity as $key => $value) $entity->$key = $value;
-			}
+		if (($post_id = $attachment_id = wp_insert_attachment($entity, $filename))) {
+			$new_entity = $this->object->find($post_id);
+			foreach ($new_entity as $key => $value) $entity->$key = $value;
 
 			// Merge meta data with WordPress Attachment Meta Data
 			if (property_exists($entity, 'meta_data')) {

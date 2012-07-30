@@ -1,5 +1,23 @@
 <?php
 
+
+class Mixin_NextGen_Gallery_Image_Validation extends Mixin
+{
+	function validate()
+	{
+		// If a filename is set, and no alttext is set, then set the alttext
+		// to the basename of the filename (legacy behavior)
+		if ($this->object->filename && !isset($this->object->alttext)) {
+			$path_parts = pathinfo( $this->object->filename);
+			$this->object->alttext = ( !isset($path_parts['filename']) ) ? substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) : $path_parts['filename'];
+		}
+
+		$this->validates_presence_of('galleryid', 'filename', 'alttext');
+        $this->validates_numericality_of('galleryid');
+        $this->validates_numericality_of($this->id());
+	}
+}
+
 /**
  * Model for NextGen Gallery Images
  */
@@ -10,6 +28,7 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
     function define()
     {
         parent::define();
+		$this->add_mixin('Mixin_NextGen_Gallery_Image_Validation');
         $this->implement('I_Gallery_Image');
     }
 
@@ -29,13 +48,6 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 		// Initialize
 		parent::initialize($mapper, $properties, $context);
 	}
-
-    function validate()
-    {
-        $this->validates_presence_of('galleryid', 'filename');
-        $this->validates_numericality_of('galleryid');
-        $this->validates_numericality_of($this->id());
-    }
 
 	/**
 	 * Returns the model representing the gallery associated with this image

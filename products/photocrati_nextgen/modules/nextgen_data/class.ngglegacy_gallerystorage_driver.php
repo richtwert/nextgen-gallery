@@ -67,13 +67,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * Gets the absolute path where the image is stored
 	 * Can optionally return the path for a particular sized image
 	 */
-	function get_image_abspath($image, $size='full')
+	function get_image_abspath($image, $size='full', $check_existance=FALSE)
 	{
 		$retval = NULL;
 
 		// If we have the id, get the actual image entity
 		if (is_int($image)) {
-			$image = $this->object->_image_mapper->find($image_id);
+			$image = $this->object->_image_mapper->find($image);
 		}
 
 		// Ensure we have the image entity - user could have passed in an
@@ -88,13 +88,21 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$retval = path_join($gallery_path, $image->filename);
 						break;
 
+					case 'thumbnails':
+					case 'thumbnail':
+						$size = 'thumbs';
+						// deliberately no break here
+
 					# We assume any other size of image is stored in the a
 					# subdirectory of the same name within the gallery folder
 					# gallery folder, but with the size appended to the filename
 					default:
 						$image_path = path_join($gallery_path, $size);
-						$image_path = path_join($image_path, $image->filename);
-						if (file_exists($image_path)) $retval = $image_path;
+						$image_path = path_join($image_path, "{$size}_{$image->filename}");
+						if ($check_existance && file_exists($image_path)) {
+							$retval = $image_path;
+						}
+						elseif (!$check_existance) $retval = $image_path;
 						break;
 				}
 			}
@@ -114,7 +122,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	{
 		return str_replace(
 			ABSPATH,
-			site_url(),
+			site_url().'/',
 			$this->object->get_image_abspath($image, $size)
 		);
 	}

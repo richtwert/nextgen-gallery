@@ -1,60 +1,53 @@
 <?php
 
 /**
- * We create this as an extension as it encapsulates methods which will most
- * likely be replaced by adapters.
- *
- * For other than that, we could have just defined these methods in C_NextGen_Gallery
+ * This hook is triggered to fire a WordPress action after the NextGen Gallery
+ * been successfully saved
  */
 class Hook_NextGen_Gallery_Persistence extends Hook
 {
-	/**
-	 * Before validation, sets the gallery path
-	 */
-	function set_gallery_path()
-	{
-        // Here for legacy purposes
-        $this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
-
-        // Get the default gallery storage path
-        $name = $this->object->name;
-		$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
-		$storage_dir = $settings->get('gallerypath');
-        unset($settings);
-        $gallery_dir = path_join(ABSPATH, path_join($storage_dir, $name));
-
-        // Check for existing folder
-        if ( is_dir($gallery_dir) ) {
-            $suffix = 1;
-            do {
-                    $alt_name = substr ($name, 0, 200 - ( strlen( $suffix ) + 1 ) ) . "_$suffix";
-                    $gallery_dir = path_join(ABSPATH, path_join($storage_dir,$alt_name));
-                    $dir_check = is_dir($gallery_dir);
-                    $suffix++;
-            } while ( $dir_check );
-            $name = $alt_name;
-        }
-
-        // Set gallery dir
-        $this->object->path = path_join($storage_dir, $name);
-	}
-
 	/**
 	 * Once a gallery has been created, NextGEN legacy fires an action for
 	 * other plugins to use.
 	 */
 	function fire_wordpress_action()
 	{
-		// here you can inject a custom function. Again for legacy purposes
-        do_action('ngg_created_new_gallery', $this->object->id());
-	}
+		$retval = $this->object->get_method_property(
+			'save', ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
+		);
 
+		// here you can inject a custom function. Again for legacy purposes
+		if ($retval) do_action('ngg_created_new_gallery', $this->object->id());
+	}
+}
+
+
+class Mixin_NextGen_Gallery_Validation
+{
     /**
-     * Returns the absolute path to the gallery path
+     * Validates whether the gallery can be saved
      */
-    function get_gallery_path()
+    function validate()
     {
-        return path_join(ABSPATH, $this->object->path);
+        $this->object->name = sanitize_file_name( sanitize_title($this->object->title));
+		$this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
+        $this->object->slug = nggdb::get_unique_slug( sanitize_title($this->object->title), 'gallery' );
+
+        // If author is missing, then set to the current user id
+        // TODO: Using wordpress function. Should use abstraction
+        if (!$this->object->author) {
+            $this->object->author = get_current_user_id();
+        }
+
+		// Set what will be the path to the gallery
+		$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
+		$this->object->path = $storage->get_upload_relpath($this->object);
+		unset($storage);
+
+        $this->object->validates_presence_of('title');
+		$this->object->validates_presence_of('name');
+        $this->object->validates_uniqueness_of('slug');
+        $this->object->validates_numericality_of('author');
     }
 }
 
@@ -72,7 +65,7 @@ class C_NextGen_Gallery extends C_DataMapper_Model
     function define()
     {
         parent::define();
-		$this->add_post_hook('validate', 'Add Gallery Path', 'Hook_NextGen_Gallery_Persistence', 'set_gallery_path');
+		$this->add_mixin('Mixin_NextGen_Gallery_Validation');
 		$this->add_post_hook('save', 'Fire WordPress Action', 'Hook_NextGen_Gallery_Persistence', 'fire_wordpress_action');
         $this->implement('I_Gallery');
     }
@@ -91,29 +84,4 @@ class C_NextGen_Gallery extends C_DataMapper_Model
 		}
 		parent::initialize($mapper, $properties, $context);
 	}
-
-    /**
-     * Validates whether the gallery can be saved
-     */
-    function validate()
-    {
-        $this->name = sanitize_file_name( sanitize_title($this->title));
-        $this->slug = nggdb::get_unique_slug( sanitize_title($this->title), 'gallery' );
-
-        // If author is missing, then set to the current user id
-        // TODO: Using wordpress function. Should use abstraction
-        if (!$this->author) {
-            $this->author = get_current_user_id();
-        }
-
-		// Set what will be the path to the gallery
-		$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
-		$this->path = $storage->get_upload_relpath($this);
-		unset($storage);
-
-        $this->validates_presence_of('title');
-		$this->validates_presence_of('name');
-        $this->validates_uniqueness_of('slug');
-        $this->validates_numericality_of('author');
-    }
 }

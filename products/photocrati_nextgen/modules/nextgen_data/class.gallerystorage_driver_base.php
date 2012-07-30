@@ -97,8 +97,19 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				$image = $this->object->_image_mapper->find($image);
 			}
 
-			// Get the dimensions
-			if ($size == 'original') $size = 'full';
+			// Adjust size parameter
+			switch ($size) {
+				case 'original':
+					$size = 'full';
+					break;
+				case 'thumbnails':
+				case 'thumb':
+				case 'thumbs':
+					$size = 'thumbnail';
+					break;
+			}
+
+			// Get image dimensions
 			if (isset($image->meta_data) && isset($image->meta_data[$size])) {
 				$retval = $image->meta_data[$size];
 			}
@@ -156,18 +167,18 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	 */
 	function get_image_html($image, $size='full')
 	{
-		return "";
+		$retval = "";
+
+		if (is_int($image)) $image = $this->object->_image_mapper->find($image);
 
 		if ($image) {
-			// Get the image
-			if (is_int($image)) $this->object->_get_image_mapper->find($image);
 
 			// Get the image properties
 			$alttext = esc_attr($image->alttext);
 			$title	 = esc_attr($image->title);
 
 			// Get the dimensions
-			$dimensions = $this->object->_get_image_dimensions($image, $size);
+			$dimensions = $this->object->get_image_dimensions($image, $size);
 
 			// Get the image url
 			$image_url = $this->object->get_image_url($image, $size);
@@ -176,7 +187,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				'<img',
 				"alt=\"{$alttext}\"",
 				"title=\"{$title}\"",
-				"url=\"{$image_url}\"",
+				"src=\"{$image_url}\"",
 				'/>'
 			));
 		}
@@ -378,6 +389,22 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;
 			$image_key			= $this->object->_image_mapper->get_primary_key_column();
+
+			// Determine the dimensions of the image
+			// We're going to use a GD function here. There's probably a better
+			// way. But WordPress uses GD, so I figure we might as well too.
+			// Alex Rabe also said that he's not sure how robust the imagemagick
+			// support is, as not many people use it.
+			if (function_exists('getimagesize')) {
+				$dimensions = getimagesize($abs_filename);
+				$image->meta_data = array();
+				$image->meta_data['full'] = array(
+					'width'		=>	$dimensions[0],
+					'height'	=>	$dimensions[1]
+				);
+			}
+
+			// Save the image
 			if ($this->object->_image_mapper->save($image)) {
 
 				try {
@@ -434,5 +461,22 @@ class C_GalleryStorage_Driver_Base extends C_Component
 	function get_driver_class_name()
 	{
 		return get_called_class();
+	}
+
+
+/**
+	 * Gets the url or path of an image of a particular size
+	 * @param string $method
+	 * @param array $args
+	 */
+	function __call($method, $args)
+	{
+		if (preg_match("/^get_(\w+)_(abspath|url|dimensions|html)$/", $method, $match)) {
+			if (isset($match[1]) && isset($match[2]) && !$this->has_method($method)) {
+				$method = 'get_image_'.$match[2];
+				return call_user_func_array(array(&$this, $method), array($match[1]));
+			}
+		}
+		return parent::__call($method, $args);
 	}
 }
