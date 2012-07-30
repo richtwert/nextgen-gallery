@@ -1,80 +1,166 @@
 <?php
 
 require_once(path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
+
 class C_Test_Nextgen_Settings extends C_Test_Component_Base
 {
 	/**
-	 * The NextGen Settings instance
+	 * The NextGen Settings and multisite settings instances
+     *
 	 * @var C_NextGen_Settings
 	 */
-	var $settings;
+	public $settings;
+    public $multi_settings;
 
 	/**
-	 * Test the different ways of getting an instance of the NextGEN Settings
-	 * object
+	 * Test the NextGen Settings setup
 	 */
 	function setUp()
 	{
-		$this->ngg_mu_options = get_site_option('ngg_options');
-		$this->ngg_options = get_option('ngg_options');
 		delete_site_option('ngg_options');
 		delete_option('ngg_options');
 
-		// We can get the instance directly
-		$this->settings = C_NextGen_Settings::get_instance();
-		$this->assertEqual(get_class($this->settings), 'C_NextGen_Settings');
-
 		// We can get the instance from the component registry as a utility
-		$this->settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$this->settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings', array());
 		$this->assertEqual(get_class($this->settings), 'C_NextGen_Settings');
+
+        $this->multi_settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings', array('multisite'));
+        $this->assertEqual(get_class($this->multi_settings), 'C_NextGen_Settings');
 	}
 
+    /**
+     * Test retrieving options
+     *
+     * Because we have array, class, and getter access we do repeat ourselves a bit here
+     */
+    function test_get()
+    {
+        $defaults = C_NextGen_Settings_Defaults::get_defaults();
+        $multi_defaults = C_NextGen_Settings_Defaults::get_defaults(True);
+
+        // test for __get access, ArrayAccess access, and ->get() and compare the result with the defaults
+        $this->assertTrue(
+            isset($this->settings->imgHeight),
+            'Could not access settings->imgHeight'
+        );
+
+        $this->assertTrue(
+            isset($this->settings['imgHeight']),
+            'Could not access settings[imgHeight]'
+        );
+
+        $this->assertEqual(
+            $this->settings->get('imgHeight'),
+            $defaults['imgHeight'],
+            'get(imgHeight) did not equal $defaults[imgHeight]'
+        );
+
+        $this->assertEqual(
+            $this->multi_settings->get('wpmuCSSfile'),
+            $multi_defaults['wpmuCSSfile'],
+            'get(wpmuCSSfile) did not equal $multi_defaults[wpmuCSSfile]'
+        );
+    }
+
+    /**
+     * Test is_set() and isset()
+     */
+    function test_is_set()
+    {
+        $this->assertTrue(
+            $this->settings->is_set('imgHeight'),
+            'is_set(imgHeight) returned False'
+        );
+
+        $this->assertTrue(
+            isset($this->settings->imgHeight),
+            'isset(settings->imgHeight) returned False'
+        );
+
+        $this->assertTrue(
+            isset($this->settings['imgHeight']),
+            'isset(settings[imgHeight]) returned False'
+        );
+
+        $this->assertFalse(
+            $this->settings->is_set('foo_bar'),
+            'is_set(foo_bar) returned True'
+        );
+
+        $this->assertFalse(
+            isset($this->settings->foo_bar),
+            'isset(settings->foo_bar) returned True'
+        );
+
+        $this->assertFalse(
+            isset($this->settings['foo_bar']),
+            'isset(settings[foo_bar] returned True'
+        );
+    }
+
 	/**
-	 * Tests that default settings being applied
+	 * Test saving a new option
 	 */
-	function test_defaults()
+	function test_set()
 	{
-		// We should be more comprehensive in our assertions here, but we're
-		// only going to test for a few defaults. Any defaults added in future
-		// version should be accompanied with an assertion.
-		//
-		// Assure that gallerypath default is set properly
-		$this->assertTrue(isset($this->settings->gallerypath));
-		$this->assertEqual(
-			$this->settings->get_global('gallerypath'),
-			'wp-content/blogs.dir/%BLOG_ID%/files/'
-		);
+        $str = 'foo bar';
+        $this->settings->set('foo_bar', $str);
+        $this->assertEqual(
+            $this->settings->get('foo_bar'),
+            $str,
+            'settings->set(foo_bar, str) = ... did not work'
+        );
 
-		// Test that the gallerypath gets overwritten by the global option
-		// in an MU environment
-		$GLOBALS['NGG_MULTISITE'] = TRUE;
-		$this->settings->reset();
-		$this->assertEqual(
-			$this->settings->gallerypath,
-			'wp-content/blogs.dir/'.get_current_blog_id().'/files/'
-		);
+        $str = 'foo_bar';
+        $this->settings->foo_bar = $str;
+        $this->assertEqual(
+            $this->settings->get('foo_bar'),
+            $str,
+            'settings->foo_bar = ... did not work'
+        );
 
-		// Test that the gallerypath does NOT get overwritten by the global
-		// option in a non-MU environment
-		$GLOBALS['NGG_MULTISITE'] = FALSE;
-		$this->settings->reset();
-		$this->assertEqual(
-			$this->settings->gallerypath,
-			'wp-content/gallery/'
-		);
-	}
+        $str = 'bar_foo';
+        $this->settings['foo_bar'] = $str;
+        $this->assertEqual(
+            $this->settings->get('foo_bar'),
+            $str,
+            'settings[foo_bar] = ... did not work'
+        );
+    }
 
-	/**
-	 * Test saving a new option as a setting
-	 */
-	function test_new_option()
-	{
-		$this->assertFalse(isset($this->settings->foo_bar));
-		$this->settings->foo_bar = "Foo Bar";
-		$this->assertTrue($this->settings->foo_bar, "Foo Bar");
-		$this->assertNull($this->settings->get_global('foo_bar'));
+    /**
+     * Test deleting options
+     */
+    function test_del()
+    {
+        $this->settings->del('foo_bar');
+        $this->assertFalse(
+            $this->settings->is_set('foo_bar'),
+            'del(foo_bar) did not run correctly'
+        );
+
+        $this->settings->foo_bar ='test';
+        unset($this->settings->foo_bar);
+        $this->assertFalse(
+            $this->settings->is_set('foo_bar'),
+            'del(foo_bar) did not run correctly'
+        );
+
+        $this->settings['foo_bar'] = 'test';
+        unset($this->settings['foo_bar']);
+        $this->assertFalse(
+            $this->settings->is_set('foo_bar'),
+            'del(foo_bar) did not run correctly'
+        );
+    }
+
+    /**
+     * Test saving (database persistence) of options to Wordpress
+     */
+    function test_wordpress_save()
+    {
+        $this->settings->set('foo_bar', 'test');
 		$this->settings->save();
-
 		$options = get_option('ngg_options', array());
 		$this->assertTrue(in_array('foo_bar', $options));
 	}
@@ -88,25 +174,74 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 		$this->assertFalse($this->settings->is_global_option('activateCSS'));
 	}
 
-
 	/**
-	 * Tests the reload method
+	 * Tests the reload() function
 	 */
 	function test_reload()
 	{
-		$this->settings->test_setting = TRUE;
+		$this->settings->test_setting = True;
 		$this->assertTrue(isset($this->settings->test_setting));
-		$this->settings->reload();
-		$this->assertFalse(isset($this->settings->test_setting));
+		$this->settings->reload(True);
+		$this->assertFalse(
+            isset($this->settings->test_setting),
+            'settings->reload(True) did not remove settings->test_setting'
+        );
 	}
 
+    /**
+     * Tests the to_array() function
+     */
+    function test_to_array()
+    {
+        $this->assertTrue(
+            is_array($this->settings->to_array()),
+            'settings->to_array() did not return an array'
+        );
+        $this->assertTrue(
+            is_array($this->multi_settings->to_array()),
+            'multi_settings->to_array() did not return an array'
+        );
+    }
 
-	function tearDown()
-	{
-		$this->settings->reset(TRUE);
-		update_option('ngg_options', $this->ngg_options);
-		update_site_option('ngg_options', $this->ngg_mu_options);
-	}
+    /**
+     * Tests multisite operations
+     */
+    function test_multisite()
+    {
+        // Assure that gallerypath default is set properly
+        $this->assertTrue(
+            isset($this->multi_settings->gallerypath),
+            'multi_settings->gallerypath does not exist'
+        );
+        $this->assertEqual(
+            $this->multi_settings->get('gallerypath'),
+            'wp-content/blogs.dir/%BLOG_ID%/files/',
+            'gallerypath did not hold the expected value'
+        );
+
+        // Test that the gallerypath gets overwritten by the global option in an MU environment
+        $GLOBALS['NGG_MULTISITE'] = True;
+        $this->settings->reset(True);
+        $this->assertEqual(
+            $this->settings->gallerypath,
+            'wp-content/blogs.dir/'. get_current_blog_id() . '/files/',
+            '_apply_multisite_overrides() did not modify gallerypath correctly'
+        );
+
+        // Test that the gallerypath does NOT get overwritten by the global option in a non-MU environment
+        $GLOBALS['NGG_MULTISITE'] = False;
+        $this->settings->reset(True);
+        $this->assertEqual(
+            $this->settings->gallerypath,
+            'wp-content/gallery/',
+            'settings->gallerypath did not hold the expected value'
+        );
+    }
+
+    function tearDown()
+    {
+        // $this->settings->reset(True);
+        delete_site_option('ngg_options');
+        delete_option('ngg_options');
+    }
 }
-
-?>

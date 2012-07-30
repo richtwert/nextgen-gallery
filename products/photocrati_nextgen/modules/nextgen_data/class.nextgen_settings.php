@@ -1,17 +1,136 @@
 <?php
 
 /**
- * Provides persistance for NextGen Settings using WordPress options API
+ * Holds a static array of the default NextGen Wordpress options
+ */
+class C_NextGen_Settings_Defaults
+{
+    /**
+     * Returns default Wordpress options array
+     *
+     * @static
+     * @param bool $global Returns global (multisite) options if True
+     * @return array
+     */
+    public static function get_defaults($global = False) {
+
+        /*
+         * The global options are returned after the if()
+         */
+        if (False == $global)
+        {
+            return array(
+                'gallerypath'    => 'wp-content/gallery/',
+                'deleteImg'      => True,              // delete Images
+                'swfUpload'      => True,              // activate the batch upload
+                'usePermalinks'  => False,             // use permalinks for parameters
+                'permalinkSlug'  => 'nggallery',       // the default slug for permalinks
+                'graphicLibrary' => 'gd',              // default graphic library
+                'imageMagickDir' => '/usr/local/bin/', // default path to ImageMagick
+                'useMediaRSS'    => False,             // activate the global Media RSS file
+                'usePicLens'     => False,             // activate the PicLens Link for galleries
+
+                // Tags / categories
+                'activateTags' => False,  // append related images
+                'appendType'   => 'tags', // look for category or tags
+                'maxImages'    => 7,      // number of images toshow
+
+                // Thumbnail Settings
+                'thumbwidth'   => 100,  // Thumb Width
+                'thumbheight'  => 75,   // Thumb height
+                'thumbfix'     => True, // Fix the dimension
+                'thumbquality' => 100,  // Thumb Quality
+
+                // Image Settings
+                'imgWidth'      => 800,   // Image Width
+                'imgHeight'     => 600,   // Image height
+                'imgQuality'    => 85,    // Image Quality
+                'imgBackup'     => True,  // Create a backup
+                'imgAutoResize' => False, // Resize after upload
+
+                // Gallery Settings
+                'galImages'         => '20', // Number of images per page
+                'galPagedGalleries' => 0,    // Number of galleries per page (in a album)
+                'galColumns'        => 0,    // Number of columns for the gallery
+                'galShowSlide'      => True, // Show slideshow
+                'galTextSlide'      => __('[Show as slideshow]', 'nggallery'), // Text for slideshow
+                'galTextGallery'    => __('[Show picture list]', 'nggallery'), // Text for gallery
+                'galShowOrder'      => 'gallery',   // Show order
+                'galSort'           => 'sortorder', // Sort order
+                'galSortDir'        => 'ASC',       // Sort direction
+                'galNoPages'        => True,        // use no subpages for gallery
+                'galImgBrowser'     => False,       // Show ImageBrowser => instead effect
+                'galHiddenImg'      => False,       // For paged galleries we can hide image
+                'galAjaxNav'        => False,       // AJAX Navigation for Shutter effect
+
+                // Thumbnail Effect
+                'thumbEffect'  => 'shutter',                           // select effect
+                'thumbCode'    => 'class="shutterset_%GALLERY_NAME%"', //
+
+                // Watermark settings
+                'wmPos'    => 'botRight',             // Postion
+                'wmXpos'   => 5,                      // X Pos
+                'wmYpos'   => 5,                      // Y Pos
+                'wmType'   => 'text',                 // Type : 'image' / 'text'
+                'wmPath'   => '',                     // Path to image
+                'wmFont'   => 'arial.ttf',            // Font type
+                'wmSize'   => 10,                     // Font Size
+                'wmText'   => get_option('blogname'), // Text
+                'wmColor'  => '000000',               // Font Color
+                'wmOpaque' => '100',                  // Font Opaque
+
+                // Image Rotator settings
+                'enableIR'          => False,
+                'slideFx'           => 'fade',
+                'irURL'             => '',
+                'irXHTMLvalid'      => False,
+                'irAudio'           => '',
+                'irWidth'           => 320,
+                'irHeight'          => 240,
+                'irShuffle'         => True,
+                'irLinkfromdisplay' => True,
+                'irShownavigation'  => False,
+                'irShowicons'       => False,
+                'irWatermark'       => False,
+                'irOverstretch'     => 'True',
+                'irRotatetime'      => 10,
+                'irTransition'      => 'random',
+                'irKenburns'        => False,
+                'irBackcolor'       => '000000',
+                'irFrontcolor'      => 'FFFFFF',
+                'irLightcolor'      => 'CC0000',
+                'irScreencolor'     => '000000',
+
+                // CSS Style
+                'activateCSS' => TRUE,           // activate the CSS file
+                'CSSfile'     => 'nggallery.css' // set default css filename
+            );
+        }
+
+        return array(
+            'gallerypath' => 'wp-content/blogs.dir/%BLOG_ID%/files/',
+            'wpmuCSSfile' => 'nggallery.css'
+        );
+    }
+}
+
+/**
+ * Provides persistence for NextGen Settings using WordPress options API
  */
 class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 {
-	function save()
+    /**
+     * Flushes both local and multisite options from C_NextGen_Settings to the database
+     *
+     * @return bool
+     */
+    function save()
 	{
-		$valid = TRUE;
+		$valid = True;
 
 		// Run validation, if available
 		if ($this->object->has_method('validate')) {
-			if (!$this->validate()); $valid = FALSE;
+			if (!$this->validate()); $valid = False;
 		}
 
 		// Save settings
@@ -32,48 +151,50 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 		return $valid;
 	}
 
-
 	/**
-	 * Fetches the settings from the database
+	 * Fetches the settings from the database; repopulates both local and multisite options
 	 */
-	function reload()
+	function reload($defaults = False)
 	{
 		// Get options
-		$this->object->_options = get_option(
-			$this->object->_get_wordpress_option_name(),
-			array()
-		);
+        if (True !== $defaults)
+        {
+            $this->object->_options = get_option(
+                $this->object->_get_wordpress_option_name(),
+                array()
+            );
 
-		// Get global options
-		$this->object->_global_options = get_site_option(
-			$this->object->_get_wordpress_option_name(TRUE),
-			array()
-		);
+            // Get global options
+            $this->object->_global_options = get_site_option(
+                $this->object->_get_wordpress_option_name(TRUE),
+                array()
+            );
+        }
 
-		if (empty($this->object->_global_options) && empty($this->object->_options)) {
-			$this->object->reset(TRUE);
+		if (True == $defaults || (empty($this->object->_global_options) && empty($this->object->_options))) {
+            $this->object->reset(True);
 		}
 	}
 
-
 	/**
 	 * Returns the name of the WordPress option used to store the settings
+     *
 	 * @param bool $global optionally, get the name of the option used to store global settings
 	 * @return string
 	 */
-	function _get_wordpress_option_name($global=FALSE)
+	function _get_wordpress_option_name($global = False)
 	{
 		// There's actually no distinction in the option name
 		return $global ? 'ngg_options' : 'ngg_options';
 	}
 
-
 	/**
-	 *  Determines whether multisite mode is activated for WordPress. This
-	 *  method first checks for a global called NGG_MULTISITE that can be set
-	 *  to TRUE OR FALSE, so that the testing framework can control the env.
-	 *  If not set, then the test failsback to the is_multisite() function
-	 *  defined by WordPress
+	 *  Determines whether multisite mode is activated for WordPress.
+     *
+     * This method first checks for a global called NGG_MULTISITE that can be set
+	 * to TRUE OR FALSE, so that the testing framework can control the env.
+	 * If not set, then the test failsback to the is_multisite() function
+	 * defined by WordPress
 	 */
 	function is_multisite()
 	{
@@ -88,28 +209,29 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 	}
 }
 
-
 /**
- *  Hook triggered after a global option has been set
+ *  Hook triggered after a global option has been set()
  */
 class Hook_NextGen_Settings_WordPress_MU_Overrides extends Hook
 {
-	function _apply_multisite_overrides($option_name, $global=FALSE)
+	function _apply_multisite_overrides($option_name, $value)
 	{
-		// If in a multisite environment and a global option is being set...
-		if ($this->object->is_multisite() && ($this->object->is_global_option($option_name) OR $global)) {
-
+		// If in a multisite environment in a multisite context..
+		if ($this->object->is_multisite()
+            && $this->object->is_global_option($option_name)
+            && 'multisite' == $this->object->context)
+        {
 			switch ($option_name) {
 				case 'CSSFile':
 					$this->call_anchor(
 						$option_name,
-						$this->object->get_global($option_name),
+						$this->object->_global_options($option_name),
 						FALSE
 					);
 					break;
 				case 'gallerypath':
 					$blog_id = get_current_blog_id();
-					$global_value = $this->object->get_global($option_name);
+					$global_value = $this->object->_global_options($option_name);
 					$this->call_anchor(
 						$option_name,
 						str_replace('%BLOG_ID%', $blog_id, $global_value),
@@ -132,157 +254,36 @@ class Hook_NextGen_Settings_WordPress_MU_Overrides extends Hook
 class Mixin_NextGen_Settings extends Mixin
 {
 	/**
-	 * Determines whether an option name is global or blog specific
-	 * @param string $option_name
-	 * @return bool
-	 */
-	function is_global_option($option_name)
-	{
-		return in_array($option_name, $this->object->_global_option_names);
-	}
-
-	/**
 	 * Resets NextGEN to it's default settings
+     *
+     * @param bool $save Whether to immediately call save() when done
+     * @return null
 	 */
-	function reset($save=FALSE)
+	function reset($save = False)
 	{
-		// Reset other options
-		$this->object->set('gallerypath',		'wp-content/gallery/');
-		$this->object->set('deleteImg',			TRUE);							// delete Images
-		$this->object->set('swfUpload',			TRUE);							// activate the batch upload
-		$this->object->set('usePermalinks',		FALSE);							// use permalinks for parameters
-		$this->object->set('permalinkSlug',		'nggallery');                  // the default slug for permalinks
-		$this->object->set('graphicLibrary',	'gd');							// default graphic library
-		$this->object->set('imageMagickDir',	'/usr/local/bin/');			// default path to ImageMagick
-		$this->object->set('useMediaRSS',		FALSE);						// activate the global Media RSS file
-		$this->object->set('usePicLens',		FALSE);						// activate the PicLens Link for galleries
-
-		// Tags / categories
-		$this->object->set('activateTags',		FALSE);						// append related images
-		$this->object->set('appendType',		'tags');						// look for category or tags
-		$this->object->set('maxImages',			7);  							// number of images toshow
-
-		// Thumbnail Settings
-		$this->object->set('thumbwidth',		100);  						// Thumb Width
-		$this->object->set('thumbheight',		75);  							// Thumb height
-		$this->object->set('thumbfix',			TRUE);							// Fix the dimension
-		$this->object->set('thumbquality',		100);  						// Thumb Quality
-
-		// Image Settings
-		$this->object->set('imgWidth',			800);  						// Image Width
-		$this->object->set('imgHeight',			600);  						// Image height
-		$this->object->set('imgQuality',		85);							// Image Quality
-		$this->object->set('imgBackup',			TRUE);							// Create a backup
-		$this->object->set('imgAutoResize',		FALSE);						// Resize after upload
-
-		// Gallery Settings
-		$this->object->set('galImages',			'20');		  					// Number of images per page
-		$this->object->set('galPagedGalleries',	0);		  					// Number of galleries per page (in a album)
-		$this->object->set('galColumns',		0);							// Number of columns for the gallery
-		$this->object->set('galShowSlide',		TRUE);							// Show slideshow
-		$this->object->set('galTextSlide',		__('[Show as slideshow]','nggallery')); // Text for slideshow
-		$this->object->set('galTextGallery',	__('[Show picture list]','nggallery')); // Text for gallery
-		$this->object->set('galShowOrder',		'gallery');					// Show order
-		$this->object->set('galSort',			'sortorder');					// Sort order
-		$this->object->set('galSortDir',		'ASC');						// Sort direction
-		$this->object->set('galNoPages',		TRUE);							// use no subpages for gallery
-		$this->object->set('galImgBrowser',		FALSE);						// Show ImageBrowser, instead effect
-		$this->object->set('galHiddenImg',		FALSE);						// For paged galleries we can hide image
-		$this->object->set('galAjaxNav',		FALSE);						// AJAX Navigation for Shutter effect
-
-		// Thumbnail Effect
-		$this->object->set('thumbEffect',		'shutter');  					// select effect
-		$this->object->set('thumbCode',			'class="shutterset_%GALLERY_NAME%"');
-
-		// Watermark settings
-		$this->object->set('wmPos',				'botRight');					// Postion
-		$this->object->set('wmXpos',			5);  							// X Pos
-		$this->object->set('wmYpos',			5);  							// Y Pos
-		$this->object->set('wmType',			'text');  						// Type : 'image' / 'text'
-		$this->object->set('wmPath',			'');  							// Path to image
-		$this->object->set('wmFont',			'arial.ttf');  				// Font type
-		$this->object->set('wmSize',			10);  							// Font Size
-		$this->object->set('wmText',			get_option('blogname'));		// Text
-		$this->object->set('wmColor',			'000000');  					// Font Color
-		$this->object->set('wmOpaque',			'100');  						// Font Opaque
-
-		// Image Rotator settings
-		$this->object->set('enableIR',			FALSE);
-		$this->object->set('slideFx',			'fade');
-		$this->object->set('irURL',				'');
-		$this->object->set('irXHTMLvalid',		FALSE);
-		$this->object->set('irAudio',			'');
-		$this->object->set('irWidth',			320);
-		$this->object->set('irHeight',			240);
-		$this->object->set('irShuffle',			TRUE);
-		$this->object->set('irLinkfromdisplay', TRUE);
-		$this->object->set('irShownavigation',  FALSE);
-		$this->object->set('irShowicons',		FALSE);
-		$this->object->set('irWatermark',		FALSE);
-		$this->object->set('irOverstretch',		'true');
-		$this->object->set('irRotatetime',		10);
-		$this->object->set('irTransition',		'random');
-		$this->object->set('irKenburns',		FALSE);
-		$this->object->set('irBackcolor',		'000000');
-		$this->object->set('irFrontcolor',		'FFFFFF');
-		$this->object->set('irLightcolor',		'CC0000');
-		$this->object->set('irScreencolor',		'000000');
-
-		// CSS Style
-		$this->object->set('activateCSS',		TRUE);							// activate the CSS file
-		$this->object->set('CSSfile',			'nggallery.css');  			// set default css filename
-
-		// Reset globals
-		$this->object->set('gallerypath', 'wp-content/blogs.dir/%BLOG_ID%/files/', TRUE);
-		$this->object->set('wpmuCSSfile', 'nggallery.css', TRUE);
-
-		if ($save) $this->object->save();
-	}
-
-	/**
-	 * Reloads the settings from the database. This method is expected to be
-	 * overwritten / replaced, as currently it does nothing
-	 *
-	 */
-	function reload()
-	{
-		throw new NotImplementException();
-	}
-
-
-	/**
-	 * Returns the value of a global option
-	 * @param string $option_name
-	 * @return mixed|NULL
-	 */
-	function get_global($option_name)
-	{
-		return $this->object->get($option_name, TRUE);
+        foreach (C_NextGen_Settings_Defaults::get_defaults() as $name => $val)
+        {
+            $this->object->set($name, $val);
+        }
+        if ($save)
+        {
+            $this->object->save();
+        }
 	}
 
 	/**
 	 * Gets the value of a setting
+     *
 	 * @param string $option_name
-	 * @param bool $global
-	 * @return null|mixed
+	 * @return mixed
 	 */
-	function get($option_name, $global=FALSE)
+	function get($option_name)
 	{
-		$retval = NULL;
+		$retval = Null;
 
-		// Is this a global setting?
-		if ($global OR $this->object->is_global_option($option_name)) {
-			if (isset($this->object->_global_options[$option_name])) {
-				$retval = $this->object->_global_options[$option_name];
-			}
-		}
-
-		// This is NOT a global setting
-		else {
-			if (isset($this->object->_options[$option_name])) {
-				$retval = $this->object->_options[$option_name];
-			}
-		}
+        if (isset($this->object->_options[$option_name])) {
+            $retval = $this->object->_options[$option_name];
+        }
 
 		return $retval;
 	}
@@ -290,54 +291,77 @@ class Mixin_NextGen_Settings extends Mixin
 
 	/**
 	 * Sets a settings option to a particular value
+     *
 	 * @param string $option_name
 	 * @param mixed $value
-	 * @param bool $global is the setting global?
-	 * @return mixed|FALSE
+	 * @return mixed $value
 	 */
-	function set($option_name, $value, $global=FALSE)
+	function set($option_name, $value)
 	{
-		$retval = FALSE;
-
-		// Global setting?
-		if ($global OR $this->object->is_global_option($option_name)) {
-			$this->object->_global_options[$option_name] = $value;
-			$retval = $value;
-		}
-
-		// Standard (non-GLOBAL) setting...
-		else {
-			$this->object->_options[$option_name] = $value;
-			$retval = $value;
-		}
-
-		return $retval;
+        $this->object->_options[$option_name] = $value;
+		return $value;
 	}
+
+    /**
+     * Removes a setting from the settings list
+     *
+     * @param string $option_name
+     * @return null
+     */
+    function del($option_name)
+    {
+        unset($this->object->_options[$option_name]);
+    }
+
+    /**
+     * Returns whether a setting exists
+     *
+     * @param string $option_name
+     * @return bool isset()
+     */
+    function is_set($option_name)
+    {
+        return isset($this->object->_options[$option_name]);
+    }
+
+    /**
+     * Returns the current options as an array
+     *
+     * @return array
+     */
+    function to_array()
+    {
+        return $this->object->_options;
+    }
 }
 
-/**
- *  A singleton class providing access to NextGEN settings.
- */
-class C_NextGen_Settings extends C_Component
+class C_NextGen_Settings extends C_Component implements ArrayAccess
 {
-	var $_global_option_names = array('wpmuCSSfile');
-	var $_global_options;
-	var $_options;
-	static $_instance = NULL;
+    /** @var array Array of multisite option names */
+    public $_global_option_names = array('wpmuCSSfile');
 
-	/**
-	 * Defines the object
-	 */
+    /** @var Internal multisite options array*/
+    public $_global_options;
+
+    /** @var Internal options array */
+    public $_options;
+
+    /** @var null Singleton instance */
+    public static $_instance = Null;
+
 	function define()
 	{
 		parent::define();
-		$this->add_mixin('Mixin_NextGen_Settings');
+
+        $this->implement('I_NextGen_Settings');
 
 		// Add persistence layer. Replace if not using WordPress
 		$this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');
 
-		// Add hook for WordPress substitutions. For instance, when the %BLOG_ID%
-		// placeholder is used
+		// Add options API.
+		$this->add_mixin('Mixin_NextGen_Settings');
+
+		// Add hook for WordPress substitutions. For instance, when the %BLOG_ID% placeholder is used
 		$this->add_post_hook(
 			'set',
 			'WordPress Multisite Overrides',
@@ -346,64 +370,105 @@ class C_NextGen_Settings extends C_Component
 		);
 	}
 
-
-	/**
-	 * Initializes the instance
-	 * @param type $context
-	 */
-	function initialize($context=FALSE)
+	function initialize($context = False)
 	{
 		parent::initialize($context);
 		$this->reload();
 	}
 
-	/**
-	 * Gets the value of a particular setting
-	 * @param string $option_name
-	 * @return mixed|NULL
-	 */
-	function __get($option_name)
-	{
-		return $this->get($option_name);
-	}
+    function __get($option_name)
+    {
+        return $this->get($option_name);
+    }
 
-	/**
-	 * Sets a setting option to a particular value
-	 * @param string $option_name
-	 * @param mixed $value
-	 * @return mixed|FALSE
-	 */
-	function __set($option_name, $value)
-	{
-		return $this->set($option_name, $value);
-	}
+    function __set($option_name, $value)
+    {
+        return $this->set($option_name, $value);
+    }
 
-	/**
-	 * Determines if a setting has been set
-	 * @param string $property
-	 * @return bool
-	 */
-	function __isset($property)
-	{
-		if (isset($this->_options[$property]) OR isset($this->_global_options[$property]))
-			return TRUE;
-		else
-			return FALSE;
-	}
+    function __isset($option_name)
+    {
+        return $this->is_set($option_name);
+    }
 
+    function __unset($option_name)
+    {
+        $this->del($option_name);
+    }
 
-	/**
-	 * Gets the singleton instance to manage NextGEN settings
-	 * @param mixed $context
-	 * @return C_NextGen_Settings
-	 */
-	static function get_instance($context=FALSE)
-	{
-		if (is_null(self::$_instance))
-			self::$_instance = new C_NextGen_Settings($context);
+    /*
+     * Returns whether an option is a multisite option
+     *
+     * @param string $option_name
+     * @return bool in_array()
+     */
+    function is_global_option($option_name)
+    {
+        return in_array($option_name, $this->_global_option_names);
+    }
 
-		return self::$_instance;
-	}
+    /**
+     * Singleton loader
+     *
+     * @static
+     * @param bool $context
+     * @return null
+     */
+    static function get_instance($context = False)
+    {
+        if (is_null(self::$_instance))
+        {
+            self::$_instance = new C_NextGen_Settings($context);
+        }
+        return self::$_instance;
+    }
+
+    /**
+     * Used to implement ArrayAccess
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @param mixed $offset
+     * @return boolean true on success or false on failure.
+     */
+    public function offsetExists($offset)
+    {
+        return $this->is_set($offset);
+    }
+
+    /**
+     * Used to implement ArrayAccess
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @param mixed $offset
+     * @return mixed Can return all value types.
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * Used to implement ArrayAccess
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->set($offset, $value);
+    }
+
+    /**
+     * Used to implement ArrayAccess
+     *
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        $this->del($offset);
+    }
+
 }
-
-?>
