@@ -147,6 +147,12 @@ class M_AutoUpdate_Admin extends C_Base_Module
     	);
     }
     
+    function get_update_page_url()
+    {
+    	// XXX make index.php automatic? maybe store it when creating subpage
+    	return admin_url('index.php?page=photocrati-auto_update-admin');
+    }
+    
     
     function admin_init()
     {
@@ -157,7 +163,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
 				$ajaxurl = admin_url('admin-ajax.php');
 			}
 
-			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin_Settings', array('ajaxurl' => $ajaxurl, 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
+			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin_Settings', array('ajaxurl' => $ajaxurl, 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'request_site' => base64_encode(admin_url()), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
 
 			if ((isset($_POST['action']) && $_POST['action'] == 'photocrati_autoupdate_admin_handle'))
 			{
@@ -168,10 +174,12 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function admin_menu()
     {
-        if ($this->_get_update_list() != null)
-        {
-					add_submenu_page('tools.php', __('Photocrati Update'), __('Photocrati Update'), 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
-        }
+    	$list = $this->_get_update_list();
+    	
+      if ($list != null)
+      {
+				add_submenu_page('index.php', __('Photocrati Updates'), __('Photocrati Updates') . ' <span class="update-plugins"><span class="update-count">' . count($list) . '</span></span>', 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
+      }
     }
     
     function dashboard_setup()
@@ -268,7 +276,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     	
     	if ($update_list != null)
     	{
-    		echo '<p>There are updates available <a class="button-secondary" href="' . esc_url(admin_url('tools.php?page=photocrati-auto_update-admin')) . '">Update Now</a></p>';
+    		echo '<p>There are updates available <a class="button-secondary" href="' . esc_url($this->get_update_page_url()) . '">Update Now</a></p>';
     	}
     }
 }

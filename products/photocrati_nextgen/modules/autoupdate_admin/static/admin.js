@@ -236,7 +236,7 @@ var Photocrati_AutoUpdate_Admin = {
 									
 										for (var i in formData)
 										{
-											submitData[formData[i].name] = formData[i].value
+											submitData[formData[i].name] = formData[i].value;
 										}
 									
 										updater.data('form-submit-data', submitData);
@@ -374,12 +374,18 @@ jQuery(document).ready(function () {
 		
 			if (invalidCount > 0)
 			{
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount) + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary">' + textList['updates_license_get'] + '</a></div>');
+				invalidLink += invalidLink.indexOf('?') == -1 ? '?' : '&';
+				invalidLink += 'pclst' + '=' + escape(Photocrati_AutoUpdate_Admin_Settings.request_site);
+				
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount) + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary" target="_blank">' + textList['updates_license_get'] + '</a></div>');
 			}
 		
 			if (expiredCount > 0)
 			{
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount) + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary">' + textList['updates_renew'] + '</a></div>');
+				expiredLink += expiredLink.indexOf('?') == -1 ? '?' : '&';
+				expiredLink += 'pclst' + '=' + escape(Photocrati_AutoUpdate_Admin_Settings.request_site);
+				
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount) + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary" target="_blank">' + textList['updates_renew'] + '</a></div>');
 			}
 			
 			if (installCount > 0)
