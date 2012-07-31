@@ -1,18 +1,5 @@
 <?php
 
-class Hook_Post_To_Entity extends Hook
-{
-	function _convert_post_to_entity(&$entity)
-	{
-		if (property_exists($entity, 'post_content')) {
-			$post_content = $this->object->unserialize($entity->post_content);
-			foreach ($post_content as $key => $value) $entity->$key = $value;
-			unset($entity->post_content);
-		}
-		return $entity;
-	}
-}
-
 class Mixin_CustomPost_DataMapper_Driver extends Mixin
 {
 
@@ -219,7 +206,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 * @param boolean $model
 	 * @return \stdClass
 	 */
-	function _convert_post_to_entity($post, $model=FALSE)
+	function convert_post_to_entity($post, $model=FALSE)
 	{
 		$entity = new stdClass();
 		foreach ($post as $key => $value) {
@@ -247,12 +234,13 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	{
 		// Was a model passed instead of an entity?
 		$post = $entity;
-		if (!in_array(strtolower(get_class($entity)), array('stdclass','stdobject')))
-			$post = $entity->get_entity();
+		if (!($entity instanceof stdClass)) $post = $entity->get_entity();
 
 		// Create the post content
 		unset($post->id_field);
-		$post->post_content = $this->object->serialize($entity);
+		unset($post->post_content_filtered);
+		unset($post->post_content);
+		$post->post_content = $this->object->serialize($post);
 		$post->post_content_filtered = $post->post_content;
 		$post->post_type = $this->object->get_object_name();
 
@@ -308,7 +296,9 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		$sql_parts = array();
 		foreach($entity as $key => $value) {
 			if (in_array($key, $omit)) continue;
-			if (is_array($value) or is_object($value)) $value = $this->object->serialize($value);
+			if (is_array($value) or is_object($value)) {
+				$value = $this->object->serialize($value);
+			}
 			$sql_parts[] = $wpdb->prepare("(%s, %s, %s)", $post_id, $key, $value);
 		}
 		$wpdb->query("INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value) VALUES ".implode(',', $sql_parts));
@@ -327,11 +317,14 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 
 		if (($post_id = wp_insert_post($post))) {
 
-			$new_entity = $this->object->find($post_id);
-			foreach ($new_entity as $key => $value) $entity->$key = $value;
+			$new_entity = $this->object->find($post_id, TRUE);
+			foreach ($new_entity->get_entity() as $key => $value) $entity->$key = $value;
 
 			// Save properties as post meta
-			$this->object->_flush_and_update_postmeta($post_id, $entity);
+			$this->object->_flush_and_update_postmeta(
+				$post_id,
+				$entity instanceof stdClass ? $entity : $entity->get_entity()
+			);
 		}
 
 		$entity->id_field = $primary_key;
@@ -345,7 +338,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 * @param  string $sql optionally run the specified query
 	 * @return array
 	 */
-	function run_query($sql=FALSE)
+	function run_query($sql=FALSE, $model=FALSE)
 	{
 		$retval = array();
 
@@ -357,9 +350,9 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		// Execute the query
 		$query = new WP_Query($this->object->_query_args);
 		foreach ($query->get_posts() as $row) {
-			$retval[] = $this->object->_convert_to_entity(
-				$this->object->_convert_post_to_entity($row)
-			);
+			$row = $this->object->convert_post_to_entity($row, $model);
+			if (!$model) $row->id_field = $this->object->get_primary_key_column();
+			$retval[] = $row;
 		}
 
 		return $retval;

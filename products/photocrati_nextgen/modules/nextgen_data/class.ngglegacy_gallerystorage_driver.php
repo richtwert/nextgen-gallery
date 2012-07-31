@@ -168,6 +168,57 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
+
+	/**
+	 * Generates a thumbnail for an image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @return bool
+	 */
+	function generate_thumbnail($image, $width=NULL, $height=NULL, $crop=NULL, $quality=NULL)
+	{
+		$retval = FALSE;
+
+		// Get the image filename
+		$filename = $this->object->get_full_abspath($image);
+
+		// Ensure we have a valid image
+		if ($image) {
+
+			// Get the thumbnail settings
+			$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
+
+			// Generate the thumbnail using WordPress
+			$retval = image_resize(
+				$filename,
+				is_null($width)		? $settings->thumbwidth		: $width,
+				is_null($height)	? $settings->thumbheight	: $height,
+				is_null($crop)		? $settings->thumbfix		: $crop,
+				NULL, // filename suffix
+				$this->object->get_thumbnail_abspath($image),
+				is_null($quality)	? $settings->thumbquality	: $quality
+			);
+
+
+			// We successfully generated the thumbnail
+			if (is_string($retval) && file_exists($retval)) {
+				if (function_exists('getimagesize')) {
+					$dimensions = getimagesize($retval);
+					if (!isset($image->meta_data)) $image->meta_data = array();
+					$image->meta_data['thumbnail'] = array(
+						'width'		=>	$dimensions[0],
+						'height'	=>	$dimensions[1]
+					);
+				}
+				$retval = ($this->object->_image_mapper->save($image) ? TRUE : FALSE);
+			}
+
+			// Something went wrong. Thumbnail generation failed!
+			else $retval = FALSE;
+
+		}
+
+		return $retval;
+	}
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base

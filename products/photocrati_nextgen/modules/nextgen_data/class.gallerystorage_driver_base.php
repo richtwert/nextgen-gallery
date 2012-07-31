@@ -88,14 +88,11 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	{
 		$retval = NULL;
 
-		// Image dimensions are stored in the $image->meta_data
-		// property for all implementations
-		if ($image) {
+		// If an image id was provided, get the entity
+		if (is_int($image)) $image = $this->object->_image_mapper->find($image);
 
-			// Ensure that we have an image object
-			if (is_int($image)) {
-				$image = $this->object->_image_mapper->find($image);
-			}
+		// Ensure we have a valid image
+		if ($image) {
 
 			// Adjust size parameter
 			switch ($size) {
@@ -109,7 +106,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					break;
 			}
 
-			// Get image dimensions
+			// Image dimensions are stored in the $image->meta_data
+			// property for all implementations
 			if (isset($image->meta_data) && isset($image->meta_data[$size])) {
 				$retval = $image->meta_data[$size];
 			}
@@ -390,20 +388,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$image->filename	= $filename;
 			$image_key			= $this->object->_image_mapper->get_primary_key_column();
 
-			// Determine the dimensions of the image
-			// We're going to use a GD function here. There's probably a better
-			// way. But WordPress uses GD, so I figure we might as well too.
-			// Alex Rabe also said that he's not sure how robust the imagemagick
-			// support is, as not many people use it.
-			if (function_exists('getimagesize')) {
-				$dimensions = getimagesize($abs_filename);
-				$image->meta_data = array();
-				$image->meta_data['full'] = array(
-					'width'		=>	$dimensions[0],
-					'height'	=>	$dimensions[1]
-				);
-			}
-
 			// Save the image
 			if ($this->object->_image_mapper->save($image)) {
 
@@ -413,6 +397,23 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					$fp = fopen($abs_filename, 'w');
 					fwrite($fp, $data);
 					fclose($fp);
+
+					// Determine the dimensions of the image
+					// We're going to use a GD function here. There's probably a better
+					// way. But WordPress uses GD, so I figure we might as well too.
+					// Alex Rabe also said that he's not sure how robust the imagemagick
+					// support is, as not many people use it.
+					if (function_exists('getimagesize')) {
+						$dimensions = getimagesize($abs_filename);
+						if (!isset($image->meta_data)) $image->meta_data = array();
+						$image->meta_data['full'] = array(
+							'width'		=>	$dimensions[0],
+							'height'	=>	$dimensions[1]
+						);
+					}
+
+					// Generate a thumbnail for the image
+					$this->object->generate_thumbnail($image);
 
 					// Notify other plugins that an image has been added
 					do_action('ngg_added_new_image', $image);

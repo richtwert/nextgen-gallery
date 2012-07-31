@@ -20,10 +20,10 @@ class A_Attachment_DataMapper extends Mixin
 	{
 		$post_id = FALSE;
 		$post = $this->object->_convert_entity_to_post($entity);
-		$primary_key = $this->object->get_primary_key_column();
 		$filename = property_exists($entity, 'filename') ? $entity->filename : FALSE;
+		$primary_key = $this->object->get_primary_key_column();
 
-		if (($post_id = $attachment_id = wp_insert_attachment($entity, $filename))) {
+		if (($post_id = $attachment_id = wp_insert_attachment($post, $filename))) {
 			$new_entity = $this->object->find($post_id);
 			foreach ($new_entity as $key => $value) $entity->$key = $value;
 
@@ -40,10 +40,13 @@ class A_Attachment_DataMapper extends Mixin
 			}
 
 			// Save properties are post meta as well
-			$this->object->_flush_and_update_postmeta($attachment_id, $entity, array(
+			$this->object->_flush_and_update_postmeta($attachment_id, ($entity instanceof stdClass ? $entity : $entity->get_entity()), array(
 					'_wp_attached_file',
-					'_wp_attachment_metadata'
+					'_wp_attachment_metadata',
+					'_mapper'
 			));
+
+			$entity->id_field = $primary_key;
 		}
 
 		return $attachment_id;

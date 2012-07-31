@@ -107,16 +107,38 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 				$this->images_to_cleanup[] = $image->$image_key;
 
 				// Or you can upload an image using base64 data
-				$image = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
+				$img = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
 				$this->images_to_cleanup[] = $image->$image_key;
 				$this->assert_valid_image($image, $image_key);
 
-				$this->assertTrue(isset($image->meta_data));
-				$this->assertTrue(isset($image->meta_data['full']));
-				$this->assertTrue(isset($image->meta_data['full']['width']));
-				$this->assertTrue(isset($image->meta_data['full']['height']));
-				$this->assertTrue(is_int($image->meta_data['full']['width']));
-				$this->assertTrue(is_int($image->meta_data['full']['height']));
+				foreach(array($img, $img->$image_key) as $image) {
+
+					// Get the full-sized image dimensions
+					$dimensions = $this->storage->get_image_dimensions($image);
+					$this->assert_valid_dimensions($dimensions);
+
+					// get_full_dimensions() is an alias to get_image_dimensions()
+					$this->assertEqual(
+						$dimensions,
+						$this->storage->get_full_dimensions($image)
+					);
+
+					// get_original_dimensions() is an alias to get_image_dimensions()
+					$this->assertEqual(
+						$dimensions,
+						$this->storage->get_original_dimensions($image)
+					);
+
+					// Get the thumbnail-sized image dimensions
+					$dimensions = $this->storage->get_thumbnail_dimensions($image);
+					$this->assert_valid_dimensions($dimensions);
+
+					// get_thumb_dimensions is an alias to get_thumbnail_dimensions()
+					$this->assertEqual(
+						$dimensions,
+						$this->storage->get_thumbnail_dimensions($image)
+					);
+				}
 			}
 		}
 	}
@@ -268,42 +290,6 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	}
 //
 //
-//	/**
-//	 * Tests getting image dimensions
-//	 */
-//	function test_get_image_dimensions()
-//	{
-//		foreach(array($this->image, $this->pid) as $image) {
-//
-//			// Get the full-sized image dimensions
-//			$dimensions = $this->storage->get_image_dimensions($image);
-//			$this->assert_valid_dimensions($dimensions);
-//
-//			// get_full_dimensions() is an alias to get_image_dimensions()
-//			$this->assertEqual(
-//				$dimensions,
-//				$this->storage->get_full_dimensions($image)
-//			);
-//
-//			// get_original_dimensions() is an alias to get_image_dimensions()
-//			$this->assertEqual(
-//				$dimensions,
-//				$this->storage->get_original_dimensions($image)
-//			);
-//
-//			// Get the thumbnail-sized image dimensions
-//			$dimensions = $this->storage->get_thumbnail_dimensions($image);
-//			$this->assert_valid_dimensions($dimensions);
-//
-//			// get_thumb_dimensions is an alias to get_thumbnail_dimensions()
-//			$this->assertEqual(
-//				$dimensions,
-//				$this->storage->get_thumbanil_dimensions($image)
-//			);
-//		}
-//	}
-//
-//
 //	function test_create_thumbnail()
 //	{
 //		foreach (array($this->image, $this->pid) as $image) {
@@ -421,11 +407,11 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 	 */
 	function assert_valid_dimensions($dimensions)
 	{
-		$this->assertTrue(is_array($dimensions));
-		$this->assertTrue(isset($dimensions['width']));
-		$this->assertTrue(isset($dimensions['height']));
-		$this->assertTrue($dimensions['height'] > 0);
-		$this->assertTrue($dimensions['width'] > 0);
+		$this->assertTrue(is_array($dimensions), "Dimensions is not an array");
+		$this->assertTrue(isset($dimensions['width']), "Dimensions array did not include a width");
+		$this->assertTrue(isset($dimensions['height']), "Dimensions array did not include a height");
+		$this->assertTrue($dimensions['height'] > 0, "Image width was not an integer greater than 0");
+		$this->assertTrue($dimensions['width'] > 0, "Image height was not an integer greater than 0");
 	}
 
 	/**
