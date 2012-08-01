@@ -211,7 +211,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
 
 			// Generate the thumbnail using WordPress
-			$thumbnail_dir = dirname($this->object->get_thumbnail_abspath($image));
+			$existing_thumbnail_abpath = $this->object->get_thumbnail_abspath($image);
+			$thumbnail_dir = dirname($existing_thumbnail_abpath);
+			if (file_exists($existing_thumbnail_abpath)) unlink($existing_thumbnail_abpath);
 			wp_mkdir_p($thumbnail_dir);
 			$retval = image_resize(
 				$filename,
