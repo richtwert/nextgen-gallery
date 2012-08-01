@@ -353,6 +353,8 @@ class M_AutoUpdate extends C_Base_Module
     		
     		$ret = unzip_file($package_file, $install_path);
     		
+    		unlink($package_file);
+    		
     		if ($ret && !is_wp_error($ret))
     		{
     			return $install_path;
@@ -360,6 +362,33 @@ class M_AutoUpdate extends C_Base_Module
     	}
     	
     	return false;
+    }
+    
+    
+    // XXX not used...
+    function _move_path_overwrite($source_path, $targe_path, $wp_filesystem)
+    {
+			$file_list = $wp_filesystem->dirlist($source_path, true);
+			
+			if ($file_list !== false)
+			{
+				$basedir = WP_CONTENT_DIR;
+				
+				foreach ($file_list as $file_path => $file_info)
+				{
+					if (isset($file_info['files']))
+					{
+						$child_list = $file_info['files'];
+						
+						if ($child_list == null)
+						{
+							
+						}
+					}
+					
+					$full_path = $source_path . $file_path;
+				}
+			}
     }
     
     
@@ -399,22 +428,49 @@ class M_AutoUpdate extends C_Base_Module
     			if (is_dir($activate_path))
     			{
     				// XXX for now overwrite and don't replace
-    				//$wp_filesystem->delete($activate_path, true);
+    				//$wp_filesystem->move($activate_path, $other_path);
     			}
-    			
-  				$wp_filesystem->move($install_path, $activate_path, true);
+    			else
+    			{
+  					$wp_filesystem->mkdir($activate_path);
+    			}
   				
-  				return $activate_path;
+  				// XXX for overwrite to work we have to do it "manually", $wp_filesystem->move() is NEVER recursive
+					$ret = copy_dir($install_path, $activate_path);
+					
+					if (!is_wp_error($ret))
+					{
+  					return $activate_path;
+					}
     		}
     	}
     	
-    	return null;
+    	return false;
     }
     
     
     // Cleans up after a command is run
-    function cleanup_command($command_info)
+    // XXX $other_path is never passed in (is null) as it's not well supported by the system yet
+    function cleanup_command($install_path, $activate_path, $other_path, $command_info)
     {
+			global $wp_filesystem;
+  			
+    	if ($wp_filesystem != null)
+    	{
+    		// Only clean up if activation was successful
+    		if ($wp_filesystem->is_dir($activate_path))
+    		{
+		  		if ($wp_filesystem->is_dir($install_path))
+		  		{
+    				$wp_filesystem->delete($install_path, true);
+		  		}
+		  		
+		  		if ($wp_filesystem->is_dir($other_path))
+		  		{
+    				$wp_filesystem->delete($other_path, true);
+		  		}
+    		}
+    	}
     }
     
     
@@ -546,6 +602,7 @@ class M_AutoUpdate extends C_Base_Module
   					}
   					case 'install':
   					case 'activate':
+  					case 'cleanup':
   					{
 							switch ($action)
 							{
@@ -567,23 +624,39 @@ class M_AutoUpdate extends C_Base_Module
 									if ($creds && WP_Filesystem($creds))
 									{
 										unset($command_info['-command-form']);
-										
-										$new_stage = $stage == 'activate' ? 'cleanup' : 'activate';
+									
+										$new_stage = null;
 										$new_path = null;
 										
 										if ($stage == 'install')
 										{
+											$new_stage = 'activate';
 											$new_path = $this->_install_package($command_info, $command_info['-command-package-file']);
 										}
 										else if ($stage == 'activate')
 										{
+											$new_stage = 'cleanup';
 											$new_path = $this->_activate_module($command_info, $command_info['-command-install-path']);
 										}
+										else if ($stage == 'cleanup')
+										{
+											$new_stage = 'none';
 										
-										if ($new_path != null)
+											$install_path = $command_info['-command-install-path'];
+											$activate_path = $command_info['-command-activate-path'];
+											
+											// XXX $other_path is passed in null as it's not well supported yet
+											$this->cleanup_command($install_path, $activate_path, null, $command_info);
+										}
+										
+										if ($new_path != null || $stage == 'cleanup')
 										{
 											$command_info['-command-stage'] = $new_stage;
-											$command_info['-command-' . $stage . '-path'] = $new_path;
+											
+											if ($new_path != null)
+											{
+												$command_info['-command-' . $stage . '-path'] = $new_path;
+											}
 										}
 										else
 										{
@@ -603,23 +676,6 @@ class M_AutoUpdate extends C_Base_Module
 							}
 							
 							break;
-  					}
-  					case 'cleanup':
-  					{
-							switch ($action)
-							{
-								case 'add':
-								case 'update':
-								{
-									$this->cleanup_command($command_info);
-									
-									$command_info['-command-stage'] = 'none';
-					
-									return $command_info;
-								}
-							}
-							
-  						break;
   					}
   				}
 					
