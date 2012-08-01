@@ -29,7 +29,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 		// Create test gallery to work with
 		$this->gallery = (object) array(
-			'title'	=>	'Test Gallery'
+			'title'	=>	'Foobar Gallery'
 		);
 		$this->gid = $this->gallery_mapper->save($this->gallery);
 		$this->assertTrue(is_int($this->gid) && $this->gid > 0, "Could not create new gallery");

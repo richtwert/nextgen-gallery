@@ -385,7 +385,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
-			$retval = $image	= new stdClass();
+			$factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
+			$retval = $image = $factory->create('gallery_image');
 			$image->alttext		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;

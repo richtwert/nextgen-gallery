@@ -45,9 +45,13 @@ class C_DataMapper_Model extends C_Component
 	/**
 	 * Gets a property of the model
 	 */
-	function __get($property_name)
+	function &__get($property_name)
 	{
-		return property_exists($this->_stdObject, $property_name) ? $this->_stdObject->$property_name : NULL;
+		if (isset($this->_stdObject->$property_name)) {
+			$retval = &$this->_stdObject->$property_name;
+			return $retval;
+		}
+		else return NULL;
 	}
 
 	/**
@@ -110,5 +114,3 @@ class C_DataMapper_Model extends C_Component
 		return $this->__get($key);
 	}
 }
-
-?>
