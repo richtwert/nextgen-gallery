@@ -3,6 +3,8 @@
 include_once('class.test_gallerystorage_driver_base.php');
 abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_GalleryStorage_Driver_Base
 {
+	var $test_file_abspath = '';
+
 	function __construct($label, $datamapper_driver_factory_method)
 	{
 		parent::__construct($label);
@@ -10,6 +12,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		$settings->datamapper_driver = $datamapper_driver_factory_method;
 		$settings->gallerystorage_driver = 'ngglegacy_gallery_storage';
 		$settings->save();
+		$this->test_file_abspath = path_join(dirname(__FILE__), 'test.jpg');
 	}
 
 
@@ -89,13 +92,12 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 			// Run upload test if our previous gallery creation tests passed
 			if ($gallery) {
-				$test_file_abspath = path_join(dirname(__FILE__), 'test.jpg');
 
 				// You can upload an image from $_FILES
 				$_FILES['file'] = array(
 					'name'		=>	'test.jpg',
 					'type'		=>	'type/jpeg',
-					'tmp_name'	=>	$test_file_abspath,
+					'tmp_name'	=>	$this->test_file_abspath,
 					'error'		=>	0
 				);
 				$image = $this->storage->upload_image($gallery);
@@ -103,7 +105,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 				$this->images_to_cleanup[] = $image->$image_key;
 
 				// Or you can upload an image using base64 data
-				$img = $this->storage->upload_image($gallery, 'test-base64.jpg', file_get_contents($test_file_abspath));
+				$img = $this->storage->upload_image($gallery, 'test-base64.jpg', file_get_contents($this->test_file_abspath));
 				$this->images_to_cleanup[] = $image->$image_key;
 				$this->assert_valid_image($image, $image_key);
 
@@ -294,6 +296,27 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 			$this->assertTrue(file_exists($this->storage->get_thumb_abspath($image)));
 			$this->assert_valid_dimensions($this->storage->get_thumbnail_dimensions($image));
 		}
+	}
+
+
+	function test_deleting_all_images_from_filesystem()
+	{
+		$this->storage->delete_image($this->image);
+		$this->assertFalse(file_exists($this->storage->get_image_abspath($this->image)));
+		$this->assertFalse(file_exists($this->storage->get_thumb_abspath($this->image)));
+	}
+
+
+	function test_deleting_thumbnail_from_filesystem()
+	{
+		$img = $this->storage->upload_image(
+			$this->gallery,
+			'test-base64.jpg',
+			file_get_contents($this->test_file_abspath))
+		;
+		$this->storage->delete_image($img, 'thumbnail');
+		$this->assertFalse(file_exists($this->storage->get_thumb_abspath($img)));
+		$this->assertTrue(file_exists($this->storage->get_full_abspath($img)));
 	}
 
 

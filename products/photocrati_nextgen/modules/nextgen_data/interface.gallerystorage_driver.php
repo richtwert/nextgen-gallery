@@ -24,4 +24,5 @@ interface I_GalleryStorage_Driver
 	function upload_image($gallery, $data=FALSE);
 	function get_driver_class_name();
 	function generate_thumbnail($image);
+	function delete_image($image, $size=FALSE);
 }

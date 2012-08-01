@@ -249,6 +249,47 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
+
+
+	function delete_image($image, $size=FALSE)
+	{
+		$retval = FALSE;
+
+		// Ensure that we have the image entity
+		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
+
+		if ($image) {
+
+			// Delete only a particular image size
+			if ($size) {
+				$abspath = $this->object->get_image_abspath($image, $size);
+				if ($abspath && file_exists($abspath)) unlink($abspath);
+				if (isset($image->meta_data) && isset($image->meta_data[$size])) {
+					unset($image->meta_data[$size]);
+					$this->object->_image_mapper->save($image);
+				}
+			}
+
+			// Delete all sizes of the image
+			else {
+				// Get the paths to all images
+				$abspaths = array($this->get_full_abspath($image));
+				if (isset($image->meta_data)) foreach (array_keys($image) as $size) {
+					$abspaths[] = $this->object->get_image_abspath($image, $size);
+				}
+
+				// Delete each image
+				foreach ($abspaths as $abspath)
+					if ($abspath && file_exists($abspath)) unlink($abspath);
+
+				// Delete the entity
+				$this->object->_image_mapper->destroy($image);
+			}
+			$retval = TRUE;
+		}
+
+		return $retval;
+	}
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
