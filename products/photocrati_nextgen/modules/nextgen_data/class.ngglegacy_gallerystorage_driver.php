@@ -94,12 +94,29 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$size = 'thumbs';
 						// deliberately no break here
 
-					# We assume any other size of image is stored in the a
-					# subdirectory of the same name within the gallery folder
-					# gallery folder, but with the size appended to the filename
+					// We assume any other size of image is stored in the a
+					//subdirectory of the same name within the gallery folder
+					// gallery folder, but with the size appended to the filename
 					default:
 						$image_path = path_join($gallery_path, $size);
-						$image_path = path_join($image_path, "{$size}_{$image->filename}");
+
+						// NGG 2.0 stores relative filenames in the meta data of
+						// an image. It does this because it uses filenames
+						// that follow conventional WordPress naming scheme.
+						if (isset($image->meta_data) && isset($image->meta_data[$size]) && isset($image->meta_data[$size]['filename'])) {
+							$image_path = path_join($image_path, $image->meta_data[$size]['filename']);
+						}
+
+						// NGG Legacy does not store relative filenames in the
+						// image entity for sizes other than the original.
+						// Although the naming scheme for filenames differs from
+						// WordPress conventions, NGG legacy does follow it's
+						// own naming schema consistently so we can guess the path
+						else {
+							$image_path = path_join($image_path, "{$size}_{$image->filename}");
+						}
+
+						// Should we check whether the image actually exists?
 						if ($check_existance && file_exists($image_path)) {
 							$retval = $image_path;
 						}
@@ -178,23 +195,28 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	{
 		$retval = FALSE;
 
-		// Get the image filename
-		$filename = $this->object->get_full_abspath($image);
+		// Get the image entity
+		if (is_int($image)) $image = $this->object->_image_mapper->find($image);
 
 		// Ensure we have a valid image
 		if ($image) {
+
+			// Get the image filename
+			$filename = $this->object->get_full_abspath($image);
 
 			// Get the thumbnail settings
 			$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
 
 			// Generate the thumbnail using WordPress
+			$thumbnail_dir = dirname($this->object->get_thumbnail_abspath($image));
+			wp_mkdir_p($thumbnail_dir);
 			$retval = image_resize(
 				$filename,
 				is_null($width)		? $settings->thumbwidth		: $width,
 				is_null($height)	? $settings->thumbheight	: $height,
 				is_null($crop)		? $settings->thumbfix		: $crop,
 				NULL, // filename suffix
-				$this->object->get_thumbnail_abspath($image),
+				$thumbnail_dir,
 				is_null($quality)	? $settings->thumbquality	: $quality
 			);
 
@@ -204,12 +226,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if (function_exists('getimagesize')) {
 					$dimensions = getimagesize($retval);
 					if (!isset($image->meta_data)) $image->meta_data = array();
-					$image->meta_data['thumbnail'] = array(
+					$image->meta_data['thumbs'] = array(
 						'width'		=>	$dimensions[0],
-						'height'	=>	$dimensions[1]
+						'height'	=>	$dimensions[1],
+						'filename'	=>	$retval
 					);
 				}
-				$retval = ($this->object->_image_mapper->save($image) ? TRUE : FALSE);
+				$retval = $this->object->_image_mapper->save($image);
+				$retval = is_int($retval) && $retval > 0 ? TRUE : FALSE;
 			}
 
 			// Something went wrong. Thumbnail generation failed!

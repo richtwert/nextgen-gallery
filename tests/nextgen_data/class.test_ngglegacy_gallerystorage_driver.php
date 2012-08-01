@@ -107,7 +107,7 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 				$this->images_to_cleanup[] = $image->$image_key;
 
 				// Or you can upload an image using base64 data
-				$img = $this->storage->upload_image($gallery, 'test.png', file_get_contents($test_file_abspath));
+				$img = $this->storage->upload_image($gallery, 'test-base64.jpg', file_get_contents($test_file_abspath));
 				$this->images_to_cleanup[] = $image->$image_key;
 				$this->assert_valid_image($image, $image_key);
 
@@ -288,18 +288,19 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 			$this->assert_valid_img_tag($html, $image, $this->storage->get_thumbnail_url($image));
 		}
 	}
-//
-//
-//	function test_create_thumbnail()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//			// Recreate the thumbnail for the uploaded image
-//			$this->storage->create_thumbnail($image);
-//			$this->assertTrue(file_exists($this->storage->get_thumb_abspath($image)));
-//		}
-//	}
-//
-//
+
+
+	function test_generate_thumbnail()
+	{
+		foreach (array($this->image, $this->pid) as $image) {
+			// Recreate the thumbnail for the uploaded image
+			$this->assertTrue($this->storage->generate_thumbnail($image));
+			$this->assertTrue(file_exists($this->storage->get_thumb_abspath($image)));
+			$this->assert_valid_dimensions($this->storage->get_thumbnail_dimensions($image));
+		}
+	}
+
+
 //	/**
 //	 * Tests getting the backup path
 //	 */

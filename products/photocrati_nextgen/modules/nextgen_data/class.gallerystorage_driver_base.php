@@ -100,9 +100,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					$size = 'full';
 					break;
 				case 'thumbnails':
+				case 'thumbnail':
 				case 'thumb':
-				case 'thumbs':
-					$size = 'thumbnail';
+					$size = 'thumbs';
 					break;
 			}
 
@@ -224,7 +224,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	{
 		$retval = FALSE;
 
-		if (($image_path = $this->object->get_image_path($image))) {
+		if (($image_path = $this->object->get_image_abspath($image))) {
 			$retval = copy($image_path, $this->object->get_backup_abspath($image));
 		}
 
@@ -382,7 +382,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
-			$retval = $image				= new stdClass();
+			$retval = $image	= new stdClass();
 			$image->title		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;
