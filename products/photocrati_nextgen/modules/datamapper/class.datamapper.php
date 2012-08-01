@@ -16,14 +16,21 @@ class Mixin_DataMapper extends Mixin
 	{
 		$factory_method = '';
 
+		// No constant has been defined to establish a global datamapper driver
 		if (!defined('DATAMAPPER_DRIVER')) {
-			$factory_method = get_option(PHOTOCRATI_GALLERY_OPTION_PREFIX.'datamapper_driver');
+
+			// Get the datamapper configured in the database
+			$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
+			$factory_method = $settings->datamapper_driver;
 			if (!$factory_method) throw new DataMapperDriverNotSelectedException();
-			if ($context) {
-				if (!is_array($context)) $context=array($context);
-				if (!in_array('SIMPLE_TEST', $context)) define('DATAMAPPER_DRIVER', $factory_method);
-			}
+
+			// Define a constant and use this as the global datamapper driver,
+			// unless running in a SimpleTest Environment
+			if (!isset($GLOBALS['SIMPLE_TEST_RUNNING']))
+				define('DATAMAPPER_DRIVER', $factory_method);
 		}
+
+		// Use the globally defined datamapper driver in the constant
 		else $factory_method = DATAMAPPER_DRIVER;
 
 		return $factory_method;

@@ -8,9 +8,14 @@ require_once('class.test_custompost_datamapper_base.php');
  */
 class C_Test_DataMapper_Using_CustomPost_Driver extends C_Test_CustomPost_DataMapper_Base
 {
-	function __construct()
+	function __construct($label="Test Case for C_DataMapper using CustomPost Driver")
 	{
-		parent::__construct("Test Case for C_DataMapper using CustomPost Driver");
+		parent::__construct($label);
+
+		// Tell the datamapper which driver to use
+		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$settings->datamapper_driver = 'custom_post_datamapper';
+		$settings->save();
 	}
 
 	/**
@@ -21,18 +26,15 @@ class C_Test_DataMapper_Using_CustomPost_Driver extends C_Test_CustomPost_DataMa
 	{
 		$retval = FALSE;
 
-		// Tell the datamapper which driver to use
-		update_option(PHOTOCRATI_GALLERY_OPTION_PREFIX.'datamapper_driver', 'custom_post_datamapper');
-
 		// Create a valid data mapper for 'posts' using a factory
-		$this->mapper = $this->get_factory()->create('datamapper', $this->post_type, 'SIMPLE_TEST');
+		$this->mapper = $this->get_factory()->create('datamapper', $this->post_type);
 		$this->assert_valid_datamapper($this->mapper);
 		$this->assertIsA($this->mapper, 'C_DataMapper');
 
 		// Create a valid data mapper for 'posts' without a factory
 		// This is necessary for unit testing, as we want to test the
 		// datamapper not the factory class"
-		$this->mapper = new C_DataMapper($this->post_type, 'SIMPLE_TEST');
+		$this->mapper = new C_DataMapper($this->post_type);
 		$this->assert_valid_datamapper($this->mapper);
 
 		// For testing purposes, we'll add some mocking capabilities to the

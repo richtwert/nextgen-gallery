@@ -89,7 +89,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		$retval = NULL;
 
 		// If an image id was provided, get the entity
-		if (is_int($image)) $image = $this->object->_image_mapper->find($image);
+		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
 
 		// Ensure we have a valid image
 		if ($image) {
@@ -102,7 +102,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				case 'thumbnails':
 				case 'thumbnail':
 				case 'thumb':
-					$size = 'thumbs';
+				case 'thumbs':
+					$size = 'thumbnail';
 					break;
 			}
 
@@ -167,13 +168,13 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	{
 		$retval = "";
 
-		if (is_int($image)) $image = $this->object->_image_mapper->find($image);
+		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
 
 		if ($image) {
 
 			// Get the image properties
 			$alttext = esc_attr($image->alttext);
-			$title	 = esc_attr($image->title);
+			$title	 = $alttext;
 
 			// Get the dimensions
 			$dimensions = $this->object->get_image_dimensions($image, $size);
@@ -186,6 +187,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				"alt=\"{$alttext}\"",
 				"title=\"{$title}\"",
 				"src=\"{$image_url}\"",
+				"width=\"{$dimensions['width']}\"",
+				"height=\"{$dimensions['height']}\"",
 				'/>'
 			));
 		}
@@ -262,7 +265,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 				// Copy the db entry
 				if ($db) {
-					if (is_int($image)) $this->object->_image_mapper($image);
+					if (is_numeric($image)) $this->object->_image_mapper($image);
 					unset($image->$image_key);
 					$image->galleryid = $gallery;
 				}
@@ -323,7 +326,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				$retval = $gallery_obj_or_id->$gallery_key;
 			}
 		}
-		elseif(is_int($gallery_obj_or_id)) {
+		elseif(is_numeric($gallery_obj_or_id)) {
 			$retval = $gallery_obj_or_id;
 		}
 
@@ -346,7 +349,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				$retval = $image_obj_or_id->$image_key;
 			}
 		}
-		elseif (is_int($image_obj_or_id)) {
+		elseif (is_numeric($image_obj_or_id)) {
 			$retval = $image_obj_or_id;
 		}
 
@@ -383,7 +386,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 			// Create the database record
 			$retval = $image	= new stdClass();
-			$image->title		= sanitize_title($filename);
+			$image->alttext		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;
 			$image_key			= $this->object->_image_mapper->get_primary_key_column();

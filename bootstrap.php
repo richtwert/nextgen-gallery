@@ -132,25 +132,25 @@ class C_NextGEN_Bootstrap
 	 */
 	function add_testsuite($suites=array())
 	{
-        // To avoid autoloading issues we feed Pope's tests one at a time
-        $suites['pope'] = array(
-            'core',
-            'pre_hooks',
-            'post_hooks',
-            'registry',
-            'factories',
-            'modules',
-            'wrappers',
-            'advanced',
-            'method_properties'
-        );
-        foreach ($suites['pope'] as &$suite)
-        {
-            $suite = path_join(
-                PHOTOCRATI_GALLERY_PLUGIN_DIR,
-                'pope' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $suite . '.php'
-            );
-        }
+//        // To avoid autoloading issues we feed Pope's tests one at a time
+//        $suites['pope'] = array(
+//            'core',
+//            'pre_hooks',
+//            'post_hooks',
+//            'registry',
+//            'factories',
+//            'modules',
+//            'wrappers',
+//            'advanced',
+//            'method_properties'
+//        );
+//        foreach ($suites['pope'] as &$suite)
+//        {
+//            $suite = path_join(
+//                PHOTOCRATI_GALLERY_PLUGIN_DIR,
+//                'pope' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $suite . '.php'
+//            );
+//        }
 
 		// Define Test Directory
 		$tests_dir = PHOTOCRATI_GALLERY_TESTS_DIR;

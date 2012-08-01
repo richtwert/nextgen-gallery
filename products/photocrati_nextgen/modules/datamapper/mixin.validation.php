@@ -413,7 +413,7 @@ class Mixin_Validation extends Mixin
     {
 		// Get any entities that have the same property
         $mapper = $this->object->get_mapper();
-		$mapper->select("COUNT(*)");
+		$mapper->select($mapper->get_primary_key_column());
 		$mapper->limit(1);
 		$mapper->where_and(array("{$property} = %s", $this->object->$property));
 		if (!$this->object->is_new()) {

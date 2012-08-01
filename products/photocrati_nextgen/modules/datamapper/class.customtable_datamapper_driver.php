@@ -169,19 +169,37 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		unset($entity->id_field);
 		$primary_key = $this->object->get_primary_key_column();
 		if (isset($entity->$primary_key)) {
-			if($this->object->_update($entity)) $retval = $entity->$primary_key;
+			if($this->object->_update($entity)) $retval = intval($entity->$primary_key);
 		}
 		else {
 			$retval = $this->object->_create($entity);
 			if ($retval) {
 				$new_entity = $this->object->find($retval);
 				foreach ($new_entity as $key => $value) $entity->$key = $value;
+				$retval = intval($entity->$primary_key);
 			}
 		}
 		$entity->id_field = $primary_key;
 
 		return $retval;
 	}
+
+	/**
+	 * Converts an entity to something suitable for inserting into
+	 * a database column
+	 * @param stdObject $entity
+	 * @return array
+	 */
+	function _convert_to_table_data($entity)
+	{
+		$data = (array) $entity;
+		foreach ($data as $key => $value) {
+			if (is_array($value)) $data[$key] = $this->object->serialize($value);
+		}
+
+		return $data;
+	}
+
 
 	/**
 	 * Destroys/deletes an entity
@@ -203,7 +221,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		}
 
 		// If we have an ID, then delete the post
-		if (is_integer($id)) {
+		if (is_numeric($id)) {
 			$sql = $this->object->_wpdb()->prepare(
 		      "DELETE FROM `{$this->object->get_table_name()}` WHERE {$key} = %s",
 			  $id
@@ -222,12 +240,17 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	function _create($entity)
 	{
 		$retval = FALSE;
-		if ($this->object->_wpdb()->insert($this->object->get_table_name(), (array)$entity)) {
+		$id =  $this->object->_wpdb()->insert(
+			$this->object->get_table_name(),
+			$this->object->_convert_to_table_data($entity)
+		);
+		if ($id) {
 			$key = $this->object->get_primary_key_column();
-			$retval = $entity->$key = $this->object->_wpdb()->insert_id;
+			$retval = $entity->$key = intval($this->object->_wpdb()->insert_id);
 		}
 		return $retval;
 	}
+
 
 	/**
 	 * Updates a record in the database
@@ -236,9 +259,12 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	function _update($entity)
 	{
 		$key = $this->object->get_primary_key_column();
-		return $this->object->_wpdb()->update($this->object->get_table_name(), (array)$entity, array(
-			 $key => $entity->$key
-		));
+
+		return $this->object->_wpdb()->update(
+			$this->object->get_table_name(),
+			$this->object->_convert_to_table_data($entity),
+			array($key => $entity->$key)
+		);
 	}
 
 

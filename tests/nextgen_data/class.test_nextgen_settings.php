@@ -12,6 +12,13 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	public $settings;
     public $multi_settings;
 
+
+	function __construct($label='C_NextGen_Settings Test')
+	{
+		parent::__construct($label);
+	}
+
+
 	/**
 	 * Test the NextGen Settings setup
 	 */

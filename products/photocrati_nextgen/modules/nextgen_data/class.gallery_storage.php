@@ -20,14 +20,21 @@ class Mixin_GalleryStorage extends Mixin
 	{
 		$factory_method = '';
 
+		// No constant has been defined to establish a global gallerystorage driver
 		if (!defined('GALLERYSTORAGE_DRIVER')) {
-			$factory_method = get_option(PHOTOCRATI_GALLERY_OPTION_PREFIX.'gallerystorage_driver');
+
+			// Get the datamapper configured in the database
+			$settings = $this->object->_get_registry()->get_singleton_utility('I_NextGen_Settings');
+			$factory_method = $settings->gallerystorage_driver;
 			if (!$factory_method) throw new GalleryStorageDriverNotSelectedException();
-			if ($context) {
-				if (!is_array($context)) $context=array($context);
-				if (!in_array($context, 'SIMPLE_TEST')) define('GALLERYSTORAGE_DRIVER', $factory_method);
-			}
+
+			// Define a constant and use this as the global gallerystorage driver,
+			// unless running in a SimpleTest Environment
+			if (!isset($GLOBALS['SIMPLE_TEST_RUNNING']))
+				define('GALLERYSTORAGE_DRIVER', $factory_method);
 		}
+
+		// Use the globally defined gallerystorage driver in the constant
 		else $factory_method = GALLERYSTORAGE_DRIVER;
 
 		return $factory_method;

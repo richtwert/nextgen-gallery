@@ -85,7 +85,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	function find($entity, $model=FALSE)
 	{
 		$pkey = $this->object->get_primary_key_column();
-		if (!is_int($entity)) $entity = $entity->$pkey;
+		if (!is_numeric($entity)) $entity = intval($entity->$pkey);
 
 		$results = $this->object->select()->where_and(
 				array("{$pkey} = %d", $entity)

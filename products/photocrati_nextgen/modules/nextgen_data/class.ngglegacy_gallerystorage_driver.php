@@ -49,7 +49,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		// Get the gallery entity from the database
 		if ($gallery) {
-			if (is_int($gallery)) {
+			if (is_numeric($gallery)) {
 				$gallery = $this->object->_gallery_mapper->find($gallery);
 			}
 		}
@@ -72,7 +72,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$retval = NULL;
 
 		// If we have the id, get the actual image entity
-		if (is_int($image)) {
+		if (is_numeric($image)) {
 			$image = $this->object->_image_mapper->find($image);
 		}
 
@@ -80,6 +80,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		// incorrect id
 		if (is_object($image)) {
 			if (($gallery_path = $this->object->get_gallery_abspath($image->galleryid))) {
+				$folder = $size;
 				switch ($size) {
 
 					# Images are stored in the associated gallery folder
@@ -91,14 +92,16 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					case 'thumbnails':
 					case 'thumbnail':
 					case 'thumb':
-						$size = 'thumbs';
+					case 'thumbs':
+						$size = 'thumbnail';
+						$folder = 'thumbs';
 						// deliberately no break here
 
 					// We assume any other size of image is stored in the a
 					//subdirectory of the same name within the gallery folder
 					// gallery folder, but with the size appended to the filename
 					default:
-						$image_path = path_join($gallery_path, $size);
+						$image_path = path_join($gallery_path, $folder);
 
 						// NGG 2.0 stores relative filenames in the meta data of
 						// an image. It does this because it uses filenames
@@ -196,7 +199,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$retval = FALSE;
 
 		// Get the image entity
-		if (is_int($image)) $image = $this->object->_image_mapper->find($image);
+		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
 
 		// Ensure we have a valid image
 		if ($image) {
@@ -220,20 +223,21 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				is_null($quality)	? $settings->thumbquality	: $quality
 			);
 
-
 			// We successfully generated the thumbnail
 			if (is_string($retval) && file_exists($retval)) {
 				if (function_exists('getimagesize')) {
 					$dimensions = getimagesize($retval);
 					if (!isset($image->meta_data)) $image->meta_data = array();
-					$image->meta_data['thumbs'] = array(
+					$image->meta_data['thumbnail'] = array(
 						'width'		=>	$dimensions[0],
 						'height'	=>	$dimensions[1],
-						'filename'	=>	$retval
+						'filename'	=>	$retval,
+						'generated'	=> microtime()
 					);
 				}
+
 				$retval = $this->object->_image_mapper->save($image);
-				$retval = is_int($retval) && $retval > 0 ? TRUE : FALSE;
+				$retval = is_numeric($retval) && $retval > 0 ? TRUE : FALSE;
 			}
 
 			// Something went wrong. Thumbnail generation failed!

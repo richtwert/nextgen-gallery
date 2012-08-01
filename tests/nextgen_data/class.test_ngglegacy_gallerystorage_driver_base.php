@@ -1,24 +1,24 @@
 <?php
 
 include_once('class.test_gallerystorage_driver_base.php');
-class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Driver_Base
+abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_GalleryStorage_Driver_Base
 {
+	function __construct($label, $datamapper_driver_factory_method)
+	{
+		parent::__construct($label);
+		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$settings->datamapper_driver = $datamapper_driver_factory_method;
+		$settings->gallerystorage_driver = 'ngglegacy_gallery_storage';
+		$settings->save();
+	}
+
+
 	/**
 	 * Create a gallery and image for testing purposes
 	 */
 	function setUp()
 	{
 		parent::setUp();
-
-		// We deregister the gallery storage utility, and replace it with
-		// the ngglegacy driver
-		$this->original = $this->get_registry()->get_utility_class_name('I_Gallery_Storage');
-		$this->get_registry()->del_utility('I_Gallery_Storage');
-		$this->get_registry()->add_utility('I_Gallery_Storage', 'C_NggLegacy_GalleryStorage_Driver');
-
-		// As this is NOT a test for the datamapper, we'll either use the
-		// configured default or specifically select the custom post driver
-		if (!defined('DATAMAPPER_DRIVER')) define('DATAMAPPER_DRIVER', 'custom_post_datamapper');
 
 		// Get the mappers required for these tests
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
@@ -33,7 +33,7 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 
 		// Create image to work with
 		$this->image = (object) array(
-			'title'		=>	'test-image',
+			'alttext'		=>	'test-image',
 			'filename'	=>	'test.jpg',
 			'galleryid'	=>	$this->gid
 		);
@@ -60,10 +60,6 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		foreach ($this->images_to_cleanup as $pid) {
 			$this->image_mapper->destroy($pid);
 		}
-
-		// Re-register the original gallery storage implementation
-		$this->get_registry()->del_utility('I_Gallery_Storage');
-		$this->get_registry()->add_utility('I_Gallery_Storage', $this->original);
 	}
 
 
@@ -426,10 +422,9 @@ class C_Test_NggLegacy_GalleryStorage_Driver extends C_Test_GalleryStorage_Drive
 		$this->assertTrue(is_object($image), "Image is not an object");
 		$url		= preg_quote($url, '/');
 		$alttext	= preg_quote($image->alttext, '/');
-		$title		= preg_quote($image->title, '/');
 		$this->assertPattern("/src=['\"]{$url}['\"]/", $html, "Image tag does not contain the correct 'src' attribute: %s");
 		$this->assertPattern("/alt=['\"]{$alttext}['\"]/", $html, "Image tag does not contain the correct 'alt' attribute: %s");
-		$this->assertPattern("/title=['\"]{$title}['\"]/", $html, "Image tag does not contain the correct 'title' attribute: %s");
+		$this->assertPattern("/title=['\"]{$alttext}['\"]/", $html, "Image tag does not contain the correct 'title' attribute: %s");
 	}
 }
 

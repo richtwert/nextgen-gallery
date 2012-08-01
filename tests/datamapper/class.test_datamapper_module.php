@@ -7,6 +7,11 @@ class C_Test_DataMapper_Module extends UnitTestCase
 	 */
 	private $_registry = NULL;
 
+	function __construct($label='M_DataMapper Test')
+	{
+		parent::__construct($label);
+	}
+
 
 	function setUp()
 	{
