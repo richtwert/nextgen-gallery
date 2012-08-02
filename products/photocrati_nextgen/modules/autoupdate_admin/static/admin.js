@@ -16,7 +16,7 @@ function photocrati_autoupdate_readable_size(bytes)
   var sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
   if (bytes == 0) return typeof(bytes) == 'number' ? '0 bytes' : 'n/a';
   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+  return Math.ceil(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
 
 String.prototype.format = function() { return photocrati_autoupdate_string_format.apply(this, arguments); };

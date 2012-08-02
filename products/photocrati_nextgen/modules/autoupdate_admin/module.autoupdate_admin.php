@@ -74,13 +74,23 @@ class M_AutoUpdate_Admin extends C_Base_Module
 		          ),
 		          array('jquery-ui-core', 'jquery-ui-progressbar', 'jquery-ui-dialog')
 		      );
+		      
+					wp_register_style(
+						'jquery-ui', 
+		          path_join(
+		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
+		              'jquery-ui.css'
+		          ), 
+		          false, '1.8.16'
+					);
 				
 		      wp_register_style(
 		          'pc-autoupdate-admin', 
 		          path_join(
 		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
 		              'admin.css'
-		          )
+		          ),
+		          array('jquery-ui')
 		      );
 		      
 		      wp_enqueue_script('pc-autoupdate-admin');
@@ -134,7 +144,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     		'updater_button_start' => __('Start Update'),
     		'updater_status_done' => __('Done.'),
     		// XXX note that because of how json_encode works we need to manually escape double quotes it seems
-    		'updater_status_start' => __('Click \\"Start Update\\" to begin the upgrade process.'),
+    		'updater_status_start' => __('Click <b>Start Update</b> to begin the upgrade process.'),
     		'updater_status_preparing' => __('Preparing upgrade process...'),
     		'updater_status_stage_download' => __('Downloading package {1} of {0}...'),
     		'updater_status_stage_install' => __('Installing package {1} of {0}...'),
@@ -178,8 +188,14 @@ class M_AutoUpdate_Admin extends C_Base_Module
     	
       if ($list != null)
       {
-				add_submenu_page('index.php', __('Photocrati Updates'), __('Photocrati Updates') . ' <span class="update-plugins"><span class="update-count">' . count($list) . '</span></span>', 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
+				add_submenu_page('index.php', __('Photocrati Updates'), __('Photocrati') . ' <span class="update-plugins"><span class="update-count">' . count($list) . '</span></span>', 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
       }
+      else if (isset($_GET['page']) && $_GET['page'] == $this->module_id)
+			{
+				wp_redirect(admin_url());
+				
+				exit();
+			}
     }
     
     function dashboard_setup()
@@ -280,4 +296,5 @@ class M_AutoUpdate_Admin extends C_Base_Module
     	}
     }
 }
+
 new M_AutoUpdate_Admin();
