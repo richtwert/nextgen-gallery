@@ -9,7 +9,7 @@ class A_NextGen_Multisite_Settings extends Mixin
     {
         // This handles WordPress substitutions like the %BLOG_ID placeholder
         $this->object->add_post_hook(
-            'set',
+            'set_multisite_option',
             'WordPress Multisite Overrides',
             'Hook_NextGen_Settings_WordPress_MU_Overrides',
             '_apply_multisite_overrides'
@@ -32,6 +32,20 @@ class A_NextGen_Multisite_Settings extends Mixin
         if ($save)
         {
             $this->object->save();
+        }
+    }
+
+    /**
+     * Restores from defaults any configuration settings that were removed
+     */
+    function restore_missing_multisite_options()
+    {
+        foreach (C_NextGen_Settings_Defaults::get_defaults(True) as $name => $val)
+        {
+            if (!isset($this->object->_global_options[$name]))
+            {
+                $this->object->set_multisite_option($name, $val);
+            }
         }
     }
 
@@ -59,10 +73,22 @@ class A_NextGen_Multisite_Settings extends Mixin
      * @param mixed $value
      * @return mixed $value
      */
-    function set($option_name, $value)
+    function set_multisite_option($option_name, $value)
     {
         $this->object->_global_options[$option_name] = $value;
         return $value;
+    }
+
+    /**
+     * Aliases set() to set_multisite_option()
+     *
+     * @param string $option_name
+     * @param mixed $value
+     * @return mixed $value
+     */
+    function set($option_name, $value)
+    {
+        return $this->object->set_multisite_option($option_name, $value);
     }
 
     /**

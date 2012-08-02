@@ -124,15 +124,27 @@ class C_NextGen_Settings_Defaults
 class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 {
     /**
+     * Restores both missing site options and multisite options
+     */
+    function restore_all_missing_options()
+    {
+        $this->object->restore_missing_options();
+        if ($this->object->has_method('restore_missing_multisite_options'))
+        {
+            $this->object->restore_missing_multisite_options();
+        }
+    }
+    /**
      * Flushes both local and multisite options from C_NextGen_Settings to the database
      *
      * @return bool
      */
     function save()
 	{
-		$valid = True;
+        $this->object->restore_all_missing_options();
 
 		// Run validation, if available
+        $valid = True;
 		if ($this->object->has_method('validate')) {
 			if (!$this->validate()); $valid = False;
 		}
@@ -158,25 +170,23 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 	/**
 	 * Fetches the settings from the database; repopulates both local and multisite options
 	 */
-	function reload($defaults = False)
+	function reload()
 	{
 		// Get options
-        if (True !== $defaults)
-        {
-            $this->object->_options = get_option(
-                $this->object->_get_wordpress_option_name(),
-                array()
-            );
+        $this->object->_options = get_option(
+            $this->object->_get_wordpress_option_name(),
+            array()
+        );
 
-            // Get global options
-            $this->object->_global_options = get_site_option(
-                $this->object->_get_wordpress_option_name(TRUE),
-                array()
-            );
-        }
+        // Get global options
+        $this->object->_global_options = get_site_option(
+            $this->object->_get_wordpress_option_name(TRUE),
+            array()
+        );
 
-		if (True == $defaults || (empty($this->object->_global_options) && empty($this->object->_options))) {
-            $this->object->reset(True);
+        // this will restore all missing options
+		if (empty($this->object->_global_options) && empty($this->object->_options)) {
+            $this->object->save();
 		}
 	}
 
@@ -242,6 +252,20 @@ class Mixin_NextGen_Settings extends Mixin
         }
 	}
 
+    /**
+     * Restores from defaults any configuration settings that were removed
+     */
+    function restore_missing_options()
+    {
+        foreach (C_NextGen_Settings_Defaults::get_defaults() as $name => $val)
+        {
+            if (!isset($this->object->_options[$name]))
+            {
+                $this->object->set_option($name, $val);
+            }
+        }
+    }
+
 	/**
 	 * Gets the value of a setting
      *
@@ -259,9 +283,8 @@ class Mixin_NextGen_Settings extends Mixin
 		return $retval;
 	}
 
-
 	/**
-	 * Sets a settings option to a particular value
+	 * Aliases set() to set_option()
      *
 	 * @param string $option_name
 	 * @param mixed $value
@@ -269,9 +292,21 @@ class Mixin_NextGen_Settings extends Mixin
 	 */
 	function set($option_name, $value)
 	{
-        $this->object->_options[$option_name] = $value;
-		return $value;
+        return $this->object->set_option($option_name, $value);
 	}
+
+    /**
+     * Sets a settings option to a particular value
+     *
+     * @param string $option_name
+     * @param mixed $value
+     * @return mixed $value
+     */
+    function set_option($option_name, $value)
+    {
+        $this->object->_options[$option_name] = $value;
+        return $value;
+    }
 
     /**
      * Removes a setting from the settings list
