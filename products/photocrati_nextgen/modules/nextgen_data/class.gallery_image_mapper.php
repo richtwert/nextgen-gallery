@@ -12,6 +12,8 @@ class Hook_Unserialize_Image_Metadata extends Hook
 
 class C_Gallery_Image_Mapper extends C_DataMapper
 {
+    public static $_instances = array();
+
 	function define($context=FALSE)
 	{
 		parent::define('ngg_pictures', array('attachment', $context));
@@ -23,4 +25,13 @@ class C_Gallery_Image_Mapper extends C_DataMapper
 			'unserialize_metadata'
 		);
 	}
+
+    static function get_instance($context = False)
+    {
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_Gallery_Image_Mapper($context);
+        }
+        return self::$_instances[$context];
+    }
 }

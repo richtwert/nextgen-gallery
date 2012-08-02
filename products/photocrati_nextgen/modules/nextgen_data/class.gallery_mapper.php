@@ -22,7 +22,7 @@ class Mixin_Gallery_Mapper extends Mixin
 		}
 
 		// Get the first gallery image
-		$factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
+		$factory = $this->_get_registry()->get_utility('I_Component_Factory');
 		$image_mapper = $factory->create('gallery_image_mapper');
 		$image = $image_mapper->find_first(array('galleryid = %s', $gallery));
 
@@ -39,6 +39,8 @@ class Mixin_Gallery_Mapper extends Mixin
 
 class C_Gallery_Mapper extends C_DataMapper
 {
+    public static $_instances = array();
+
 	function define($context=FALSE)
 	{
 		// Add 'gallery' context
@@ -56,4 +58,13 @@ class C_Gallery_Mapper extends C_DataMapper
 	{
 		$this->_post_title_field = 'title';
 	}
+
+    public static function get_instance($context = False)
+    {
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_Gallery_Mapper($context);
+        }
+        return self::$_instances[$context];
+    }
 }

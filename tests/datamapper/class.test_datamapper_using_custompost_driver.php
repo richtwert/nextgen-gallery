@@ -13,7 +13,7 @@ class C_Test_DataMapper_Using_CustomPost_Driver extends C_Test_CustomPost_DataMa
 		parent::__construct($label);
 
 		// Tell the datamapper which driver to use
-		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
 		$settings->datamapper_driver = 'custom_post_datamapper';
 		$settings->save();
 	}

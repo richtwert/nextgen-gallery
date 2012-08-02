@@ -8,7 +8,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 	function __construct($label, $datamapper_driver_factory_method)
 	{
 		parent::__construct($label);
-		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
 		$settings->datamapper_driver = $datamapper_driver_factory_method;
 		$settings->gallerystorage_driver = 'ngglegacy_gallery_storage';
 		$settings->save();
@@ -29,7 +29,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 		// Create test gallery to work with
 		$this->gallery = (object) array(
-			'title'	=>	'Foobar Gallery'
+			'title'	=>	'NextGen Test Gallery'
 		);
 		$this->gid = $this->gallery_mapper->save($this->gallery);
 		$this->assertTrue(is_int($this->gid) && $this->gid > 0, "Could not create new gallery");
@@ -163,7 +163,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		$this->assertTrue(is_object($gallery));
 
 		// We'll need the settings utility to get the configured gallerypath
-		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
 		$rel_upload_dir = $settings->gallerypath;
 
 		// Set some path expectations

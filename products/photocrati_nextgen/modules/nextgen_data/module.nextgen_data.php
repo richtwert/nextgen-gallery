@@ -14,7 +14,7 @@ class Mixin_Load_Lightbox_Library extends Mixin
         if (is_backend()) return;
 
         // Create a factory to hatch C_Lightbox_Library objects
-        $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
+        $factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
 
         // Find the default
         $lightbox = $factory->create('lightbox_library');

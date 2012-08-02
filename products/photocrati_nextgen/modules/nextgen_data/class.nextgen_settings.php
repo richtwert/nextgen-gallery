@@ -103,7 +103,11 @@ class C_NextGen_Settings_Defaults
 
                 // CSS Style
                 'activateCSS' => TRUE,           // activate the CSS file
-                'CSSfile'     => 'nggallery.css' // set default css filename
+                'CSSfile'     => 'nggallery.css', // set default css filename
+
+                // framework settings
+                'datamapper_driver' => 'custom_table_datamapper',
+                'gallerystorage_driver' => 'ngglegacy_gallery_storage'
             );
         }
 
@@ -376,7 +380,7 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
      * @param bool $context
      * @return null
      */
-    static function &get_instance($context = False)
+    static function get_instance($context = False)
     {
         if (!isset(self::$_instances[$context]))
         {

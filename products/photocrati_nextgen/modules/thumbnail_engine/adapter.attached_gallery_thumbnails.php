@@ -25,7 +25,7 @@ class A_Attached_Gallery_Thumbnails extends Mixin
         if ($success && $this->object->settings && isset($this->object->settings['generate_thumbnails'])) {
             
             // Instantiate the factory. We're gonna need it.
-            $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
+            $factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
             
             // Iterate through each image of the instance and generate a thumbnail for it
             foreach ($this->object->get_images(FALSE, FALSE, FALSE, TRUE) as $image) {

@@ -439,7 +439,7 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
         if ($this->object->attached_gallery && !$this->object->attached_gallery->is_new()) {
             $images = array();
 
-			$image_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_MApper');
+			$image_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 			$image_mapper->select()->where(array("galleryid = %s", $this->object->attached_gallery->gallery_id));
 			foreach ($image_mapper->limit(1,20)->order_by('sortorder')->run_query() as $image) {
               $images[] = $this->object->render_image_form($image, $this->object->attached_gallery);
@@ -708,13 +708,13 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
 	 */
 	function _get_factory()
 	{
-		return $this->_get_registry()->get_singleton_utility('I_Component_Factory');
+		return $this->_get_registry()->get_utility('I_Component_Factory');
 	}
 
 
 	function _get_router()
 	{
-		return $this->_get_registry()->get_singleton_utility('I_Router');
+		return $this->_get_registry()->get_utility('I_Router');
 	}
 
 

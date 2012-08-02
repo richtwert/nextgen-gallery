@@ -13,7 +13,7 @@ class C_Test_DataMapper_Using_CustomTable_Driver extends C_Test_CustomTable_Data
 		parent::__construct($label);
 
 		// Tell the datamapper which driver to use
-		$settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings');
+		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
 		$settings->datamapper_driver = 'custom_table_datamapper';
 		$settings->save();
 	}

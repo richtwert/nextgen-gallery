@@ -297,7 +297,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		$retval = NULL;
 
 		try {
-			$factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
+			$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
 			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {

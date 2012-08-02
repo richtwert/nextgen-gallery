@@ -25,7 +25,7 @@ class C_Test_DataMapper_Module extends UnitTestCase
 
 	function test_whether_factory_methods_exist()
 	{
-		$factory = $this->_registry->get_singleton_utility('I_Component_Factory');
+		$factory = $this->_registry->get_utility('I_Component_Factory');
 		$this->assertTrue($factory->has_method('datamapper'));
 		$this->assertTrue($factory->has_method('datamapper_model'));
 		$this->assertTrue($factory->has_method('custom_table_datamapper'));

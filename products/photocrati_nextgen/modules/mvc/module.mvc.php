@@ -55,7 +55,7 @@ class M_MVC extends C_Base_Module
 
 	function route()
 	{
-		$router = $this->_get_registry()->get_singleton_utility('I_Router');
+		$router = $this->_get_registry()->get_utility('I_Router');
 		$router->route();
 	}
 

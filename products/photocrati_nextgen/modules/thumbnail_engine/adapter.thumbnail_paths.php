@@ -72,7 +72,7 @@ class A_Thumbnail_Paths extends Mixin
            if (is_array($config)) $config = (object) $config;
        }else {
            // Get thumbnail configuration
-            $factory = $this->object->_get_registry()->get_singleton_utility('I_Component_Factory');
+            $factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
             $config = $factory->create('thumbnail_config');
        }
        $alt = h($this->object->alttext);

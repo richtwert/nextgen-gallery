@@ -52,7 +52,7 @@ class M_Resource_Loader extends C_Base_Module
 
 	function _get_router()
 	{
-		return $this->_get_registry()->get_singleton_utility('I_Router');
+		return $this->_get_registry()->get_utility('I_Router');
 	}
 }
 

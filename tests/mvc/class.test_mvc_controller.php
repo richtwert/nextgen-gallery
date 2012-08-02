@@ -106,7 +106,7 @@ class C_Test_MVC_Controller extends C_Test_Component_Base
 	 */
 	function get_router()
 	{
-		return $this->get_registry()->get_singleton_utility('I_Router');
+		return $this->get_registry()->get_utility('I_Router');
 	}
 
 

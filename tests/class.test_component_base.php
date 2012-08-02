@@ -11,7 +11,7 @@ abstract class C_Test_Component_Base extends UnitTestCase
 	 */
 	function get_factory()
 	{
-		return $this->get_registry()->get_singleton_utility('I_Component_Factory');
+		return $this->get_registry()->get_utility('I_Component_Factory');
 	}
 
 	/**
