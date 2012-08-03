@@ -202,7 +202,7 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 		$this->settings->reload();
 		$this->assertFalse(
             isset($this->settings->test_setting),
-            'settings->reload(True) did not remove settings->test_setting'
+            'settings->reload() did not remove settings->test_setting'
         );
 	}
 
@@ -254,6 +254,42 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
             $this->settings->gallerypath,
             'wp-content/gallery/',
             'settings->gallerypath did not hold the expected value'
+        );
+    }
+
+    function test_restore_defaults()
+    {
+        $defaults = C_NextGen_Settings_Defaults::get_defaults();
+        $multi_defaults = C_NextGen_Settings_Defaults::get_defaults(True);
+
+        $this->assertEqual(
+            $this->settings->get('imgHeight'),
+            $defaults['imgHeight'],
+            'get(imgHeight) did not equal $defaults[imgHeight]'
+        );
+
+        $this->assertEqual(
+            $this->multi_settings->get('wpmuCSSfile'),
+            $multi_defaults['wpmuCSSfile'],
+            'get(wpmuCSSfile) did not equal $multi_defaults[wpmuCSSfile]'
+        );
+
+        // we already tested is_set() and unset() earlier. Assume it works, and then run the restore
+        unset($this->settings->imgHeight);
+        unset($this->multi_settings->wpmuCSSfile);
+        $this->settings->restore_all_missing_options();
+        $this->multi_settings->restore_all_missing_options();
+
+        $this->assertEqual(
+            $this->settings->get('imgHeight'),
+            $defaults['imgHeight'],
+            'get(imgHeight) did not equal $defaults[imgHeight]'
+        );
+
+        $this->assertEqual(
+            $this->multi_settings->get('wpmuCSSfile'),
+            $multi_defaults['wpmuCSSfile'],
+            'get(wpmuCSSfile) did not equal $multi_defaults[wpmuCSSfile]'
         );
     }
 
