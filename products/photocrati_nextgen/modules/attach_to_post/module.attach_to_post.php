@@ -3,14 +3,9 @@
 /***
 	{
 		Module: photocrati-attach_to_post,
-		Depends: { photocrati-admin }
+		Depends: { photocrati-simple_html_dom }
 	}
 ***/
-
-define(
-    'PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_ROUTING_PATTERN', 
-    photocrati_gallery_plugin_routing_pattern('attach_to_post')
-);
 
 define(
     'PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_TINYCE_PLUGIN',
@@ -22,8 +17,6 @@ define('PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_URL', path_join(
     PHOTOCRATI_GALLERY_MODULE_URL,
     basename(dirname(__FILE__))
 ));
-
-define('PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_AJAX_URL', photocrati_gallery_plugin_routing_uri('attach_to_post/ajax'));
 
 class M_Attach_to_Post extends C_Base_Module
 {
@@ -38,43 +31,58 @@ class M_Attach_to_Post extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
-        
+
         $this->add_mixin('Mixin_MVC_Controller_Rendering');
         $this->add_mixin('Mixin_Substitute_Gallery_Placeholders');
     }
-    
-    
+
+
     function initialize()
     {
         @ini_set('post_max_size', '20M');
         @ini_set('upload_max_filesize', '20M');
         @ini_set('max_input_time', '1600');
-        
+
         $this->_register_routes();
     }
-    
-    
+
+
     function _register_routes()
     {
-        $router = $this->_get_registry()->get_singleton_utility('I_Router');
+        $router = $this->_get_registry()->get_utility('I_Router');
         $router->add_route(__CLASS__, 'C_Attach_to_Post', array(
-            'uri'=>PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_ROUTING_PATTERN
+            'uri'=>$router->routing_pattern('attach_to_post')
         ));
     }
-    
-    
+
+
     function _register_adapters()
     {
         $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
         $this->_get_registry()->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
     }
-    
-    
+
+
+	function _register_utilities()
+	{
+		$this->_get_registry()->add_utility('I_Attached_Gallery_Mapper', 'C_Attached_Gallery_Mapper');
+	}
+
+
     function _register_hooks()
     {
         add_action('admin_enqueue_scripts', array(&$this, 'load_tinymce_helpers'));
-        
-        // Add custom post type for attached galleries
+		add_action('init',					array(&$this, 'register_post_types'));
+
+        // Add hooks to load attached galleries
+        add_filter('posts_results',     array(&$this, 'load_attached_galleries'), 100, 2);
+        remove_filter('the_content',    'wpautop');
+    }
+
+
+	function register_post_types()
+	{
+		        // Add custom post type for attached galleries
         register_post_type('attached_gallery', array(
             'labels'            =>  array(
                 'name'          =>  _('Attached Galleries'),
@@ -90,7 +98,7 @@ class M_Attach_to_Post extends C_Base_Module
             'hierarchical'      =>  FALSE,
             'supports'          =>  array('title')
         ));
-        
+
         register_post_type('attached_gal_image', array(
             'labels'            =>  array(
                 'name'          =>  _('Attached Gallery Images'),
@@ -106,17 +114,15 @@ class M_Attach_to_Post extends C_Base_Module
             'hierarchical'      =>  FALSE,
             'supports'          =>  array('title')
         ));
-        
-        // Add hooks to load attached galleries
-        add_filter('posts_results',     array(&$this, 'load_attached_galleries'), 100, 2);
-        remove_filter('the_content',    'wpautop');
-    }
-    
-    
+	}
+
+
     function load_tinymce_helpers()
     {
         global $post_ID;
-        
+
+        $router = $this->_get_registry()->get_utility('I_Router');
+
         // Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
             if (get_user_option('rich_editing') == 'true') {
@@ -129,13 +135,13 @@ class M_Attach_to_Post extends C_Base_Module
         wp_register_script('tinymce_helpers', $this->static_url('tinymce_helpers.js'));
         wp_enqueue_script('tinymce_helpers');
         wp_localize_script('tinymce_helpers', 'tinymce_nextgen', array(
-           'preview_url'    =>  photocrati_gallery_plugin_routing_uri('attach_to_post/preview'),
-           'attach_url'    =>  photocrati_gallery_plugin_routing_uri('attach_to_post'),
+           'preview_url'    =>  $router->routing_uri('attach_to_post/preview'),
+           'attach_url'    =>  $router->routing_uri('attach_to_post'),
            'post_id'        =>  $post_ID
         ));
     }
-    
-    
+
+
     /**
      * Integrates with the WordPress framework to add a tinymce button
      * for attaching NextGen galleries
@@ -145,19 +151,19 @@ class M_Attach_to_Post extends C_Base_Module
     function add_tinymce_button($buttons)
     {
         array_push(
-            $buttons, 
-            'separator', 
+            $buttons,
+            'separator',
             PHOTOCRATI_GALLERY_MOD_ATTACH_TO_POST_TINYCE_PLUGIN
         );
         return $buttons;
     }
-    
-    
+
+
     /**
      * Adds our TinyMCE plugin used to attach galleries to posts/pages
      * @filter: mce_external_plugins
      * @param array $plugins
-     * @return array 
+     * @return array
      */
     function add_tinymce_plugin($plugins)
     {

@@ -19,16 +19,15 @@ class M_NextGen_Slideshow_Gallery extends C_Base_Module
             'Photocrati Media',
             'http://www.photocrati.com'
         );
-        
+
 //        C_Gallery_Type_Registry::add(
 //            $this->module_name,
 //            $this->module_description,
 //            'C_NextGen_Slideshow_Gallery_Settings',
-//            'C_NextGen_Slideshow_Gallery_View'
+//            'C_NextGen_Slideshow_Gallery_View',
 //        );
     }
-    
-    
+
     function initialize()
     {
     }

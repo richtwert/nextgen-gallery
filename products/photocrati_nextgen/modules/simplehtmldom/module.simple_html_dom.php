@@ -6,7 +6,7 @@
 	}
 ***/
 
-if (!function_exists(('file_get_html'))) include_once('simplehtmldom/simple_html_dom.php');
+if (!function_exists(('file_get_html'))) require_once('simplehtmldom/simple_html_dom.php');
 
 class M_Simple_Html_Dom extends C_Base_Module
 {
@@ -22,8 +22,8 @@ class M_Simple_Html_Dom extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
-    
-    
+
+
     function initialize()
     {
     }

@@ -1,0 +1,412 @@
+<?php
+
+class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
+{
+	/**
+	 * Gets the name of the primary key column
+	 * @return string
+	 */
+	function get_primary_key_column()
+	{
+		return $this->object->_primary_key_column;
+	}
+
+
+	/**
+	 * Selects which fields to collect from the table
+	 * @param string $fields
+	 */
+	function select($fields='*')
+	{
+		// Create a fresh slate
+		$this->object->_init();
+
+		// Create fields list
+		$fields = is_string($fields) ? explode(',', $fields) : $fields;
+		foreach ($fields as &$field) {
+			$field = $this->object->_clean_column($field);
+			if ($this->object->has_column($field)) $field = "`{$field}`";
+		}
+
+		// Create select clause
+		$this->object->_select_clause = 'SELECT '.implode(', ', $fields);
+
+		return $this->object;
+	}
+
+
+	/**
+	 * Orders the results of the query
+	 * This method may be used multiple of times to order by more than column
+	 * @param $order_by
+	 * @param $direction
+	 */
+	function order_by($order_by, $direction='ASC')
+	{
+		$order_by	= $this->object->_clean_column($order_by);
+
+		// If the order by clause is a column, then it should be backticked
+		if ($this->object->has_column($order_by)) $order_by = "`{$order_by}`";
+
+		$direction	= $this->object->_clean_column($direction);
+		$order		= "{$order_by} {$direction}";
+		$this->object->_order_clauses[] = $order;
+
+		return $this->object;
+	}
+
+	/**
+	 * Specifies a limit and optional offset
+	 * @param integer $max
+	 * @param integer $offset
+	 */
+	function limit($max, $offset=0)
+	{
+		$limit = FALSE;
+		if ($offset)
+			$limit = $this->_wpdb()->prepare("LIMIT %d, %d",$offset,$max);
+		else
+			$limit = $this->_wpdb()->prepare("LIMIT %d", $max);
+		if ($limit) $this->object->_limit_clause = $limit;
+
+		return $this->object;
+	}
+
+	/**
+	 * Adds a where clause to the driver
+	 * @param array $where_clauses
+	 * @param string $join
+	 */
+	function _add_where_clause($where_clauses, $join)
+	{
+		$clauses = array();
+
+		foreach ($where_clauses as $clause) {
+			extract($clause);
+			if ($this->object->has_column($column)) $column = "`{$column}`";
+			if (!is_array($value)) $value = array($value);
+			foreach ($value as $index => $v) {
+				$v = $clause['type'] == 'numeric' ? $v : "'{$v}'";
+				$value[$index] = $v;
+			}
+			$value = implode(', ', $value);
+			if ($compare == 'IN') $value = "({$value})";
+
+			$clauses[] = "{$column} {$compare} {$value}";
+		}
+
+		$this->object->_where_clauses[] = implode(" {$join} ", $clauses);
+	}
+
+
+	/**
+	 * Returns the total number of entities known
+	 * @return type
+	 */
+	function count()
+	{
+		$retval = 0;
+
+		$key = $this->object->get_primary_key_column();
+		$results = $this->object->run_query(
+			"SELECT COUNT({$key}) FROM {$this->object->get_table_name()}"
+		);
+		if ($results && isset($results[0]->$key))
+			$retval = (int)$results[0]->$key;
+
+		return $retval;
+	}
+
+
+	/**
+	 * Run the query
+	 * @param $sql optionally run the specified SQL insteads
+	 * return
+	 */
+	function run_query($sql=FALSE)
+	{
+		$retval = array();
+
+		// Or generate SQL query
+		if (!$sql) {
+			$sql = array();
+			$sql[] = $this->object->_select_clause;
+			$sql[] = 'FROM `'.$this->object->get_table_name().'`';
+			$where_clauses = array();
+			foreach ($this->object->_where_clauses as $where) {
+				$where_clauses[] = '('.$where.')';
+			}
+			if ($where_clauses) $sql[] = 'WHERE '.implode(' AND ', $where_clauses);
+			if ($this->object->_order_clauses) $sql[] = 'ORDER BY '.implode(', ', $this->object->_order_clauses);
+			if ($this->object->_limit_clause) $sql[] = $this->object->_limit_clause;
+			$sql = implode(' ', $sql);
+		}
+
+		// If we have a SQL statement to execute, then heck, execute it!
+		if ($sql) {
+			$this->_wpdb()->query($sql);
+			if ($this->_wpdb()->last_result) {
+				$retval = array();
+
+				// For each row, create an entity, update it's properties, and
+				// add it to the result set
+				foreach ($this->_wpdb()->last_result as $row) {
+					$retval[] = $this->_convert_to_entity($row);
+				}
+			}
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Stores the entity
+	 * @param stdClass $entity
+	 */
+	function _save_entity($entity)
+	{
+		$retval = FALSE;
+		unset($entity->id_field);
+		$primary_key = $this->object->get_primary_key_column();
+		if (isset($entity->$primary_key)) {
+			if($this->object->_update($entity)) $retval = intval($entity->$primary_key);
+		}
+		else {
+			$retval = $this->object->_create($entity);
+			if ($retval) {
+				$new_entity = $this->object->find($retval);
+				foreach ($new_entity as $key => $value) $entity->$key = $value;
+				$retval = intval($entity->$primary_key);
+			}
+		}
+		$entity->id_field = $primary_key;
+
+		return $retval;
+	}
+
+	/**
+	 * Converts an entity to something suitable for inserting into
+	 * a database column
+	 * @param stdObject $entity
+	 * @return array
+	 */
+	function _convert_to_table_data($entity)
+	{
+		$data = (array) $entity;
+		foreach ($data as $key => $value) {
+			if (is_array($value)) $data[$key] = $this->object->serialize($value);
+		}
+
+		return $data;
+	}
+
+
+	/**
+	 * Destroys/deletes an entity
+	 * @param stdObject|C_DataMapper_Model|int $entity
+	 * @return boolean
+	 */
+	function destroy($entity)
+	{
+		$retval = FALSE;
+		$key = $this->object->get_primary_key_column();
+		$id = FALSE;
+
+		// Find the id of the entity
+		if (is_object($entity) && isset($entity->$key)) {
+			$id = (int)$entity->$key;
+		}
+		else {
+			$id = (int)$entity;
+		}
+
+		// If we have an ID, then delete the post
+		if (is_numeric($id)) {
+			$sql = $this->object->_wpdb()->prepare(
+		      "DELETE FROM `{$this->object->get_table_name()}` WHERE {$key} = %s",
+			  $id
+			);
+			$retval = $this->object->_wpdb()->query($sql);
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Creates a new record in the database
+	 * @param stdObject $entity
+	 * @return boolean
+	 */
+	function _create($entity)
+	{
+		$retval = FALSE;
+		$id =  $this->object->_wpdb()->insert(
+			$this->object->get_table_name(),
+			$this->object->_convert_to_table_data($entity)
+		);
+		if ($id) {
+			$key = $this->object->get_primary_key_column();
+			$retval = $entity->$key = intval($this->object->_wpdb()->insert_id);
+		}
+		return $retval;
+	}
+
+
+	/**
+	 * Updates a record in the database
+	 * @param stdObject $entity
+	 */
+	function _update($entity)
+	{
+		$key = $this->object->get_primary_key_column();
+
+		return $this->object->_wpdb()->update(
+			$this->object->get_table_name(),
+			$this->object->_convert_to_table_data($entity),
+			array($key => $entity->$key)
+		);
+	}
+
+
+	/**
+	 * Fetches the last row
+	 * @param array $conditions
+	 * @return C_DataMapper_Entity
+	 */
+	function find_last($conditions=array(), $model=FALSE)
+	{
+		$retval = NULL;
+
+		// Get row number for the last row
+		$table_name = $this->object->_clean_column($this->object->get_table_name());
+		$count = $this->_wpdb()->get_var("SELECT COUNT(*) FROM `{$table_name}`");
+		$offset = $count-1;
+		$results = $this->select()->where_and($conditions)->limit(1, $offset)->run_query();
+		if ($results) {
+			$retval = $model? $this->object->convert_to_model($results[0]) : $results[0];
+		}
+
+		return $retval;
+	}
+
+
+	/**
+	 * Looks up using SQL the columns existing in the database
+	 */
+	function lookup_columns()
+	{
+		$this->object->_columns = array();
+		$sql = "SHOW COLUMNS FROM `{$this->object->get_table_name()}`";
+		foreach ($this->object->run_query($sql) as $row) {
+			$this->object->_columns[] = $row->Field;
+		}
+		return $this->object->_columns;
+	}
+
+	/**
+	 * Determines whether a column is present for the table
+	 * @param string $column_name
+	 * @return string
+	 */
+	function has_column($column_name)
+	{
+		if (empty($this->object->_columns)) $this->object->lookup_columns();
+		return array_search($column_name, $this->object->_columns);
+	}
+
+	/**
+	 * Defines a column for this table
+	 * @param string $column_name
+	 * @param string $datatype
+	 */
+	function define_column($column_name, $datatype)
+	{
+		$this->object->_defined_columns[$column_name] = $datatype;
+	}
+
+	function add_column($column_name, $datatype=FALSE)
+	{
+		// If no datatype was specified, perhaps the column was already defined
+		if (!$datatype && isset($this->object->_defined_columns[$column_name])) {
+			$datatype = $this->object->_defined_columns[$column_name];
+		}
+
+		// Ensure that we have a datatype before continuing...
+		if ($datatype) {
+			$sql = "ALTER TABLE `{$this->get_table_name()}` ADD COLUMN ``{$column_name}` {$datatype}";
+			$this->object->run_query($sql);
+		}
+
+		$this->object->lookup_columns();
+	}
+
+	/**
+	 * Migrates the schema of the database
+	 */
+	function migrate()
+	{
+		if (empty($this->object->_columns)) $this->object->lookup_columns();
+		foreach ($this->object->_columns as $column_name) {
+			if (!$this->object->has_column($column_name)) {
+				$this->object->add_column($column_name);
+			}
+		}
+	}
+
+
+	function _init()
+	{
+		$this->object->_where_clauses = array();
+		$this->object->_order_clauses = array();
+		$this->object->_limit_clause = '';
+		$this->object->_select_clause = '';
+	}
+}
+
+class C_CustomTable_DataMapper_Driver extends C_DataMapper_Driver_Base
+{
+	/**
+	 * The WordPress Database Connection
+	 * @var wpdb
+	 */
+	var $_where_clauses = array();
+	var $_order_clauses = array();
+	var $_limit_clause = '';
+	var $_select_clause = '';
+	var $_columns = array();
+	var $_defined_columns = array();
+
+	function define()
+	{
+		parent::define();
+		$this->add_mixin('C_CustomTable_DataMapper_Driver_Mixin');
+		$this->implement('I_CustomTable_DataMapper');
+	}
+
+	function initialize($object_name, $context=FALSE)
+	{
+		parent::initialize($object_name, $context=FALSE);
+		$this->_primary_key_column = $this->_lookup_primary_key_column();
+	}
+
+	/**
+	 * Returns the database connection object for WordPress
+	 * @global wpdb $wpdb
+	 * @return wpdb
+	 */
+	function _wpdb()
+	{
+		global $wpdb;
+		return $wpdb;
+	}
+
+	/**
+	 * Looks up the primary key column for this table
+	 */
+	function _lookup_primary_key_column()
+	{
+		$key = $this->_wpdb()->get_row("SHOW INDEX FROM {$this->get_table_name()} WHERE Key_name='PRIMARY'", ARRAY_A);
+		if (!$key) throw new Exception("Please specify the primary key for {$this->get_table_name ()}");
+		return $key['Column_name'];
+	}
+}

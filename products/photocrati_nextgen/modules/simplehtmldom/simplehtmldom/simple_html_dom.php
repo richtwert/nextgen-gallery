@@ -685,7 +685,7 @@ class simple_html_dom_node {
             case 'plaintext': return true;
         }
         //no value attr: nowrap, checked selected...
-        return (array_key_exists($name, $this->attr)) ? true : isset($this->attr[$name]);
+        return (array_key_exists($name, $this->attr)) ? TRUE : isset($this->attr[$name]);
     }
 
     function __unset($name) {

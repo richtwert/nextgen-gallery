@@ -6,7 +6,7 @@ class A_JQuery_Lightbox_Library extends Mixin
     {
         $this->object->add_post_hook(
             '_load_libraries', 
-            "Add's lightbox support", 
+            "Adds lightbox support", 
             get_class(),
             'add_jquery_lightbox_support'
         );

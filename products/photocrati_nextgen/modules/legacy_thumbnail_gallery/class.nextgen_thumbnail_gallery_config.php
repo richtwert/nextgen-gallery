@@ -1,8 +1,8 @@
 <?php
 
 class C_NextGen_Thumbnail_Gallery_Config extends C_Thumbnail_Config
-{   
-    function set_defaults()
+{
+    function _set_defaults()
     {
         $this->settings = array_merge($this->settings, array(
             'thumbnail_crop'        =>  1,
@@ -18,6 +18,6 @@ class C_NextGen_Thumbnail_Gallery_Config extends C_Thumbnail_Config
             'show_slideshow_link'   =>  0,
             'show_piclens_link'     =>  0,
         ));
-        parent::set_defaults();
+        parent::_set_defaults();
     }
 }
