@@ -40,7 +40,7 @@ class C_Test_DataMapper_Using_CustomTable_Driver extends C_Test_CustomTable_Data
 		// For testing purposes, we'll add some mocking capabilities to the
 		// mapper
 		$this->mapper->add_mixin('Mock_Mixin_DataMapper_Driver');
-		$this->mapper->_wrapped_class->add_mixin('Mock_Mixin_DataMapper_Driver');
+		$this->mapper->_wrapped_instance->add_mixin('Mock_Mixin_DataMapper_Driver');
 
 		return $retval;
 	}

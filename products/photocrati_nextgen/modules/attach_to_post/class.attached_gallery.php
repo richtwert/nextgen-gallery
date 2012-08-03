@@ -6,6 +6,23 @@ class Mixin_Attached_Gallery_Validation extends Mixin
     {
         $this->object->validates_presence_of('post_id');
         $this->object->validates_presence_of('gallery_type');
+		$this->object->Validates_presence_of('gallery_source');
+
+		// When the source for images is an existing gallery,
+		// then we require images to be selected
+		if (isset($this->object->source) &&
+		in_array($this->object->source, array('existing_gallery'))) {
+			$this->object->validates_presence_of(
+				'images',
+				array(),
+				"No images selected. You must at least choose one image to display."
+			);
+
+			// If there are images selected, then we must validate them as well
+			if ($images) foreach ($images as $image) {
+				// TODO: Validate images
+			}
+		}
     }
 }
 
@@ -46,27 +63,6 @@ class Mixin_Attached_Gallery_Methods extends Mixin
             )
         );
     }
-
-	/**
-	 * Gets images for the attached gallery
-	 * @param array $conditions filter the number of images returned
-	 * @param boolean $return_mapper
-	 */
-	function get_images($conditions=array(), $return_mapper=FALSE)
-	{
-		$retval = array();
-
-		if ($this->object->images) {
-			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
-			$key = $mapper->get_primary_key_col();
-			$where = $key.' IN '.implode(',', $this->object->images);
-			$mapper->select()->where($where);
-			if ($conditions) $mapper->where($conditions);
-			$retval = $return_mapper ? $mapper : $mapper->run_query();
-		}
-
-		return $retval;
-	}
 
 
 	/**
@@ -113,17 +109,23 @@ class Mixin_Attached_Gallery_Methods extends Mixin
 	}
 }
 
+/**
+ * Creates a model representing a gallery attached to a post/page
+ */
 class C_Attached_Gallery extends C_DataMapper_Model
 {
 	var $_mapper_interface = 'I_Attached_Gallery_Mapper';
 
-
+	/**
+	 * Define the object
+	 */
 	function define()
 	{
+		parent::define();
 		$this->add_mixin('Mixin_Attached_Gallery_Validation');
 		$this->add_mixin('Mixin_Attached_Gallery_Methods');
+		$this->implement('I_Attached_Gallery');
 	}
-
 
 	/**
 	 * Instantiates a new model

@@ -51,7 +51,12 @@ class C_DataMapper_Model extends C_Component
 			$retval = &$this->_stdObject->$property_name;
 			return $retval;
 		}
-		else return NULL;
+		else {
+			// We need to assign NULL to a variable first, since only
+			// variables can be returned by reference
+			$retval = NULL;
+			return $retval;
+		}
 	}
 
 	/**

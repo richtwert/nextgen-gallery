@@ -12,7 +12,14 @@ class Mixin_NextGen_Gallery_Image_Validation extends Mixin
 			$this->object->alttext = ( !isset($path_parts['filename']) ) ? substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) : $path_parts['filename'];
 		}
 
-		$this->validates_presence_of('galleryid', 'filename', 'alttext');
+		// If not set already, we'll add an exclude property. This is used
+		// by NextGEN Gallery itself, as well as the Attach to Post module
+		if (!isset($this->object->exclude)) $exclude = FALSE;
+
+		// If not set already, set a default sortorder
+		if (!isset($this->object->sortorder)) $this->object->sortorder = 0;
+
+		$this->validates_presence_of('galleryid', 'filename', 'alttext', 'exclude', 'sortorder');
         $this->validates_numericality_of('galleryid');
         $this->validates_numericality_of($this->id());
 	}

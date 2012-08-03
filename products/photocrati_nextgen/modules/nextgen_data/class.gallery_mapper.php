@@ -37,10 +37,17 @@ class Mixin_Gallery_Mapper extends Mixin
 	}
 }
 
+/**
+ * Provides a datamapper for galleries
+ */
 class C_Gallery_Mapper extends C_DataMapper
 {
     public static $_instances = array();
 
+	/**
+	 * Define the object
+	 * @param string $context
+	 */
 	function define($context=FALSE)
 	{
 		// Add 'gallery' context
@@ -54,11 +61,23 @@ class C_Gallery_Mapper extends C_DataMapper
 		$this->implement('I_Gallery_Mapper');
 	}
 
-	function initialize()
+	/**
+	 * Initializes the gallery mapper
+	 */
+	function initialize($context=FALSE)
 	{
+		parent::initialize($context);
+
+		// Tells the CustomPost driver (when used) what property to use
+		// as the value for the "post_title" column
 		$this->_post_title_field = 'title';
 	}
 
+	/**
+	 * Returns a singleton of the gallery mapper
+	 * @param string $context
+	 * @return C_Gallery_Mapper
+	 */
     public static function get_instance($context = False)
     {
         if (!isset(self::$_instances[$context]))

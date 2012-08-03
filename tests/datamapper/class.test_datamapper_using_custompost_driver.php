@@ -40,7 +40,7 @@ class C_Test_DataMapper_Using_CustomPost_Driver extends C_Test_CustomPost_DataMa
 		// For testing purposes, we'll add some mocking capabilities to the
 		// mapper
 		$this->mapper->add_mixin('Mock_Mixin_DataMapper_Driver');
-		$this->mapper->_wrapped_class->add_mixin('Mock_Mixin_DataMapper_Driver');
+		$this->mapper->_wrapped_instance->add_mixin('Mock_Mixin_DataMapper_Driver');
 
 		return $retval;
 	}

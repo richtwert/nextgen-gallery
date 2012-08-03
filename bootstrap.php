@@ -70,7 +70,13 @@ class C_NextGEN_Bootstrap
 			$this->directory_path('lang')
 		);
 
+		// Run activation logic
 		register_activation_hook(__FILE__, array(&$this, 'activate'));
+
+		// Should we log database queries for debugging
+		if (defined('LOG_WPDB_QUERIES')) {
+			add_filter('query', array(&$this, 'log_db_queries'));
+		}
 
 		// Register our test suite
 		add_filter('simpletest_suites', array(&$this, 'add_testsuite'));
@@ -122,6 +128,7 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('PHOTOCRATI_GALLERY_OPTION_PREFIX', 'nggallery');
 		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.5');
+		#define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
 
@@ -307,6 +314,22 @@ class C_NextGEN_Bootstrap
 	function file_uri($file_name = NULL)
 	{
 		return $this->path($file_name);
+	}
+
+
+	/**
+	 * Logs DB queries
+	 * @param string $query
+	 */
+	function log_db_queries($query)
+	{
+		$fp = fopen(LOG_WPDB_QUERIES, 'a');
+		$time = strftime("%c");
+		$log = "\n{$time}: {$query}";
+		fputs($fp, $log);
+		fclose($fp);
+
+		return $query;
 	}
 }
 

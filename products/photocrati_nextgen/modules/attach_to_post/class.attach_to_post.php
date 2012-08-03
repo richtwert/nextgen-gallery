@@ -44,12 +44,13 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
 
         try {
             $params = $this->object->_params;
-            $params['ID'] = $params['attached_gallery_id'];
 
             // Create attached gallery with the parameters
             $attached_gallery = $this->object->_get_factory()->create(
                 'attached_gallery',
-                $params
+				FALSE,
+                $params,
+				'attach_to_post'
             );
 
             // We'll get the gallery config object
@@ -64,30 +65,16 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
             $gallery_config->validate();
             if ($gallery_config->is_valid()) {
 
-                if (!(($retval['saved'] = $attached_gallery->is_valid()))) {
-                    $retval['validation_errors'] = $attached_gallery->get_errors();
-                }
+				// Attempt saving the attached gallery
+				if (($ID = $attached_gallery->save())) {
+					$retval['saved']	= TRUE;
+					$retval['ID']		= $ID;
+				}
 
-                // Create the attached gallery images
-                else {
-                    $attached_gallery->save();
-
-                    // Ensure that we have images
-                    $source = $this->object->param('gallery_source');
-                    $images = $this->object->param('images');
-
-                    if ($images || in_array($source, array('recent_images', 'random_images'))) {
-                        if ($images) {
-		                }
-                        // Include the new attached gallery id in the response
-                        $retval['attached_gallery_id'] = $attached_gallery->id();
-                    }
-                    else {
-                        $retval['error'] = _("No images selected. You must at least choose one image to display.");
-                        $attached_gallery->delete();
-                    }
-
-                }
+				// Save failed. There must have been validation errors
+				else {
+					$retval['validation_errors'] = $attached_gallery->get_errors();
+				}
             }
 
             // The gallery settings are not valid
@@ -98,18 +85,9 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         catch (Exception $ex) {
             $retval['error'] = $ex->getMessage();
             $retval['stack'] = $ex->getTraceAsString();
-        }
-
-        // Perform any clean up if errors occured
-        foreach (array('error','image_validation_errors') as $field) {
-            if (isset($retval[$field])) {
-
-                // TODO: When an attached gallery is deleted, the attached
-                // gallery images should be deleted as well
-                $attached_gallery->delete();
-                $retval['saved'] = FALSE;
-                unset($retval['attached_gallery_id']);
-            }
+			$attached_gallery->destroy();
+			unset($retval['saved']);
+			unset($retval['ID']);
         }
 
         return $retval;
@@ -188,7 +166,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         }
 
         // We need to create the gallery first
-        else {
+        elseif ($this->param('gallery_source') == 'new_gallery') {
             $gallery = $this->object->_get_factory()->create('gallery', $mapper, array(
                 'title'      => $this->param('gallery_name'),
                 'galdesc'   => $this->param('gallery_description')
@@ -210,14 +188,13 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
                     $retval['validation_errors'] = $this->object->show_errors_for($image, TRUE);
                 }
                 else {
-                    $retval['image'] = $image->properties;
-                    $retval['image']['image_id'] = $image->id();
-                    $retval['image']['gallery_id'] = $gallery->id();
+                    $retval['image'] = (array)$image->get_entity();
                 }
             }
             catch (Exception $ex) {
                 $retval['stack'] = $ex->getTraceAsString();
                 $retval['error'] = $ex->getMessage();
+				// TODO: Should we do any other cleanup here?
             }
         }
         else {
@@ -231,60 +208,83 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     /**
      * Gets images for an attached gallery or gallery
      */
- function _get_image_forms()
- {
-     $retval = array();
-     $source = $this->object->param('source');
-     $id = $this->object->param('id');
+	function _get_image_forms()
+	{
+		$retval = array();
+		$source = $this->object->param('source');
+		$id = $this->object->param('ID');
 		$limit = $this->object->param('limit');
 		$offset = $this->object->param('offset');
-     $forms = array();
+		$gallery_id = $this->object->param('gallery_id');
+		$forms = array();
 
-		// Ensure we have the attached gallery or gallery id
-		if ($id) {
+		// This routine will only accomodate requests for
+		// existing_gallery sources at this time. For any other source,
+		// I recommend that you create a hook;
+		if (in_array($source, array('existing_gallery'))) {
 
-			// Get random/recent images
-			if (in_array($source, array('recent_images', 'random_images'))) {
+			// When this has values, then we'll iterate through our
+			// image resultset and determine whether the image is actually
+			// included to be displayed in the gallery type
+			$exclusions = array();
 
+			// Create gallery image mapper. This is fundamental to the rest of this
+			// routine
+			$image_mapper	= $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+			$image_key		= $image_mapper->get_primary_key_column();
+
+			// We're going to create a query for images. How the query is built will
+			// be determined on some conditions below.
+
+			// Decide which gallery images we want to fetch
+			$galleries = array();
+			if ($gallery_id) $galleries[] = $gallery_id;
+
+			// Are we to fetch an attached gallery?
+			if ($id) {
+				$mapper = $this->object->_get_registry()->get_utility('I_Attached_Gallery_Mapper');
+				$attached_gallery = $mapper->find($id);
+				$galleries[] = $attached_gallery->gallery_id;
+				$exclusions = $attached_gallery->images;
 			}
 
-			// Get images for a gallery
-			else {
-				// Ensure we've got the gallery id
-				$gallery_id = $id;
-				$attached_gallery = NULL;
-				if ($source == 'attached_gallery') {
-					$attached_gallery = $this->object->_get_attached_gallery($id);
-					$gallery_id = $attached_gallery->gallery_id;
-				}
+			// Create the query and get the images
+			$image_mapper->select()->where("galleryid IN (%s)", $galleries);
+			if ($limit) $image_mapper->limit($limit, $offset);
+			$images = $image_mapper->run_query();
 
-				// Get the images for the gallery
-				$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
-				$mapper->select()->where(array("galleryid = %s", $gallery_id));
-				$mapper->order_by('sortorder');
-				if ($limit) $mapper->limit($limit, $offset);
-				foreach ($mapper->run_query() as $image) {
-					$forms[] = $this->object->render_image_form($image, $attached_gallery);
-				}
+			// Generate image forms for the images, and calculate exclusions
+			foreach ($image_mapper->run_query() as $image) {
+				if ($exclusions && in_array($image->$image_key, $exclusions))
+					$image->exclude = TRUE;
+				$forms[] = $this->object->render_image_form($image);
 			}
 		}
 
-     if ($forms) {
-         // Render the image options tab
-         $retval['html'] = $this->render_partial('image_options_tab', array(
-            'images' =>  $forms
-         ), TRUE);
-     }
+		// Do we have forms to display
+		if ($forms) {
 
-     return $retval;
- }
+			// Render the image options tab
+			$retval['html'] = $this->render_partial('image_options_tab', array(
+			   'images' =>  $forms
+			), TRUE);
+		}
+		else {
+			$retval['html'] = $this->render_partial("no_images_available");
+		}
 
+		return $retval;
+	}
 
+	/**
+	 * Executes an AJAX action.
+	 */
     function ajax()
     {
         $retval = array('error' => 'Action does not exist');
 
         if ($this->param('action') && $this->has_method($this->param('action'))) {
+			// TODO: Need to look for nonce values
             $action = $this->param('action');
             unset($this->object->_params[$action]);
             $retval = $this->$action();
@@ -299,6 +299,9 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
     }
 }
 
+/**
+ * Adds resources to WordPress required for the attach to post interface
+ */
 class Mixin_Attach_To_Post_Resources extends Mixin
 {
     /**
@@ -336,7 +339,7 @@ class Mixin_Attach_To_Post_Resources extends Mixin
         wp_register_script(
             'nextgen_attach_to_post',
             $this->static_url('attach_to_post.js'),
-            array('jquery.plupload.queue', 'form2js', 'jquery-ui-accordion', 'plupload-all')
+            array('jquery.plupload.queue', 'form2js', 'jquery-ui-accordion', 'plupload-all', 'jquery-ui-sortable')
         );
         wp_enqueue_style('global');
         wp_enqueue_style('wp-admin');
@@ -431,18 +434,21 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
      * @return string
      */
     function render_image_options_tab()
-    {
+	{
         $retval = '';
 
         // If a gallery instance is being viewed, then we get the gallery images
         // associated with it
         if ($this->object->attached_gallery && !$this->object->attached_gallery->is_new()) {
-            $images = array();
+			$images = array();
 
 			$image_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 			$image_mapper->select()->where(array("galleryid = %s", $this->object->attached_gallery->gallery_id));
 			foreach ($image_mapper->limit(1,20)->order_by('sortorder')->run_query() as $image) {
-              $images[] = $this->object->render_image_form($image, $this->object->attached_gallery);
+				$images[] = $this->object->render_image_form(
+					$image,
+					$this->object->attached_gallery
+				);
             }
 			unset($image_mapper);
 
@@ -487,7 +493,8 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
 		// Is the image included in the attached gallery ?
 		$included = TRUE;
 		if ($this->attached_gallery) {
-			$included = in_array($image->to_model()->id(), $this->attached_gallery->images);
+			$id_field = $image->id_field;
+			$included = in_array($image->$id_field, $this->attached_gallery->images);
 		}
 
         return $this->render_partial('image_form', array(
@@ -648,19 +655,19 @@ class Mixin_Attach_To_Post_Tabs extends Mixin
     {
         return array(
           # heading => content
-          _('Gallery Source')
+          _('What would you like to display?')
           => 'render_gallery_source_tab',
 
-          _('Gallery Type')
+          _('Select a Gallery or Album Type')
           => 'render_gallery_type_tab',
 
-          _('Import (Optional)')
-          => 'render_import_tab',
+//          _('Import (Optional)')
+//          => 'render_import_tab',
 
-          _('Gallery Display (Optional - Post Specific)')
+          _('Customize your Gallery or Album Options (Optional)')
           => 'render_gallery_display_tab',
 
-          _('Image Options (Optional - Post Specific)')
+          _('Edit individual images/Organize')
           => 'render_image_options_tab'
         );
     }
@@ -722,7 +729,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
     {
         // If we're editing an existing gallery instance, populate it
         $this->_get_attached_gallery(
-            $this->param('attached_gallery_id', FALSE)
+            $this->param('ID', FALSE)
         );
 
         // Ensure we know what post we're on
@@ -742,7 +749,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
         // Render the index view
         $this->render_view('index', array(
            'accordion'              =>  $accordion,
-           'attached_gallery_id'    =>  $this->attached_gallery ? $this->attached_gallery->id() : FALSE,
+           'ID'						=>  $this->attached_gallery ? $this->attached_gallery->id() : FALSE,
            'post_id'                =>  $this->post_id
         ));
     }

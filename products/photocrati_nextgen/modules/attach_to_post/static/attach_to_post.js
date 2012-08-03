@@ -59,11 +59,12 @@ jQuery(function($){
         var post_id = window.location.search.match(/post_id=(\d+)/);
         if (post_id) post_id = post_id[1];
 
+		// We'll be attaching data to the DOM
         var $el = $this = $(document);
 
         // Attach the internal data
         var obj = {
-            attached_gallery_id: attached_gallery_id,
+            ID:					 attached_gallery_id,
             post_id:             post_id,
             ajax_url:            nextgen_attach_settings.ajax_url,
             max_file_size:       nextgen_attach_settings.max_file_size,
@@ -104,28 +105,40 @@ jQuery(function($){
         footer = $('.plupload_filelist_footer').detach();
         $('.plupload_content').prepend(footer);
 
-        // Get plupload instance and attach events
+        // Get plupload instance and start attaching events
         uploader = uploader.pluploadQueue();
+
+		// When a file has been successfully uploaded, call file_uploaded()
         uploader.bind('FileUploaded', $.fn.NextGen_AttachToPost.file_uploaded);
+
+		// When there was an upload error, display it to the user
         uploader.bind('Error', function(up, err){
             $('#gallery_source_tab .errors').html(err).show();
         });
+
+		// When the upload is complete, populate the images
+		// in the image tab
         uploader.bind('UploadComplete', function(){
 
             // Populate the images from the new gallery
-            $.fn.NextGen_AttachToPost.populate_images();
+            $.fn.NextGen_AttachToPost.populate_images('gallery');
 
             // Restore the "Attach Gallery" button
             $('#save_button').removeAttr('disabled').val('Attach Gallery');
 
             // Move to the gallery type tab automatically
+			// TODO: Broken
             $('a[href="#Gallery_Type"').parents('h3').click();
 
         });
-        uploader.bind('')
+
+		// Before an image is uploaded, add the gallery information
+		// to the request. This ensures that a gallery gets created if
+		// needed
         uploader.bind('BeforeUpload', function(up, info){
+
             // While uploading images, we need to temporary disable the
-            // "Attach Gallery" button
+            // "Attach Gallery" button. Restored in the UploadComplete() callback
             $('#save_button').attr('disabled', 'disabled').val('Uploading images...');
 
             // Ensure that the gallery name and description is
@@ -360,7 +373,7 @@ jQuery(function($){
 
         // XXX Image sources that don't upload anything need this
         if (!$this.val().match(/new_gallery|existing_gallery/)) {
-        	$.fn.NextGen_AttachToPost.populate_images();
+        	$.fn.NextGen_AttachToPost.populate_images('gallery');
         }
     };
 
@@ -380,7 +393,7 @@ jQuery(function($){
        $.fn.NextGen_AttachToPost.update_obj(obj);
 
        // Populate images
-       if (!no_images) $.fn.NextGen_AttachToPost.populate_images();
+       if (!no_images) $.fn.NextGen_AttachToPost.populate_images('gallery');
     };
 
     /**
@@ -393,34 +406,20 @@ jQuery(function($){
        // be disabled
        $('#save_button').attr('disabled','disabled').val('Loading images...');
 
-     	 var source = $('#gallery_source').val();
-       var obj = $.fn.NextGen_AttachToPost.get_obj();
-
-       // Populate the images for this gallery
-       obj.action = '_get_image_forms';
-
-       if (source.match(/new_gallery|existing_gallery/)) {
-		     if (obj.attached_gallery_id) {
-		         obj.source = 'attached_gallery';
-		         obj.id = obj.attached_gallery_id;
-		     }
-		     else {
-		         obj.source = 'gallery';
-		         obj.id = obj.gallery_id;
-		     }
-		   }
-		   else {
-		     obj.source = source;
-		   }
+	   var obj = $.fn.NextGen_AttachToPost.get_obj();
+	   obj.action = '_get_image_forms';
+	   obj.source = $('#gallery_source').val();
 
        // Get the images from the server
        $.post(obj.ajax_url, obj, function(data, status, xhr){
            if (typeof(data) ==  'string') data = JSON.parse(data);
            $('#image_options_tab').replaceWith(data.html);
 
-           var $image_list = $('#image_options_tab #image_list');
+		   // Restore save button
+           $('#save_button').removeAttr('disabled').val('Attach Gallery');
 
            // Enable sorting!
+		   var $image_list = $('#image_options_tab #image_list');
            var sorted_list = $image_list.sortable({
               handle: 'img',
               scroll: true,
@@ -437,9 +436,6 @@ jQuery(function($){
                   count++;
                });
            });
-
-           // Restore save button
-           $('#save_button').removeAttr('disabled').val('Attach Gallery');
        });
     }
 
@@ -548,7 +544,7 @@ jQuery(function($){
 
         // Submit AJAX request
         var data = $.extend(data, obj);
-        data.id = obj.attached_gallery_id;
+        data.ID = obj.ID;
         data.action = "_save_attached_gallery";
         $.post(obj.ajax_url, data, function(data, status, xhr){
 
@@ -575,6 +571,7 @@ jQuery(function($){
             }
 
             // Collect validation errors for images
+			// TODO: Need to display image validation errors
             if (data.image_validation_errors) {
 
             }
@@ -584,15 +581,15 @@ jQuery(function($){
 
                 // Update the obj
                 var obj = $.fn.NextGen_AttachToPost.get_obj();
-                obj.attached_gallery_id = data.attached_gallery_id;
+                obj.ID = data.ID;
                 $.fn.NextGen_AttachToPost.update_obj(obj);
-                $('attached_gallery_id').val(obj.attached_gallery_id);
+                $('attached_gallery_id').val(obj.ID);
 
                 // Call tinyMCE helper methods to add the
                 // attached gallery to the editor. We can then close
                 // the 'attach to post' interface
                 parent.append_attached_gallery(
-                    obj.attached_gallery_id,
+                    obj.ID,
                     obj.gallery_name
                 );
                 parent.close_tinymce_windows();

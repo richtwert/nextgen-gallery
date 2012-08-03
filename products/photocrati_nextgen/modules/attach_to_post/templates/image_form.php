@@ -2,7 +2,7 @@
 
     <!-- Display Thumbnail -->
     <div class='thumbnail'>
-        <?php echo $image->to_thumbnail_img_tag() ?>
+		<?php echo $this->_get_storage()->get_thumbnail_html($image) ?>
     </div>
 
     <!-- Display Hide/Show and Edit links -->

@@ -18,12 +18,22 @@ class C_Gallery_Image_Mapper extends C_DataMapper
 	{
 		parent::define('ngg_pictures', array('attachment', $context));
 		$this->set_model_factory_method('gallery_image');
-		$this->_wrapped_class->add_post_hook(
+		$this->_wrapped_instance->add_post_hook(
 			'_convert_to_entity',
 			'Unserialize Metadata',
 			'Hook_Unserialize_Image_Metadata',
 			'unserialize_metadata'
 		);
+	}
+
+
+	function initialize($context=FALSE)
+	{
+		parent::initialize($context);
+
+		// Tells the CustomPost driver (when used) what property to use
+		// as the value for the "post_title" column
+		$this->_post_title_field = 'alttext';
 	}
 
     static function get_instance($context = False)

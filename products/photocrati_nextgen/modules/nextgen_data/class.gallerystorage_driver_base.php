@@ -488,10 +488,11 @@ class C_GalleryStorage_Driver_Base extends C_Component
 	function __call($method, $args)
 	{
 		if (preg_match("/^get_(\w+)_(abspath|url|dimensions|html)$/", $method, $match)) {
-			if (isset($match[1]) && isset($match[2]) && !$this->has_method($method)) {
+			if (isset($match[1]) && isset($match[2]) && strpos($method, 'get_image') == FALSE) {
 				$method = 'get_image_'.$match[2];
 				$args[] = $match[1]; // array($image, $size)
-				return call_user_func_array(array(&$this, $method), $args);
+				return parent::__call($method, $args);
+//				return call_user_func_array(array(&$this, $method), $args);
 			}
 		}
 		return parent::__call($method, $args);

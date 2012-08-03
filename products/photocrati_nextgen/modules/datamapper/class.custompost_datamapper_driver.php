@@ -36,7 +36,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 * @param type $direction
 	 * @return C_DataMapper_Driver_Base
 	 */
-	function order_by($order_by, $direction)
+	function order_by($order_by, $direction='ASC')
 	{
 		if (in_array($order_by, $this->object->_get_querable_table_columns())) {
 			$this->object->_query_args['orderby'] = $order_by;
@@ -412,7 +412,7 @@ class C_CustomPost_DataMapper_Driver extends C_DataMapper_Driver_Base
 	var $_post_excerpt_field = FALSE;
 	var $_primary_key_column = 'ID';
 
-	function define($object_name, $context=FALSE)
+	function define($context=FALSE)
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_CustomPost_DataMapper_Driver');
