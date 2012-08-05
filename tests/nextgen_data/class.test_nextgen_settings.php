@@ -12,12 +12,10 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 	public $settings;
     public $multi_settings;
 
-
 	function __construct($label='C_NextGen_Settings Test')
 	{
 		parent::__construct($label);
 	}
-
 
 	/**
 	 * Test the NextGen Settings setup
@@ -45,8 +43,9 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
      */
     function test_get()
     {
-        $defaults = C_NextGen_Settings_Defaults::get_defaults();
-        $multi_defaults = C_NextGen_Settings_Defaults::get_defaults(True);
+        $C_NextGen_Settings_Defaults = new C_NextGen_Settings_Defaults();
+        $defaults = $C_NextGen_Settings_Defaults->get_defaults();
+        $multi_defaults = $C_NextGen_Settings_Defaults->get_defaults(True);
 
         // test for __get access, ArrayAccess access, and ->get() and compare the result with the defaults
         $this->assertTrue(
@@ -259,8 +258,8 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 
     function test_restore_defaults()
     {
-        $defaults = C_NextGen_Settings_Defaults::get_defaults();
-        $multi_defaults = C_NextGen_Settings_Defaults::get_defaults(True);
+        $C_NextGen_Settings_Defaults = new C_NextGen_Settings_Defaults();
+        $defaults = $C_NextGen_Settings_Defaults->get_defaults();
 
         $this->assertEqual(
             $this->settings->get('imgHeight'),
@@ -268,17 +267,12 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
             'get(imgHeight) did not equal $defaults[imgHeight]'
         );
 
-        $this->assertEqual(
-            $this->multi_settings->get('wpmuCSSfile'),
-            $multi_defaults['wpmuCSSfile'],
-            'get(wpmuCSSfile) did not equal $multi_defaults[wpmuCSSfile]'
-        );
-
-        // we already tested is_set() and unset() earlier. Assume it works, and then run the restore
+        $GLOBALS['NGG_MULTISITE'] = True;
+        $this->multi_settings->reset();
         unset($this->settings->imgHeight);
         unset($this->multi_settings->wpmuCSSfile);
         $this->settings->restore_all_missing_options();
-        $this->multi_settings->restore_all_missing_options();
+        $GLOBALS['NGG_MULTISITE'] = False;
 
         $this->assertEqual(
             $this->settings->get('imgHeight'),
@@ -287,9 +281,9 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
         );
 
         $this->assertEqual(
-            $this->multi_settings->get('wpmuCSSfile'),
-            $multi_defaults['wpmuCSSfile'],
-            'get(wpmuCSSfile) did not equal $multi_defaults[wpmuCSSfile]'
+            $this->multi_settings->get('gallerypath'),
+            'wp-content/blogs.dir/'. get_current_blog_id() . '/files/',
+            'restore_all_missing_options() did not work or _apply_multisite_overrides() was not called'
         );
     }
 

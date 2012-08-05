@@ -8,11 +8,10 @@ class C_NextGen_Settings_Defaults
     /**
      * Returns default Wordpress options array
      *
-     * @static
      * @param bool $global Returns global (multisite) options if True
      * @return array
      */
-    public static function get_defaults($global = False) {
+    public function get_defaults($global = False) {
 
         /*
          * The global options are returned after the if()
@@ -128,10 +127,32 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
      */
     function restore_all_missing_options()
     {
-        $this->object->restore_missing_options();
-        if ($this->object->has_method('restore_missing_multisite_options'))
+
+        /*
+         * We can't really get to the other possible instances of our utility,
+         * but we can retrieve our utility in it's other instance and invoke its
+         * methods then.
+         */
+        if ($this->object->has_method('restore_missing_options'))
         {
-            $this->object->restore_missing_multisite_options();
+            $this->object->restore_missing_options();
+        } else {
+            $tmp = $this->_get_registry()->get_utility('I_NextGen_Settings');
+            $tmp->restore_missing_options();
+            unset($tmp);
+        }
+
+        // multisite options are only considered when multisite is turned on
+        if ($this->object->is_multisite())
+        {
+            if ($this->object->has_method('restore_missing_multisite_options'))
+            {
+                $this->object->restore_missing_multisite_options();
+            } else {
+                $tmp = $this->_get_registry()->get_utility('I_NextGen_Settings', array('multisite'));
+                $tmp->restore_missing_multisite_options();
+                unset($tmp);
+            }
         }
     }
     /**
@@ -242,7 +263,8 @@ class Mixin_NextGen_Settings extends Mixin
 	function reset($save = False)
 	{
         $this->object->_options = array();
-        foreach (C_NextGen_Settings_Defaults::get_defaults() as $name => $val)
+        $C_NextGen_Settings_Defaults = new C_NextGen_Settings_Defaults();
+        foreach ($C_NextGen_Settings_Defaults->get_defaults() as $name => $val)
         {
             $this->object->set($name, $val);
         }
@@ -257,7 +279,8 @@ class Mixin_NextGen_Settings extends Mixin
      */
     function restore_missing_options()
     {
-        foreach (C_NextGen_Settings_Defaults::get_defaults() as $name => $val)
+        $C_NextGen_Settings_Defaults = new C_NextGen_Settings_Defaults();
+        foreach ($C_NextGen_Settings_Defaults->get_defaults() as $name => $val)
         {
             if (!isset($this->object->_options[$name]))
             {
@@ -341,6 +364,132 @@ class Mixin_NextGen_Settings extends Mixin
     }
 }
 
+/**
+ * Adjusts the C_NextGen_Settings class to manage multisite options
+ */
+class Mixin_NextGen_Multisite_Settings extends Mixin
+{
+    function initialize()
+    {
+        // This handles WordPress substitutions like the %BLOG_ID placeholder
+        $this->object->add_post_hook(
+            'set_multisite_option',
+            'WordPress Multisite Overrides',
+            'Hook_NextGen_Settings_WordPress_MU_Overrides',
+            '_apply_multisite_overrides'
+        );
+    }
+
+    /**
+     * Resets NextGEN to it's default settings
+     *
+     * @param bool $save Whether to immediately call save() when done
+     * @return null
+     */
+    function reset($save = False)
+    {
+        $this->object->_global_options = array();
+        $C_NextGen_Settings_Defaults = new C_NextGen_Settings_Defaults();
+        foreach ($C_NextGen_Settings_Defaults->get_defaults(True) as $name => $val)
+        {
+            $this->object->set($name, $val);
+        }
+        if ($save)
+        {
+            $this->object->save();
+        }
+    }
+
+    /**
+     * Restores from defaults any configuration settings that were removed
+     */
+    function restore_missing_multisite_options()
+    {
+        $C_NextGen_Settings_Defaults = new C_NextGen_Settings_Defaults();
+        foreach ($C_NextGen_Settings_Defaults->get_defaults(True) as $name => $val)
+        {
+            if (!isset($this->object->_global_options[$name]))
+            {
+                $this->object->set_multisite_option($name, $val);
+            }
+        }
+    }
+
+    /**
+     * Gets the value of a setting
+     *
+     * @param string $option_name
+     * @return mixed
+     */
+    function get($option_name)
+    {
+        $retval = Null;
+
+        if (isset($this->object->_global_options[$option_name])) {
+            $retval = $this->object->_global_options[$option_name];
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Sets a settings option to a particular value
+     *
+     * @param string $option_name
+     * @param mixed $value
+     * @return mixed $value
+     */
+    function set_multisite_option($option_name, $value)
+    {
+        $this->object->_global_options[$option_name] = $value;
+        return $value;
+    }
+
+    /**
+     * Aliases set() to set_multisite_option()
+     *
+     * @param string $option_name
+     * @param mixed $value
+     * @return mixed $value
+     */
+    function set($option_name, $value)
+    {
+        return $this->object->set_multisite_option($option_name, $value);
+    }
+
+    /**
+     * Removes a setting from the settings list
+     *
+     * @param string $option_name
+     * @return null
+     */
+    function del($option_name)
+    {
+        unset($this->object->_global_options[$option_name]);
+    }
+
+    /**
+     * Returns whether a setting exists
+     *
+     * @param string $option_name
+     * @return bool isset()
+     */
+    function is_set($option_name)
+    {
+        return isset($this->object->_global_options[$option_name]);
+    }
+
+    /**
+     * Returns the current options as an array
+     *
+     * @return array
+     */
+    function to_array()
+    {
+        return $this->object->_global_options;
+    }
+}
+
 class C_NextGen_Settings extends C_Component implements ArrayAccess
 {
     /** @var array Array of multisite option names */
@@ -361,19 +510,24 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
 	function define()
 	{
 		parent::define();
-
         $this->implement('I_NextGen_Settings');
-
-		// Add persistence layer. Replace if not using WordPress
-		$this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');
-
-		// Default options API
-		$this->add_mixin('Mixin_NextGen_Settings');
 	}
 
 	function initialize($context = False)
 	{
 		parent::initialize($context);
+
+        // Add persistence layer. Replace if not using WordPress
+        $this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');
+
+        // Default options API
+        if ('multisite' == $context)
+        {
+            $this->add_mixin('Mixin_NextGen_Multisite_Settings');
+        } else {
+            $this->add_mixin('Mixin_NextGen_Settings');
+        }
+
 		$this->object->reload();
 	}
 
@@ -472,4 +626,33 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
         $this->del($offset);
     }
 
+}
+
+/**
+ *  Hook triggered after a global option has been set()
+ */
+class Hook_NextGen_Settings_WordPress_MU_Overrides extends Hook
+{
+    function _apply_multisite_overrides($option_name, $value)
+    {
+        if (!$this->object->is_multisite())
+        {
+            return Null;
+        }
+
+        switch ($option_name) {
+            case 'gallerypath':
+                $blog_id = get_current_blog_id();
+                $this->call_anchor(
+                    $option_name,
+                    str_replace('%BLOG_ID%', $blog_id, $value)
+                );
+                break;
+        }
+
+        return $this->object->get_method_property(
+            $this->method_called,
+            ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
+        );
+    }
 }
