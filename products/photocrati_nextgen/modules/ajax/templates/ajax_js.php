@@ -1,0 +1,1 @@
+window.photocrati_ajax_url = "<?php echo $ajax_url ?>";
