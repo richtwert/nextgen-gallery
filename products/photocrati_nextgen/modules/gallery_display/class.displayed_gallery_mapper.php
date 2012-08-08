@@ -2,6 +2,8 @@
 
 class C_Displayed_Gallery_Mapper extends C_CustomPost_DataMapper_Driver
 {
+	static $_instances = array();
+
 	function define()
 	{
 		parent::define();
@@ -21,4 +23,19 @@ class C_Displayed_Gallery_Mapper extends C_CustomPost_DataMapper_Driver
 	{
 		parent::initialize('displayed_gallery', array($context, 'display_gallery'));
 	}
+
+
+		/**
+	 * Gets a singleton of the mapper
+	 * @param string|array $context
+	 * @return C_Displayed_Gallery_Mapper
+	 */
+    public static function get_instance($context = False)
+    {
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_Displayed_Gallery_Mapper($context);
+        }
+        return self::$_instances[$context];
+    }
 }

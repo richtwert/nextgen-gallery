@@ -61,6 +61,107 @@ class M_Gallery_Display extends C_Base_Module
 			'I_Component_Factory', 'A_Gallery_Display_Factory'
 		);
 	}
+
+
+	function _register_hooks()
+	{
+		add_shortcode('ngg_images', array(&$this, 'display_images'));
+	}
+
+
+	/**
+	 * Displays a "displayed gallery" instance
+	 */
+	function display_images($params, $inner_content=NULL)
+	{
+		// TODO: This function needs to be moved to a mixin, so that
+		// it can be adapted
+		$displayed_gallery = NULL;
+
+		// Configure the arguments
+		$defaults = array(
+			'id'				=>	NULL,
+			'source'			=>	NULL,
+			'container_ids'		=>	array(),
+			'gallery_ids'		=>	array(),
+			'album_ids'			=>	array(),
+			'tag_ids'			=>	array(),
+			'display_type'		=>	NULL,
+			'exclusions'		=>	array()
+		);
+		$args = shortcode_atts($defaults, $params);
+
+		// Are we loading a specific displayed gallery that's persisted?
+		$mapper = $this->_get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		if (!is_null($args['id'])) {
+			$displayed_gallery = $mapper->find($args['id']);
+			unset($mapper); // no longer needed
+		}
+
+		// We're generating a new displayed gallery
+		else {
+
+			// Determine the source
+			if (is_null($args['source'])) {
+
+				// Galleries?
+				if ($args['gallery_ids']) {
+					$args['source']					= 'galleries';
+					if (is_empty($args['container_ids']))
+						$args['container_ids']		= $args['gallery_ids'];
+				}
+
+				// Albums ?
+				elseif ($args['album_ids']) {
+					$args['source']					= 'albums';
+					if (!$args['container_ids'])
+						$args['container_ids']		= $args['album_ids'];
+				}
+
+				// Tags ?
+				elseif ($args['tag_ids']) {
+					$args['source']					= 'tags';
+					if (!$args['container_ids'])
+						$args['container_ids']		= $args['tag_ids'];
+				}
+			}
+
+			// Perform some conversions
+			if (!is_array($args['container_ids'])) {
+				$args['container_ids']	= preg_split("/,\|/", $args['container_ids']);
+			}
+			if (!is_array($args['exclusions'])) {
+				$args['exclusions']		= preg_split("/,\|/", $args['exclusions']);
+			}
+
+			// Get the display settings
+			foreach (array_keys($defaults) as $key) unset($params[$key]);
+			$args['display_settings']	= $params;
+
+			// Validate the displayed gallery
+			$factory = $this->_get_registry()->get_utility('I_Component_Factory');
+			$displayed_gallery = $factory->create('displayed_gallery', $args, $mapper);
+			unset($factory);
+		}
+
+		// Validate the displayed gallery
+		if ($displayed_gallery && $displayed_gallery->is_valid()) {
+
+			// Set a temporary id
+			$displayed_gallery->id(uniqid('temp'));
+
+			// Display!
+			$controller = $this->_get_registry()->get_utility(
+				'I_Display_Type_Controller', $displayed_gallery->display_type
+			);
+			$controller->enqueue_resources($displayed_gallery);
+			$controller->index($displayed_gallery);
+		}
+		else {
+			return "Invalid Displayed Gallery";
+		}
+
+	}
 }
 
 new M_Gallery_Display();

@@ -28,7 +28,7 @@ class C_Display_Type extends C_DataMapper_Model
 	function initialize($properties=array(), $mapper=FALSE, $context=FALSE)
 	{
 		// If no mapper was specified, then get the mapper
-		if ($mapper) $mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
+		if (!$mapper) $mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
 
 		parent::initialize($mapper, $properties, $context);
 	}

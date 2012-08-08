@@ -6,23 +6,19 @@
  */
 class C_Display_Type_Controller extends C_MVC_Controller
 {
-	/**
-	 * The associated display type with the controller
-	 * @var C_Display_Type|stdClass
-	 */
-	var $_display_type;
+	static $_instances = array();
 
 	function define()
 	{
 		parent::define();
 		$this->add_mixin('Mixin_Display_Type_Controller');
-		$this->implements('I_Display_Type_Controller');
+		$this->implement('I_Display_Type_Controller');
 	}
 
-	function initialize($display_type, $context=FALSE)
+	function initialize($context=FALSE)
 	{
 		parent::initialize($context);
-		$this->_display_type = $display_type;
+
 	}
 
 
@@ -45,6 +41,21 @@ class C_Display_Type_Controller extends C_MVC_Controller
 			return parent::__call($method, $args);
 		}
 	}
+
+
+	/**
+	 * Gets a singleton of the mapper
+	 * @param string|array $context
+	 * @return C_Display_Type_Controller
+	 */
+    public static function get_instance($context = False)
+    {
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_Display_Type_Controller($context);
+        }
+        return self::$_instances[$context];
+    }
 }
 
 /**
@@ -55,34 +66,43 @@ class Mixin_Display_Type_Controller extends Mixin
 	/**
 	 * Renders the frontend display of the display type
 	 */
-	function index()
+	function index($display_type, $return=FALSE)
 	{
-		$this->object->render_partial('index');
+		return $this->object->render_partial('index', array(), $return);
+	}
+
+	/**
+	 * This method should be overwritten by other adapters/mixins, and call
+	 * wp_enqueue_script() / wp_enqueue_style()
+	 */
+	function enqueue_resources()
+	{
 	}
 
 	/**
 	 * Renders the settings form for the display type
 	 */
-	function settings()
+	function settings($display_type, $return)
 	{
 		// Get the fields for this gallery type
 		$fields = array();
-		foreach ($this->object->get_field_names() as $field) {
+		foreach ($this->object->get_field_names($display_type) as $field) {
 			$render_method = "render_{$field}_field";
 			if ($this->object->has_method($render_method))
 				$fields[] = $this->object->$render_method();
 		}
 
 		// Render the display type settings template
-		$this->object->render_partial('display_type_settings', array(
-			'fields' => $fields
-		));
+		return $this->object->render_partial('display_type_settings', array(
+			'fields'		=> $fields,
+			'display_type'	=> $display_type
+		), $return);
 	}
 
 	/**
 	 * Returns the name of the fields to
 	 */
-	function get_field_names()
+	function get_field_names($display_type)
 	{
 		return array();
 	}

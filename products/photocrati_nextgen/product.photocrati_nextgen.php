@@ -49,6 +49,12 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load the Lazy Resource Loader
 		$this->_get_registry()->load_module('photocrati-lazy_resources');
+
+		// Load the Gallery Display module, used to display galleries and albums
+		$this->_get_registry()->load_module('photocrati-gallery_display');
+
+		// Load the NextGEN Basic Thumbnails display type
+		$this->_get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
 	}
 }
 
