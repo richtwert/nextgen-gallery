@@ -21,6 +21,10 @@ class Mixin_NextGen_Gallery_Image_Validation extends Mixin
 		// by NextGEN Gallery itself, as well as the Attach to Post module
 		if (!isset($this->object->exclude)) $exclude = FALSE;
 
+		// Ensure that the object has a description attribute,
+		// even it if it's not set
+		if (!isset($this->object->description)) $this->object->description = '';
+
 		// If not set already, set a default sortorder
 		if (!isset($this->object->sortorder)) $this->object->sortorder = 0;
 

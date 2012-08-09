@@ -2,9 +2,6 @@
 
 class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 {
-	var $_max_images_to_fetch = 20;
-
-
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
 	 * This method deprecated use of the nggShowGallery() function.
@@ -13,80 +10,66 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function index($displayed_gallery)
 	{
 		// Get the images to be displayed
-		$images = $displayed_gallery->get_images($this->_max_images_to_fetch);
+		$current_page = get_query_var('nggpage');
+		if (!$current_page) $current_page = 1;
+		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
+		$offset = $images_per_page * ($current_page-1);
+		$images = $displayed_gallery->get_images($images_per_page, $offset);
+		$total	= $displayed_gallery->get_image_count();
+		$pagination = FALSE;
 
 		// Are there images to display?
 		if ($images) {
 
-			// $_GET from wp_query
-			$show    = get_query_var('show');
-			$pid     = get_query_var('pid');
-			$pageid  = get_query_var('pageid');
+			/***
+			// We try to replicate what a call to nggShowGallery() would
+			// render as much as possible. The reason why we don't make a call
+			// to nggShowGallery() is that it assumes that only one gallery
+			// is being displayed, and I don't feel confident modifying it
+			// to behave otherwise. I'd sooner replicate the look n' feel
+			// and deprecate the nggShowGallery() method
+			***/
 
-			switch(get_query_var('show')) {
-
-				// We're not displaying a slideshow
-				case 'slide':
-
-					// Get settings object to determine default dimensions
-					// of the image rotator
-					$settings = $this->object->_get_registry()->get_utility(
-						'I_NextGen_Settings'
-					);
-
-					// Render the basic slideshow
-					// This is ugly - but it's a first attempt to convert
-					// the ngglegacy galleries into something that makes
-					// sense.
-					global $nggRewrite;
-					$args['show'] = "gallery";
-					$slideshow_link_text = $displayed_gallery->display_settings['slideshow_link_text'];
-					echo '<div class="ngg-galleryoverview">';
-					echo '<div class="slideshowlink"><a class="slideshowlink" href="' . $nggRewrite->get_permalink($args) . '">'.nggGallery::i18n($slideshow_link_text).'</a></div>';
-					$displayed_gallery->display_type = 'photocrati-nextgen_basic_slideshow';
-					$controller = $this->_get_registry()->get_utility(
-						'I_Display_Type_Controller',
-						$displayed_gallery->display_type
-					);
-					$controller->enqueue_resources($displayed_gallery);
-					$controller->index($displayed_gallery);
-					echo  '</div>'."\n";
-					echo '<div class="ngg-clear"></div>'."\n";
-					break;
-
-				// We'l continue to display the thumbnail gallery
-				default:
-					echo nggCreateGallery(
-						$images,
-						$displayed_gallery->id(),
-						$displayed_gallery->display_settings['template'],
-						$displayed_gallery->display_settings['images_per_page']);
+			// Create pagination
+			if ($images_per_page) {
+				$pagination = new nggNavigation;
+				$pagination = $pagination->create_navigation(
+					$current_page, $total, $images_per_page
+				);
 			}
+
+			// Determine what the slideshow link would be
+			// TODO: Figure this out
+			$slideshow_link = 'http://www.google.ca';
+
+			// Determine what the piclens link would be
+			$piclens_link	= 'http://www.google.ca';
+
+			// Determine the lightbox effects attributes
+			$effect_html = '';
+
+			// Get the gallery storage component
+			$storage = $this->object->_get_registry()->get_utility(
+				'I_Gallery_Storage'
+			);
+
+			$params = $displayed_gallery->display_settings;
+			$params['storage']				= &$storage;
+			$params['images']				= &$images;
+			$params['displayed_gallery_id'] = $displayed_gallery->id();
+			$params['current_page']			= $current_page;
+			$params['slideshow_link']		= $slideshow_link;
+			$params['piclens_link']			= $piclens_link;
+			$params['effect_html']			= $effect_html;
+			$params['pagination']			= $pagination;
+
+			$this->object->render_partial('nextgen_basic_thumbnails', $params);
+
 		}
 		else {
-			$this->render_partial("no_images_found");
+			$this->object->render_partial("no_images_found");
 		}
 	}
-
-
-	/**
-     * Convert the displayed gallery settings to the names of legacy settings
-     * @param array $settings
-     * @return array
-     */
-    function _displayed_gallery_settings_to_legacy_settings($settings)
-    {
-        return array(
-            'galShowSlide'      =>  $settings['show_slideshow_link'],
-            'galTextSlide'      =>  $settings['slideshow_link_text'],
-            'galColumns'        =>  $settings['num_of_columns'],
-            'usePicLens'        =>  $settings['show_piclens_link'],
-            'galImages'         =>  $settings['images_per_page'],
-            'galTextGallery'    =>  $settings['thumbnail_link_text'],
-            'piclens_link_text' =>  $settings['piclens_link_text']
-
-        );
-    }
 
 
 	/**

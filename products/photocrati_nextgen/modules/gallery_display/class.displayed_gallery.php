@@ -98,18 +98,34 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param int $limit
 	 * @param int $offset
 	 */
-	function get_images($limit=FALSE, $offset=FALSE)
+	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
 		// Get the image mapper
 		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 		$image_key = $mapper->get_primary_key_column();
 
 		// Create query
-		$mapper->select()->where(array("galleryid in (%s)", $this->object->container_ids));
+		$mapper->select($id_only ? $image_key : '*')->where(
+			array("galleryid in (%s)", $this->object->container_ids)
+		);
 		$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
 		if ($limit) $mapper->limit($limit, $offset);
 
 		return $mapper->run_query();
+	}
+
+	/**
+	 * Gets the number of images to display
+	 * @param int|FALSE $limit
+	 * @param int|FALSE $offset
+	 * @return int
+	 */
+	function get_image_count($limit=FALSE, $offset=FALSE)
+	{
+		$result = $this->object->get_images($limit, $offset, TRUE);
+		if ($result) $result = count($result);
+		else $result = 0;
+		return $result;
 	}
 
 	/**
@@ -120,5 +136,11 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	{
 		$mapper = $this->object->_get_registry()->get_utility('I_Display_Type_Mapper');
 		return  $mapper->find_by_name($this->object->display_type, TRUE);
+	}
+
+
+	function _get_image_mapper()
+	{
+
 	}
 }

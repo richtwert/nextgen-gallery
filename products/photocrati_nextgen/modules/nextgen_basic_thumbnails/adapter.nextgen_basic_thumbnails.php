@@ -23,17 +23,29 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 {
 	function set_defaults()
 	{
+		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+
 		// Set defaults
 		if (!isset($this->object->settings))
 			$this->object->settings = array();
 		if (!isset($this->object->settings['template']))
 			$this->object->settings['template'] = '';
 		if (!isset($this->object->settings['images_per_page']))
-			$this->object->settings['images_per_page'] = FALSE;
-		if (!isset($this->object->settings['slideshow_link_text'])) {
-			$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
-			$this->object->settings['slideshow_link_text'] = $settings->galTextGallery;
-		}
+			$this->object->settings['images_per_page'] = $settings->galImages;
+		if (!isset($this->object->settings['slideshow_link_text']))
+			$this->object->settings['slideshow_link_text'] = $settings->galTextSlide;
+		if (!isset($this->object->settings['show_slideshow_link']))
+			$this->object->settings['show_slideshow_link'] = $settings->galShowSlide;
+		if (!isset($this->object->settings['show_piclens_link']))
+			$this->object->settings['show_piclens_link'] = $settings->usePicLens;
+		if (!isset($this->object->settings['piclens_link_text']))
+			$this->object->settings['piclens_link_text'] = 'Show PicLens';
+		if (!isset($this->object->settings['number_of_columns']))
+			$this->object->settings['number_of_columns'] = $settings->galColumns;
+		if (!isset($this->object->settings['thumb_width']))
+			$this->object->settings['thumb_width'] = $settings->thumbwidth;
+		if (!isset($this->object->settings['thumb_height']))
+			$this->object->settings['thumb_height'] = $settings->thumbheight;
 	}
 
 	function validate()

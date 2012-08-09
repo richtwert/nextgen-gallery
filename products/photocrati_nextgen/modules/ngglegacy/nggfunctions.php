@@ -145,6 +145,7 @@ function nggShow_JS_Slideshow($galleryID, $width, $height, $class = 'ngg-slidesh
  * @param string $template (optional) name for a template file, look for gallery-$template
  * @param int $images (optional) number of images per page
  * @return the content
+ * @deprecated since version 2.0
  */
 function nggShowGallery( $galleryID, $template = '', $images = false ) {
 
@@ -263,10 +264,10 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
     $gallery->ID = (int) $galleryID;
     $gallery->show_slideshow = false;
     $gallery->show_piclens = false;
-//    $gallery->name = stripslashes ( $first_image->name  );
-//    $gallery->title = stripslashes( $first_image->title );
-//    $gallery->description = html_entity_decode(stripslashes( $first_image->galdesc));
-//    $gallery->pageid = $first_image->pageid;
+    $gallery->name = stripslashes ( $first_image->name  );
+    $gallery->title = stripslashes( $first_image->title );
+    $gallery->description = html_entity_decode(stripslashes( $first_image->galdesc));
+    $gallery->pageid = $first_image->pageid;
     $gallery->anchor = 'ngg-gallery-' . $galleryID . '-' . $current_page;
     reset($picturelist);
 
@@ -326,13 +327,7 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
 
     //we cannot use the key as index, cause it's filled with the pid
 	$index = 0;
-	$registry = C_Component_Registry::get_instance();
-	$storage = $registry->get_utility('I_Gallery_Storage');
     foreach ($picturelist as $key => $picture) {
-
-		// Set the picture url
-		$picture->imageURL = $storage->get_image_url($picture);
-		$picture->thumbURL = $storage->get_thumb_url($picture);
 
 		//needed for hidden images (THX to Sweigold for the main idea at : http://wordpress.org/support/topic/228743/ )
 		$picturelist[$key]->hidden = false;
@@ -347,11 +342,10 @@ function nggCreateGallery($picturelist, $galleryID = false, $template = '', $ima
 		}
 
         // get the effect code
-//        if ($galleryID)
-//            $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode('set_' . $galleryID);
-//        else
-//            $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode(get_the_title());
-		$thumbcode = '';
+        if ($galleryID)
+            $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode('set_' . $galleryID);
+        else
+            $thumbcode = ($ngg_options['galImgBrowser']) ? '' : $picture->get_thumbcode(get_the_title());
 
         // create link for imagebrowser and other effects
         $args ['nggpage'] = empty($nggpage) || ($template != 'carousel') ? false : $nggpage;  // only needed for carousel mode
