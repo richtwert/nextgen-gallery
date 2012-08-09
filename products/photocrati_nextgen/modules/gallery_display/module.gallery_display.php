@@ -138,29 +138,24 @@ class M_Gallery_Display extends C_Base_Module
 
 			// Validate the displayed gallery
 			$factory = $this->_get_registry()->get_utility('I_Component_Factory');
-			$displayed_gallery = $factory->create('displayed_gallery', $args, $mapper);
+			$displayed_gallery = $factory->create('displayed_gallery', $mapper, $args);
 			unset($factory);
 		}
 
 		// Validate the displayed gallery
-		$valid = FALSE;
-		if ($displayed_gallery) {
-			$displayed_gallery->validate();
-			if ($displayed_gallery->is_valid()) {
-				$valid = TRUE;
+		if ($displayed_gallery && $displayed_gallery->validate()) {
 
-				// Set a temporary id
-				$displayed_gallery->id(uniqid('temp'));
+			// Set a temporary id
+			$displayed_gallery->id(uniqid('temp'));
 
-				// Display!
-				$controller = $this->_get_registry()->get_utility(
-					'I_Display_Type_Controller', $displayed_gallery->display_type
-				);
-				$controller->enqueue_resources($displayed_gallery);
-				$controller->index($displayed_gallery);
-			}
+			// Display!
+			$controller = $this->_get_registry()->get_utility(
+				'I_Display_Type_Controller', $displayed_gallery->display_type
+			);
+			$controller->enqueue_resources($displayed_gallery);
+			$controller->index($displayed_gallery);
 		}
-		if (!$valid) return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
+		else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
 	}
 }
 

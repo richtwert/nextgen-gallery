@@ -38,8 +38,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 					// This is ugly - but it's a first attempt to convert
 					// the ngglegacy galleries into something that makes
 					// sense.
+					global $nggRewrite;
+					$args['show'] = "gallery";
+					$slideshow_link_text = $displayed_gallery->display_settings['slideshow_link_text'];
 					echo '<div class="ngg-galleryoverview">';
-					echo '<div class="slideshowlink"><a class="slideshowlink" href="' . $nggRewrite->get_permalink($args) . '">'.nggGallery::i18n($ngg_options['galTextGallery']).'</a></div>';
+					echo '<div class="slideshowlink"><a class="slideshowlink" href="' . $nggRewrite->get_permalink($args) . '">'.nggGallery::i18n($slideshow_link_text).'</a></div>';
 					$displayed_gallery->display_type = 'photocrati-nextgen_basic_slideshow';
 					$controller = $this->_get_registry()->get_utility(
 						'I_Display_Type_Controller',
@@ -53,9 +56,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 				// We'l continue to display the thumbnail gallery
 				default:
-					nggCreateGallery(
+					echo nggCreateGallery(
 						$images,
-						FALSE,
+						$displayed_gallery->id(),
 						$displayed_gallery->display_settings['template'],
 						$displayed_gallery->display_settings['images_per_page']);
 			}

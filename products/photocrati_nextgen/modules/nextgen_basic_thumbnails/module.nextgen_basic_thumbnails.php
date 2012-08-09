@@ -12,6 +12,11 @@ define(
 	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js'
 );
 
+define(
+	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS',
+	'photocrati-nextgen_basic_thumbnails'
+);
+
 class M_NextGen_Basic_Thumbnails extends C_Base_Module
 {
 	function define()
@@ -30,6 +35,12 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 
 	function _register_adapters()
 	{
+		// Installs the display type
+		$this->_get_registry()->add_adapter(
+			'I_NextGen_Activator',
+			'A_NextGen_Basic_Thumbnails_Activation'
+		);
+
 		// Provides settings fields and frontend rendering
 		$this->_get_registry()->add_adapter(
 			'I_Display_Type_Controller',

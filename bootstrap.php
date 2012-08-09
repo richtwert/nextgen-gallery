@@ -128,14 +128,7 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('PHOTOCRATI_GALLERY_OPTION_PREFIX', 'nggallery');
 		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.5');
-
-		// TODO: Must be removed when running automated tests. I've temporarily
-		// defined these constants, as currently we're not using the
-		// C_NextGen_Settings class in the activation routine of the plugin.
-
-		define('DATAMAPPER_DRIVER', 'custom_table_datamapper');
-		define('GALLERYSTORAGE_DRIVER', 'ngglegacy_gallery_storage');
-//		define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
+		define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
 

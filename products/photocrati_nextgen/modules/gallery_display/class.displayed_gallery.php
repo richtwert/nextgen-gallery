@@ -25,11 +25,11 @@ class C_Displayed_Gallery extends C_DataMapper_Model
 
 	/**
 	 * Initializes a display type with properties
-	 * @param array|stdClass|C_Displayed_Gallery $properties
 	 * @param FALSE|C_Displayed_Gallery_Mapper $mapper
+	 * @param array|stdClass|C_Displayed_Gallery $properties
 	 * @param FALSE|string|array $context
 	 */
-	function initialize($properties=array(), $mapper=FALSE, $context=FALSE)
+	function initialize($mapper=FALSE, $properties=array(), $context=FALSE)
 	{
 		if (!$mapper) $mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
 
@@ -42,34 +42,48 @@ class C_Displayed_Gallery extends C_DataMapper_Model
  */
 class Mixin_Displayed_Gallery_Validation extends Mixin
 {
+	function set_defaults()
+	{
+		// If the display type is set, then get it's settings and apply them as
+		// defaults to the "display_settings" of the displayed gallery
+		if (isset($this->object->display_type)) {
+
+			// Get display type mapper
+			$display_type = $this->object->get_display_type();
+			if (!$display_type) {
+				$this->object->add_error('Invalid display type', 'display_type');
+			}
+			else {
+				$this->object->display_settings = $this->object->array_merge_assoc(
+					$display_type->settings, $this->object->display_settings
+				);
+			}
+		}
+	}
+
+
 	function validate()
 	{
+		$this->object->set_defaults();
+
 		$this->object->validates_presence_of('source');
 		$this->object->validates_presence_of('display_type');
 		if (in_array($this->object->source, array('galleries', 'albums', 'tags'))) {
 			$this->object->validates_presence_of('container_ids');
 		}
 
-		// Get display type mapper
-		$mapper = $this->object->_get_registry()->get_utility('I_Display_Type_Mapper');
-		$display_type = $mapper->find_by_name($this->object->display_type);
-		if (!$display_type) {
-			$this->object->add_error('Invalid display type', 'display_type');
-		}
-
-		// Override the global settings with the displayed gallery's settings
-		else {
-			$display_type->settings = $this->object->array_merge_assoc(
-				$display_type->settings, $displayed_gallery->display_settings
-			);
-			if ($display_type->is_invalid()) {
-				foreach ($display_type->get_errors() as $property => $errors) {
-					foreach ($errors as $error) {
-						$displayed_gallery->add_error($error, $property);
-					}
+		// Validate the display settings
+		$display_type = $this->object->get_display_type();
+		$display_type->settings = $this->object->display_settings;
+		if (!$display_type->validate()) {
+			foreach ($display_type->get_errors() as $property => $errors) {
+				foreach ($errors as $error) {
+					$this->object->add_error($error, $property);
 				}
 			}
 		}
+
+		return $this->object->is_valid();
 	}
 }
 
@@ -96,5 +110,15 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		if ($limit) $mapper->limit($limit, $offset);
 
 		return $mapper->run_query();
+	}
+
+	/**
+	 * Gets the display type object used in this displayed gallery
+	 * @return C_Display_Type
+	 */
+	function get_display_type()
+	{
+		$mapper = $this->object->_get_registry()->get_utility('I_Display_Type_Mapper');
+		return  $mapper->find_by_name($this->object->display_type, TRUE);
 	}
 }

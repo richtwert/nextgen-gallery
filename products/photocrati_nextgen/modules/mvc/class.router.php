@@ -204,7 +204,6 @@ class Mixin_Router extends Mixin
         $controller = $singleton ?
             eval('return '.$klass.'::get_instance($context);') :
             new $klass($context);
-        $controller = $this->object->_get_registry()->apply_adapters($controller);
 
         // Call the controller method
         $this->object->call_action($controller, $action, $exit);
