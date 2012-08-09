@@ -90,7 +90,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 				$value[$index] = $v;
 			}
 			$value = implode(', ', $value);
-			if ($compare == 'IN') $value = "({$value})";
+			if (strpos($compare, 'IN') !== FALSE) $value = "({$value})";
 
 			$clauses[] = "{$column} {$compare} {$value}";
 		}

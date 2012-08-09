@@ -174,25 +174,21 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 		// If conditions is not an array, make it one
 		if (!is_array($conditions)) $conditions = array($conditions);
-
-		// Is there a single condition
-		if (isset($conditions[0]) && is_string($conditions['0'])) {
-			$clause = $conditions[0];
-			array_shift($conditions);
-			$binds = $conditions;
-			$where_clauses[] = $this->object->_parse_where_clause($clause,$binds);
+		elseif (!empty($conditions) && !is_array($conditions[0])) {
+			// Just a single condition was passed, but with a bind
+			$conditions = array($conditions);
 		}
 
-		// Are there multiple conditions
-		else {
-			foreach ($conditions as $condition) {
-				if (is_string($condition)) {
-					$where_clauses[] = $this->object->_parse_where_clause($condition);
-				}
-				else {
-					$clause = array_shift($condition);
-					$where_clauses[] = $this->object->_parse_where_clause($clause, $condition);
-				}
+		// Iterate through each condition
+		foreach ($conditions as $condition) {
+			if (is_string($condition)) {
+				$clause = $this->object->_parse_where_clause($condition);
+				if ($clause) $where_clauses[] = $clause;
+			}
+			else {
+				$clause = array_shift($condition);
+				$clause = $this->object->_parse_where_clause($clause, $condition);
+				if ($clause) $where_clauses[] = $clause;
 			}
 		}
 
@@ -214,28 +210,42 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	 */
 	function _parse_where_clause($condition)
 	{
-
 		$column = '';
 		$operator = '';
 		$value = '';
+		$numeric = TRUE;
 
 		// Substitute any placeholders
 		global $wpdb;
 		$binds = func_get_args();
+		$binds = $binds[1]; // first argument is the condition
+		foreach ($binds as &$bind) {
 
-		if (isset($binds[1])) {
-			$condition = $wpdb->prepare($condition, $binds[1]);
+			// A bind could be an array, used for the 'IN' operator
+			// or a simple scalar value. We need to convert arrays
+			// into scalar values
+			if (is_object($bind)) $bind = (array)$bind;
+			if (is_array($bind)) {
+				if (empty($bind)) return FALSE;
+				foreach ($bind as &$val) {
+					if (!is_numeric($val)) {
+						$val = '"'.addslashes($val).'"';
+						$numeric = FALSE;
+					}
+				}
+				$bind = implode(',', $bind);
+			}
+			elseif(!is_numeric($bind)) $numeric = FALSE;
 		}
-
-		else
-			$condition = $wpdb->prepare($condition);
+		$condition = $wpdb->prepare($condition, $binds);
 
 		// Parse the where clause
 		if (preg_match("/^[^\s]+/", $condition, $match)) {
 			$column = trim(array_shift($match));
 			$condition = str_replace($column, '', $condition);
 		}
-		if (preg_match("/IN|LIKE|[=!<>]+/", $condition, $match)) {
+
+		if (preg_match("/(NOT )?IN|(NOT )?LIKE|[=!<>]+/i", $condition, $match)) {
 			$operator = trim(array_shift($match));
 			$condition = str_replace($operator, '', $condition);
 			$operatior = strtolower($operator);
@@ -262,10 +272,9 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		$retval = array(
 			'column'	=> $column,
 			'value'		=> $value,
-			'compare'	=> $operator,
-			'type'		=> 'string',
+			'compare'	=> strtoupper($operator),
+			'type'		=> $numeric ? 'numeric' : 'string',
 		);
-		if (is_numeric($value)) $retval['type'] = 'numeric';;
 
 		return $retval;
 	}
