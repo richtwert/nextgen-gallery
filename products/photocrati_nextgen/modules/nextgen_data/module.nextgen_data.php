@@ -2,7 +2,8 @@
 
 /***
 	{
-		Module: photocrati-nextgen-data
+		Module: photocrati-nextgen-data,
+		Depends: { photocrati-nextgen_settings, photocrati-datamapper }
 	}
 ***/
 
@@ -85,7 +86,6 @@ class M_NextGen_Data extends C_Base_Module
 
     function _register_utilities()
     {
-		$this->_get_registry()->add_utility('I_NextGen_Settings', 'C_NextGen_Settings');
 		$this->_get_registry()->add_utility('I_Gallery_Mapper', 'C_Gallery_Mapper');
 		$this->_get_registry()->add_utility('I_Gallery_Image_Mapper', 'C_Gallery_Image_Mapper');
     }
