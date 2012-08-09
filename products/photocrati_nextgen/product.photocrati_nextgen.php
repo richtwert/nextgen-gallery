@@ -25,6 +25,10 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$module_path = path_join(dirname(__FILE__), 'modules');
 		$this->_get_registry()->set_product_module_path($this->module_id, $module_path);
 		$this->_get_registry()->add_module_path($module_path, TRUE, FALSE);
+		
+		// The NextGEN Settings module provides uniform centralized management
+		// of settings for the plugin.
+		$this->_get_registry()->load_module('photocrati-nextgen_settings');
 
 		// The NextGEN Settings module provides uniform centralized management
 		// of settings for the plugin.
