@@ -32,7 +32,7 @@ class M_Lazy_Resources extends C_Base_Module
 	function _register_hooks()
 	{
 		add_action('init', array(&$this, 'enqueue_scripts'));
-		add_action('wp_print_footer_scripts', array(&$this, 'print_footer_scripts'), 999);
+		add_action('wp_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);
 	}
 
 	/**
@@ -45,13 +45,19 @@ class M_Lazy_Resources extends C_Base_Module
 		wp_register_script(
 			'sidjs',
 			PHOTOCRATI_GALLERY_LAZY_RESOURCES_JS_URL.'/sidjs-0.1.js',
-			array(),
-			'0.1',
-			TRUE
+			array('jquery'),
+			'0.1'
+		);
+
+		wp_register_script(
+			'lazy_resources',
+			PHOTOCRATI_GALLERY_LAZY_RESOURCES_JS_URL.'/lazy_resources.js',
+			array('sidjs', 'jquery'),
+			$this->module_version
 		);
 
 		// Enqueue!
-		wp_enqueue_script('sidjs');
+		wp_enqueue_script('lazy_resources');
 	}
 
 
@@ -77,10 +83,8 @@ class M_Lazy_Resources extends C_Base_Module
 
 		// Lazy-load all resources
 		echo "\n<script type='text/javascript'>";
-		echo "var urls = ".json_encode($script_urls).";\n";
-		echo "if (urls.length) Sid.js(urls);\n";
-		echo "urls = ".json_encode($style_urls).";\n";
-		echo "if (urls.length) Sid.css(urls);\n";
+		echo "lazy_script_urls = ".json_encode($script_urls).";\n";
+		echo "lazy_style_urls = ".json_encode($style_urls).";\n";
 		echo "</script>\n";
 	}
 
