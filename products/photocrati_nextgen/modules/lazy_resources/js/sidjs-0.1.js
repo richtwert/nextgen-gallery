@@ -53,89 +53,93 @@ IE8:
     - triggers load, readystatechange
 Assume all versions of IE support readystatechange
 */
-(function() {
-	var win = window,
-		doc = document,
-		proto = 'prototype',
-		head = doc.getElementsByTagName('head')[0],
-		body = doc.getElementsByTagName('body')[0],
-		sniff = /*@cc_on!@*/1 + /(?:Gecko|AppleWebKit)\/(\S*)/.test(navigator.userAgent); // 0 - IE, 1 - O, 2 - GK/WK
+jQuery(function(){
 
-	var createNode = function(tag, attrs) {
-		var attr, node = doc.createElement(tag);
-		for (attr in attrs) {
-			if (attrs.hasOwnProperty(attr)) {
-				node.setAttribute(attr, attrs[attr]);
+	(function() {
+		var win = window,
+			doc = document,
+			proto = 'prototype',
+			head = doc.getElementsByTagName('head')[0],
+			body = doc.getElementsByTagName('body')[0],
+			sniff = /*@cc_on!@*/1 + /(?:Gecko|AppleWebKit)\/(\S*)/.test(navigator.userAgent); // 0 - IE, 1 - O, 2 - GK/WK
+
+		var createNode = function(tag, attrs) {
+			var attr, node = doc.createElement(tag);
+			for (attr in attrs) {
+				if (attrs.hasOwnProperty(attr)) {
+					node.setAttribute(attr, attrs[attr]);
+				}
 			}
-		}
-		return node;
-	};
+			return node;
+		};
 
-	var load = function(type, urls, callback, scope) {
-		if (this == win) {
-			return new load(type, urls, callback, scope);
-		}
-
-		urls = (typeof urls == 'string' ? [urls] : urls);
-		scope = (scope ? (scope == 'body' ? body : head) : (type == 'js' ? body : head));
-
-		this.callback = callback || function() {};
-		this.queue = [];
-
-		var node, i = len = 0, that = this;
-
-		for (i = 0, len = urls.length; i < len; i++) {
-			this.queue[i] = 1;
-			if (type == 'css') {
-				node = createNode('link', { type: 'text/css', rel: 'stylesheet', href: urls[i] });
+		var load = function(type, urls, callback, scope) {
+			if (this == win) {
+				return new load(type, urls, callback, scope);
 			}
-			else {
-				node = createNode('script', { type: 'text/javascript', src: urls[i] });
-			}
-			scope.appendChild(node);
 
-			if (sniff) {
-				if (type == 'css' && sniff == 2) {
-					var intervalID = setInterval(function() {
-						try {
-							node.sheet.cssRules;
-							clearInterval(intervalID);
-							that.__callback();
-						}
-						catch (ex) {}
-					}, 100);
+			urls = (typeof urls == 'string' ? [urls] : urls);
+			scope = (scope ? (scope == 'body' ? body : head) : (type == 'js' ? body : head));
+
+			this.callback = callback || function() {};
+			this.queue = [];
+
+			var node, i = len = 0, that = this;
+
+			for (i = 0, len = urls.length; i < len; i++) {
+				this.queue[i] = 1;
+				if (type == 'css') {
+					node = createNode('link', { type: 'text/css', rel: 'stylesheet', href: urls[i] });
 				}
 				else {
-					node.onload = function() {
-						that.__callback();
+					node = createNode('script', { type: 'text/javascript', src: urls[i] });
+				}
+				scope.appendChild(node);
+
+				if (sniff) {
+					if (type == 'css' && sniff == 2) {
+						var intervalID = setInterval(function() {
+							try {
+								node.sheet.cssRules;
+								clearInterval(intervalID);
+								that.__callback();
+							}
+							catch (ex) {}
+						}, 100);
+					}
+					else {
+						node.onload = function() {
+							that.__callback();
+						}
 					}
 				}
+				else {
+					node.onreadystatechange = function() {
+						if (/^loaded|complete$/.test(this.readyState)) {
+							this.onreadystatechange = null;
+							that.__callback();
+						}
+					};
+				}
 			}
-			else {
-				node.onreadystatechange = function() {
-					if (/^loaded|complete$/.test(this.readyState)) {
-						this.onreadystatechange = null;
-						that.__callback();
-					}
-				};
+
+			return this;
+		};
+		load[proto].__callback = function() {
+			if (this.queue.pop() && (this.queue == 0)) { this.callback(); }
+		};
+
+		window.Sid = {
+			css: function(urls, callback, scope) {
+				return load('css', urls, callback, scope);
+			},
+			js: function(urls, callback, scope) {
+				return load('js', urls, callback, scope);
+			},
+			load: function(type, urls, callback, scope) {
+				return load(type, urls, callback, scope);
 			}
-		}
+		};
+	})();
 
-		return this;
-	};
-	load[proto].__callback = function() {
-		if (this.queue.pop() && (this.queue == 0)) { this.callback(); }
-	};
-
-	window.Sid = {
-		css: function(urls, callback, scope) {
-			return load('css', urls, callback, scope);
-		},
-		js: function(urls, callback, scope) {
-			return load('js', urls, callback, scope);
-		},
-		load: function(type, urls, callback, scope) {
-			return load(type, urls, callback, scope);
-		}
-	};
-})();
+});

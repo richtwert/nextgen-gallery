@@ -44,23 +44,17 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// The MVC framework is really a templating framework - not MVC.
 		$this->_get_registry()->load_module('photocrati-mvc');
 
-		// We have a dynamic resource loader for loading static content, such as
-		// stylesheets and javascript source files.
-		$this->_get_registry()->load_module('photocrati-resource_loader');
+		// This provides a general AJAX handler for all other modules to extend
+		$this->_get_registry()->load_module('photocrati-ajax');
 
-		// Add the admin area
-		$this->_get_registry()->load_module('photocrati-admin');
+		// Load the Lazy Resource Loader
+		$this->_get_registry()->load_module('photocrati-lazy_resources');
 
-		// Load the Ngglegacy ImageBrowser Gallery Type
-		$this->_get_registry()->load_module('photocrati-nextgen_imagebrowser');
+		// Load the Gallery Display module, used to display galleries and albums
+		$this->_get_registry()->load_module('photocrati-gallery_display');
 
-		// Load the NggLegacy Slideshow Gallery Type
-		// TODO: We need to add the config class for the gallery type before
-		// we can actually use/load it
-		// $this->_get_registry()->load_module('photocrati-nextgen_slideshow');
-
-		// Load the Attach to Post interface
-		$this->_get_registry()->load_module('photocrati-attach_to_post');
+		// Load the NextGEN Basic Thumbnails display type
+		$this->_get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
 	}
 }
 

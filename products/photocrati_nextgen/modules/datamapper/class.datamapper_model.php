@@ -111,11 +111,17 @@ class C_DataMapper_Model extends C_Component
 	}
 
 	/**
-	 * Gets the primary key
+	 * Gets/sets the primary key
 	 */
 	function id()
 	{
 		$key = $this->get_mapper()->get_primary_key_column();
-		return $this->__get($key);
+		$args = func_get_args();
+		if ($args) {
+			return $this->__set($key, $args[0]);
+		}
+		else {
+			return $this->__get($key);
+		}
 	}
 }
