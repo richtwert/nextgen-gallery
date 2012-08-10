@@ -34,10 +34,6 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			$this->object->settings['images_per_page'] = $settings->galImages;
 		if (!isset($this->object->settings['slideshow_link_text']))
 			$this->object->settings['slideshow_link_text'] = $settings->galTextSlide;
-		if (!isset($this->object->settings['show_slideshow_link']))
-			$this->object->settings['show_slideshow_link'] = $settings->galShowSlide;
-		if (!isset($this->object->settings['show_piclens_link']))
-			$this->object->settings['show_piclens_link'] = $settings->usePicLens;
 		if (!isset($this->object->settings['piclens_link_text']))
 			$this->object->settings['piclens_link_text'] = 'Show PicLens';
 		if (!isset($this->object->settings['number_of_columns']))
@@ -46,6 +42,26 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			$this->object->settings['thumb_width'] = $settings->thumbwidth;
 		if (!isset($this->object->settings['thumb_height']))
 			$this->object->settings['thumb_height'] = $settings->thumbheight;
+
+		// Show slideshow link ?
+		if (!isset($this->object->settings['show_slideshow_link']))
+			$this->object->settings['show_slideshow_link'] = $settings->galShowSlide;
+		elseif (is_string($this->object->settings['show_slideshow_link'])) {
+			if (preg_match("/^1|true|yes$/", $this->object->settings['show_slideshow_link']))
+				$this->object->settings['show_slideshow_link'] = TRUE;
+			else
+				$this->object->settings['show_slideshow_link'] = FALSE;
+		}
+
+		// Show piclens link?
+		if (!isset($this->object->settings['show_piclens_link']))
+			$this->object->settings['show_piclens_link'] = $settings->usePicLens;
+		elseif (is_string($this->object->settings['show_piclens_link'])) {
+			if (preg_match("/^1|true|yes$/", $this->object->settings['show_piclens_link']))
+				$this->object->settings['show_piclens_link'] = TRUE;
+			else
+				$this->object->settings['show_piclens_link'] = FALSE;
+		}
 	}
 
 	function validate()

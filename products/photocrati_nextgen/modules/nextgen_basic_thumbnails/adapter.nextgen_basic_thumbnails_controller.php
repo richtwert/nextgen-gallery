@@ -43,7 +43,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			$slideshow_link = 'http://www.google.ca';
 
 			// Determine what the piclens link would be
-			$piclens_link	= 'http://www.google.ca';
+			if ($displayed_gallery->display_settings['show_piclens_link']) {
+				$params = base64_encode(json_encode($displayed_gallery->get_entity()));
+				$mediarss_link	= real_site_url('/mediarss?source=displayed_gallery&params='.$params);
+				$piclens_link	= "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
+			}
 
 			// Determine the lightbox effects attributes
 			$effect_html = '';
@@ -69,6 +73,22 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		else {
 			$this->object->render_partial("no_images_found");
 		}
+	}
+
+	/**
+	 * Enqueues all static resources required by this display type
+	 * @param C_Displayed_Gallery $displayed_gallery
+	 */
+	function enqueue_resources($displayed_gallery)
+	{
+		if ($displayed_gallery->display_settings['show_piclens_link']) {
+			wp_enqueue_script(
+				'piclens',
+				(is_ssl()?'https':'http').'://lite.piclens.com/current/piclens_optimized.js'
+			);
+		}
+
+		$this->call_parent('enqueue_resources', $displayed_gallery);
 	}
 
 

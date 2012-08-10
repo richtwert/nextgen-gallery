@@ -1,10 +1,10 @@
 <?php
 
 /***
-	{
+{
 		Module: photocrati-nextgen-data,
 		Depends: { photocrati-nextgen_settings, photocrati-datamapper }
-	}
+}
 ***/
 
 class Mixin_Load_Lightbox_Library extends Mixin

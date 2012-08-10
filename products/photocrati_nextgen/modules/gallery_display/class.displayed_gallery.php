@@ -114,6 +114,23 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		return $mapper->run_query();
 	}
 
+
+	/**
+	 * Get the galleries associated with this display
+	 */
+	function get_galleries()
+	{
+		$retval = array();
+		if ($this->object->source == 'gallery') {
+			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
+			$gallery_key = $mapper->get_primary_key_column();
+			$mapper->select()->where(array("{$gallery_key} IN (%s)", $this->object->container_ids));
+			return $mapper->run_query();
+		}
+		return $retval;
+	}
+
+
 	/**
 	 * Gets the number of images to display
 	 * @param int|FALSE $limit
