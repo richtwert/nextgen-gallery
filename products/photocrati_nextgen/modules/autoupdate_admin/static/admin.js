@@ -57,6 +57,7 @@ var Photocrati_AutoUpdate_Admin = {
 		
 		updaterLog.html('');
 		updaterProgress.progressbar('option', 'value', 1);
+		updaterProgress.show();
 		
 		this.updateContinue(updater, textList);
 	},
@@ -102,7 +103,9 @@ var Photocrati_AutoUpdate_Admin = {
 			
 			if (updateStage == nextStage)
 			{
-				updaterMessage.html(textList['updater_status_done']);
+				updaterMessage.html('<span style="color:#44aa44;font-weight:bold;">' + textList['updater_status_done'] + '</span>');
+				updater.find('.details .button-update-start').hide();
+				updater.find('.details .button-update-done').css('display', 'inline');
 				updaterLog.append('Update Completed.\n');
 				updaterProgress.progressbar('option', 'value', 100);
 			
@@ -370,14 +373,14 @@ jQuery(document).ready(function () {
 			totalSize = photocrati_autoupdate_readable_size(totalSize);
 			downloadSize = photocrati_autoupdate_readable_size(downloadSize);
 			
-			content.append('<div class="details"><span class="message">' + textList['updates_available'].format(updateCount, installCount) + ' ' + textList['updates_sizes'].format(totalSize, downloadSize) + '</span></div>');
+			content.append('<div class="details"><span class="update-info">' + textList['updates_available'].format(updateCount, installCount) /* + ' ' + textList['updates_sizes'].format(totalSize, downloadSize) */ + '</span></div>');
 		
 			if (invalidCount > 0)
 			{
 				invalidLink += invalidLink.indexOf('?') == -1 ? '?' : '&';
 				invalidLink += 'pclst' + '=' + escape(Photocrati_AutoUpdate_Admin_Settings.request_site);
 				
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount) + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary" target="_blank">' + textList['updates_license_get'] + '</a></div>');
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount, updateCount, '<br/>') + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary" target="_blank">' + textList['updates_license_get'] + '</a></div>');
 			}
 		
 			if (expiredCount > 0)
@@ -385,7 +388,7 @@ jQuery(document).ready(function () {
 				expiredLink += expiredLink.indexOf('?') == -1 ? '?' : '&';
 				expiredLink += 'pclst' + '=' + escape(Photocrati_AutoUpdate_Admin_Settings.request_site);
 				
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount) + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary" target="_blank">' + textList['updates_renew'] + '</a></div>');
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount, updateCount, '<br/>') + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary" target="_blank">' + textList['updates_renew'] + '</a></div>');
 			}
 			
 			if (installCount > 0)
@@ -394,6 +397,7 @@ jQuery(document).ready(function () {
 				var updaterMessage = jQuery('<span class="message"></span>');
 				var updaterLog = jQuery('<pre class="log"></pre>');
 				var updaterProgress = jQuery('<div class="progress-bar" />').progressbar();
+				var logContainer = null;
 				
 				updater.data('update-list', updateList);
 				
@@ -407,15 +411,16 @@ jQuery(document).ready(function () {
 				
 				elem = jQuery('<div class="details"></div>');
 				var downloadLogBtn = jQuery('<button class="button-secondary download-log" style="visibility:hidden">' + textList['updater_logger_download'] + '</button>');
-				elem.append(jQuery('<h4 class="show-log">' + textList['updater_logger_title'] + '</h4>').css({ cursor : 'pointer' }).click(function (e) {
+				var showLogBtn = jQuery('<span>' + textList['updater_logger_title'] + '</span>').css({ cursor : 'pointer' }).click(function (e) {
 					e.preventDefault();
 					jQuery(this).parent().find('.log').slideToggle();
 					return false;
-				}).append(downloadLogBtn));
+				});
+				elem.append(jQuery('<h4 class="show-log">' + '</h4>').append(showLogBtn).append(downloadLogBtn));
 				elem.css({ overflow: 'auto' });
 				updaterLog.css({ height: 300 }).hide(); 
 				elem.append(updaterLog);
-				updater.append(elem);
+				logContainer = elem;
 				
 				downloadLogBtn.click(function (e) {
 					e.preventDefault();
@@ -446,6 +451,7 @@ jQuery(document).ready(function () {
 					return false;
 				});
 				
+				updaterProgress.hide();
 				updaterProgress.bind('progressbarchange', function(event, ui) {
 					var val = jQuery(this).progressbar( "option", "value" );
 					
@@ -453,10 +459,12 @@ jQuery(document).ready(function () {
 						downloadLogBtn.css('visibility', 'visible');
 				});
 				
-				updater.append(updaterProgress);
+				elem = jQuery('<div class="details"></div>');
+				elem.append(updaterProgress);
+				updater.append(elem);
 				
 				elem = jQuery('<div class="details"></div>');
-				elem.append(jQuery('<button class="button-primary">' + textList['updater_button_start'] + '</button>').click(function (e) {
+				elem.append(jQuery('<button class="button-primary button-update-start">' + textList['updater_button_start'] + '</button>').click(function (e) {
 					e.preventDefault();
 					var jthis = jQuery(this);
 					if (!jthis.attr('disabled'))
@@ -466,7 +474,10 @@ jQuery(document).ready(function () {
 					}
 					return false;
 				}));
+				elem.append(jQuery('<a class="button-primary button-update-done" href="' + Photocrati_AutoUpdate_Admin_Settings.adminurl + '">' + textList['updater_button_done'] + '</a>').hide());
 				updater.append(elem);
+				
+				updater.append(logContainer);
 				
 				content.append(updater);
 			}

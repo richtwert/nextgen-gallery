@@ -133,17 +133,18 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function _get_text_list()
     {
+  		// XXX note that because of how json_encode works across PHP versions we need NOT TO USE double quotes in the text it seems
     	return array(
-    		'no_updates' => __('No updates available.'),
-    		'updates_available' => __('Updates available, {1} updates of {0} will be installed.'),
+    		'no_updates' => __('No updates available. You are using the latest version of Photocrati.'),
+    		'updates_available' => __('An update is available for your theme.'),
     		'updates_sizes' => __('Update size is {0} and a total of <b>{1}</b> will be downloaded.'),
-    		'updates_license_invalid' => __('Note: {0} of the available updates can\'t be installed because your license seems invalid or no license was installed in this instance.'),
-    		'updates_license_get' => __('Install my license'),
-    		'updates_expired' => __('Note: {0} of the available updates can\'t be installed because your subscription is expired.'),
-    		'updates_renew' => __('Renew my subscription.'),
+    		'updates_license_invalid' => __('In order to update your theme, we need to confirm that you are still an active member. You\'ll be redirected to our site, prompted for your original purchase email, and returned here for the update. {2}This is part of a new update mechanism, and you\'ll only need to do it once.'),
+    		'updates_license_get' => __('Start confirmation'),
+    		'updates_expired' => __('Your updates cannot be installed because your membership has expired. You can update in minutes and get immediate access to updates and support for an additional year.'),
+    		'updates_renew' => __('Renew my membership'),
     		'updater_button_start' => __('Start Update'),
-    		'updater_status_done' => __('Done.'),
-    		// XXX note that because of how json_encode works we need to manually escape double quotes it seems
+    		'updater_button_done' => __('Return to dashboard'),
+    		'updater_status_done' => __('Success! Your theme is now up-to-date.'),
     		'updater_status_start' => __('Click <b>Start Update</b> to begin the upgrade process.'),
     		'updater_status_preparing' => __('Preparing upgrade process...'),
     		'updater_status_stage_download' => __('Downloading package {1} of {0}...'),
@@ -151,7 +152,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     		'updater_status_stage_activate' => __('Activating packages...'),
     		'updater_status_stage_cleanup' => __('Cleaning up...'),
     		'updater_status_cancel' => __('Update was canceled.'),
-    		'updater_status_error' => __('An error occurred during the operation ({0}).'),
+    		'updater_status_error' => __('An error occurred during your update ({0}).'),
     		'updater_logger_title' => __('Show Update Log'),
     		'updater_logger_download' => __('Download Update Log')
     	);
@@ -173,7 +174,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
 				$ajaxurl = admin_url('admin-ajax.php');
 			}
 
-			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin_Settings', array('ajaxurl' => $ajaxurl, 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'request_site' => base64_encode(admin_url()), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
+			wp_localize_script('pc-autoupdate-admin', 'Photocrati_AutoUpdate_Admin_Settings', array('ajaxurl' => $ajaxurl, 'adminurl' => admin_url(), 'actionSec' => wp_create_nonce('pc-autoupdate-admin-nonce'), 'request_site' => base64_encode(admin_url()), 'update_list' => json_encode($this->_get_update_list()), 'text_list' => json_encode($this->_get_text_list())));
 
 			if ((isset($_POST['action']) && $_POST['action'] == 'photocrati_autoupdate_admin_handle'))
 			{

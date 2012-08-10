@@ -6,23 +6,26 @@ background:transparent none no-repeat scroll left center;
 background-image:url('ajax-loader.gif');
 padding:20px 40px;
 }
-#update-loader .message {
-font-style:italic;
-}
 #update-content .details {
 font-size:105%;
 font-style:italic;
 margin:8px 0px;
 }
+#update-content .details .message {
+font-style:italic;
+font-size:115%;
+padding:8px 5;
+}
 #update-content .details-alert .message {
 font-weight:bold;
 color:#dd3322;
+line-height:25px;
 }
 #update-content .details .log {
 background:#f8f8f8;
 overflow-y:scroll;
 padding:5px 8px;
-margin-bottom:8px;
+margin:0 0 8px 0;
 }
 #update-content .details .show-log {
 margin:0;
