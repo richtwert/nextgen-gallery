@@ -39,6 +39,7 @@ class M_MVC extends C_Base_Module
 
     function initialize()
     {
+		parent::initialize();
         set_exception_handler(array(&$this, 'handle_exit'));
     }
 

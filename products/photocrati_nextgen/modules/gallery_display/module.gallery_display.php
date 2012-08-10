@@ -101,37 +101,35 @@ class M_Gallery_Display extends C_Base_Module
 		// We're generating a new displayed gallery
 		else {
 
-			// Determine the source
-			if (is_null($args['source'])) {
+			// Perform some conversions...
 
-				// Galleries?
-				if ($args['gallery_ids']) {
-					$args['source']					= 'galleries';
-					if (is_empty($args['container_ids']))
-						$args['container_ids']		= $args['gallery_ids'];
-				}
-
-				// Albums ?
-				elseif ($args['album_ids']) {
-					$args['source']					= 'albums';
-					if (!$args['container_ids'])
-						$args['container_ids']		= $args['album_ids'];
-				}
-
-				// Tags ?
-				elseif ($args['tag_ids']) {
-					$args['source']					= 'tags';
-					if (!$args['container_ids'])
-						$args['container_ids']		= $args['tag_ids'];
-				}
+			// Galleries?
+			if ($args['gallery_ids']) {
+				$args['source']					= 'galleries';
+				$args['container_ids']		= $args['gallery_ids'];
+				unset($args['gallery_ids']);
 			}
 
-			// Perform some conversions
+			// Albums ?
+			elseif ($args['album_ids']) {
+				$args['source']					= 'albums';
+				$args['container_ids']		= $args['album_ids'];
+				unset($args['albums_ids']);
+			}
+
+			// Tags ?
+			elseif ($args['tag_ids']) {
+				$args['source']					= 'tags';
+				$args['container_ids']		= $args['tag_ids'];
+				unset($args['tag_ids']);
+			}
+
+			// Convert strings to arrays
 			if (!is_array($args['container_ids'])) {
-				$args['container_ids']	= preg_split("/,\|/", $args['container_ids']);
+				$args['container_ids']	= preg_split("/,|\|/", $args['container_ids']);
 			}
 			if (!is_array($args['exclusions'])) {
-				$args['exclusions']		= preg_split("/,\|/", $args['exclusions']);
+				$args['exclusions']		= preg_split("/,|\|/", $args['exclusions']);
 			}
 
 			// Get the display settings
@@ -140,12 +138,12 @@ class M_Gallery_Display extends C_Base_Module
 
 			// Validate the displayed gallery
 			$factory = $this->_get_registry()->get_utility('I_Component_Factory');
-			$displayed_gallery = $factory->create('displayed_gallery', $args, $mapper);
+			$displayed_gallery = $factory->create('displayed_gallery', $mapper, $args);
 			unset($factory);
 		}
 
 		// Validate the displayed gallery
-		if ($displayed_gallery && $displayed_gallery->is_valid()) {
+		if ($displayed_gallery && $displayed_gallery->validate()) {
 
 			// Set a temporary id
 			$displayed_gallery->id(uniqid('temp'));
@@ -157,10 +155,7 @@ class M_Gallery_Display extends C_Base_Module
 			$controller->enqueue_resources($displayed_gallery);
 			$controller->index($displayed_gallery);
 		}
-		else {
-			return "Invalid Displayed Gallery";
-		}
-
+		else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
 	}
 }
 

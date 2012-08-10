@@ -80,12 +80,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		// incorrect id
 		if (is_object($image)) {
 			if (($gallery_path = $this->object->get_gallery_abspath($image->galleryid))) {
-				$folder = $size;
+				$folder = $prefix = $size;
 				switch ($size) {
 
 					# Images are stored in the associated gallery folder
 					case 'full':
 					case 'original':
+					case 'image':
 						$retval = path_join($gallery_path, $image->filename);
 						break;
 
@@ -95,6 +96,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					case 'thumbs':
 						$size = 'thumbnail';
 						$folder = 'thumbs';
+						$prefix = 'thumbs';
 						// deliberately no break here
 
 					// We assume any other size of image is stored in the a
@@ -116,7 +118,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						// WordPress conventions, NGG legacy does follow it's
 						// own naming schema consistently so we can guess the path
 						else {
-							$image_path = path_join($image_path, "{$size}_{$image->filename}");
+							$image_path = path_join($image_path, "{$prefix}_{$image->filename}");
 						}
 
 						// Should we check whether the image actually exists?

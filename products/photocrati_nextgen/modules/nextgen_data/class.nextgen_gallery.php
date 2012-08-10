@@ -29,15 +29,7 @@ class Mixin_NextGen_Gallery_Validation
      */
     function validate()
     {
-        $this->object->name = sanitize_file_name( sanitize_title($this->object->title));
-		$this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
-        $this->object->slug = nggdb::get_unique_slug( sanitize_title($this->object->title), 'gallery' );
-
-        // If author is missing, then set to the current user id
-        // TODO: Using wordpress function. Should use abstraction
-        if (!$this->object->author) {
-            $this->object->author = get_current_user_id();
-        }
+		$this->object->set_defaults();
 
 		// Set what will be the path to the gallery
 		$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
@@ -48,7 +40,28 @@ class Mixin_NextGen_Gallery_Validation
 		$this->object->validates_presence_of('name');
         $this->object->validates_uniqueness_of('slug');
         $this->object->validates_numericality_of('author');
+
+		return $this->object->is_valid();
     }
+
+	/**
+	 * Sets default values for the gallery
+	 */
+	function set_defaults()
+	{
+		// If author is missing, then set to the current user id
+        // TODO: Using wordpress function. Should use abstraction
+        if (!$this->object->author) {
+            $this->object->author = get_current_user_id();
+        }
+
+		// Generate name and slug based off of the title
+		if (isset($this->object->title)) {
+			$this->object->name = sanitize_file_name( sanitize_title($this->object->title));
+			$this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
+			$this->object->slug = nggdb::get_unique_slug( sanitize_title($this->object->title), 'gallery' );
+		}
+	}
 }
 
 /**

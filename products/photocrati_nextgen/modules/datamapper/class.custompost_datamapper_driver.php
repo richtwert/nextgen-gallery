@@ -152,6 +152,22 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 					// Must be metadata
 					$clause['key'] = $clause['column'];
 					unset($clause['column']);
+
+					// If an IN clause is provided, then we need to convert the
+					// values back to an array
+					if (strpos($clause['compare'], 'IN') !== FALSE) {
+						$clause['value'] = explode(',', $clause['value']);
+						foreach ($clause['value'] as &$val) {
+							if (!is_numeric($val)) {
+
+								// In the _parse_where_clause() method, we
+								// quote the strings and add slashes
+								$val = stripslashes($val);
+								$val = substr($val, 1, strlen($val)-2);
+							}
+						}
+					}
+
 					if (!isset($this->object->_query_args['meta_query'])) {
 						$this->object->_query_args['meta_query'] = array();
 					}

@@ -30,6 +30,10 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// of settings for the plugin.
 		$this->_get_registry()->load_module('photocrati-nextgen_settings');
 
+		// The NextGEN Settings module provides uniform centralized management
+		// of settings for the plugin.
+		$this->_get_registry()->load_module('photocrati-nextgen_settings');
+
 		// The datamapper is a library which is required by our data tier
 		// components. This is the first module we load as in the future, the
 		// plan is to refactor the photocrati-nextgen-legacy module to use it

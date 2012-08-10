@@ -34,7 +34,13 @@ class Mixin_NextGen_Activator extends Mixin
 {
 	function install()
 	{
-		// Ensures that ALL options are present
+		// Install multisite options
+		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings', 'multisite');
+		$settings->save();
+
+		// Install blog specific options
+		// TODO: Need to determine if this was network activated, and if so, to
+		// install blog specific options for every blog
 		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
 		$settings->save();
 	}

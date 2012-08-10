@@ -8,9 +8,9 @@ class A_Gallery_Display_Factory extends Mixin
 	 * @param C_DataMapper|FALSE $mapper
 	 * @param string|array|FALSE $context
 	 */
-	function display_type($properties=array(), $mapper=FALSE, $context=FALSE)
+	function display_type($mapper=FALSE, $properties=array(), $context=FALSE)
 	{
-		return new C_Display_Type($properties, $mapper, $context);
+		return new C_Display_Type($mapper, $properties, $context);
 	}
 
 	/**
@@ -19,8 +19,8 @@ class A_Gallery_Display_Factory extends Mixin
 	 * @param C_DataMapper|FALSE $mapper
 	 * @param string|array|FALSE $context
 	 */
-	function displayed_gallery($properties=array(), $mapper=FALSE, $context=FALSE)
+	function displayed_gallery($mapper=FALSE, $properties=array(), $context=FALSE)
 	{
-		return new C_Displayed_Gallery($properties, $mapper, $context);
+		return new C_Displayed_Gallery($mapper, $properties, $context);
 	}
 }

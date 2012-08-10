@@ -128,7 +128,7 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('PHOTOCRATI_GALLERY_OPTION_PREFIX', 'nggallery');
 		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.5');
-		#define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
+		define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
 
@@ -165,6 +165,8 @@ class C_NextGEN_Bootstrap
 		if (file_exists($tests_dir)) {
 
 			// Include mock objects
+			// TODO: These mock objects should be moved to the appropriate
+			// test folder
 			require_once(path_join($tests_dir, 'mocks.php'));
 
 			// Define the NextGEN Test Suite
