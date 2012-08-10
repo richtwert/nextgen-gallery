@@ -38,6 +38,7 @@ class M_AutoUpdate extends C_Base_Module
     
     function admin_init()
     {
+    	// XXX this should probably be moved to autoupdate-admin
     	if (isset($_GET['pclihs']))
     	{
     		if (!current_user_can('manage_options'))
@@ -76,6 +77,13 @@ class M_AutoUpdate extends C_Base_Module
     				if ($license == null || $license != $license_new)
     				{
     					$this->set_license($license_new, $product);
+    					
+    					$autoupdate_admin = $this->_get_registry()->get_module('photocrati-auto_update-admin');
+    					
+    					if ($autoupdate_admin != null)
+    					{
+    						wp_redirect($autoupdate_admin->get_update_page_url());
+    					}
     				}
     			}
     			else
@@ -98,7 +106,7 @@ class M_AutoUpdate extends C_Base_Module
     				
     				$error .= '.';
     				
-    				wp_die('Couldn\'t install new license' . $error);
+    				wp_die('Couldn\'t activate membership' . $error);
     			}
     		}
     	}
@@ -347,13 +355,18 @@ class M_AutoUpdate extends C_Base_Module
     	
     	if ($install_path != null && $package_file != null && is_file($package_file))
     	{
+				global $wp_filesystem;
+  			
     		$dir = dirname($install_path);
     		$base = basename($install_path);
     		$install_path = $dir . DIRECTORY_SEPARATOR . '__' . $base;
     		
     		$ret = unzip_file($package_file, $install_path);
     		
-    		unlink($package_file);
+		  	if ($wp_filesystem != null)
+		  	{
+		  		$wp_filesystem->delete($package_file);
+    		}
     		
     		if ($ret && !is_wp_error($ret))
     		{
