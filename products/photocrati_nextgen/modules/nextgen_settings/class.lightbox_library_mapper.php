@@ -51,7 +51,7 @@ class Mixin_Lightbox_Library_Mapper
 	 */
 	function find_by_name($name, $model=FALSE)
 	{
-		$results = $this->select()->where(array('name = %s', $name))->run_query(FALSE, $model);
+		$results = $this->object->select()->where(array('name = %s', $name))->run_query(FALSE, $model);
 		if ($results) $results = $results[0];
 		return $results;
 	}

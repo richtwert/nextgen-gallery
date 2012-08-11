@@ -70,8 +70,8 @@ class Mixin_Display_Type_Controller extends Mixin
 	function enqueue_resources($displayed_gallery)
 	{
 		// Enqueue the lightbox effect library
-		$settings	= $this->object->get_registry()->get_utility('I_NextGen_Settings');
-		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$settings	= $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$mapper		= $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$library	= $mapper->find_by_name($settings->thumbEffect);
 		if ($library) {
 			$i=0;
