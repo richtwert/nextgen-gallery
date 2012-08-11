@@ -122,6 +122,11 @@ class M_AutoUpdate extends C_Base_Module
   		$path_list = array();
     	$license = null;
     	
+    	if ($license_default == false)
+    	{
+    		$license_default = null;
+    	}
+    	
     	if ($product != null) 
     	{
     		$license = get_option('photocrati_license_product_' . $product);
