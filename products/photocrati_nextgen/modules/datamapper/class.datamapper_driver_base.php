@@ -52,7 +52,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	function serialize($value)
 	{
 		//Using json_encode here because PHP's serialize is not Unicode safe
-		return json_encode($value);
+		return base64_encode(json_encode($value));
 	}
 
 
@@ -63,7 +63,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		if (strlen($value) > 1)
 		{
 			//Using json_decode here because PHP's unserialize is not Unicode safe
-			$retval = json_decode($retval, TRUE);
+			$retval = json_decode(base64_decode($retval), TRUE);
 
 			// JSON Decoding failed. Perhaps it's PHP serialized data?
 			if ($retval == NULL) {

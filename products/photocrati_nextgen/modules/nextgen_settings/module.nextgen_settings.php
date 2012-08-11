@@ -33,7 +33,8 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->activator = $this->_get_registry()->get_utility('I_NextGen_Activator');
+		$this->activator  = $this->_get_registry()->get_utility('I_NextGen_Activator');
+		$this->controller = $this->_get_registry()->get_utility('I_NextGen_Settings_Controller');
 	}
 
 
@@ -42,19 +43,123 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function _register_utilities()
 	{
-		$this->_get_registry()->add_utility('I_NextGen_Settings', 'C_NextGen_Settings');
-		$this->_get_registry()->add_utility('I_NextGen_Activator','C_NextGen_Activator');
+		/**
+		 * Provides a component to manage NextGen Settings
+		 */
+		$this->_get_registry()->add_utility(
+			'I_NextGen_Settings',
+			'C_NextGen_Settings'
+		);
+
+		/**
+		 * Provides a component to provide plugin activation
+		 */
+		$this->_get_registry()->add_utility(
+			'I_NextGen_Activator',
+			'C_NextGen_Activator'
+		);
+
+		/**
+		 * Provides a utility to perform CRUD operations for Lightbox libraries
+		 */
+		$this->_get_registry()->add_utility(
+			'I_Lightbox_Library_Mapper',
+			'C_Lightbox_Library_Mapper'
+		);
+
+		// Provides the Options page
+		$this->_get_registry()->add_utility(
+			'I_NextGen_Settings_Controller',
+			'C_NextGen_Settings_Controller'
+		);
 	}
 
-	
 	/**
-	 * Use the NextGEN Activator to run activation routines
+	 * Registers adapters required by this module
+	 */
+	function _register_adapters()
+	{
+		$this->_get_registry()->add_adapter(
+			'I_Component_Factory',
+			'A_NextGen_Settings_Factory'
+		);
+
+		$this->_get_registry()->add_adapter(
+			'I_MVC_Controller',
+			'A_MVC_Validation'
+		);
+	}
+
+	/**
+	 * Hooks into the WordPress Framework
 	 */
 	function _register_hooks()
 	{
+		// Use the NextGEN Activator to run activation routines
 		add_action(
 			'activate_'.PHOTOCRATI_GALLERY_PLUGIN_BASENAME,
 			array(&$this->activator, 'install')
+		);
+
+		// Provides menu options for managing NextGEN Settings
+		add_action(
+			'admin_menu',
+			array(&$this, 'add_menu_pages'),
+			999
+		);
+
+		// Enqueues static resources required
+		if (is_admin()) {
+			add_action(
+				'admin_init',
+				array(&$this, 'enqueue_resources')
+			);
+		}
+	}
+
+	/**
+	 * Adds menu pages to manage NextGen Settings
+	 * @uses action: admin_menu
+	 */
+	function add_menu_pages()
+	{
+		// Add the "Options" page
+		add_submenu_page(
+			NGGFOLDER,
+			_('Other Options'),
+			_('Other Options'),
+			'NextGEN Change options',
+			'ngg_other_options',
+			array(&$this->controller, 'index')
+		);
+	}
+
+	/**
+	 * Enqueues static resources required for the Settings page
+	 */
+	function enqueue_resources()
+	{
+		wp_enqueue_script(
+			'nextgen_settings_page',
+			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_settings_page.js',
+			array('jquery-ui-accordion'),
+			$this->module_version
+		);
+
+		// There are many jQuery UI themes available via Google's CDN:
+		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
+		wp_enqueue_style(
+			'jquery-ui-south-street',
+			(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
+			array(),
+			'1.7.0'
+		);
+
+		wp_enqueue_style(
+			'nextgen_settings_page',
+			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_settings_page.css',
+			array(),
+			$this->module_version
 		);
 	}
 }

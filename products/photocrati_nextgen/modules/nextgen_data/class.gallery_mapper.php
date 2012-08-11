@@ -1,7 +1,68 @@
 <?php
 
+/**
+ * Provides a datamapper for galleries
+ */
+class C_Gallery_Mapper extends C_DataMapper
+{
+    public static $_instances = array();
+
+	/**
+	 * Define the object
+	 * @param string $context
+	 */
+	function define($context=FALSE)
+	{
+		// Add 'gallery' context
+		if (!is_array($context)) $context = array($context);
+		array_push($context, 'gallery');
+
+		// Continue defining the object
+		parent::define('ngg_gallery', $context);
+		$this->set_model_factory_method('gallery');
+		$this->get_wrapped_instance()->add_mixin('Mixin_Gallery_Mapper');
+		$this->implement('I_Gallery_Mapper');
+	}
+
+	/**
+	 * Initializes the gallery mapper
+	 */
+	function initialize($context=FALSE)
+	{
+		parent::initialize($context);
+
+		// Tells the CustomPost driver (when used) what property to use
+		// as the value for the "post_title" column
+		$this->_post_title_field = 'title';
+	}
+
+	/**
+	 * Returns a singleton of the gallery mapper
+	 * @param string $context
+	 * @return C_Gallery_Mapper
+	 */
+    public static function get_instance($context = False)
+    {
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_Gallery_Mapper($context);
+        }
+        return self::$_instances[$context];
+    }
+}
+
 class Mixin_Gallery_Mapper extends Mixin
 {
+	/**
+	 * Uses the title property as the post title when the Custom Post driver
+	 * is used
+	 */
+	function get_post_title($entity)
+	{
+		return $entity->title;
+	}
+
+
 	/**
 	 * Sets the preview image for the gallery
 	 * @param int|stdClass|C_NextGen_Gallery $gallery
@@ -35,55 +96,4 @@ class Mixin_Gallery_Mapper extends Mixin
 
 		return $retval;
 	}
-}
-
-/**
- * Provides a datamapper for galleries
- */
-class C_Gallery_Mapper extends C_DataMapper
-{
-    public static $_instances = array();
-
-	/**
-	 * Define the object
-	 * @param string $context
-	 */
-	function define($context=FALSE)
-	{
-		// Add 'gallery' context
-		if (!is_array($context)) $context = array($context);
-		array_push($context, 'gallery');
-
-		// Continue defining the object
-		parent::define('ngg_gallery', $context);
-		$this->set_model_factory_method('gallery');
-		$this->add_mixin('Mixin_Gallery_Mapper');
-		$this->implement('I_Gallery_Mapper');
-	}
-
-	/**
-	 * Initializes the gallery mapper
-	 */
-	function initialize($context=FALSE)
-	{
-		parent::initialize($context);
-
-		// Tells the CustomPost driver (when used) what property to use
-		// as the value for the "post_title" column
-		$this->_post_title_field = 'title';
-	}
-
-	/**
-	 * Returns a singleton of the gallery mapper
-	 * @param string $context
-	 * @return C_Gallery_Mapper
-	 */
-    public static function get_instance($context = False)
-    {
-        if (!isset(self::$_instances[$context]))
-        {
-            self::$_instances[$context] = new C_Gallery_Mapper($context);
-        }
-        return self::$_instances[$context];
-    }
 }

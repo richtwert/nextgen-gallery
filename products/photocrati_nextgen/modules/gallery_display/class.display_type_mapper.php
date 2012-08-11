@@ -7,28 +7,19 @@ class C_Display_Type_Mapper extends C_CustomPost_DataMapper_Driver
 {
 	public static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_Display_Type_Mapper');
 		$this->implement('I_Display_Type_Mapper');
 		$this->set_model_factory_method('display_type');
 	}
 
-	/**
-	 * Initializes the mapper
-	 * @param string|array|FALSE $context
-	 */
-	function initialize($context = FALSE)
+	function initialize($context=FALSE)
 	{
-		// Tells the CustomPost driver what the custom post will be called, as
-		// well sets a context
-		parent::define('display_type', array($context, 'display_type'));
-
-		// Tells the CustomPost driver what property to use
-		// as the value for the "post_title" column
-		$this->_post_title_field = 'title';
+		parent::initialize('display_type', array($context, 'display_type'));
 	}
+
 
 	/**
 	 * Gets a singleton of the mapper
@@ -63,5 +54,15 @@ class Mixin_Display_Type_Mapper extends Mixin
 		$results = $this->object->run_query(FALSE, $model);
 		if ($results) $retval = $results[0];
 		return $retval;
+	}
+
+	/**
+	 * Uses the title attribute as the post title
+	 * @param stdClass $entity
+	 * @return string
+	 */
+	function get_post_title($entity)
+	{
+		return $entity->title;
 	}
 }

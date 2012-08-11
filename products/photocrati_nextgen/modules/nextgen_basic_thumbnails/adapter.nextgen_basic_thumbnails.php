@@ -38,10 +38,10 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			$this->object->settings['piclens_link_text'] = 'Show PicLens';
 		if (!isset($this->object->settings['number_of_columns']))
 			$this->object->settings['number_of_columns'] = $settings->galColumns;
-		if (!isset($this->object->settings['thumb_width']))
-			$this->object->settings['thumb_width'] = $settings->thumbwidth;
-		if (!isset($this->object->settings['thumb_height']))
-			$this->object->settings['thumb_height'] = $settings->thumbheight;
+		if (!isset($this->object->settings['thumbnail_width']))
+			$this->object->settings['thumbnail_width'] = $settings->thumbwidth;
+		if (!isset($this->object->settings['thumbnail_height']))
+			$this->object->settings['thumbnail_height'] = $settings->thumbheight;
 
 		// Show slideshow link ?
 		if (!isset($this->object->settings['show_slideshow_link']))
@@ -66,6 +66,10 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 
 	function validate()
 	{
+		$this->object->validates_presence_of('thumbnail_width');
+		$this->object->validates_presence_of('thumbnail_height');
+		$this->object->validates_numericality_of('thumbnail_width');
+		$this->object->validates_numericality_of('thumbnail_height');
 		$this->object->validates_numericality_of('images_per_page');
 	}
 }

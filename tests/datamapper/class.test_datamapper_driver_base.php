@@ -21,7 +21,7 @@ abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 	{
 		parent::__construct($title);
 		$this->post_title = "Mike's Test Post";
-		$this->post_type = 'posts';
+		$this->post_type = 'post';
 		$this->model_factory_method = 'my_model';
 		$this->ids_to_cleanup = array();
 	}
