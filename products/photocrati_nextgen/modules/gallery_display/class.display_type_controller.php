@@ -70,8 +70,8 @@ class Mixin_Display_Type_Controller extends Mixin
 	function enqueue_resources($displayed_gallery)
 	{
 		// Enqueue the lightbox effect library
-		$settings	= $this->object->get_registry()->get_utility('I_NextGen_Settings');
-		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$settings	= $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$mapper		= $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$library	= $mapper->find_by_name($settings->thumbEffect);
 		if ($library) {
 			$i=0;
@@ -86,7 +86,7 @@ class Mixin_Display_Type_Controller extends Mixin
 			foreach (explode("\n", $library->css_stylesheets) as $style) {
 				wp_enqueue_style(
 					$library->name.'-'.$i,
-					$script
+					$style
 				);
 				$i+=1;
 			}
@@ -172,6 +172,20 @@ class Mixin_Display_Type_Controller extends Mixin
 	{
 		return NULL;
 	}
+
+
+	/**
+	 * Returns the effect HTML code for the displayed gallery
+	 * @param type $displayed_gallery
+	 */
+	function get_effect_code($displayed_gallery)
+	{
+		$effect_code = $displayed_gallery->display_settings['effect_code'];
+		$effect_code = str_replace('%GALLERY_ID%', $displayed_gallery->id(), $effect_code);
+		$effect_code = str_replace('%GALLERY_NAME%', $displayed_gallery->id(), $effect_code);
+		return $effect_code;
+	}
+
 
 	/**
 	 * Adds data to the DOM which is then accessible by a script
