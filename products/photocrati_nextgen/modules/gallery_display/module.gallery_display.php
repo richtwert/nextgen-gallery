@@ -23,10 +23,25 @@ class M_Gallery_Display extends C_Base_Module
 	}
 
 	/**
+	 * Initializes the module
+	 */
+	function initialize()
+	{
+		parent::initialize();
+		$this->controller = $this->_get_registry()->get_utility('I_Display_Settings_Controller');
+	}
+
+
+	/**
 	 * Register utilities required for this module
 	 */
 	function _register_utilities()
 	{
+		$this->_get_registry()->add_utility(
+			'I_Display_Settings_Controller',
+			'C_Display_Settings_Controller'
+		);
+
 		// This utility provides a controller to render the settings form
 		// for a display type, or render the front-end of a display type
 		$this->_get_registry()->add_utility(
@@ -62,10 +77,63 @@ class M_Gallery_Display extends C_Base_Module
 		);
 	}
 
-
+	/**
+	 * Registers hooks for the WordPress framework
+	 */
 	function _register_hooks()
 	{
+		// Add the display settings page to wp-admin
+		add_action('admin_menu', array(&$this, 'add_display_settings_page'), 999);
+
+		// Enqueues static resources required
+		if (is_admin()) {
+			add_action(
+				'admin_init',
+				array(&$this, 'enqueue_resources')
+			);
+		}
+
+		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
+	}
+
+
+	/**
+	 * Adds the display settings page to wp-admin
+	 */
+	function add_display_settings_page()
+	{
+		add_submenu_page(
+			NGGFOLDER,
+			_('NextGEN Display Settings'),
+			_('Display Settings'),
+			'NextGEN Manage gallery',
+			'ngg_display_settings',
+			array(&$this->controller, 'index')
+		);
+	}
+
+
+	/**
+	 * Enqueues static resources for the Display Settings Page
+	 */
+	function enqueue_resources()
+	{
+		wp_enqueue_script(
+			'nextgen_display_settings_page',
+			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_display_settings_page.js',
+			array('jquery-ui-accordion'),
+			$this->module_version
+		);
+
+		// There are many jQuery UI themes available via Google's CDN:
+		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
+		wp_enqueue_style(
+			'jquery-ui-south-street',
+			(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
+			array(),
+			'1.7.0'
+		);
 	}
 
 

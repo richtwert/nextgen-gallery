@@ -50,7 +50,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			}
 
 			// Determine the lightbox effects attributes
-			$effect_html = '';
+			$effect_html = $displayed_gallery->display_settings['effects_code'];
 
 			// Get the gallery storage component
 			$storage = $this->object->_get_registry()->get_utility(
@@ -110,5 +110,32 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function _get_js_init_url()
 	{
 		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails_init.js';
+	}
+
+
+	/**
+	 * Returns a list of fields to render on the settings page
+	 */
+	function _get_field_names()
+	{
+		return array(
+			'thumbnail_dimensions'
+		);
+	}
+
+	/**
+	 * Renders the thumbnail width field
+	 * @param C_Display_Type $display_type
+	 * @return string
+	 */
+	function _render_thumbnail_dimensions_field($display_type)
+	{
+		return $this->render_partial('nextgen_basic_thumbnail_dimensions', array(
+			'thumbnail_width_label'		=>	_('Thumbnail Width:'),
+			'thumbnail_height_label'	=>	_('Thumbnail Height:'),
+			'display_type_name'			=>	$display_type->name,
+			'thumbnail_width'			=>	$display_type->settings['thumbnail_width'],
+			'thumbnail_height'			=>	$display_type->settings['thumbnail_height']
+		), TRUE);
 	}
 }
