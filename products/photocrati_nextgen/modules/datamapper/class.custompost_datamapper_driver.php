@@ -270,14 +270,12 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 
 		// A post required a title
 		if (!property_exists($post, 'post_title')) {
-			if ($this->object->_post_title_field) $post->post_title = $post->{$this->object->_post_title_field};
-			else $post->post_title = "Untitled {$this->object->get_object_name()}";
+			$post->post_title = $this->object->get_post_title($post);
 		}
 
 		// A post also requires an excerpt
 		if (!property_exists($post, 'post_excerpt')) {
-			if ($this->object->_post_excerpt_field) $post->post_excerpt = $post->$this->object->_post_excerpt_field;
-			else $post->post_excerpt = "";
+			$post->post_excerpt = $this->object->get_post_excerpt($post);
 		}
 
 		return $post;
@@ -419,13 +417,32 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 
 		return $retval;
 	}
+
+
+	/**
+	 * Returns the title of the post. Used when post_title is not set
+	 * @param stdClass $entity
+	 * @return string
+	 */
+	function get_post_title($entity)
+	{
+		return "Untitled {$this->object->get_object_name()}";
+	}
+
+	/**
+	 * Returns the excerpt of the post. Used when post_excerpt is not set
+	 * @param stdClass $entity
+	 * @return string
+	 */
+	function get_post_excerpt($entity)
+	{
+		return '';
+	}
 }
 
 class C_CustomPost_DataMapper_Driver extends C_DataMapper_Driver_Base
 {
 	var $_query_args = array();
-	var $_post_title_field = FALSE;
-	var $_post_excerpt_field = FALSE;
 	var $_primary_key_column = 'ID';
 
 	function define($context=FALSE)

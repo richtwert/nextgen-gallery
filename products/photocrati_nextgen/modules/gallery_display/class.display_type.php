@@ -34,6 +34,22 @@ class C_Display_Type extends C_DataMapper_Model
 		// Construct the model
 		parent::initialize($mapper, $properties, $context);
 	}
+
+
+	/**
+	 * Allows a setting to be retrieved directly, rather than through the
+	 * settings property
+	 * @param string $property
+	 * @return mixed
+	 */
+	function &__get($property)
+	{
+		if (isset($this->object->settings) && isset($this->object->settings[$property])) {
+			$retval = &$this->object->settings[$property];
+			return $retval;
+		}
+		else return parent::__get($property);
+	}
 }
 
 class Mixin_Display_Type_Validation extends Mixin

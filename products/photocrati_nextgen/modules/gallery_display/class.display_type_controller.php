@@ -69,6 +69,29 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function enqueue_resources($displayed_gallery)
 	{
+		// Enqueue the lightbox effect library
+		$settings	= $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$library	= $mapper->find_by_name($settings->thumbEffect);
+		if ($library) {
+			$i=0;
+			foreach (explode("\n", $library->scripts) as $script) {
+				wp_enqueue_script(
+					$library->name.'-'.$i,
+					$script
+				);
+				$i+=1;
+			}
+			$i=0;
+			foreach (explode("\n", $library->css_stylesheets) as $style) {
+				wp_enqueue_style(
+					$library->name.'-'.$i,
+					$script
+				);
+				$i+=1;
+			}
+		}
+
 		// Enqueue the display type library
 		wp_enqueue_script(
 			$displayed_gallery->display_type,
@@ -111,23 +134,23 @@ class Mixin_Display_Type_Controller extends Mixin
 	{
 		// Get the fields for this gallery type
 		$fields = array();
-		foreach ($this->object->_get_field_names($display_type) as $field) {
-			$render_method = "render_{$field}_field";
+		foreach ($this->object->_get_field_names() as $field) {
+			$render_method = "_render_{$field}_field";
 			if ($this->object->has_method($render_method))
-				$fields[] = $this->object->$render_method();
+				$fields[] = $this->object->$render_method($display_type);
 		}
 
 		// Render the display type settings template
 		return $this->object->render_partial('display_type_settings', array(
+			'title'			=> $display_type->title,
 			'fields'		=> $fields,
-			'display_type'	=> $display_type
 		), $return);
 	}
 
 	/**
 	 * Returns the name of the fields to
 	 */
-	function _get_field_names($display_type)
+	function _get_field_names()
 	{
 		return array();
 	}

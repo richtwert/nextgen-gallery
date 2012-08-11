@@ -34,6 +34,18 @@ class Mixin_NextGen_Activator extends Mixin
 {
 	function install()
 	{
+		// We need a custom lightbox library option
+		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$mapper->save((object)array(
+			'name'	=>	'Custom',
+		));
+		$mapper->save((object)array(
+			'name'				=>	'Test',
+			'code'				=>	'class="foobar"',
+			'css_stylesheets'	=>	'http://www.google.ca/style.css',
+			'scripts'			=>	'http://www.google.ca/script.js'
+		));
+
 		// Install multisite options
 		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings', 'multisite');
 		$settings->save();

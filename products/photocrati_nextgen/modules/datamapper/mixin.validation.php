@@ -413,11 +413,12 @@ class Mixin_Validation extends Mixin
     {
 		// Get any entities that have the same property
         $mapper = $this->object->get_mapper();
-		$mapper->select($mapper->get_primary_key_column());
+		$key = $mapper->get_primary_key_column();
+		$mapper->select($key);
 		$mapper->limit(1);
 		$mapper->where_and(array("{$property} = %s", $this->object->$property));
 		if (!$this->object->is_new()) {
-			$mapper->where_and(array("{$property} != %s", $this->object->id()));
+			$mapper->where_and(array("{$key} != %s", $this->object->id()));
 		}
 		foreach ($scope as $another_property) {
 			$mapper->where_and(array("{$another_property} = %s", $another_property));
