@@ -9,6 +9,8 @@
 
 class M_Gallery_Display extends C_Base_Module
 {
+	var $page_name = 'ngg_display_settings';
+
 	function define()
 	{
 		parent::define(
@@ -108,7 +110,7 @@ class M_Gallery_Display extends C_Base_Module
 			_('NextGEN Display Settings'),
 			_('Display Settings'),
 			'NextGEN Manage gallery',
-			'ngg_display_settings',
+			$this->page_name,
 			array(&$this->controller, 'index')
 		);
 	}
@@ -119,21 +121,23 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function enqueue_resources()
 	{
-		wp_enqueue_script(
-			'nextgen_display_settings_page',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_display_settings_page.js',
-			array('jquery-ui-accordion'),
-			$this->module_version
-		);
+		if (isset($_REQUEST['page']) && $_REQUEST['page'] == $this->page_name) {
+			wp_enqueue_script(
+				'nextgen_display_settings_page',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_display_settings_page.js',
+				array('jquery-ui-accordion'),
+				$this->module_version
+			);
 
-		// There are many jQuery UI themes available via Google's CDN:
-		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
-		wp_enqueue_style(
-			'jquery-ui-south-street',
-			(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
-			array(),
-			'1.7.0'
-		);
+			// There are many jQuery UI themes available via Google's CDN:
+			// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
+			wp_enqueue_style(
+				'jquery-ui-south-street',
+				(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
+				array(),
+				'1.7.0'
+			);
+		}
 	}
 
 

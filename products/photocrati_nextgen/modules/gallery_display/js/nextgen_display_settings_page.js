@@ -1,3 +1,4 @@
 jQuery(function($){
-	alert('here');
+	// Activate accordions
+	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 });
