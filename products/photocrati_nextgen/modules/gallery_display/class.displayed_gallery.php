@@ -102,15 +102,34 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	{
 		// Get the image mapper
 		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$mapper->select($id_only ? $image_key : '*');
 		$image_key = $mapper->get_primary_key_column();
 
 		// Create query
-		$mapper->select($id_only ? $image_key : '*')->where(
-			array("galleryid in (%s)", $this->object->container_ids)
-		);
-		$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+		switch ($this->object->source) {
+			case 'galleries':
+				$mapper->where(
+					array("galleryid in (%s)", $this->object->container_ids)
+				);
+				$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+				break;
+			case 'recent':
+				$mapper->order_by('imagedate', 'DESC');
+				break;
+			case 'random':
+				$mapper->order_by('rand');
+				break;
+			case 'tags':
+				$term_ids = $wpdb->get_col( $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$this->object->container_ids}) ORDER BY term_id ASC "));
+				$image_ids = get_objects_in_term($term_ids, 'ngg_tag');
+				$mapper->where(
+					array("{$image_key} IN (%s)", $image_ids)
+				);
+				break;
+		}
+		
+		// Return results
 		if ($limit) $mapper->limit($limit, $offset);
-
 		return $mapper->run_query();
 	}
 
