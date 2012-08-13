@@ -49,9 +49,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 				$piclens_link	= "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
-			// Determine the lightbox effects attributes
-			$effect_code = $displayed_gallery->display_settings['effect_code'];
-
 			// Get the gallery storage component
 			$storage = $this->object->_get_registry()->get_utility(
 				'I_Gallery_Storage'
@@ -64,8 +61,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			$params['current_page']			= $current_page;
 			$params['slideshow_link']		= $slideshow_link;
 			$params['piclens_link']			= $piclens_link;
+			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
 			$params['pagination']			= $pagination;
-			$params['effect_code']			= $effect_code;
 
 			$this->object->render_partial('nextgen_basic_thumbnails', $params);
 

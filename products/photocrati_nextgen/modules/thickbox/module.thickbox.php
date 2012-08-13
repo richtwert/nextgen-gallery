@@ -20,16 +20,10 @@ class M_Thickbox extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
-    
-    
-    function initialize()
-    {
-    }
-    
-    
+
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Lightbox_Library', 'A_Thickbox_Lightbox_Library');
+        $this->_get_registry()->add_adapter('I_NextGen_Activator', 'A_Thickbox_Library_Activation');
     }
 }
 

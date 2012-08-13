@@ -65,6 +65,10 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			else
 				$this->object->settings['show_piclens_link'] = FALSE;
 		}
+
+		// Set the effect code
+		$this->object->settings['effect_code'] = $settings->thumbCode;
+
 	}
 
 	function validate()

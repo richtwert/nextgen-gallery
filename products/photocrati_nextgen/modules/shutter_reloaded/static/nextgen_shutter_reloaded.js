@@ -1,0 +1,1 @@
+jQuery(function($){ var shutterLinks = {}, shutterSets = {}; shutterReloaded.Init(); });
