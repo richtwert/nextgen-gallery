@@ -411,7 +411,7 @@ jQuery(document).ready(function () {
 				
 				elem = jQuery('<div class="details"></div>');
 				var downloadLogBtn = jQuery('<button class="button-secondary download-log" style="visibility:hidden">' + textList['updater_logger_download'] + '</button>');
-				var showLogBtn = jQuery('<span>' + textList['updater_logger_title'] + '</span>').css({ cursor : 'pointer' }).click(function (e) {
+				var showLogBtn = jQuery('<span class="show-log-button">' + textList['updater_logger_title'] + '</span>').css({ cursor : 'pointer' }).hide().click(function (e) {
 					e.preventDefault();
 					jQuery(this).parent().find('.log').slideToggle();
 					return false;

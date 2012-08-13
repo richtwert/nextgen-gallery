@@ -30,7 +30,9 @@ margin:0 0 8px 0;
 #update-content .details .show-log {
 margin:0;
 }
+#update-content .details .show-log-button {
+margin-right:20px;
+}
 button.download-log {
-margin-left:20px;
 margin-bottom:4px;
 }

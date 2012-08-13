@@ -76,12 +76,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
 		      );
 		      
 					wp_register_style(
-						'jquery-ui', 
-		          path_join(
-		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
-		              'jquery-ui.css'
-		          ), 
-		          false, '1.8.16'
+						'jquery-ui', PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL . '/jquery-ui/jquery-ui-1.8.16.custom.css', false, '1.8.16'
 					);
 				
 		      wp_register_style(
@@ -89,11 +84,12 @@ class M_AutoUpdate_Admin extends C_Base_Module
 		          path_join(
 		              PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL,
 		              'admin.css'
-		          ),
-		          array('jquery-ui')
+		          )
 		      );
 		      
 		      wp_enqueue_script('pc-autoupdate-admin');
+	       	wp_enqueue_style('jquery-ui');
+	       	//wp_enqueue_style('wp-jquery-ui-dialog');
 		      wp_enqueue_style('pc-autoupdate-admin');
         }
     }
