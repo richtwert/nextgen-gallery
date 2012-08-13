@@ -42,6 +42,9 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			$this->object->settings['thumbnail_width'] = $settings->thumbwidth;
 		if (!isset($this->object->settings['thumbnail_height']))
 			$this->object->settings['thumbnail_height'] = $settings->thumbheight;
+		if (!isset($this->object->settings['effects_code'])) {
+			$this->object->settings['effect_code'] = $settings->thumbCode;
+		}
 
 		// Show slideshow link ?
 		if (!isset($this->object->settings['show_slideshow_link']))
