@@ -41,7 +41,7 @@ class Mixin_GalleryStorage extends Mixin
 	}
 }
 
-class C_Gallery_Storage extends C_Component
+class C_Gallery_Storage extends C_GalleryStorage_Base
 {
     public static $_instances = array();
 
@@ -74,23 +74,5 @@ class C_Gallery_Storage extends C_Component
 		$factory_method = $this->_get_driver_factory_method($context);
 		$factory = $this->_get_registry()->get_utility('I_Component_Factory');
 		return $factory->create($factory_method, $object_name, $context);
-	}
-
-	/**
-	 * Gets the url or path of an image of a particular size
-	 * @param string $method
-	 * @param array $args
-	 */
-	function __call($method, $args)
-	{
-		if (preg_match("/^get_(\w+)_(abspath|url|dimensions|html)$/", $method, $match)) {
-			if (isset($match[1]) && isset($match[2]) && strpos($method, 'get_image') == FALSE) {
-				$method = 'get_image_'.$match[2];
-				$args[] = $match[1]; // array($image, $size)
-				return parent::__call($method, $args);
-//				return call_user_func_array(array(&$this, $method), $args);
-			}
-		}
-		return parent::__call($method, $args);
 	}
 }

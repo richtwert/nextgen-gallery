@@ -25,7 +25,6 @@ class A_Attachment_DataMapper extends Mixin
 
 		if (($post_id = $attachment_id = wp_insert_attachment($post, $filename))) {
 			$new_entity = $this->object->find($post_id);
-			var_dump($new_entity);
 			foreach ($new_entity as $key => $value) $entity->$key = $value;
 
 			// Merge meta data with WordPress Attachment Meta Data

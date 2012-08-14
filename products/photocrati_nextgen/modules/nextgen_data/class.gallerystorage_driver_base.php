@@ -11,9 +11,10 @@ class E_UploadException extends RuntimeException
 
 class E_InsufficientWriteAccessException extends RuntimeException
 {
-	function __construct($message='', $code=NULL, $previous=NULL)
+	function __construct($message=FALSE, $filename=NULL, $code=NULL, $previous=NULL)
 	{
 		if (!$message) $message = "Could not write to file. Please check filesystem permissions.";
+		if ($filename) $message .= " Filename: {$filename}";
 		parent::__construct($message, $code, $previous);
 	}
 }
@@ -433,7 +434,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					);
 				}
 				catch(Exception $ex) {
-					throw new E_InsufficientWriteAccessException();
+					throw new E_InsufficientWriteAccessException(
+						FALSE, $abs_filename, FALSE, $ex
+					);
 				}
 			}
 		}
@@ -443,7 +446,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	}
 }
 
-class C_GalleryStorage_Driver_Base extends C_Component
+class C_GalleryStorage_Driver_Base extends C_GalleryStorage_Base
 {
     public static $_instances = array();
 
