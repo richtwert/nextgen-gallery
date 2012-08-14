@@ -107,6 +107,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 
 		// Create query
 		switch ($this->object->source) {
+			case 'gallery':
 			case 'galleries':
 				$mapper->where(
 					array("galleryid in (%s)", $this->object->container_ids)
@@ -128,8 +129,13 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				break;
 		}
 
-		// Return results
+		// Apply other parts of the query
+		if (isset($this->object->order_by)) {
+			
+		}
 		if ($limit) $mapper->limit($limit, $offset);
+
+		// Return results
 		return $mapper->run_query();
 	}
 

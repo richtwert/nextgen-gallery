@@ -54,7 +54,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
 
 		$image = $this->storage->upload_base64_image($gallery, $this->test_image_abspath);
-		$image->alttext = "Test Image #2";
+		$image->alttext = "A Test Image #2";
 		$image->description = "This is a test image";
 		if ($this->img_mapper->save($image)) {
 			$this->image_ids[] = $image->$img_key;
@@ -87,7 +87,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		else $this->fail("Could not create {$image->alttext}");
 
 		$image = $this->storage->upload_base64_image($gallery, $this->test_image_abspath);
-		$image->alttext = "Test Image #5";
+		$image->alttext = "A Test Image #5";
 		$image->description = "This is a test image";
 		if ($this->img_mapper->save($image)) {
 			$this->image_ids[] = $image->$img_key;
@@ -130,12 +130,42 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 	 */
 	function test_get_gallery_images()
 	{
+		// Get the images for the first gallery
+		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
+		$displayed_gallery->source = 'gallery';
+		$displayed_gallery->container_ids = $this->gallery_ids[0];
+		$images = $displayed_gallery->get_images();
+		$this->assertEqual(count($images), 3);
+		$this->assertEqual($displayed_gallery->get_image_count(), 3);
+
+		// Get the images for all galleries
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'gallery';
 		$displayed_gallery->container_ids = $this->gallery_ids;
 		$images = $displayed_gallery->get_images();
 		$this->assertEqual(count($images), 6);
-		$this->assertEqual(count($images), $displayed_gallery->get_image_count());
+		$this->assertEqual($displayed_gallery->get_image_count(), 6);
+
+		// Exclude one of the images
+		$displayed_gallery->exclusions = array($this->image_ids[0]);
+		$images = $displayed_gallery->get_images();
+		$this->assertEqual(count($images), 5);
+		$this->assertEqual($displayed_gallery->get_image_count(), 5);
+
+		// Set limits
+		$images = $displayed_gallery->get_images(2);
+		$this->assertEqual($displayed_gallery->get_image_count(), 5);
+		$this->assertEqual(count($images), 2);
+
+		// Test ordering
+		$displayed_gallery->container_ids = $this->gallery_ids[0];
+		$displayed_gallery->order_by = 'alttext';
+		$displayed_gallery->exclusions = array();
+		$images = $displayed_gallery->get_images();
+		$first_image = $images[0];
+		$this->assertEqual(count($images), 3);
+		$this->assertEqual($displayed_gallery->get_image_count(), 3);
+		$this->assertEqual($first_image->alttext, "A Test Image #2");
 	}
 }
 
