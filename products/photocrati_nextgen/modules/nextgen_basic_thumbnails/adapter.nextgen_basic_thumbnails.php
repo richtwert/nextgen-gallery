@@ -6,7 +6,7 @@ class A_NextGen_Basic_Thumbnails extends Mixin
 	{
 		if ($this->object->name == PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS) {
 			$this->object->add_pre_hook(
-				'validate',
+				'validation',
 				get_class(),
 				'Hook_NextGen_Basic_Thumbnails_Validation'
 			);
@@ -71,7 +71,7 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 
 	}
 
-	function validate()
+	function validation()
 	{
 		$this->object->validates_presence_of('thumbnail_width');
 		$this->object->validates_presence_of('thumbnail_height');

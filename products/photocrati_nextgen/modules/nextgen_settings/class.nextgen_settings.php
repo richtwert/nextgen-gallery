@@ -172,13 +172,8 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 	{
         $this->object->restore_all_missing_options();
 
-		// Run validation, if available
-		if ($this->object->has_method('validate')) {
-			$this->object->validate();
-		}
-
 		// Save settings
-		if ($this->object->is_valid()) {
+		if ($this->object->validate()) {
 			$valid = update_option(
 				$this->object->_get_wordpress_option_name(),
 				$this->object->_options

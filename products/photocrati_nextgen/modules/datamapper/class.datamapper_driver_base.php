@@ -346,11 +346,10 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		// a model
 		elseif (!$this->object->is_model($entity)) {
 			$model = $this->object->convert_to_model($entity);
-			get_class($model);
 		}
 
 		// Validate the model
-		if ($model->has_method('validate')) $model->validate();
+		$model->validate();
 
 		if ($model->is_valid()) {
 			$retval = $this->object->_save_entity($model->get_entity());

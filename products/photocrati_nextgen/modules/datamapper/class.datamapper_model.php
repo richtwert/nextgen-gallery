@@ -136,7 +136,7 @@ class C_DataMapper_Model extends C_Component
  */
 class Mixin_DataMapper_Model_Validation extends Mixin
 {
-	function validate()
+	function validation()
 	{
 		return $this->object->is_valid();
 	}

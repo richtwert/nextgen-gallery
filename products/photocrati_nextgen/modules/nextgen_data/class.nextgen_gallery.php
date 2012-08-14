@@ -27,7 +27,7 @@ class Mixin_NextGen_Gallery_Validation
     /**
      * Validates whether the gallery can be saved
      */
-    function validate()
+    function validation()
     {
 		$this->object->set_defaults();
 

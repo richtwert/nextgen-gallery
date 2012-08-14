@@ -166,6 +166,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	function _save_entity($entity)
 	{
 		$retval = FALSE;
+		
 		unset($entity->id_field);
 		$primary_key = $this->object->get_primary_key_column();
 		if (isset($entity->$primary_key)) {

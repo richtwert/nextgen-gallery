@@ -31,7 +31,7 @@ class Mixin_Lightbox_Library_Validation extends Mixin
 		}
 	}
 
-	function validate()
+	function validation()
 	{
 		$this->set_defaults();
 		$this->object->validates_presence_of('name');

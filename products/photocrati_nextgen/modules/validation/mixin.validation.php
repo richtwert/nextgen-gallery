@@ -152,6 +152,7 @@ class Mixin_Validation extends Mixin
     {
         $this->clear_errors();
         if ($this->object->has_method('validation')) $this->object->validation();
+		return $this->is_valid();
     }
 
 

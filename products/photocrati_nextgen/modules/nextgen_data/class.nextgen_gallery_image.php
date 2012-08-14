@@ -3,7 +3,7 @@
 
 class Mixin_NextGen_Gallery_Image_Validation extends Mixin
 {
-	function validate()
+	function validation()
 	{
 		$this->object->set_defaults();
 

@@ -54,7 +54,7 @@ class C_Display_Type extends C_DataMapper_Model
 
 class Mixin_Display_Type_Validation extends Mixin
 {
-	function validate()
+	function validation()
 	{
 		$this->object->set_defaults();
 

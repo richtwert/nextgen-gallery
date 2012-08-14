@@ -13,6 +13,7 @@ abstract class C_Test_CustomTable_DataMapper_Base extends C_Test_DataMapper_Driv
 	{
 		parent::__construct($title?$title:"Test Case for C_CustomTable_DataMapper_Driver");
 		$this->table_name = 'posts';
+		$this->post_type = 'posts';
 	}
 
 	function setUp()

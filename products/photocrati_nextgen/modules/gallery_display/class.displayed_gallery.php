@@ -63,7 +63,7 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 	}
 
 
-	function validate()
+	function validation()
 	{
 		$this->object->set_defaults();
 
