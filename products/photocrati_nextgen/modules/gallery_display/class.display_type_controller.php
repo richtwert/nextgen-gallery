@@ -67,7 +67,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	 * This method should be overwritten by other adapters/mixins, and call
 	 * wp_enqueue_script() / wp_enqueue_style()
 	 */
-	function enqueue_resources($displayed_gallery)
+	function enqueue_frontend_resources($displayed_gallery)
 	{
 		// Enqueue the lightbox effect library
 		$settings	= $this->object->_get_registry()->get_utility('I_NextGen_Settings');
@@ -115,6 +115,15 @@ class Mixin_Display_Type_Controller extends Mixin
 			(array)$displayed_gallery->get_entity(),
 			FALSE
 		);
+	}
+
+	/**
+	 * Enqueues resources for a particular display type
+	 * @param C_Display_Type $display_type
+	 */
+	function enqueue_backend_resources($display_type)
+	{
+		return;
 	}
 
 

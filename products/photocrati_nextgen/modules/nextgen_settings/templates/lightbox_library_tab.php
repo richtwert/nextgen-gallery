@@ -21,13 +21,17 @@
 				<?php endforeach ?>
 			</select>
 			&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
 			<a
 				href="#"
 				id="lightbox_library_advanced_toggle"
-				hidden_label="<?php echo esc_attr(_('Show Advanced Settings'))?>"
-				active_label="<?php echo esc_attr(_('Hide Advanced Settings'))?>"
+				hidden_label="<?php echo esc_attr(_('(Show Advanced Settings)'))?>"
+				active_label="<?php echo esc_attr(_('(Hide Advanced Settings)'))?>"
 				>
-				<?php echo_h(_("Show Advanced Settings"))?>
+				<?php echo_h(_("(Show Advanced Settings)"))?>
 			</a>
 		</td>
 	</tr>

@@ -137,6 +137,11 @@ class M_Gallery_Display extends C_Base_Module
 				array(),
 				'1.7.0'
 			);
+
+			wp_enqueue_style(
+				'nextgen_display_settings_page',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_display_settings_page.css'
+			);
 		}
 	}
 
@@ -224,7 +229,7 @@ class M_Gallery_Display extends C_Base_Module
 			$controller = $this->_get_registry()->get_utility(
 				'I_Display_Type_Controller', $displayed_gallery->display_type
 			);
-			$controller->enqueue_resources($displayed_gallery);
+			$controller->enqueue_frontend_resources($displayed_gallery);
 			$controller->index($displayed_gallery);
 		}
 		else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());

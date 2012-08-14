@@ -18,7 +18,7 @@ class C_NextGen_Settings_Defaults
          */
         if (False == $global)
         {
-            return array(
+            $options = array(
                 'gallerypath'    => 'wp-content/gallery/',
                 'deleteImg'      => True,              // delete Images
                 'swfUpload'      => True,              // activate the batch upload
@@ -104,10 +104,18 @@ class C_NextGen_Settings_Defaults
                 'activateCSS' => TRUE,           // activate the CSS file
                 'CSSfile'     => 'nggallery.css', // set default css filename
 
-                // framework settings
+                // Framework settings
                 'datamapper_driver' => 'custom_table_datamapper',
-                'gallerystorage_driver' => 'ngglegacy_gallery_storage'
+                'gallerystorage_driver' => 'ngglegacy_gallery_storage',
             );
+
+			// Thumbnail sizes
+			$options['thumbnail_dimensions'] = array(
+				"{$options['thumbwidth']}x{$options['thumbheight']}",
+				"100x100"
+			);
+
+			return $options;
         }
 
         return array(

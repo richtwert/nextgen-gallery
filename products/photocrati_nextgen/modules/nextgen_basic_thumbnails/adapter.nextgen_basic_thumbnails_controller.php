@@ -3,6 +3,14 @@
 class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 {
 	/**
+	 * Adds framework support for thumbnails
+	 */
+	function initialize()
+	{
+		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
+	}
+
+	/**
 	 * Displays the ngglegacy thumbnail gallery.
 	 * This method deprecated use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
@@ -76,7 +84,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 * Enqueues all static resources required by this display type
 	 * @param C_Displayed_Gallery $displayed_gallery
 	 */
-	function enqueue_resources($displayed_gallery)
+	function enqueue_frontend_resources($displayed_gallery)
 	{
 		if ($displayed_gallery->display_settings['show_piclens_link']) {
 			wp_enqueue_script(
@@ -85,7 +93,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			);
 		}
 
-		$this->call_parent('enqueue_resources', $displayed_gallery);
+		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
 
@@ -118,21 +126,5 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		return array(
 			'thumbnail_dimensions'
 		);
-	}
-
-	/**
-	 * Renders the thumbnail width field
-	 * @param C_Display_Type $display_type
-	 * @return string
-	 */
-	function _render_thumbnail_dimensions_field($display_type)
-	{
-		return $this->render_partial('nextgen_basic_thumbnail_dimensions', array(
-			'thumbnail_width_label'		=>	_('Thumbnail Width:'),
-			'thumbnail_height_label'	=>	_('Thumbnail Height:'),
-			'display_type_name'			=>	$display_type->name,
-			'thumbnail_width'			=>	$display_type->settings['thumbnail_width'],
-			'thumbnail_height'			=>	$display_type->settings['thumbnail_height']
-		), TRUE);
 	}
 }
