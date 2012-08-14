@@ -382,6 +382,14 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			// WordPress Media Library for uploading, then the wp_upload_bits()
 			// function should perhaps be used
 			$upload_dir = $this->object->get_upload_abspath($gallery);
+
+			// Perhaps a filename was given instead of base64 data?
+			if ($data[0] == '/' && file_exists($data)) {
+				if (!$filename) $filename = basename($data);
+				$data = file_get_contents($data);
+			}
+
+			// Determine filenames
 			$filename = $filename ? $filename : uniqid('nextgen-gallery');
 			$abs_filename = path_join($upload_dir, $filename);
 

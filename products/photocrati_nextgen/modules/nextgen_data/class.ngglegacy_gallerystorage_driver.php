@@ -276,7 +276,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			else {
 				// Get the paths to all images
 				$abspaths = array($this->get_full_abspath($image));
-				if (isset($image->meta_data)) foreach (array_keys($image) as $size) {
+				if (isset($image->meta_data)) foreach (array_keys($image->meta_data) as $size) {
 					$abspaths[] = $this->object->get_image_abspath($image, $size);
 				}
 
