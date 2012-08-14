@@ -45,7 +45,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 		{
 			$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create(
-				'displayed_gallery', $mapper, json_decode(base64_decode($params))
+				'displayed_gallery', $mapper, json_decode($params)
 			);
 		}
 
