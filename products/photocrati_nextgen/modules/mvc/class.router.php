@@ -259,9 +259,9 @@ class C_Router extends C_Component
     var $_route_priorities = array();
     var $_route_cache = array();
 
-    function define()
+    function define($context=FALSE)
     {
-		parent::define();
+		parent::define($context);
         $this->add_mixin('Mixin_Router');
 		$this->add_mixin('Mixin_Route_Patterns');
 		$this->implement('I_Router');

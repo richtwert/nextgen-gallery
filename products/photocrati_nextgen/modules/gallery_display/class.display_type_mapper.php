@@ -9,7 +9,7 @@ class C_Display_Type_Mapper extends C_CustomPost_DataMapper_Driver
 
 	function define($context=FALSE)
 	{
-		parent::define($context);
+		parent::define(NULL, array($context, 'display_type'));
 		$this->add_mixin('Mixin_Display_Type_Mapper');
 		$this->implement('I_Display_Type_Mapper');
 		$this->set_model_factory_method('display_type');
@@ -17,7 +17,7 @@ class C_Display_Type_Mapper extends C_CustomPost_DataMapper_Driver
 
 	function initialize($context=FALSE)
 	{
-		parent::initialize('display_type', array($context, 'display_type'));
+		parent::initialize('display_type');
 	}
 
 

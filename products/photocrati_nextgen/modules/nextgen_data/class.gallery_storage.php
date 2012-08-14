@@ -47,6 +47,7 @@ class C_Gallery_Storage extends C_Component
 
 	function define($object_name, $context=FALSE)
 	{
+		parent::define($context);
 		$this->add_mixin('Mixin_GalleryStorage');
 		$this->wrap('I_GalleryStorage_Driver', array(&$this, '_get_driver'), array($object_name, $context));
 		$this->implement('I_Gallery_Storage');

@@ -22,17 +22,7 @@ class C_Gallery_Mapper extends C_DataMapper
 		$this->set_model_factory_method('gallery');
 		$this->get_wrapped_instance()->add_mixin('Mixin_Gallery_Mapper');
 		$this->implement('I_Gallery_Mapper');
-	}
 
-	/**
-	 * Initializes the gallery mapper
-	 */
-	function initialize($context=FALSE)
-	{
-		parent::initialize($context);
-
-		// Tells the CustomPost driver (when used) what property to use
-		// as the value for the "post_title" column
 		$this->_post_title_field = 'title';
 	}
 

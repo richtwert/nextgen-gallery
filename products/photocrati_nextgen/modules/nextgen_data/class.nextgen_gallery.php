@@ -75,9 +75,9 @@ class C_NextGen_Gallery extends C_DataMapper_Model
      * Defines the interfaces and methods (through extensions and hooks)
      * that this class provides
      */
-    function define()
+    function define($properties, $mapper, $context=FALSE)
     {
-        parent::define();
+        parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_NextGen_Gallery_Validation');
 		$this->add_post_hook('save', 'Fire WordPress Action', 'Hook_NextGen_Gallery_Persistence', 'fire_wordpress_action');
         $this->implement('I_Gallery');
@@ -89,12 +89,12 @@ class C_NextGen_Gallery extends C_DataMapper_Model
 	 * @param C_DataMapper $mapper
 	 * @param string $context
 	 */
-	function initialize($properties = FALSE, $mapper=FALSE, $context = FALSE) {
+	function initialize($properties = FALSE, $mapper=FALSE) {
 
 		// Get the mapper is not specified
 		if (!$mapper) {
 			$mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
 		}
-		parent::initialize($mapper, $properties, $context);
+		parent::initialize($mapper, $properties);
 	}
 }

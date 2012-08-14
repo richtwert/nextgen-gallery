@@ -7,9 +7,9 @@ class C_NextGen_Settings_Controller extends C_MVC_Controller
 {
 	static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Settings_Controller');
 		$this->implement('I_NextGen_Settings_Controller');
 	}

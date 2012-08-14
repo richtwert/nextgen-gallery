@@ -2,9 +2,9 @@
 
 class C_MediaRSS_Controller extends C_MVC_Controller
 {
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_MediaRSS_Controller');
 	}
 }

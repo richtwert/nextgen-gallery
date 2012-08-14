@@ -11,9 +11,9 @@
  */
 class C_Lightbox_Library extends C_DataMapper_Model
 {
-	function define()
+	function define($mapper, $properties, $context=FALSE)
 	{
-		parent::define();
+		parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_Lightbox_Library_Validation');
 		$this->implement('I_Lightbox_Library');
 	}

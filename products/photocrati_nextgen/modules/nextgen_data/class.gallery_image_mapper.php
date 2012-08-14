@@ -4,9 +4,16 @@ class C_Gallery_Image_Mapper extends C_DataMapper
 {
     public static $_instances = array();
 
+	/**
+	 * Defines the gallery image mapper
+	 * @param type $context
+	 */
 	function define($context=FALSE)
 	{
-		parent::define('ngg_pictures', array('attachment', $context));
+		// Add 'attachment' context
+		if (!is_array($context)) $context = array($context);
+		array_push($context, 'attachment');
+		parent::define('ngg_pictures', $context);
 		$this->get_wrapped_instance()->add_mixin('Mixin_Gallery_Image_Mapper');
 		$this->get_wrapped_instance()->add_post_hook(
 			'_convert_to_entity',
@@ -15,11 +22,6 @@ class C_Gallery_Image_Mapper extends C_DataMapper
 			'unserialize_metadata'
 		);
 		$this->implement('I_Gallery_Image_Mapper');
-	}
-
-	function initialize($context=FALSE)
-	{
-		parent::initialize($context);
 		$this->set_model_factory_method('gallery_image');
 	}
 

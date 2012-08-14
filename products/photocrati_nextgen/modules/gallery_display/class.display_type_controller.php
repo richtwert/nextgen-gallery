@@ -8,17 +8,11 @@ class C_Display_Type_Controller extends C_MVC_Controller
 {
 	static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_Display_Type_Controller');
 		$this->implement('I_Display_Type_Controller');
-	}
-
-	function initialize($context=FALSE)
-	{
-		parent::initialize($context);
-
 	}
 
 

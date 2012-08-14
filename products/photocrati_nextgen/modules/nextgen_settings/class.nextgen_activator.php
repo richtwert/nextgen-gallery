@@ -4,9 +4,9 @@ class C_NextGen_Activator extends C_Component
 {
 	static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Activator');
 		$this->implement('I_NextGen_Activator');
 	}

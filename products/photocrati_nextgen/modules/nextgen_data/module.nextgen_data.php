@@ -6,30 +6,6 @@
 		Depends: { photocrati-nextgen_settings, photocrati-datamapper }
 }
 ***/
-
-class Mixin_Load_Lightbox_Library extends Mixin
-{
-    function load_lightbox_library()
-    {
-        // Only execute in frontend
-        if (is_backend()) return;
-
-        // Create a factory to hatch C_Lightbox_Library objects
-        $factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
-
-        // Find the default
-        $lightbox = $factory->create('lightbox_library');
-        $lightbox = $lightbox->find_default();
-        if ($lightbox) {
-            global $post;
-            wp_enqueue_script($lightbox->script);
-            if ($lightbox->style) wp_enqueue_style($lightbox->style);
-            $post->post_content .= "<script type='text/javascript'>{$lightbox->javascript_code}</script>";
-        }
-    }
-}
-
-
 class Mixin_Dequeue_NextGen_Legacy_Scripts extends Mixin
 {
     /**
@@ -61,14 +37,12 @@ class M_NextGen_Data extends C_Base_Module
         );
 
         $this->add_mixin('Mixin_Dequeue_NextGen_Legacy_Scripts');
-        $this->add_mixin('Mixin_Load_Lightbox_Library');
     }
 
 
     function _register_hooks()
     {
         add_action('wp_print_scripts',  array(&$this, 'dequeue_scripts'));
-        //add_action('wp_enqueue_scripts',  array(&$this, 'load_lightbox_library'));
     }
 
 

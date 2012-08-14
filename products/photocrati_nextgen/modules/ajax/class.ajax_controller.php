@@ -2,9 +2,9 @@
 
 class C_Ajax_Controller extends C_MVC_Controller
 {
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->implement('I_Ajax_Controller');
 	}
 

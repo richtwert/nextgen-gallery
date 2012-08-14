@@ -22,11 +22,6 @@ class M_Simple_Html_Dom extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
-
-
-    function initialize()
-    {
-    }
 }
 
 new M_Simple_Html_Dom();

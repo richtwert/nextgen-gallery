@@ -83,9 +83,9 @@ class Mixin_WordPress_GalleryStorage_Driver extends Mixin
 
 class C_WordPress_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base
 {
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_WordPress_GalleryStorage_Driver');
 	}
 }

@@ -166,7 +166,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	function _save_entity($entity)
 	{
 		$retval = FALSE;
-		
+
 		unset($entity->id_field);
 		$primary_key = $this->object->get_primary_key_column();
 		if (isset($entity->$primary_key)) {
@@ -377,16 +377,16 @@ class C_CustomTable_DataMapper_Driver extends C_DataMapper_Driver_Base
 	var $_columns = array();
 	var $_defined_columns = array();
 
-	function define()
+	function define($object_name, $context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('C_CustomTable_DataMapper_Driver_Mixin');
 		$this->implement('I_CustomTable_DataMapper');
 	}
 
-	function initialize($object_name, $context=FALSE)
+	function initialize($object_name)
 	{
-		parent::initialize($object_name, $context=FALSE);
+		parent::initialize($object_name);
 		$this->_primary_key_column = $this->_lookup_primary_key_column();
 	}
 

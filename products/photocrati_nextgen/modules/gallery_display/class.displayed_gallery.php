@@ -15,9 +15,9 @@ class C_Displayed_Gallery extends C_DataMapper_Model
 {
 	var $_mapper_interface = 'I_Displayed_Gallery_Mapper';
 
-	function define()
+	function define($mapper=FALSE, $properties=FALSE, $context=FALSE)
 	{
-		parent::define();
+		parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_Displayed_Gallery_Validation');
 		$this->add_mixin('Mixin_Displayed_Gallery_Instance_Methods');
 		$this->implement('I_Displayed_Gallery');
@@ -30,11 +30,10 @@ class C_Displayed_Gallery extends C_DataMapper_Model
 	 * @param array|stdClass|C_Displayed_Gallery $properties
 	 * @param FALSE|string|array $context
 	 */
-	function initialize($mapper=FALSE, $properties=array(), $context=FALSE)
+	function initialize($mapper=FALSE, $properties=array())
 	{
 		if (!$mapper) $mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
-
-		parent::initialize($mapper, $properties, $context);
+		parent::initialize($mapper, $properties);
 	}
 }
 

@@ -447,15 +447,16 @@ class C_GalleryStorage_Driver_Base extends C_Component
 {
     public static $_instances = array();
 
-	function define()
+	function define($context)
 	{
+		parent::define($context);
 		$this->add_mixin('Mixin_GalleryStorage_Driver_Base');
 		$this->implement('I_GalleryStorage_Driver');
 	}
 
-	function initialize($context)
+	function initialize()
 	{
-		parent::initialize($context);
+		parent::initialize();
 		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
 		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 	}

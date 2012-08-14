@@ -2,17 +2,15 @@
 
 class C_Album_Mapper extends C_DataMapper
 {
+
 	function define($context=FALSE)
 	{
-		parent::define('ngg_album', array('album', $context));
+
+		if (!is_array($context)) $context = array($context);
+		array_push($context, 'album');
+		parent::define('ngg_album', $context);
 		$this->get_wrapped_instance()->add_mixin('Mixin_Album_Mapper');
 		$this->implement('I_Album_Mapper');
-	}
-
-
-	function initialize($context)
-	{
-		parent::initialize(array('album', $context));
 		$this->set_model_factory_method('album');
 	}
 }

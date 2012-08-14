@@ -509,30 +509,24 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
     /** @var null Singleton instance */
     public static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
-        $this->implement('I_NextGen_Settings');
-	}
-
-	function initialize($context = False)
-	{
-		parent::initialize($context);
-
-		// Add validation
+		parent::define($context);
 		$this->add_mixin('Mixin_Validation');
-
-        // Add persistence layer. Replace if not using WordPress
         $this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');
 
         // Default options API
         if ('multisite' == $context)
-        {
             $this->add_mixin('Mixin_NextGen_Multisite_Settings');
-        } else {
+		else
             $this->add_mixin('Mixin_NextGen_Settings');
-        }
+		
+        $this->implement('I_NextGen_Settings');
+	}
 
+	function initialize()
+	{
+		parent::initialize();
 		$this->object->reload();
 	}
 

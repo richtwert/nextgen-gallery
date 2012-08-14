@@ -13,9 +13,9 @@ class C_Display_Type extends C_DataMapper_Model
 {
 	var $_mapper_interface = 'I_Display_Type_Mapper';
 
-	function define()
+	function define($mapper, $properties, $context=FALSE)
 	{
-		parent::define();
+		parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_Display_Type_Validation');
 		$this->implement('I_Display_Type');
 	}
