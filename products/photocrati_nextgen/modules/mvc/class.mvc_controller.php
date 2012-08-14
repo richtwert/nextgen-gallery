@@ -23,6 +23,13 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             case 'xhtml':
                 $type = 'text/html';
                 break;
+			case 'xml':
+				$type = 'text/xml';
+				break;
+			case 'rss':
+			case 'rss2':
+				$type = 'application/rss+xml';
+				break;
             case 'css':
                 $type = 'text/css';
                 break;
