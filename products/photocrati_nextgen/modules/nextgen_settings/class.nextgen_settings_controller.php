@@ -144,6 +144,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		return $this->render_partial('image_sorting_tab', array(
 			'sorting_order_label'		=>	_('Sorting Order'),
 			'sorting_order_options'		=>	array(
+				'Custom'				=>	'sortorder',
 				'Image ID'				=>	'pid',
 				'Filename'				=>	'filename',
 				'Alt/Title Text'		=>	'alttext',
