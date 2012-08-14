@@ -173,13 +173,12 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
         $this->object->restore_all_missing_options();
 
 		// Run validation, if available
-        $valid = TRUE;
 		if ($this->object->has_method('validate')) {
-			if (!$this->object->validate()) $valid = FALSE;
+			$this->object->validate();
 		}
 
 		// Save settings
-		if ($valid) {
+		if ($this->object->is_valid()) {
 			$valid = update_option(
 				$this->object->_get_wordpress_option_name(),
 				$this->object->_options
@@ -193,7 +192,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 			}
 		}
 
-		return $valid;
+		return $this->object->is_valid();
 	}
 
 	/**
@@ -524,6 +523,9 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
 	function initialize($context = False)
 	{
 		parent::initialize($context);
+
+		// Add validation
+		$this->add_mixin('Mixin_Validation');
 
         // Add persistence layer. Replace if not using WordPress
         $this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');

@@ -263,16 +263,16 @@ abstract class C_MVC_Controller extends C_Component
      * @param string $key
      * @return mixed
      */
-    function param($key, $default=NULL)
+    function &param($key, $default=NULL)
     {
         $retval = $default;
 
         if (isset($this->_params[$key])) {
-            $val = $this->_params[$key];
+            $val = &$this->_params[$key];
             if (is_array($val))
-                $retval = $val;
+                $retval = &$val;
             elseif (is_string($val) && !in_array(strtolower($val), array('null','false')))
-                $retval = $val;
+                $retval = &$val;
         }
 
         return $retval;

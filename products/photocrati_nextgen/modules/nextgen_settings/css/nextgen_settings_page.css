@@ -8,17 +8,17 @@
 	 * vertical-align: top;
 	*/
 }
-.gallery_page_ngg_other_options table td#column1 {
+.gallery_page_ngg_other_options table td.column1 {
 	width: 140px;
 }
 
 .gallery_page_ngg_other_options textarea {
-	height: 60px;
+	height: 100px;
 }
 
 .gallery_page_ngg_other_options textarea,
 .gallery_page_ngg_other_options input[type=text] {
-	width: 80%;
+	width: 100%;
 }
 
 #lightbox_library_advanced_toggle {

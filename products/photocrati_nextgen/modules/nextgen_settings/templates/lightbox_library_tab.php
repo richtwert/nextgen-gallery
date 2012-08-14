@@ -1,14 +1,11 @@
-<?php if (isset($message)): ?>
-<?php echo $message ?>
-<?php endif ?>
 <table>
 	<!-- Lightbox Library Name -->
 	<tr>
-		<td id="column1">
+		<td class="column1">
 			<label for="lightbox_library"><?php echo_h(_("Effect Library:"))?></label>
 		</td>
 		<td>
-			<select name="id" id="lightbox_library">
+			<select name="lightbox_library_id" id="lightbox_library">
 				<?php foreach ($libs as $lib): ?>
 				<option
 					css_stylesheets="<?php echo esc_attr($lib->css_stylesheets)?>"

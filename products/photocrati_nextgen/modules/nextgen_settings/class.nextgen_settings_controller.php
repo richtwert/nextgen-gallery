@@ -11,7 +11,6 @@ class C_NextGen_Settings_Controller extends C_MVC_Controller
 	{
 		parent::define();
 		$this->add_mixin('Mixin_NextGen_Settings_Controller');
-		$this->add_mixin('Mixin_Lightbox_Library_Tab');
 		$this->implement('I_NextGen_Settings_Controller');
 	}
 
@@ -42,11 +41,63 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
 
-		$this->render_partial('nextgen_settings_page', array(
-			'page_heading'	=>	$this->object->_get_options_page_heading(),
-			'tabs'		=>	$this->object->_get_tabs($settings),
-		));
+		// Is this post a request? If so, process the request
+		if ($this->is_post_request()) {
+			$view_params = $this->object->_process_post_request($settings);
+		}
+
+		// Set other view params
+		$view_params['page_heading'] = $this->object->_get_options_page_heading();
+		$view_params['tabs']		 = $this->object->_get_tabs($settings);
+
+		// Render view
+		$this->render_partial('nextgen_settings_page', $view_params);
 	}
+
+
+	/**
+	 * Processes the POST request
+	 * @param C_NextGen_Settings $settings
+	 */
+	function _process_post_request($settings)
+	{
+		$retval = array();
+
+		// Do we have sufficient data to continue?
+		if (($params = $this->object->param('settings'))) {
+
+			// Try saving the settings
+			foreach ($params as $k=>$v) $settings->$k = $v;
+
+			// Save lightbox effects settings
+			if ($settings->is_valid()) {
+				$this->object->_save_lightbox_library($settings);
+			}
+
+			// Save the changes made to the settings
+			if ($settings->save()) {
+				$retval['message'] = $this->object->show_success_for(
+					$settings, 'NextGEN Gallery Settings', TRUE
+				);
+			}
+
+			// Save failed. Display validation errors
+			else {
+				$retval['message'] = $this->object->show_errors_for(
+					$settings, TRUE
+				);
+			}
+ 		}
+
+		// Insufficient data - illegal request
+		else {
+			$error_msg = _("Invalid request");
+			$retval['message'] = "<div class='error entity_errors'>{$error_msg}</div>";
+		}
+
+		return $retval;
+	}
+
 
 	/**
 	 * Returns the page heading for the "Options" page
@@ -63,7 +114,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	function _get_tabs($settings)
 	{
 		$tabs = array(
-			_('Lightbox Effect') =>$this->object->_render_lightbox_library_tab($settings)
+			_('Lightbox Effect') =>$this->object->_render_lightbox_library_tab($settings),
+			_('Image Sorting')	 =>$this->object->_render_image_sorting_tab($settings),
 		);
 
 		if (is_multisite()) {
@@ -80,44 +132,47 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		echo 'Multisite Options go here';
 	}
-}
 
-/**
- * Provides a tab to configure the lightbox effect used
- */
-class Mixin_Lightbox_Library_Tab extends Mixin
-{
+
+	/**
+	 * Renders the image sorting tab
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_image_sorting_tab($settings)
+	{
+		return $this->render_partial('image_sorting_tab', array(
+			'sorting_order_label'		=>	_('Sorting Order'),
+			'sorting_order_options'		=>	array(
+				'Image ID'				=>	'pid',
+				'Filename'				=>	'filename',
+				'Alt/Title Text'		=>	'alttext',
+				'Date/Time'				=>	'imagedate'
+			),
+			'sorting_order'				=>	$settings->galSort,
+			'sorting_direction_label'	=>	_('Sorting Direction'),
+			'sorting_direction_options'	=>	array(
+				'Ascending'				=>	'ASC',
+				'Descending'			=>	'DESC'
+			),
+			'sorting_direction'			=>	$settings->galSortDir
+		), TRUE);
+	}
+
+
+	/**
+	 * Renders the lightbox library settings tab
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
 	function _render_lightbox_library_tab($settings)
 	{
-		// Get the library mapper. We'll need this from now on
-		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
-		$message = FALSE;
-
-		// Save the selected lightbox library
-		if ($this->object->is_post_request() && (($id = $this->object->param('id')))) {
-			$library = $mapper->find($id, TRUE);
-			if ($library) {
-				// Update library
-				if (($params = $this->object->param('lightbox_library'))) {
-					foreach ($params as $k => $v) $library->$k = $v;
-					$mapper->save($library);
-					if ($library->is_invalid())
-						$message = $this->object->show_errors_for($library, TRUE);
-					else
-						$message = $this->object->show_success_for($library, 'Lightbox settings', TRUE);
-				}
-
-				// Set default lightbox library
-				$settings->thumbEffect = $library->name;
-				$settings->thumbCode   = $library->code;
-				$settings->save();
-			}
-		}
 		// Find all lightbox effect libraries. We're retrieving them as models
 		// which is NOT the best idea, but currently only models have the
 		// set_defaults() method executed for them.
 		// TODO: Adjust datamapper drivers to call a set_defaults() method
 		// from the convert_to_entity() method
+		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$libs = $mapper->find_all(array(), TRUE);
 
 		// Render tab
@@ -125,7 +180,46 @@ class Mixin_Lightbox_Library_Tab extends Mixin
 			'libs'		=>	$libs,
 			'id_field'	=>	$mapper->get_primary_key_column(),
 			'selected'	=>	$settings->thumbEffect,
-			'message'	=>	$message
 		), TRUE);
+	}
+
+
+	/**
+	 * Saves the lightbox library settings
+	 * @param type $settings
+	 */
+	function _save_lightbox_library($settings)
+	{
+		// Ensure that a lightbox library was selected
+		if (($id = $this->object->param('lightbox_library_id'))) {
+
+			// Get the lightbox library mapper and find the library selected
+			$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+			$library = $mapper->find($id, TRUE);
+
+			// If a valid library, we have updated settings from the user, then
+			// try saving the changes
+			if ($library && (($params = $this->object->param('lightbox_library')))) {
+				foreach ($params as $k=>$v) $library->$k = $v;
+				$mapper->save($library);
+
+				// If the requested changes weren't valid, add the validation
+				// errors to the C_NextGen_Settings object
+				if ($settings->is_invalid()) {
+					foreach ($library->get_errors() as $property => $errs) {
+						foreach ($errs as $error) $settings->add_error(
+							$error, $property
+						);;
+					}
+				}
+
+				// The lightbox library update was successful.
+				// Update C_NextGen_Settings
+				else {
+					$settings->thumbEffect = $library->name;
+					$settings->thumbCode   = $library->code;
+				}
+			}
+		}
 	}
 }
