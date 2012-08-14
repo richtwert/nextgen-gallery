@@ -117,16 +117,41 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails_init.js';
 	}
 
+    /**
+     * Renders the fields to set the number images & columns per page
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
     function _render_thumbnail_limits_field($display_type)
     {
-        $settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
-
-        return $this->render_partial('nextgen_basic_thumbnail_limits', array(
+        return $this->render_partial('nextgen_basic_thumbnails_settings_limits', array(
             'display_type_name' => $display_type->name,
-            'thumbnail_images_per_page_label' => _('Images per page:'),
-            'thumbnail_columns_per_page_label' => _('Number of columns to display:'),
-            'thumbnail_images_per_page' => $settings->galImages,
-            'thumbnail_columns_per_page' => $settings->galColumns
+
+            'images_per_page_label' => _('Images per page:'),
+            'images_per_page' => $display_type->settings['images_per_page'],
+
+            'number_of_columns_label' => _('Number of columns to display:'),
+            'number_of_columns' => $display_type->settings['number_of_columns']
+        ), True);
+    }
+
+    /**
+     * Renders the fields to set the text of links for slideshows & piclens
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_thumbnail_text_links_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_text_links', array(
+            'display_type_name' => $display_type->name,
+
+            'slideshow_text_link_label' => _('Slideshow text link:'),
+            'slideshow_text_link' => $display_type->settings['slideshow_text_link'],
+
+            'piclens_text_link_label' => _('Piclens text link:'),
+            'piclens_text_link' => $display_type->settings['piclens_text_link']
         ), True);
     }
 
@@ -137,7 +162,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	{
 		return array(
 			'thumbnail_dimensions',
-            'thumbnail_limits'
+            'thumbnail_limits',
+            'thumbnail_text_links'
 		);
 	}
 }
