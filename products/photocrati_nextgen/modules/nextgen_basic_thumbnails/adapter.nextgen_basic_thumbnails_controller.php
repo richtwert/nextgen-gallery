@@ -117,6 +117,18 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails_init.js';
 	}
 
+    function _render_thumbnail_limits_field($display_type)
+    {
+        $settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+
+        return $this->render_partial('nextgen_basic_thumbnail_limits', array(
+            'display_type_name' => $display_type->name,
+            'thumbnail_images_per_page_label' => _('Images per page:'),
+            'thumbnail_columns_per_page_label' => _('Number of columns to display:'),
+            'thumbnail_images_per_page' => $settings->galImages,
+            'thumbnail_columns_per_page' => $settings->galColumns
+        ), True);
+    }
 
 	/**
 	 * Returns a list of fields to render on the settings page
@@ -124,7 +136,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function _get_field_names()
 	{
 		return array(
-			'thumbnail_dimensions'
+			'thumbnail_dimensions',
+            'thumbnail_limits'
 		);
 	}
 }
