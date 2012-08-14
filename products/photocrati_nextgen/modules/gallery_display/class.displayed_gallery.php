@@ -102,8 +102,8 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	{
 		// Get the image mapper
 		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
-		$mapper->select($id_only ? $image_key : '*');
 		$image_key = $mapper->get_primary_key_column();
+		$mapper->select($id_only ? $image_key : '*');
 
 		// Create query
 		switch ($this->object->source) {
@@ -127,7 +127,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				);
 				break;
 		}
-		
+
 		// Return results
 		if ($limit) $mapper->limit($limit, $offset);
 		return $mapper->run_query();
