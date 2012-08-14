@@ -44,13 +44,6 @@ class Mixin_Display_Settings_Controller extends Mixin
 
 		// For each display type, get the settings pages
 		foreach ($display_types as $display_type) {
-			$display_type_controller = $this->object->_get_registry()->get_utility(
-				'I_Display_Type_Controller', $display_type->name
-			);
-			$display_type_controller->enqueue_backend_resources($display_type);
-			$display_type_tabs[] = $display_type_controller->settings(
-				$display_type, TRUE
-			);
 
 			// Process the form
 			if ($this->object->is_post_request()) {
@@ -71,6 +64,15 @@ class Mixin_Display_Settings_Controller extends Mixin
 					}
 				}
 			}
+
+			// Display the tab
+			$display_type_controller = $this->object->_get_registry()->get_utility(
+				'I_Display_Type_Controller', $display_type->name
+			);
+			$display_type_controller->enqueue_backend_resources($display_type);
+			$display_type_tabs[] = $display_type_controller->settings(
+				$display_type, TRUE
+			);
 		}
 
 		// Render the view
