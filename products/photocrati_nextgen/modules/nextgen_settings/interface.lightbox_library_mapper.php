@@ -1,6 +1,6 @@
 <?php
 
-interface I_Lightbox_Librray_Mapper
+interface I_Lightbox_Library_Mapper
 {
-	
+
 }

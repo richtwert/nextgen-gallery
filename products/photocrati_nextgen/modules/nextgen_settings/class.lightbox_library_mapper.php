@@ -7,12 +7,27 @@ class C_Lightbox_Library_Mapper extends C_CustomPost_DataMapper_Driver
 {
 	static $_instances = array();
 
-	function initialize($context = FALSE)
+	/**
+	 * Defines the lightbox library datamapper
+	 * @param type $context
+	 */
+	function define($context = FALSE)
 	{
-		parent::initialize('lightbox_library', array('lightbox_library', $context));
+		if (!is_array($context)) $context = array($context);
+		array_push($context, 'lightbox_library');
+		parent::define('lightbox_library', $context);
 		$this->add_mixin('Mixin_Lightbox_Library_Mapper');
-		$this->set_model_factory_method('lightbox_library');
 		$this->implement('I_Lightbox_Library_Mapper');
+
+		$this->set_model_factory_method('lightbox_library');
+	}
+
+	/**
+	 * Initializes the datamapper
+	 */
+	function initialize()
+	{
+		parent::initialize('lightbox_library');
 	}
 
 	/**

@@ -37,6 +37,6 @@ class A_Thickbox_Library_Activation extends Mixin
 			$retval = $wp_styles->registered[$handle]->src;
 		}
 
-		return $retval;
+		return real_site_url($retval);
 	}
 }

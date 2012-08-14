@@ -18,7 +18,7 @@ class C_NextGen_Settings_Defaults
          */
         if (False == $global)
         {
-            return array(
+            $options = array(
                 'gallerypath'    => 'wp-content/gallery/',
                 'deleteImg'      => True,              // delete Images
                 'swfUpload'      => True,              // activate the batch upload
@@ -104,10 +104,18 @@ class C_NextGen_Settings_Defaults
                 'activateCSS' => TRUE,           // activate the CSS file
                 'CSSfile'     => 'nggallery.css', // set default css filename
 
-                // framework settings
+                // Framework settings
                 'datamapper_driver' => 'custom_table_datamapper',
-                'gallerystorage_driver' => 'ngglegacy_gallery_storage'
+                'gallerystorage_driver' => 'ngglegacy_gallery_storage',
             );
+
+			// Thumbnail sizes
+			$options['thumbnail_dimensions'] = array(
+				"{$options['thumbwidth']}x{$options['thumbheight']}",
+				"100x100"
+			);
+
+			return $options;
         }
 
         return array(
@@ -164,14 +172,8 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 	{
         $this->object->restore_all_missing_options();
 
-		// Run validation, if available
-        $valid = TRUE;
-		if ($this->object->has_method('validate')) {
-			if (!$this->object->validate()) $valid = FALSE;
-		}
-
 		// Save settings
-		if ($valid) {
+		if ($this->object->validate()) {
 			$valid = update_option(
 				$this->object->_get_wordpress_option_name(),
 				$this->object->_options
@@ -185,7 +187,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 			}
 		}
 
-		return $valid;
+		return $this->object->is_valid();
 	}
 
 	/**
@@ -507,27 +509,24 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
     /** @var null Singleton instance */
     public static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
-        $this->implement('I_NextGen_Settings');
-	}
-
-	function initialize($context = False)
-	{
-		parent::initialize($context);
-
-        // Add persistence layer. Replace if not using WordPress
+		parent::define($context);
+		$this->add_mixin('Mixin_Validation');
         $this->add_mixin('Mixin_WordPress_NextGen_Settings_Persistance');
 
         // Default options API
         if ('multisite' == $context)
-        {
             $this->add_mixin('Mixin_NextGen_Multisite_Settings');
-        } else {
+		else
             $this->add_mixin('Mixin_NextGen_Settings');
-        }
+		
+        $this->implement('I_NextGen_Settings');
+	}
 
+	function initialize()
+	{
+		parent::initialize();
 		$this->object->reload();
 	}
 

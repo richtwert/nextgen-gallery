@@ -8,8 +8,9 @@ class C_DataMapper_Model extends C_Component
 	/**
 	 * Define the model
 	 */
-	function define()
+	function define($mapper, $properties, $context=FALSE)
 	{
+		parent::define($context);
 		$this->add_mixin('Mixin_Validation');
 		$this->add_mixin('Mixin_DataMapper_Model_Validation');
 		$this->implement('I_DataMapper_Model');
@@ -21,11 +22,11 @@ class C_DataMapper_Model extends C_Component
 	 * @param array|stdClass $properties
 	 * @param string $context
 	 */
-	function initialize($mapper, $properties=FALSE, $context = FALSE)
+	function initialize($mapper, $properties=FALSE)
 	{
 		$this->_mapper = $mapper;
 		$this->_stdObject = $properties ? (object)$properties  : new stdClass();
-		parent::initialize($context);
+		parent::initialize();
 		$this->set_defaults();
 	}
 
@@ -136,7 +137,7 @@ class C_DataMapper_Model extends C_Component
  */
 class Mixin_DataMapper_Model_Validation extends Mixin
 {
-	function validate()
+	function validation()
 	{
 		return $this->object->is_valid();
 	}

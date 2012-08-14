@@ -26,6 +26,11 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->_get_registry()->set_product_module_path($this->module_id, $module_path);
 		$this->_get_registry()->add_module_path($module_path, TRUE, FALSE);
 
+		// The validation module is a helper module intended to be adopted
+		// by other modules. The datamapper and nextgen_settings modules
+		// make use of it.
+		$this->_get_registry()->load_module('photocrati-validation');
+
 		// The NextGEN Settings module provides uniform centralized management
 		// of settings for the plugin.
 		$this->_get_registry()->load_module('photocrati-nextgen_settings');
@@ -63,6 +68,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
 		$this->_get_registry()->load_module('photocrati-mediarss');
+
+		// Provides framework-wide support for thumbnail-like gallery types
+		$this->_get_registry()->load_module('photocrati-thumbnails');
 
 		// Load the NextGEN Basic Thumbnails display type
 		$this->_get_registry()->load_module('photocrati-nextgen_basic_thumbnails');

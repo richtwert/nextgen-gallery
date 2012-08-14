@@ -1,14 +1,11 @@
-<?php if (isset($message)): ?>
-<?php echo $message ?>
-<?php endif ?>
 <table>
 	<!-- Lightbox Library Name -->
 	<tr>
-		<td id="column1">
+		<td class="column1">
 			<label for="lightbox_library"><?php echo_h(_("Effect Library:"))?></label>
 		</td>
 		<td>
-			<select name="id" id="lightbox_library">
+			<select name="lightbox_library_id" id="lightbox_library">
 				<?php foreach ($libs as $lib): ?>
 				<option
 					css_stylesheets="<?php echo esc_attr($lib->css_stylesheets)?>"
@@ -21,13 +18,17 @@
 				<?php endforeach ?>
 			</select>
 			&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
 			<a
 				href="#"
 				id="lightbox_library_advanced_toggle"
-				hidden_label="<?php echo esc_attr(_('Show Advanced Settings'))?>"
-				active_label="<?php echo esc_attr(_('Hide Advanced Settings'))?>"
+				hidden_label="<?php echo esc_attr(_('(Show Advanced Settings)'))?>"
+				active_label="<?php echo esc_attr(_('(Hide Advanced Settings)'))?>"
 				>
-				<?php echo_h(_("Show Advanced Settings"))?>
+				<?php echo_h(_("(Show Advanced Settings)"))?>
 			</a>
 		</td>
 	</tr>

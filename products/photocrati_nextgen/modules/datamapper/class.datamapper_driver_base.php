@@ -346,11 +346,10 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		// a model
 		elseif (!$this->object->is_model($entity)) {
 			$model = $this->object->convert_to_model($entity);
-			get_class($model);
 		}
 
 		// Validate the model
-		if ($model->has_method('validate')) $model->validate();
+		$model->validate();
 
 		if ($model->is_valid()) {
 			$retval = $this->object->_save_entity($model->get_entity());
@@ -368,16 +367,16 @@ class C_DataMapper_Driver_Base extends C_Component
 	var $_object_name;
 	var $_model_factory_method = FALSE;
 
-	function define($context=FALSE)
+	function define($object_name, $context=FALSE)
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_DataMapper_Driver_Base');
 		$this->implement('I_DataMapper_Driver');
 	}
 
-	function initialize($object_name, $context=FALSE)
+	function initialize($object_name)
 	{
-		parent::initialize($context);
+		parent::initialize();
 		$this->_object_name = $object_name;
 	}
 

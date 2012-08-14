@@ -11,9 +11,10 @@ class E_UploadException extends RuntimeException
 
 class E_InsufficientWriteAccessException extends RuntimeException
 {
-	function __construct($message='', $code=NULL, $previous=NULL)
+	function __construct($message=FALSE, $filename=NULL, $code=NULL, $previous=NULL)
 	{
 		if (!$message) $message = "Could not write to file. Please check filesystem permissions.";
+		if ($filename) $message .= " Filename: {$filename}";
 		parent::__construct($message, $code, $previous);
 	}
 }
@@ -433,7 +434,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					);
 				}
 				catch(Exception $ex) {
-					throw new E_InsufficientWriteAccessException();
+					throw new E_InsufficientWriteAccessException(
+						FALSE, $abs_filename, FALSE, $ex
+					);
 				}
 			}
 		}
@@ -443,19 +446,20 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	}
 }
 
-class C_GalleryStorage_Driver_Base extends C_Component
+class C_GalleryStorage_Driver_Base extends C_GalleryStorage_Base
 {
     public static $_instances = array();
 
-	function define()
+	function define($context)
 	{
+		parent::define($context);
 		$this->add_mixin('Mixin_GalleryStorage_Driver_Base');
 		$this->implement('I_GalleryStorage_Driver');
 	}
 
-	function initialize($context)
+	function initialize()
 	{
-		parent::initialize($context);
+		parent::initialize();
 		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
 		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 	}

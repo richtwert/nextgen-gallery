@@ -9,6 +9,7 @@
 class M_NextGen_Settings extends C_Base_Module
 {
 	var $activator = NULL;
+	var $page_name = 'ngg_other_options';
 
 	/**
 	 * Defines the module
@@ -129,7 +130,7 @@ class M_NextGen_Settings extends C_Base_Module
 			_('Other Options'),
 			_('Other Options'),
 			'NextGEN Change options',
-			'ngg_other_options',
+			$this->page_name,
 			array(&$this->controller, 'index')
 		);
 	}
@@ -139,28 +140,30 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function enqueue_resources()
 	{
-		wp_enqueue_script(
-			'nextgen_settings_page',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_settings_page.js',
-			array('jquery-ui-accordion'),
-			$this->module_version
-		);
+		if (isset($_REQUEST['page']) && $_REQUEST['page'] == $this->page_name) {
+			wp_enqueue_script(
+				'nextgen_settings_page',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_settings_page.js',
+				array('jquery-ui-accordion'),
+				$this->module_version
+			);
 
-		// There are many jQuery UI themes available via Google's CDN:
-		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
-		wp_enqueue_style(
-			'jquery-ui-south-street',
-			(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
-			array(),
-			'1.7.0'
-		);
+			// There are many jQuery UI themes available via Google's CDN:
+			// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
+			wp_enqueue_style(
+				'jquery-ui-south-street',
+				(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
+				array(),
+				'1.7.0'
+			);
 
-		wp_enqueue_style(
-			'nextgen_settings_page',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_settings_page.css',
-			array(),
-			$this->module_version
-		);
+			wp_enqueue_style(
+				'nextgen_settings_page',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_settings_page.css',
+				array(),
+				$this->module_version
+			);
+		}
 	}
 }
 

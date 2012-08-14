@@ -26,8 +26,10 @@ class Mixin_DataMapper extends Mixin
 
 			// Define a constant and use this as the global datamapper driver,
 			// unless running in a SimpleTest Environment
-			if (!isset($GLOBALS['SIMPLE_TEST_RUNNING']))
+			if (!isset($GLOBALS['SIMPLE_TEST_RUNNING'])) {
 				define('DATAMAPPER_DRIVER', $factory_method);
+			}
+
 		}
 
 		// Use the globally defined datamapper driver in the constant

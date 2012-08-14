@@ -4,9 +4,9 @@ class C_Display_Settings_Controller extends C_MVC_Controller
 {
 	static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
+		parent::define($context);
 		$this->add_mixin('Mixin_Display_Settings_Controller');
 		$this->implement('I_Display_Settings_Controller');
 	}
@@ -47,6 +47,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 			$display_type_controller = $this->object->_get_registry()->get_utility(
 				'I_Display_Type_Controller', $display_type->name
 			);
+			$display_type_controller->enqueue_backend_resources($display_type);
 			$display_type_tabs[] = $display_type_controller->settings(
 				$display_type, TRUE
 			);

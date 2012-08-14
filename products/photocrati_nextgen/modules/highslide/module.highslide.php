@@ -35,13 +35,8 @@ class M_Highslide extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
-    
-    
-    function initialize()
-    {
-    }
-    
-    
+
+
     function _register_hooks()
     {
         wp_register_script(
@@ -50,7 +45,7 @@ class M_Highslide extends C_Base_Module
             array(),
             '4.1.13'
         );
-        
+
         wp_register_style(
             'highslide',
             PHOTOCRATI_GALLERY_MOD_HIGHSLIDE_CSS_URL,
@@ -58,8 +53,8 @@ class M_Highslide extends C_Base_Module
             '4.1.13'
         );
     }
-    
-    
+
+
     function _register_adapters()
     {
         $this->_get_registry()->add_adapter('I_Lightbox_Library', 'A_Highslide_Lightbox_Library');

@@ -4,14 +4,11 @@ class C_Displayed_Gallery_Mapper extends C_CustomPost_DataMapper_Driver
 {
 	static $_instances = array();
 
-	function define()
+	function define($context=FALSE)
 	{
-		parent::define();
-		{
-			parent::define();
-			$this->implement('I_Displayed_Gallery_Mapper');
-			$this->set_model_factory_method('display_type');
-		}
+		parent::define(NULL, array($context, 'display_gallery'));
+		$this->implement('I_Displayed_Gallery_Mapper');
+		$this->set_model_factory_method('display_type');
 	}
 
 
@@ -19,13 +16,13 @@ class C_Displayed_Gallery_Mapper extends C_CustomPost_DataMapper_Driver
 	 * Initializes the mapper
 	 * @param string|array|FALSE $context
 	 */
-	function initialize($context = FALSE)
+	function initialize()
 	{
-		parent::initialize('displayed_gallery', array($context, 'display_gallery'));
+		parent::initialize('displayed_gallery');
 	}
 
-
-		/**
+	
+	/**
 	 * Gets a singleton of the mapper
 	 * @param string|array $context
 	 * @return C_Displayed_Gallery_Mapper

@@ -9,14 +9,15 @@
  * - display_type		(name of the display type being used)
  * - display_settings	(settings for the display type)
  * - exclusions			(excluded entity ids)
+ * - entity_ids			(specific images/galleries to include, sorted)
  */
 class C_Displayed_Gallery extends C_DataMapper_Model
 {
 	var $_mapper_interface = 'I_Displayed_Gallery_Mapper';
 
-	function define()
+	function define($mapper=FALSE, $properties=FALSE, $context=FALSE)
 	{
-		parent::define();
+		parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_Displayed_Gallery_Validation');
 		$this->add_mixin('Mixin_Displayed_Gallery_Instance_Methods');
 		$this->implement('I_Displayed_Gallery');
@@ -29,11 +30,10 @@ class C_Displayed_Gallery extends C_DataMapper_Model
 	 * @param array|stdClass|C_Displayed_Gallery $properties
 	 * @param FALSE|string|array $context
 	 */
-	function initialize($mapper=FALSE, $properties=array(), $context=FALSE)
+	function initialize($mapper=FALSE, $properties=array())
 	{
 		if (!$mapper) $mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
-
-		parent::initialize($mapper, $properties, $context);
+		parent::initialize($mapper, $properties);
 	}
 }
 
@@ -62,7 +62,7 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 	}
 
 
-	function validate()
+	function validation()
 	{
 		$this->object->set_defaults();
 
@@ -103,14 +103,33 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		// Get the image mapper
 		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
 		$image_key = $mapper->get_primary_key_column();
+		$mapper->select($id_only ? $image_key : '*');
 
 		// Create query
-		$mapper->select($id_only ? $image_key : '*')->where(
-			array("galleryid in (%s)", $this->object->container_ids)
-		);
-		$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
-		if ($limit) $mapper->limit($limit, $offset);
+		switch ($this->object->source) {
+			case 'galleries':
+				$mapper->where(
+					array("galleryid in (%s)", $this->object->container_ids)
+				);
+				$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+				break;
+			case 'recent':
+				$mapper->order_by('imagedate', 'DESC');
+				break;
+			case 'random':
+				$mapper->order_by('rand');
+				break;
+			case 'tags':
+				$term_ids = $wpdb->get_col( $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$this->object->container_ids}) ORDER BY term_id ASC "));
+				$image_ids = get_objects_in_term($term_ids, 'ngg_tag');
+				$mapper->where(
+					array("{$image_key} IN (%s)", $image_ids)
+				);
+				break;
+		}
 
+		// Return results
+		if ($limit) $mapper->limit($limit, $offset);
 		return $mapper->run_query();
 	}
 

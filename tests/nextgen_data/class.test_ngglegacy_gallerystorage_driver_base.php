@@ -4,17 +4,21 @@ include_once('class.test_gallerystorage_driver_base.php');
 abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_GalleryStorage_Driver_Base
 {
 	var $test_file_abspath = '';
+	var $new_datamapper_driver = '';
+	var $new_gallerystorage_driver = '';
+	var $original_datamapper_driver = '';
+	var $original_gallerystorage_driver = '';
 
 	function __construct($label, $datamapper_driver_factory_method)
 	{
 		parent::__construct($label);
-		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
-		$settings->datamapper_driver = $datamapper_driver_factory_method;
-		$settings->gallerystorage_driver = 'ngglegacy_gallery_storage';
-		$settings->save();
+		$this->settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+		$this->new_datamapper_driver			= $datamapper_driver_factory_method;
+		$this->new_gallerystorage_driver		= 'ngglegacy_gallery_storage';
+		$this->original_datamapper_driver		= $this->settings->datamapper_driver;
+		$this->original_gallerystorage_driver	= $this->settings->gallerystorage_driver;
 		$this->test_file_abspath = path_join(dirname(__FILE__), 'test.jpg');
 	}
-
 
 	/**
 	 * Create a gallery and image for testing purposes
@@ -22,6 +26,11 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 	function setUp()
 	{
 		parent::setUp();
+
+		// Change the datamapper and gallery storage drivers
+		$this->settings->gallerystorage_driver  = $this->new_gallerystorage_driver;
+		$this->settings->datamapper_driver		= $this->new_datamapper_driver;
+		$this->settings->save();
 
 		// Get the mappers required for these tests
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
@@ -51,6 +60,11 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 	function tearDown()
 	{
 		parent::tearDown();
+
+		// Restore the datamapper and gallery storage drivers
+		$this->settings->gallerystorage_driver  = $this->original_gallerystorage_driver;
+		$this->settings->datamapper_driver		= $this->original_datamapper_driver;
+		$this->settings->save();
 
 		// Delete any temporary galleries and images we might have created
 		$this->gallery_mapper->destroy($this->gid);

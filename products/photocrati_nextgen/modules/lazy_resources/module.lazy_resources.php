@@ -31,7 +31,7 @@ class M_Lazy_Resources extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-		add_action('init', array(&$this, 'enqueue_scripts'));
+		add_action('init', array(&$this, 'enqueue_scripts'), 1);
 		add_action('wp_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);
 		add_action('admin_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);
 	}
@@ -71,6 +71,8 @@ class M_Lazy_Resources extends C_Base_Module
 	 */
 	function print_footer_scripts()
 	{
+		wp_print_scripts();
+
 		// Get the remaining script and style resources that haven't yet
 		// been loaded
 		ob_start();

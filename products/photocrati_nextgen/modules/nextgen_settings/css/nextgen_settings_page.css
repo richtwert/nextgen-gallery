@@ -1,21 +1,31 @@
 .gallery_page_ngg_other_options table {
-	width: 100%;
+	width: 80%;
 	height: 100%;
 }
 .gallery_page_ngg_other_options table td {
-	vertical-align: top;
+	/*
+     * The below should be used, but it doesn't display correctly on Chrome.
+	 * vertical-align: top;
+	*/
 }
-.gallery_page_ngg_other_options table td#column1 {
-	width: 120px;
+.gallery_page_ngg_other_options table td.column1 {
+	width: 140px;
 }
 
 .gallery_page_ngg_other_options textarea {
-	height: 60px;
+	height: 100px;
 }
 
 .gallery_page_ngg_other_options textarea,
 .gallery_page_ngg_other_options input[type=text] {
-	width: 80%;
+	width: 100%;
+}
+
+#lightbox_library_advanced_toggle {
+	font-size: 11px;
+	position: relative;
+	bottom: 5px;
+	color: #444444;
 }
 
 .entity_errors {

@@ -23,6 +23,13 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             case 'xhtml':
                 $type = 'text/html';
                 break;
+			case 'xml':
+				$type = 'text/xml';
+				break;
+			case 'rss':
+			case 'rss2':
+				$type = 'application/rss+xml';
+				break;
             case 'css':
                 $type = 'text/css';
                 break;
@@ -175,18 +182,17 @@ abstract class C_MVC_Controller extends C_Component
 	var $exit = FALSE;
 
 
-    function define()
+    function define($context=FALSE)
     {
-		parent::define();
-
+		parent::define($context);
         $this->add_mixin('Mixin_MVC_Controller_Defaults');
         $this->add_mixin('Mixin_MVC_Controller_Rendering');
         $this->implement('I_MVC_Controller');
     }
 
-    function initialize($context=FALSE)
+    function initialize()
     {
-        parent::initialize($context);
+        parent::initialize();
         $this->_request = function_exists('apache_request_headers') ?
             apache_request_headers() : array();
         $this->_params = $this->parse_params($_REQUEST);
@@ -263,16 +269,16 @@ abstract class C_MVC_Controller extends C_Component
      * @param string $key
      * @return mixed
      */
-    function param($key, $default=NULL)
+    function &param($key, $default=NULL)
     {
         $retval = $default;
 
         if (isset($this->_params[$key])) {
-            $val = $this->_params[$key];
+            $val = &$this->_params[$key];
             if (is_array($val))
-                $retval = $val;
+                $retval = &$val;
             elseif (is_string($val) && !in_array(strtolower($val), array('null','false')))
-                $retval = $val;
+                $retval = &$val;
         }
 
         return $retval;

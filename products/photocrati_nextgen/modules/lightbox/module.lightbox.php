@@ -56,12 +56,8 @@ class M_Lightbox extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
-    
-    
-    function initialize()
-    {
-    }
-    
+	
+
     function _register_hooks()
     {
         wp_register_script(
@@ -70,7 +66,7 @@ class M_Lightbox extends C_Base_Module
             array('jquery'),
             '0.5'
         );
-        
+
         wp_register_style(
             'jquery.lightbox',
             PHOTOCRATI_GALLERY_MOD_LIGHTBOX_CSS_URL,
@@ -78,8 +74,8 @@ class M_Lightbox extends C_Base_Module
             '0.5'
         );
     }
-    
-    
+
+
     function _register_adapters()
     {
         $this->_get_registry()->add_adapter(

@@ -2,7 +2,8 @@
 
 /***
  {
-	Module: photocrati-datamapper
+	Module: photocrati-datamapper,
+	Depends: { photocrati-validation }
  }
 ***/
 class M_DataMapper extends C_Base_Module
