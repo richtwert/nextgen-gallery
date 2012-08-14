@@ -124,7 +124,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function _get_field_names()
 	{
 		return array(
-			'thumbnail_dimensions'
+			'thumbnail_dimensions',
+            'thumbnail_misc'
 		);
 	}
 }
