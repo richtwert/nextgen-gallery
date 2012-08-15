@@ -118,52 +118,109 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	}
 
     /**
-     * Renders the fields to set the number images & columns per page
+     * Renders the images_per_page settings field
      *
      * @param C_Display_Type $display_type
      * @return string
      */
-    function _render_thumbnail_limits_field($display_type)
+    function _render_thumbnail_images_per_page_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_limits', array(
+        return $this->render_partial('nextgen_basic_thumbnails_settings_images_per_page', array(
             'display_type_name' => $display_type->name,
-
             'images_per_page_label' => _('Images per page:'),
             'images_per_page' => $display_type->settings['images_per_page'],
+        ), True);
+    }
 
+    /**
+     * Renders the number_of_columns settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_thumbnail_number_of_columns_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_number_of_columns', array(
+            'display_type_name' => $display_type->name,
             'number_of_columns_label' => _('Number of columns to display:'),
             'number_of_columns' => $display_type->settings['number_of_columns']
         ), True);
     }
 
     /**
-     * Renders the fields to set the text of links for slideshows & piclens
+     * Renders the slideshow_link_text settings field
      *
      * @param C_Display_Type $display_type
      * @return string
      */
-    function _render_thumbnail_text_links_field($display_type)
+    function _render_thumbnail_slideshow_link_text_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_text_links', array(
+        return $this->render_partial('nextgen_basic_thumbnails_settings_slideshow_link_text', array(
             'display_type_name' => $display_type->name,
-
-            'slideshow_text_link_label' => _('Slideshow text link:'),
-            'slideshow_text_link' => $display_type->settings['slideshow_text_link'],
-
-            'piclens_text_link_label' => _('Piclens text link:'),
-            'piclens_text_link' => $display_type->settings['piclens_text_link']
+            'slideshow_link_text_label' => _('Slideshow text link:'),
+            'slideshow_link_text' => $display_type->settings['slideshow_link_text'],
         ), True);
     }
 
-	/**
+    /**
+     * Renders the piclens_link_text settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_thumbnail_piclens_link_text_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_piclens_link_text', array(
+            'display_type_name' => $display_type->name,
+            'piclens_link_text_label' => _('Piclens text link:'),
+            'piclens_link_text' => $display_type->settings['piclens_link_text']
+        ), True);
+    }
+
+    /**
+     * Renders the show_slideshow_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_thumbnail_show_slideshow_link_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_show_slideshow_link', array(
+            'display_type_name' => $display_type->name,
+            'show_slideshow_link_label' => _('Show slideshow link:'),
+            'show_slideshow_link' => $display_type->settings['show_slideshow_link']
+        ), True);
+    }
+
+    /**
+     * Renders the show_piclens_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_thumbnail_show_piclens_link_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_show_piclens_link', array(
+            'display_type_name' => $display_type->name,
+            'show_piclens_link_label' => _('Show piclens link:'),
+            'show_piclens_link' => $display_type->settings['show_piclens_link']
+        ), True);
+    }
+
+
+    /**
 	 * Returns a list of fields to render on the settings page
 	 */
 	function _get_field_names()
 	{
 		return array(
 			'thumbnail_dimensions',
-            'thumbnail_limits',
-            'thumbnail_text_links'
+            'thumbnail_images_per_page',
+            'thumbnail_number_of_columns',
+            'thumbnail_slideshow_link_text',
+            'thumbnail_piclens_link_text',
+            'thumbnail_show_slideshow_link',
+            'thumbnail_show_piclens_link'
 		);
 	}
 }
