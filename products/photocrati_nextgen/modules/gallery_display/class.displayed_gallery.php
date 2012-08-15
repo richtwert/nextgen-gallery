@@ -59,6 +59,13 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 				);
 			}
 		}
+
+		// Default ordering
+		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		if (!isset($this->object->order_by))
+			$this->object->order_by = $settings->galSort;
+		if (!isset($this->object->order_direction))
+			$this->object->order_direction = $settings->galSortDir;
 	}
 
 
@@ -98,21 +105,91 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param int $limit
 	 * @param int $offset
 	 */
-	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE, $include_exclusions=FALSE)
 	{
-		// Get the image mapper
-		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
-		$image_key = $mapper->get_primary_key_column();
-		$mapper->select($id_only ? $image_key : '*');
-
 		// Create query
 		switch ($this->object->source) {
 			case 'gallery':
 			case 'galleries':
-				$mapper->where(
-					array("galleryid in (%s)", $this->object->container_ids)
-				);
-				$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+
+				// When a gallery is a source, then we're retrieving images.
+				$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+				$image_key = $mapper->get_primary_key_column();
+				$mapper->select($id_only ? $image_key : '*');
+
+				// We can do that by specifying what gallery ids we
+				// want images from:
+				if ($this->object->container_ids && !$this->object->entity_ids) {
+					$mapper->where(
+						array("galleryid in (%s)", $this->object->container_ids)
+					);
+
+					// We can excluse images from those galleries we're not
+					// interested in...
+					if ($this->object->exclusions) {
+						$mapper->where(
+							array(
+								"{$image_key} NOT IN (%s)",
+								$this->object->exclusions
+							)
+						);
+					}
+
+					// Apply sorting
+					$mapper->order_by($this->object->order_by, $this->object->order_direction);
+				}
+
+				// Or, instead of specifying what galleries we want images from,
+				// we can specify the images in particular that we want to fetch
+				elseif ($this->object->entity_ids && !$this->object->container_ids) {
+					$mapper->where(
+						array("pid in %s", $this->object->entity_ids)
+					);
+					$mapper->order_by($this->object->order_by, $this->object->order_direction);
+				}
+
+				// Finally, a user can specify what galleries they're interested
+				// in, and select what images in particular they want. Exclusions
+				// are then calculated rather than specified.
+				// NOTE: This is used in the Attach to Post interface
+				elseif ($this->object->entity_ids && $this->object->container_ids) {
+
+					// We're going to return images from all of the galleries
+					// specified, but mark which images will be excluded. To do
+					// so, we have to create a dynamic column
+					$select = $id_only ? $image_key : '*';
+					$set = implode(',', array_reverse($this->object->entity_ids));
+					$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS 'sortorder'";
+					$select .= ", IF(@row = 0, 1, 0) AS 'exclude'";
+					$mapper->select($select);
+
+					// Limit by specified galleries
+					$mapper->where(
+						array("galleryid in (%s)", $this->object->container_ids)
+					);
+
+					// Do we want to include the exclusions in the result
+					if (!$include_exclusions) $mapper->where(array("exclude = %d", 0));
+
+					// A user might want to sort the results by the order of
+					// images that they specified to be included. For that,
+					// we need some trickery by reversing the order direction
+					if ($this->object->order_by == 'sortorder') {
+						if ($this->object->order_direction == 'ASC')
+							$this->object->order_direction = 'DESC';
+						else
+							$this->object->order_direction = 'ASC';
+					}
+					$mapper->order_by($this->object->order_by, $this->object->order_direction);
+
+					// When using a custom order (sortorder), we should apply a
+					// secondary sort order to maintain the default sort order
+					// for galleries as much as possible
+					if ($this->object->order_by == 'sortorder') {
+						$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+						$mapper->order_by($settings->galSort, $settings->galSortDir);
+					}
+				}
 				break;
 			case 'recent':
 				$mapper->order_by('imagedate', 'DESC');
@@ -127,11 +204,6 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 					array("{$image_key} IN (%s)", $image_ids)
 				);
 				break;
-		}
-
-		// Apply other parts of the query
-		if (isset($this->object->order_by)) {
-			
 		}
 		if ($limit) $mapper->limit($limit, $offset);
 

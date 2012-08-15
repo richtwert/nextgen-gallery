@@ -130,6 +130,8 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 	 */
 	function test_get_gallery_images()
 	{
+		$image_key = $this->img_mapper->get_primary_key_column();
+
 		// Get the images for the first gallery
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'gallery';
@@ -166,6 +168,29 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		$this->assertEqual(count($images), 3);
 		$this->assertEqual($displayed_gallery->get_image_count(), 3);
 		$this->assertEqual($first_image->alttext, "A Test Image #2");
+
+		// Test getting specific image ids (first & last image)
+		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
+		$displayed_gallery->source = 'gallery';
+		$displayed_gallery->entity_ids = array(
+			$this->image_ids[0],
+			$this->image_ids[count($this->image_ids)-1]
+		);
+		$images = $displayed_gallery->get_images();
+		$this->assertEqual(count($images), 2);
+		$this->assertEqual($displayed_gallery->get_image_count(), 2);
+		$this->assertEqual($images[0]->$image_key, $this->image_ids[0]);
+		$this->assertEqual($images[1]->$image_key, $this->image_ids[count($this->image_ids)-1]);
+
+		// Test getting specific image ids from a list of galleries, including
+		// exclusions
+		$displayed_gallery->container_ids = $this->gallery_ids;
+		$displayed_gallery->order_by = 'sortorder';
+		$images = $displayed_gallery->get_images();
+		$this->assertEqual(count($images), 6);
+		$this->assertEqual($displayed_gallery->get_image_count(), 6);
+		$this->assertEqual($images[0]->$image_key, $this->image_ids[0]);
+		$this->assertEqual($images[1]->$image_key, $this->image_ids[count($this->image_ids)-1]);
 	}
 }
 

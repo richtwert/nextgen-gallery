@@ -25,6 +25,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			'paged'			=> FALSE,
 			'fields'		=> $fields,
 			'post_status'	=> 'any',
+			'datamapper'	=>	TRUE
 		);
 		return $this->object;
 	}

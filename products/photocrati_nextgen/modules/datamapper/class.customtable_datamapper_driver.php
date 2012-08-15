@@ -13,23 +13,16 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 
 
 	/**
-	 * Selects which fields to collect from the table
+	 * Selects which fields to collect from the table.
+	 * NOTE: Not protected from SQL injection - DO NOT let your users
+	 * specify DB columns
 	 * @param string $fields
 	 */
 	function select($fields='*')
 	{
 		// Create a fresh slate
 		$this->object->_init();
-
-		// Create fields list
-		$fields = is_string($fields) ? explode(',', $fields) : $fields;
-		foreach ($fields as &$field) {
-			$field = $this->object->_clean_column($field);
-			if ($this->object->has_column($field)) $field = "`{$field}`";
-		}
-
-		// Create select clause
-		$this->object->_select_clause = 'SELECT '.implode(', ', $fields);
+		$this->object->_select_clause = "SELECT {$fields}";
 
 		return $this->object;
 	}
