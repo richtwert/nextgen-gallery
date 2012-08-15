@@ -7,7 +7,7 @@ class Mixin_NextGen_Gallery_Image_Validation extends Mixin
 	{
 		$this->object->set_defaults();
 
-		$this->validates_presence_of('galleryid', 'filename', 'alttext', 'exclude', 'sortorder');
+		$this->validates_presence_of('galleryid', 'filename', 'alttext', 'exclude', 'sortorder', 'imagedate');
         $this->validates_numericality_of('galleryid');
         $this->validates_numericality_of($this->id());
 		$this->validates_numericality_of('sortorder');
@@ -28,11 +28,17 @@ class Mixin_NextGen_Gallery_Image_Validation extends Mixin
 		// If not set already, set a default sortorder
 		if (!isset($this->object->sortorder)) $this->object->sortorder = 0;
 
+		// The imagedate must be set
+		if (!isset($this->object->imagedate))
+			$this->object->imagedate = date("Y-d-m h-i-s");
+
 		// If a filename is set, and no alttext is set, then set the alttext
 		// to the basename of the filename (legacy behavior)
 		if ($this->object->filename && !isset($this->object->alttext)) {
 			$path_parts = pathinfo( $this->object->filename);
-			$this->object->alttext = ( !isset($path_parts['filename']) ) ? substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) : $path_parts['filename'];
+			$this->object->alttext = ( !isset($path_parts['filename']) ) ?
+				substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) :
+				$path_parts['filename'];
 		}
 	}
 }

@@ -105,17 +105,17 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param int $limit
 	 * @param int $offset
 	 */
-	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE, $include_exclusions=FALSE)
+	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
+		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$image_key = $mapper->get_primary_key_column();
+		$mapper->select($id_only ? $image_key : '*');
+		$run_query = TRUE;
+
 		// Create query
 		switch ($this->object->source) {
 			case 'gallery':
 			case 'galleries':
-
-				// When a gallery is a source, then we're retrieving images.
-				$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
-				$image_key = $mapper->get_primary_key_column();
-				$mapper->select($id_only ? $image_key : '*');
 
 				// We can do that by specifying what gallery ids we
 				// want images from:
@@ -159,17 +159,14 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 					// so, we have to create a dynamic column
 					$select = $id_only ? $image_key : '*';
 					$set = implode(',', array_reverse($this->object->entity_ids));
-					$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS 'sortorder'";
-					$select .= ", IF(@row = 0, 1, 0) AS 'exclude'";
+					$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
+					$select .= ", IF(@row = 0, @exclude := 1, @exclude := 0) AS exclude";
 					$mapper->select($select);
 
 					// Limit by specified galleries
 					$mapper->where(
 						array("galleryid in (%s)", $this->object->container_ids)
 					);
-
-					// Do we want to include the exclusions in the result
-					if (!$include_exclusions) $mapper->where(array("exclude = %d", 0));
 
 					// A user might want to sort the results by the order of
 					// images that they specified to be included. For that,
@@ -192,10 +189,16 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				}
 				break;
 			case 'recent':
+			case 'recent_images':
 				$mapper->order_by('imagedate', 'DESC');
+				if ($this->object->exclusions)
+					$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
 				break;
 			case 'random':
+			case 'random_images':
 				$mapper->order_by('rand');
+				if ($this->object->exclusions)
+					$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
 				break;
 			case 'tags':
 				$term_ids = $wpdb->get_col( $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$this->object->container_ids}) ORDER BY term_id ASC "));
@@ -204,11 +207,15 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 					array("{$image_key} IN (%s)", $image_ids)
 				);
 				break;
+			default:
+				$run_query = FALSE;
+				break;
 		}
-		if ($limit) $mapper->limit($limit, $offset);
-
-		// Return results
-		return $mapper->run_query();
+		if ($run_query) {
+			if ($limit) $mapper->limit($limit, $offset);
+			return $mapper->run_query();
+		}
+		else return array();
 	}
 
 

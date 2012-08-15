@@ -51,6 +51,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[] = $image->$img_key;
 		}
 		else $this->fail("Could not create {$image->alttext}");
+		sleep(1);
 
 
 		$image = $this->storage->upload_base64_image($gallery, $this->test_image_abspath);
@@ -60,6 +61,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[] = $image->$img_key;
 		}
 		else $this->fail("Could not create {$image->alttext}");
+		sleep(1);
 
 		$image = $this->storage->upload_base64_image($gallery, $this->test_image_abspath);
 		$image->alttext = "Test Image #3";
@@ -68,6 +70,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[] = $image->$img_key;
 		}
 		else $this->fail("Could not create {$image->alttext}");
+		sleep(1);
 
 		// Create test gallery #2
 		$gallery = new stdClass();
@@ -85,6 +88,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[] = $image->$img_key;
 		}
 		else $this->fail("Could not create {$image->alttext}");
+		sleep(1);
 
 		$image = $this->storage->upload_base64_image($gallery, $this->test_image_abspath);
 		$image->alttext = "A Test Image #5";
@@ -93,6 +97,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[] = $image->$img_key;
 		}
 		else $this->fail("Could not create {$image->alttext}");
+		sleep(1);
 
 		$image = $this->storage->upload_base64_image($gallery, $this->test_image_abspath);
 		$image->alttext = "Test Image #6";
@@ -101,6 +106,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[] = $image->$img_key;
 		}
 		else $this->fail("Could not create {$image->alttext}");
+		sleep(1);
 	}
 
 	/**
@@ -192,6 +198,27 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		$this->assertEqual($images[0]->$image_key, $this->image_ids[0]);
 		$this->assertEqual($images[1]->$image_key, $this->image_ids[count($this->image_ids)-1]);
 	}
-}
 
+
+	function test_get_recent_images()
+	{
+		// Test getting 5 of the most recent images
+		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
+		$displayed_gallery->source = 'recent';
+		$images = $displayed_gallery->get_images(5);
+		$this->assertEqual($displayed_gallery->get_image_count(), count($this->img_mapper->find_all()));
+		$this->assertEqual(count($images), 5);
+		$this->assertEqual($images[0]->pid, $this->image_ids[count($this->image_ids)-1]);
+
+		// Test the same, but exclude the most recent image
+		$displayed_gallery->exclusions = array(
+			$this->image_ids[count($this->image_ids)-1]
+		);
+		$images = $displayed_gallery->get_images(5);
+		$this->assertEqual($displayed_gallery->get_image_count(), count($this->img_mapper->find_all()));
+		$this->assertEqual(count($images), 5);
+		$this->assertEqual($images[0]->pid, $this->image_ids[count($this->image_ids)-2]);
+
+	}
+}
 ?>
