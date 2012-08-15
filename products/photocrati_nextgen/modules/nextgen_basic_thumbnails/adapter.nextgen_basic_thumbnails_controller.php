@@ -8,6 +8,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function initialize()
 	{
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
+        $this->add_mixin('Mixin_NextGen_Basic_Templates');
 	}
 
 	/**
@@ -220,7 +221,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_slideshow_link_text',
             'nextgen_basic_thumbnails_piclens_link_text',
             'nextgen_basic_thumbnails_show_slideshow_link',
-            'nextgen_basic_thumbnails_show_piclens_link'
+            'nextgen_basic_thumbnails_show_piclens_link',
+            'nextgen_basic_templates_template'
 		);
 	}
 }
