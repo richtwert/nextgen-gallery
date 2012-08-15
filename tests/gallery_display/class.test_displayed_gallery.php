@@ -215,10 +215,9 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[count($this->image_ids)-1]
 		);
 		$images = $displayed_gallery->get_images(5);
-		$this->assertEqual($displayed_gallery->get_image_count(), count($this->img_mapper->find_all()));
+		$this->assertEqual($displayed_gallery->get_image_count(), count($this->img_mapper->find_all())-1);
 		$this->assertEqual(count($images), 5);
 		$this->assertEqual($images[0]->pid, $this->image_ids[count($this->image_ids)-2]);
-
 	}
 }
 ?>
