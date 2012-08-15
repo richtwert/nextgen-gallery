@@ -11,17 +11,18 @@ abstract class C_Test_CustomTable_DataMapper_Base extends C_Test_DataMapper_Driv
 
 	function __construct($title=FALSE)
 	{
-		parent::__construct($title?$title:"Test Case for C_CustomTable_DataMapper_Driver");
+		parent::__construct($title?$title:"Test Case for C_CustomTable_DataMapper_Driver", 'custom_table_datamapper');
 		$this->table_name = 'posts';
 		$this->post_type = 'posts';
 	}
 
 	function setUp()
 	{
+		parent::setUp();
 		$retval = FALSE;
 
 		// Create a valid data mapper for 'posts' using a factory
-		$this->mapper = $this->get_factory()->create('custom_table_datamapper', $this->table_name);
+		$this->mapper = $this->get_factory()->create($this->new_datamapper_driver, $this->table_name);
 		$this->assert_valid_datamapper($this->mapper);
 
 		// Create a valid data mapper for 'posts' without a factory

@@ -11,11 +11,6 @@ class C_Test_DataMapper_Using_CustomPost_Driver extends C_Test_CustomPost_DataMa
 	function __construct($label="Test Case for C_DataMapper using CustomPost Driver")
 	{
 		parent::__construct($label);
-
-		// Tell the datamapper which driver to use
-		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
-		$settings->datamapper_driver = 'custom_post_datamapper';
-		$settings->save();
 	}
 
 	/**
@@ -24,6 +19,7 @@ class C_Test_DataMapper_Using_CustomPost_Driver extends C_Test_CustomPost_DataMa
 	 */
 	function setUp()
 	{
+		parent::setUp();
 		$retval = FALSE;
 
 		// Create a valid data mapper for 'posts' using a factory
