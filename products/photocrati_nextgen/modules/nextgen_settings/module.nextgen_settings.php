@@ -141,6 +141,9 @@ class M_NextGen_Settings extends C_Base_Module
 	function enqueue_resources()
 	{
 		if (isset($_REQUEST['page']) && $_REQUEST['page'] == $this->page_name) {
+			wp_enqueue_script('farbtastic');
+			wp_enqueue_style('farbtastic');
+
 			wp_enqueue_script(
 				'nextgen_settings_page',
 				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_settings_page.js',

@@ -1,4 +1,6 @@
 jQuery(function($){
+	$('#watermark_colorpicker').farbtastic('#font_color');
+
 	// Activate accordions
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 
@@ -9,6 +11,9 @@ jQuery(function($){
 		$('#lightbox_library_stylesheets').val(selected.attr('css_stylesheets'));
 		$('#lightbox_library_scripts').val(selected.attr('scripts'));
 	}).change();
+
+	// Configure the watermark customization link
+	$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source');
 
 	// Toggle the advanced settings
 	$('.advanced_toggle_link').click(function(e){

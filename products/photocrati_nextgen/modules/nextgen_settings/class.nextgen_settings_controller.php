@@ -116,6 +116,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		$tabs = array(
 			_('Image Options')			=> $this->object->_render_image_options_tab($settings),
 			_('Lightbox Effect')		=> $this->object->_render_lightbox_library_tab($settings),
+			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
+			_('Custom Styling')			=> $this->object->_render_custom_styling_tab($settings),
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings)
 		);
 
@@ -133,6 +135,26 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		echo 'Multisite Options go here';
 	}
+
+
+	/**
+	 * Renders the custom styling tab
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_custom_styling_tab($settings)
+	{
+		$view = path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array(
+			'admin', 'style.php'
+		)));
+		ob_start();
+		include_once($view);
+		nggallery_admin_style();
+		$retval = ob_get_contents();
+		ob_end_clean();
+		return $retval;
+	}
+
 
 	/**
 	 * Renders the roles tab
@@ -152,6 +174,25 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		return $retval;
 	}
 
+
+	function _render_watermarks_tab($settings)
+	{
+		return $this->render_partial('watermarks_tab', array(
+			'notice'					=>	_('Please note : You can only activate the watermark under -> Manage Gallery . This action cannot be undone.'),
+			'watermark_source_label'	=>	_('How will you generate a watermark?'),
+			'watermark_sources'			=>	$this->object->_get_watermark_sources(),
+			'watermark_fields'			=>	$this->object->_get_watermark_source_fields($settings),
+			'watermark_source'			=>	$settings->wmType,
+			'position_label'			=>	_('Position:'),
+			'position'					=>	$settings->wmPos,
+			'offset_label'				=>	_('Offset:'),
+			'offset_x'					=>	$settings->wmXpos,
+			'offset_y'					=>	$settings->wmYpos,
+			'hidden_label'				=>	_('(Show Customization Options)'),
+			'active_label'				=>	_('(Hide Customization Options)')
+		), TRUE);
+	}
+
 	/**
 	 * Renders the global options tab
 	 * @param C_NextGen_Settings $settings
@@ -169,8 +210,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'show_related_images_label'		=>	_('Show Related Images on Posts?'),
 			'show_related_images_help'		=>	_('When enabled, related images will be appended to each post'),
 			'show_related_images'			=>	$settings->activateTags,
-			'related_images_hidden_label'	=>	_('(Show Advanced Settings)'),
-			'related_images_active_label'	=>	_('(Hide Advanced Settings)'),
+			'related_images_hidden_label'	=>	_('(Show Customization Settings)'),
+			'related_images_active_label'	=>	_('(Hide Customization Settings)'),
 			'match_related_images_label'	=>	_('How should related images be match?'),
 			'match_related_images'			=>	$settings->appendType,
 			'match_related_image_options'	=>	$this->object->_get_related_image_match_options(),
@@ -196,9 +237,11 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'backup_images_label'			=>	_('Backup the original images?'),
 			'backup_images_yes_label'		=>	_('Yes'),
 			'backup_images_no_label'		=>	_('No'),
-			'backup_images'					=>	$settings->imgBackup
+			'backup_images'					=>	$settings->imgBackup,
+			'thumbnail_quality_label'		=>	_('Adjust Thumbnail Quality?'),
+			'thumbnail_quality_help'		=>	_('When generating thumbnails, what image quality do you desire?'),
+			'thumbnail_quality'				=>	$settings->thumbquality
 		), TRUE);
-
 	}
 
 
@@ -305,4 +348,83 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'Tags'						=>	'tags'
 		);
 	}
+
+	/**
+	 * Gets watermark sources, along with their respective fields
+	 * @param C_NextGen_Settings $settings
+	 * @return array
+	 */
+	function _get_watermark_sources()
+	{
+		// We do this so that an adapter can add new sources
+		return array(
+			'Using an Image'	=>	'image',
+			'Using Text'		=>	'text',
+		);
+	}
+
+
+	function _get_watermark_source_fields($settings)
+	{
+		$retval = array();
+		foreach ($this->object->_get_watermark_sources() as $label => $value) {
+			$method = "_render_watermark_{$value}_fields";
+			$retval[$value] = $this->object->call_method($method, array($settings));
+		}
+		return $retval;
+	}
+
+	/**
+	 * Gets all fonts installed for watermarking
+	 * @return array
+	 */
+	function _get_watermark_fonts()
+	{
+		$retval = array();
+		foreach (scandir(path_join(NGGALLERY_ABSPATH, 'fonts')) as $filename) {
+			if (strpos($filename, '.') === 0) continue;
+			else $retval[] = $filename;
+		}
+		return $retval;
+	}
+
+
+	/**
+	 * Render fields that are needed when 'image' is selected as a watermark
+	 * source
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_watermark_image_fields($settings)
+	{
+		return $this->object->render_partial('watermark_image_fields', array(
+			'image_url_label'			=>	_('Image URL:'),
+			'watermark_image_url'		=>	$settings->wmPath,
+		), TRUE);
+	}
+
+	/**
+	 * Render fields that are needed when 'text is selected as a watermark
+	 * source
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_watermark_text_fields($settings)
+	{
+		return $this->object->render_partial('watermark_text_fields', array(
+			'fonts'						=>	$this->object->_get_watermark_fonts($settings),
+			'font_family_label'			=>	_('Font Family:'),
+			'font_family'				=>	$settings->wmFont,
+			'font_size_label'			=>	_('Font Size:'),
+			'font_size'					=>	$settings->wmSize,
+			'font_color_label'			=>	_('Font Color:'),
+			'font_color'				=>	strpos($settings->wmColor, '#') === 0 ?
+											$settings->wmColor : "#{$settings->wmColor}",
+			'watermark_text_label'		=>	_('Text:'),
+			'watermark_text'			=>	$settings->wmText,
+			'opacity_label'				=>	_('Opacity:'),
+			'opacity'					=>	$settings->wmOpaque,
+		), TRUE);
+	}
+
 }
