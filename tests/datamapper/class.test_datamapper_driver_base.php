@@ -11,19 +11,41 @@ abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 	public $model_factory_method = 'my_model';
 	public $post_id = 0;
 	public $mapper;
+	var $original_datamapper_driver = "";
+	var $settings = NULL;
+	var $new_datamapper_driver = '';
 
 
 	/**
 	 * Constructs a new test case for a datamapper driver
 	 * @param string $title
 	 */
-	function __construct($title)
+	function __construct($title, $datamapper_driver)
 	{
 		parent::__construct($title);
 		$this->post_title = "Mike's Test Post";
 		$this->post_type = 'post';
 		$this->model_factory_method = 'my_model';
 		$this->ids_to_cleanup = array();
+		$this->new_datamapper_driver = $datamapper_driver;
+		$this->settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+		$this->original_datamapper_driver = $this->settings->datamapper_driver;
+	}
+
+
+	function setUp()
+	{
+		parent::setUp();
+		$this->settings->datamapper_driver = $this->new_datamapper_driver;
+		$this->settings->save();
+	}
+
+
+	function tearDown()
+	{
+		parent::tearDown();
+		$this->settings->datamapper_driver = $this->original_datamapper_driver;
+		$this->settings->save();
 	}
 
 

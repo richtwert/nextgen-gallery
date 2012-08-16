@@ -15,7 +15,7 @@
 	<!-- Piclense link -->
 	<div class="piclenselink">
 		<a class="piclenselink" href="<?php echo esc_attr($piclens_link) ?>">
-			<?php _e('[View with PicLens]','nggallery'); ?>
+			<?php echo_h($piclens_link_text); ?>
 		</a>
 	</div>
 	<?php endif ?>
@@ -42,9 +42,11 @@
 		</div>
 	</div>
 
-	<?php if ( $number_of_columns > 0 && ++$i % $number_of_columns == 0 ): ?>
-		<br style="clear: both" />
-	<?php endif ?>
+	<?php if ($number_of_columns > 0): ?>
+        <?php if ((($i + 1) % $number_of_columns) == 0 ): ?>
+		    <br style="clear: both" />
+        <?php endif; ?>
+	<?php endif; ?>
 
 	<?php endfor ?>
 

@@ -3,12 +3,12 @@
 require_once('class.test_datamapper_driver_base.php');
 abstract class C_Test_CustomPost_DataMapper_Base extends C_Test_DataMapper_Driver_Base
 {
-		/**
+	/**
 	 * Setup test data
 	 */
 	function __construct($title=FALSE)
 	{
-		parent::__construct($title?$title:'Test Case for C_CustomPost_DataMapper_Driver');
+		parent::__construct($title?$title:'Test Case for C_CustomPost_DataMapper_Driver', 'custom_post_datamapper');
 	}
 
 
@@ -18,10 +18,11 @@ abstract class C_Test_CustomPost_DataMapper_Base extends C_Test_DataMapper_Drive
 	 */
 	function setUp()
 	{
+		parent::setUp();
 		$retval = FALSE;
 
 		// Create a valid data mapper for 'posts' using a factory
-		$this->mapper = $this->get_factory()->create('custom_post_datamapper', $this->post_type);
+		$this->mapper = $this->get_factory()->create($this->new_datamapper_driver, $this->post_type);
 		$this->assert_valid_datamapper($this->mapper);
 		$this->assertIsA($this->mapper, 'C_CustomPost_DataMapper_Driver');
 

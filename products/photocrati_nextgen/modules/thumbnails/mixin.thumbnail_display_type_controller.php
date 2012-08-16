@@ -43,6 +43,15 @@ class Mixin_Thumbnail_Display_Type_Controller extends Mixin
 		), TRUE);
 	}
 
+    function _render_thumbnail_misc_field($display_type)
+    {
+        $settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+
+        return $this->render_partial('nextgen_basic_thumbnail_misc', array(
+            'display_type_name'        => $display_type->name,
+            'thumbnail_template_label' => _('Template:')
+        ), True);
+    }
 
 	/**
 	 * Returns the selected thumbnail dimension for the display type
