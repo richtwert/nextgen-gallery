@@ -10,11 +10,12 @@ jQuery(function($){
 		$('#lightbox_library_scripts').val(selected.attr('scripts'));
 	}).change();
 
-	// Toggle the advanced settings for lightbox libraries
-	$('#lightbox_library_advanced_toggle').click(function(e){
+	// Toggle the advanced settings
+	$('.advanced_toggle_link').click(function(e){
 		e.preventDefault();
-		$("#lightbox_library_advanced_settings").toggle(500, 'swing', function(){
-			var btn = $('#lightbox_library_advanced_toggle');
+		var form_id = '#'+$(this).attr('rel');
+		var btn = $(this);
+		$(form_id).toggle(500, 'swing', function(){
 			if ($(this).hasClass('hidden')) {
 				$(this).removeClass('hidden');
 				btn.text(btn.attr('active_label'));

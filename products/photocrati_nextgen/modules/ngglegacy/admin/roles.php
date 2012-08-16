@@ -4,7 +4,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 
 function nggallery_admin_roles()  {
 
-if ( isset($_POST['update_cap']) ) {
+if ( !empty($_POST) ) {
 
 	check_admin_referer('ngg_addroles');
 
@@ -18,18 +18,12 @@ if ( isset($_POST['update_cap']) ) {
 	ngg_set_capability($_POST['edit_album'],"NextGEN Edit album");
 	ngg_set_capability($_POST['change_style'],"NextGEN Change style");
 	ngg_set_capability($_POST['change_options'],"NextGEN Change options");
-
-	nggGallery::show_message(__('Updated capabilities',"nggallery"));
 }
 
 ?>
 	<div class="wrap">
-	<?php include('templates/social_media_buttons.php'); ?>
-    <?php screen_icon( 'nextgen-gallery' ); ?>
-	<h2><?php _e('Roles / capabilities', 'nggallery') ;?></h2>
 	<p><?php _e('Select the lowest role which should be able to access the following capabilities. NextGEN Gallery supports the standard roles from WordPress.', 'nggallery') ?> <br />
 	   <?php _e('For a more flexible user management you can use the', 'nggallery') ?> <a href="http://wordpress.org/extend/plugins/capsman/" target="_blank">Capability Manager</a>.</p>
-	<form name="addroles" id="addroles" method="POST" accept-charset="utf-8" >
 		<?php wp_nonce_field('ngg_addroles') ?>
 			<table class="form-table">
 			<tr valign="top">
@@ -69,8 +63,6 @@ if ( isset($_POST['update_cap']) ) {
 				<td><label for="change_options"><select name="change_options" id="change_options"><?php wp_dropdown_roles( ngg_get_role('NextGEN Change options') ); ?></select></label></td>
 			</tr>
 			</table>
-			<div class="submit"><input type="submit" class="button-primary" name= "update_cap" value="<?php _e('Update capabilities', 'nggallery') ;?>"/></div>
-	</form>
 	</div>
 <?php
 

@@ -2,7 +2,7 @@
 	<!-- Lightbox Library Name -->
 	<tr>
 		<td class="column1">
-			<label for="lightbox_library"><?php echo_h(_("Effect Library:"))?></label>
+			<label for="lightbox_library"><?php echo_h($lightbox_library_label)?></label>
 		</td>
 		<td>
 			<select name="lightbox_library_id" id="lightbox_library">
@@ -24,6 +24,8 @@
 		<td colspan="2">
 			<a
 				href="#"
+				class="advanced_toggle_link"
+				rel="lightbox_library_advanced_settings"
 				id="lightbox_library_advanced_toggle"
 				hidden_label="<?php echo esc_attr(_('(Show Advanced Settings)'))?>"
 				active_label="<?php echo esc_attr(_('(Hide Advanced Settings)'))?>"

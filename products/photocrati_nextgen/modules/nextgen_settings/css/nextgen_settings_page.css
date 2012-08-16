@@ -2,6 +2,10 @@
 	width: 80%;
 	height: 100%;
 }
+.gallery_page_ngg_other_options table.image_options {
+	width: 100%;
+}
+
 .gallery_page_ngg_other_options table td {
 	/*
      * The below should be used, but it doesn't display correctly on Chrome.
@@ -9,7 +13,14 @@
 	*/
 }
 .gallery_page_ngg_other_options table td.column1 {
-	width: 140px;
+	width: 240px;
+}
+.gallery_page_ngg_other_options table td.column2 {
+	width: 200px;
+}
+.gallery_page_ngg_other_options .image_options label {
+	position: relative;
+	bottom: 2px;
 }
 
 .gallery_page_ngg_other_options textarea {
@@ -21,11 +32,44 @@
 	width: 100%;
 }
 
-#lightbox_library_advanced_toggle {
+.gallery_page_ngg_other_options .image_options td{
+	padding-bottom: 8px;
+}
+
+.column_wrapper {
+	width: 100%;
+	padding-right: 7px;
+}
+
+#max_related_images {
+	width: auto;
+}
+
+#image_width,
+#image_height{
+	width: 40px;
+}
+
+.advanced_toggle_link {
 	font-size: 11px;
 	position: relative;
 	bottom: 5px;
 	color: #444444;
+}
+
+.description_row{
+	position: relative;
+}
+.description_row .description {
+	width: auto;
+	position: absolute;
+	margin-top: -10px;
+	margin-bottom: 5px;
+	z-index: 10;
+}
+
+#lightbox_library_advanced_settings td {
+	text-align: right;
 }
 
 .entity_errors {
