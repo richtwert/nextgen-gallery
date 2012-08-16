@@ -32,7 +32,7 @@ class C_Displayed_Gallery extends C_DataMapper_Model
 	 */
 	function initialize($mapper=FALSE, $properties=array())
 	{
-		if (!$mapper) $mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
+		if (!$mapper) $mapper = $this->get_registry()->get_utility($this->_mapper_interface);
 		parent::initialize($mapper, $properties);
 	}
 }
@@ -59,6 +59,13 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 				);
 			}
 		}
+
+		// Default ordering
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		if (!isset($this->object->order_by))
+			$this->object->order_by = $settings->galSort;
+		if (!isset($this->object->order_direction))
+			$this->object->order_direction = $settings->galSortDir;
 	}
 
 
@@ -100,24 +107,40 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 */
 	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
-		// Get the image mapper
-		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$mapper = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 		$image_key = $mapper->get_primary_key_column();
 		$mapper->select($id_only ? $image_key : '*');
+		$run_query = TRUE;
 
 		// Create query
 		switch ($this->object->source) {
+			case 'gallery':
 			case 'galleries':
-				$mapper->where(
-					array("galleryid in (%s)", $this->object->container_ids)
+				$mapper = $this->_create_image_query_for_galleries(
+					$mapper, $image_key, $settings, $limit, $offset, $id_only
 				);
-				$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
 				break;
 			case 'recent':
+			case 'recent_images':
 				$mapper->order_by('imagedate', 'DESC');
+
+				// Exclude specific images
+				if ($this->object->exclusions)
+					$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+
+				// Limit by specified galleries
+				if ($this->object->container_ids) {
+					$mapper->where(
+						array("galleryid in (%s)", $this->object->container_ids)
+					);
+				}
 				break;
 			case 'random':
-				$mapper->order_by('rand');
+			case 'random_images':
+				$mapper = $this->_create_random_image_query(
+					$mapper, $image_key, $settings, $limit, $offset, $id_only
+				);
 				break;
 			case 'tags':
 				$term_ids = $wpdb->get_col( $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$this->object->container_ids}) ORDER BY term_id ASC "));
@@ -126,11 +149,154 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 					array("{$image_key} IN (%s)", $image_ids)
 				);
 				break;
+			default:
+				$run_query = FALSE;
+				break;
+		}
+		if ($run_query) {
+
+			// Apply a limit to the number of images retrieved
+			if (!$limit) {
+				$limit = $settings->gallery_display_limit;
+			}
+			$mapper->limit($limit, $offset);
+
+			// Return the results
+			return $mapper->run_query();
+		}
+		else return array();
+	}
+
+	/**
+	 * Creates a datamapper query for finding random images
+	 * @param C_Gallery_Image_Mapper $mapper
+	 * @param string $image_key
+	 * @param C_NextGen_Settings $settings
+	 * @param int|FALSE $limit
+	 * @param int|FALSE $offset
+	 * @param bool $id_only
+	 * @return C_Gallery_Image_Mapper
+	 */
+	function _create_random_image_query($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	{
+		// We'll get the first and last ID
+		$max = 0;
+		$min = 0;
+		$results = $mapper->select("MAX({$image_key}) AS max_id")->run_query();
+		if ($results) $max = intval($results[0]->max_id);
+		if (!$max) $max = $mapper->count();
+		$results = $mapper->select("MIN({$image_key}) AS min_id")->run_query();
+		if ($results) $min = intval($results[0]->min_id);
+
+		// Calculate a random start and end point
+		$min = rand($min, $max);
+		$max = $min+$settings->gallery_display_limit;
+
+		// Create the query
+		$mapper->select($id_only ? $image_key : '*');
+		$mapper->where(array("{$image_key} BETWEEN %d AND %d", $min, $max));
+		$mapper->order_by('rand()');
+
+		// Exclude specific images
+		if ($this->object->exclusions)
+			$mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+
+		// Limit by specified galleries
+		if ($this->object->container_ids) {
+			$mapper->where(
+				array("galleryid in (%s)", $this->object->container_ids)
+			);
 		}
 
-		// Return results
-		if ($limit) $mapper->limit($limit, $offset);
-		return $mapper->run_query();
+		return $mapper;
+	}
+
+
+	/**
+	 * Creates a datamapper query for images, using galleries as a source
+	 * for images
+	 * @param C_Gallery_Image_Mapper $mapper
+	 * @param string $image_key
+	 * @param C_NextGen_Settings $settings
+	 * @param int|FALSE $limit
+	 * @param int|FALSE $offset
+	 * @param bool $id_only
+	 * @return C_Gallery_Image_Mapper
+	 */
+	function _create_image_query_for_galleries($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	{
+		// We can do that by specifying what gallery ids we
+		// want images from:
+		if ($this->object->container_ids && !$this->object->entity_ids) {
+			$mapper->where(
+				array("galleryid in (%s)", $this->object->container_ids)
+			);
+
+			// We can excluse images from those galleries we're not
+			// interested in...
+			if ($this->object->exclusions) {
+				$mapper->where(
+					array(
+						"{$image_key} NOT IN (%s)",
+						$this->object->exclusions
+					)
+				);
+			}
+
+			// Apply sorting
+			$mapper->order_by($this->object->order_by, $this->object->order_direction);
+		}
+
+		// Or, instead of specifying what galleries we want images from,
+		// we can specify the images in particular that we want to fetch
+		elseif ($this->object->entity_ids && !$this->object->container_ids) {
+			$mapper->where(
+				array("pid in %s", $this->object->entity_ids)
+			);
+			$mapper->order_by($this->object->order_by, $this->object->order_direction);
+		}
+
+		// Finally, a user can specify what galleries they're interested
+		// in, and select what images in particular they want. Exclusions
+		// are then calculated rather than specified.
+		// NOTE: This is used in the Attach to Post interface
+		elseif ($this->object->entity_ids && $this->object->container_ids) {
+
+			// We're going to return images from all of the galleries
+			// specified, but mark which images will be excluded. To do
+			// so, we have to create a dynamic column
+			$select = $id_only ? $image_key : '*';
+			$set = implode(',', array_reverse($this->object->entity_ids));
+			$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
+			$select .= ", IF(@row = 0, @exclude := 1, @exclude := 0) AS exclude";
+			$mapper->select($select);
+
+			// Limit by specified galleries
+			$mapper->where(
+				array("galleryid in (%s)", $this->object->container_ids)
+			);
+
+			// A user might want to sort the results by the order of
+			// images that they specified to be included. For that,
+			// we need some trickery by reversing the order direction
+			if ($this->object->order_by == 'sortorder') {
+				if ($this->object->order_direction == 'ASC')
+					$this->object->order_direction = 'DESC';
+				else
+					$this->object->order_direction = 'ASC';
+			}
+			$mapper->order_by($this->object->order_by, $this->object->order_direction);
+
+			// When using a custom order (sortorder), we should apply a
+			// secondary sort order to maintain the default sort order
+			// for galleries as much as possible
+			if ($this->object->order_by == 'sortorder') {
+				$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+				$mapper->order_by($settings->galSort, $settings->galSortDir);
+			}
+		}
+
+		return $mapper;
 	}
 
 
@@ -141,7 +307,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	{
 		$retval = array();
 		if ($this->object->source == 'gallery') {
-			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
+			$mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
 			$gallery_key = $mapper->get_primary_key_column();
 			$mapper->select()->where(array("{$gallery_key} IN (%s)", $this->object->container_ids));
 			return $mapper->run_query();
@@ -170,7 +336,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 */
 	function get_display_type()
 	{
-		$mapper = $this->object->_get_registry()->get_utility('I_Display_Type_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
 		return  $mapper->find_by_name($this->object->display_type, TRUE);
 	}
 }

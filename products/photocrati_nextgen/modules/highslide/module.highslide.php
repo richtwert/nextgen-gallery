@@ -57,7 +57,7 @@ class M_Highslide extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Lightbox_Library', 'A_Highslide_Lightbox_Library');
+        $this->get_registry()->add_adapter('I_Lightbox_Library', 'A_Highslide_Lightbox_Library');
     }
 }
 

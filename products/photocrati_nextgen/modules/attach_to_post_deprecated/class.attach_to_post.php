@@ -105,7 +105,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         if (($image_id = $this->object->param('image_id'))) {
 
             // Get gallery image and set new properties
-			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+			$mapper = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
             $gallery_image = $mapper->find($image_id);
 			unset($mapper);
             $overrides = $this->array_merge_assoc($gallery_image->properties, $this->object->_params);
@@ -155,7 +155,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
         $retval = array();
 
 		// Get the gallery mapper
-		$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
 
         // the gallery object
         $gallery = FALSE;
@@ -230,7 +230,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
 
 			// Create gallery image mapper. This is fundamental to the rest of this
 			// routine
-			$image_mapper	= $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+			$image_mapper	= $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 			$image_key		= $image_mapper->get_primary_key_column();
 
 			// We're going to create a query for images. How the query is built will
@@ -242,7 +242,7 @@ class Mixin_Attach_To_Post_Ajax extends Mixin
 
 			// Are we to fetch an attached gallery?
 			if ($id) {
-				$mapper = $this->object->_get_registry()->get_utility('I_Attached_Gallery_Mapper');
+				$mapper = $this->object->get_registry()->get_utility('I_Attached_Gallery_Mapper');
 				$attached_gallery = $mapper->find($id);
 				$galleries[] = $attached_gallery->gallery_id;
 				$exclusions = $attached_gallery->images;
@@ -442,7 +442,7 @@ class Mixin_Attach_To_Post_Image_Options extends Mixin
         if ($this->object->attached_gallery && !$this->object->attached_gallery->is_new()) {
 			$images = array();
 
-			$image_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+			$image_mapper = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 			$image_mapper->select()->where(array("galleryid = %s", $this->object->attached_gallery->gallery_id));
 			foreach ($image_mapper->limit(1,20)->order_by('sortorder')->run_query() as $image) {
 				$images[] = $this->object->render_image_form(
@@ -605,7 +605,7 @@ class Mixin_Attach_To_Post_Gallery_Sources extends Mixin
 
     function render_existing_gallery_fields()
     {
-		$gallery_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
+		$gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
 		$gallery_key	= $gallery_mapper->get_primary_key_column();
 		$galleries		= $gallery_mapper->find_all();
 		unset($gallery_mapper);
@@ -706,7 +706,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
 	 */
 	function _get_storage()
 	{
-		return $this->_get_registry()->get_utility('I_Gallery_Storage');
+		return $this->get_registry()->get_utility('I_Gallery_Storage');
 	}
 
 	/**
@@ -715,13 +715,13 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
 	 */
 	function _get_factory()
 	{
-		return $this->_get_registry()->get_utility('I_Component_Factory');
+		return $this->get_registry()->get_utility('I_Component_Factory');
 	}
 
 
 	function _get_router()
 	{
-		return $this->_get_registry()->get_utility('I_Router');
+		return $this->get_registry()->get_utility('I_Router');
 	}
 
 
@@ -763,7 +763,7 @@ class C_Attach_to_Post extends C_Base_Admin_Controller
     function _get_attached_gallery($id)
     {
 		if ($id) {
-			$mapper = $this->object->_get_registry()->get_utility('I_Attached_Gallery_Mapper');
+			$mapper = $this->object->get_registry()->get_utility('I_Attached_Gallery_Mapper');
 			$this->attached_gallery = $mapper->find($id, TRUE);
 			unset($mapper);
 		}

@@ -24,7 +24,7 @@ class A_Generate_Thumbnails extends Hook
         if ($this->object->has_errors()) return;
         
         // Get thumbnail configuration
-        $factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
+        $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
         $config = $factory->create('thumbnail_config');
         
         // Create a thumbnail generator

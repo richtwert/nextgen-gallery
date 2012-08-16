@@ -34,8 +34,8 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->activator  = $this->_get_registry()->get_utility('I_NextGen_Activator');
-		$this->controller = $this->_get_registry()->get_utility('I_NextGen_Settings_Controller');
+		$this->activator  = $this->get_registry()->get_utility('I_NextGen_Activator');
+		$this->controller = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
 	}
 
 
@@ -47,7 +47,7 @@ class M_NextGen_Settings extends C_Base_Module
 		/**
 		 * Provides a component to manage NextGen Settings
 		 */
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_NextGen_Settings',
 			'C_NextGen_Settings'
 		);
@@ -55,7 +55,7 @@ class M_NextGen_Settings extends C_Base_Module
 		/**
 		 * Provides a component to provide plugin activation
 		 */
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_NextGen_Activator',
 			'C_NextGen_Activator'
 		);
@@ -63,13 +63,13 @@ class M_NextGen_Settings extends C_Base_Module
 		/**
 		 * Provides a utility to perform CRUD operations for Lightbox libraries
 		 */
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_Lightbox_Library_Mapper',
 			'C_Lightbox_Library_Mapper'
 		);
 
 		// Provides the Options page
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_NextGen_Settings_Controller',
 			'C_NextGen_Settings_Controller'
 		);
@@ -80,12 +80,12 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_Component_Factory',
 			'A_NextGen_Settings_Factory'
 		);
 
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_MVC_Controller',
 			'A_MVC_Validation'
 		);

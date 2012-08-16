@@ -103,10 +103,10 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             MVC_MODULE_DIR
         );
 
-				$products = $this->_get_registry()->get_product_list();
+				$products = $this->get_registry()->get_product_list();
 
 				foreach ($products as $product) {
-					$module_path = $this->_get_registry()->get_product_module_path($product);
+					$module_path = $this->get_registry()->get_product_module_path($product);
 					$patterns[] = path_join($module_path, '*');
 				}
 
@@ -137,10 +137,10 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             MVC_MODULE_DIR
         );
 
-				$products = $this->_get_registry()->get_product_list();
+				$products = $this->get_registry()->get_product_list();
 
 				foreach ($products as $product) {
-					$module_path = $this->_get_registry()->get_product_module_path($product);
+					$module_path = $this->get_registry()->get_product_module_path($product);
 					$patterns[] = path_join($module_path, '*');
 				}
 

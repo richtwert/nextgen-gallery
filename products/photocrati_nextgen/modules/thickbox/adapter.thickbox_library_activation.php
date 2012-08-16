@@ -14,7 +14,7 @@ class A_Thickbox_Library_Activation extends Mixin
 
 	function install_thickbox_library()
 	{
-		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$mapper->save((object)array(
 			'name'				=>	'thickbox',
 			'code'				=>	"class='thickbox' rel='%GALLERY_NAME%'",

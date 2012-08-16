@@ -15,7 +15,7 @@ class A_Shutter_Library_Activation extends Mixin
 
 	function install_shutter_reloaded_library()
 	{
-		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$mapper->save((object)array(
 			'name'				=>	'shutter',
 			'code'				=>	'class="shutterset_%GALLERY_NAME%"',

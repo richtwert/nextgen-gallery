@@ -75,7 +75,7 @@ class C_NextGen_Thumbnail_Gallery_Settings extends C_Thumbnail_Settings
     
     function get_config()
     {
-        $factory = $this->_get_registry()->get_utility('I_Component_Factory');
+        $factory = $this->get_registry()->get_utility('I_Component_Factory');
         return $factory->create(
             'nextgen_thumbnail_gallery_config',
             $this->handle_this_form()? $this->param('settings') : array()

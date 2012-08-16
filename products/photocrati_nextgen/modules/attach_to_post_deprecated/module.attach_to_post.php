@@ -49,7 +49,7 @@ class M_Attach_to_Post extends C_Base_Module
 
     function _register_routes()
     {
-        $router = $this->_get_registry()->get_utility('I_Router');
+        $router = $this->get_registry()->get_utility('I_Router');
         $router->add_route(__CLASS__, 'C_Attach_to_Post', array(
             'uri'=>$router->routing_pattern('attach_to_post')
         ));
@@ -58,14 +58,14 @@ class M_Attach_to_Post extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
-        $this->_get_registry()->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
+        $this->get_registry()->add_adapter('I_Component_Factory', 'A_Attached_Gallery_Factory');
+        $this->get_registry()->add_adapter('I_Attached_Gallery',  'A_Attached_Gallery_Dimensions');
     }
 
 
 	function _register_utilities()
 	{
-		$this->_get_registry()->add_utility('I_Attached_Gallery_Mapper', 'C_Attached_Gallery_Mapper');
+		$this->get_registry()->add_utility('I_Attached_Gallery_Mapper', 'C_Attached_Gallery_Mapper');
 	}
 
 
@@ -121,7 +121,7 @@ class M_Attach_to_Post extends C_Base_Module
     {
         global $post_ID;
 
-        $router = $this->_get_registry()->get_utility('I_Router');
+        $router = $this->get_registry()->get_utility('I_Router');
 
         // Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {

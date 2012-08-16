@@ -39,7 +39,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	 */
 	function index()
 	{
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Is this post a request? If so, process the request
 		if ($this->is_post_request()) {
@@ -173,7 +173,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		// set_defaults() method executed for them.
 		// TODO: Adjust datamapper drivers to call a set_defaults() method
 		// from the convert_to_entity() method
-		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$libs = $mapper->find_all(array(), TRUE);
 
 		// Render tab
@@ -195,7 +195,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		if (($id = $this->object->param('lightbox_library_id'))) {
 
 			// Get the lightbox library mapper and find the library selected
-			$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+			$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 			$library = $mapper->find($id, TRUE);
 
 			// If a valid library, we have updated settings from the user, then

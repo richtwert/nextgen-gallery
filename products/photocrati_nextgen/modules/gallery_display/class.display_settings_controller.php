@@ -38,7 +38,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 		// errors too, we need to display them.
 		// TODO: Figure out a better way to get validation errors. Models are
 		// too expensive to use with collections.
-		$mapper = $this->object->_get_registry()->get_utility('I_Display_Type_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
 		$display_types = $mapper->find_all(array(), TRUE);
 		$messages = array();
 
@@ -66,7 +66,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 			}
 
 			// Display the tab
-			$display_type_controller = $this->object->_get_registry()->get_utility(
+			$display_type_controller = $this->object->get_registry()->get_utility(
 				'I_Display_Type_Controller', $display_type->name
 			);
 			$display_type_controller->enqueue_backend_resources($display_type);

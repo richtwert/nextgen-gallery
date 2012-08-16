@@ -23,7 +23,7 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 {
 	function set_defaults()
 	{
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Set defaults
 		if (!isset($this->object->settings))

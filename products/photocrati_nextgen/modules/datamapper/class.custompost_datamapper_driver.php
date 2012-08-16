@@ -25,6 +25,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			'paged'			=> FALSE,
 			'fields'		=> $fields,
 			'post_status'	=> 'any',
+			'datamapper'	=>	TRUE
 		);
 		return $this->object;
 	}
@@ -38,6 +39,9 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function order_by($order_by, $direction='ASC')
 	{
+		// Make an exception for the rand() method
+		$order_by = preg_replace("/rand\(\s*\)/", 'rand', $order_by);
+
 		if (in_array($order_by, $this->object->_get_querable_table_columns())) {
 			$this->object->_query_args['orderby'] = $order_by;
 		}
@@ -95,12 +99,16 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 				case 'category_id':
 					switch($clause['compare']) {
 						case '=':
+						case 'BETWEEN';
+						case 'IN';
 							if (!isset($this->object->_query_args['category__in'])) {
 								$this->object->_query_args['category__in'] = array();
 							}
 							$this->object->_query_args['category__in'][] = $clause['value'];
 							break;
 						case '!=':
+						case 'NOT BETWEEN';
+						case 'NOT IN';
 							if (!isset($this->object->_query_args['category__not_in'])) {
 								$this->object->_query_args['category__not_in'] = array();
 							}
@@ -113,21 +121,21 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 					break;
 				case 'post_id':
 				case $this->object->get_primary_key_column():
-
-					// Post ID includes
-					if ($clause['compare'] == '=') {
-						if (!isset($this->object->_query_args['post__in'])) {
-							$this->object->_query_args['post__in'] = array();
-						}
-						$this->object->_query_args['post__in'][] = $clause['value'];
-					}
-
-					// Post ID excludes
-					else {
-						if (!isset($this->object->_query_args['post__not_in'])) {
-							$this->object->_query_args['post__not_in'] = array();
-						}
-						$this->object->_query_args['post__not_in'][] = $clause['value'];
+					switch ($clause['compare']) {
+						case '=':
+						case 'IN';
+						case 'BETWEEN';
+							if (!isset($this->object->_query_args['post__in'])) {
+								$this->object->_query_args['post__in'] = array();
+							}
+							$this->object->_query_args['post__in'][] = $clause['value'];
+							break;
+						default:
+							if (!isset($this->object->_query_args['post__not_in'])) {
+								$this->object->_query_args['post__not_in'] = array();
+							}
+							$this->object->_query_args['post__not_in'][] = $clause['value'];
+							break;
 					}
 					break;
 				case 'pagename':
@@ -153,9 +161,8 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 					$clause['key'] = $clause['column'];
 					unset($clause['column']);
 
-					// If an IN clause is provided, then we need to convert the
-					// values back to an array
-					if (strpos($clause['compare'], 'IN') !== FALSE) {
+					// Convert values to array, when required
+					if (in_array($clause['compare'], array('IN', 'BETWEEN'))) {
 						$clause['value'] = explode(',', $clause['value']);
 						foreach ($clause['value'] as &$val) {
 							if (!is_numeric($val)) {

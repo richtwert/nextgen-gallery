@@ -47,7 +47,7 @@ class Mixin_Render_Display_Type extends Mixin
 		$displayed_gallery = NULL;
 
 		// Get the NextGEN settings to provide some defaults
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Configure the arguments
 		$defaults = array(
@@ -67,7 +67,7 @@ class Mixin_Render_Display_Type extends Mixin
 		$args = shortcode_atts($defaults, $params);
 
 		// Are we loading a specific displayed gallery that's persisted?
-		$mapper = $this->_get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 		if (!is_null($args['id'])) {
 			$displayed_gallery = $mapper->find($args['id']);
 			unset($mapper); // no longer needed
@@ -127,7 +127,7 @@ class Mixin_Render_Display_Type extends Mixin
 			$args['display_settings']	= $params;
 
 			// Validate the displayed gallery
-			$factory = $this->_get_registry()->get_utility('I_Component_Factory');
+			$factory = $this->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create('displayed_gallery', $mapper, $args);
 			unset($factory);
 		}
@@ -139,7 +139,7 @@ class Mixin_Render_Display_Type extends Mixin
 			$displayed_gallery->id(uniqid('temp'));
 
 			// Display!
-			$controller = $this->_get_registry()->get_utility(
+			$controller = $this->get_registry()->get_utility(
 				'I_Display_Type_Controller', $displayed_gallery->display_type
 			);
 			$controller->enqueue_frontend_resources($displayed_gallery);

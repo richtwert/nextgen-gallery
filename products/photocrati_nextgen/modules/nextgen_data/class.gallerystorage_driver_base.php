@@ -382,11 +382,19 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			// WordPress Media Library for uploading, then the wp_upload_bits()
 			// function should perhaps be used
 			$upload_dir = $this->object->get_upload_abspath($gallery);
+
+			// Perhaps a filename was given instead of base64 data?
+			if ($data[0] == '/' && file_exists($data)) {
+				if (!$filename) $filename = basename($data);
+				$data = file_get_contents($data);
+			}
+
+			// Determine filenames
 			$filename = $filename ? $filename : uniqid('nextgen-gallery');
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
-			$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
+			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$retval = $image = $factory->create('gallery_image');
 			$image->alttext		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
@@ -460,8 +468,8 @@ class C_GalleryStorage_Driver_Base extends C_GalleryStorage_Base
 	function initialize()
 	{
 		parent::initialize();
-		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
-		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->_gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->_image_mapper = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
 	}
 
     public static function get_instance($context = False)

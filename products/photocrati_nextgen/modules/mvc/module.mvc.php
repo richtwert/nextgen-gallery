@@ -45,7 +45,7 @@ class M_MVC extends C_Base_Module
 
     function _register_utilities()
     {
-        $this->_get_registry()->add_utility('I_Router', 'C_Router');
+        $this->get_registry()->add_utility('I_Router', 'C_Router');
     }
 
     function _register_hooks()
@@ -56,7 +56,7 @@ class M_MVC extends C_Base_Module
 
 	function route()
 	{
-		$router = $this->_get_registry()->get_utility('I_Router');
+		$router = $this->get_registry()->get_utility('I_Router');
 		$router->route();
 	}
 
