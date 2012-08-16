@@ -73,8 +73,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
 			$params['pagination']			= $pagination;
 
-			$this->object->render_partial('nextgen_basic_thumbnails', $params);
-
+            if (!empty($displayed_gallery->display_settings['template']))
+            {
+                // the parameters for this are *not* yet correct
+                $this->object->legacy_render($params['template'], $params, False);
+            }
+            else {
+                $this->object->render_partial('nextgen_basic_thumbnails', $params);
+            }
 		}
 		else {
 			$this->object->render_partial("no_images_found");
