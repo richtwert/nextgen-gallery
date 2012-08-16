@@ -73,7 +73,7 @@ class Mixin_Gallery_Mapper extends Mixin
 		}
 
 		// Get the first gallery image
-		$factory = $this->_get_registry()->get_utility('I_Component_Factory');
+		$factory = $this->get_registry()->get_utility('I_Component_Factory');
 		$image_mapper = $factory->create('gallery_image_mapper');
 		$image = $image_mapper->find_first(array('galleryid = %s', $gallery));
 

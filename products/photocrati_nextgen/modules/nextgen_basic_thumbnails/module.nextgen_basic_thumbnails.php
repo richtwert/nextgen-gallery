@@ -36,20 +36,20 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 	function _register_adapters()
 	{
 		// Installs the display type
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_NextGen_Activator',
 			'A_NextGen_Basic_Thumbnails_Activation'
 		);
 
 		// Provides settings fields and frontend rendering
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_Display_Type_Controller',
 			'A_NextGen_Basic_Thumbnails_Controller',
 			$this->module_id
 		);
 
 		// Provides validation for the display type
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_Display_Type',
 			'A_NextGen_Basic_Thumbnails'
 		);

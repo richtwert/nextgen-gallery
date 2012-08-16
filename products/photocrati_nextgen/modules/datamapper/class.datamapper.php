@@ -20,7 +20,7 @@ class Mixin_DataMapper extends Mixin
 		if (!defined('DATAMAPPER_DRIVER')) {
 
 			// Get the datamapper configured in the database
-			$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 			$factory_method = $settings->datamapper_driver;
 			if (!$factory_method) throw new DataMapperDriverNotSelectedException();
 
@@ -58,7 +58,7 @@ class C_DataMapper extends C_Component
 		$object_name = $args[0];
 		$context = $args[1];
 		$method = $this->_get_driver_factory_method($context);
-		$factory = $this->_get_registry()->get_utility('I_Component_Factory');
+		$factory = $this->get_registry()->get_utility('I_Component_Factory');
 		return $factory->create($method, $object_name, $context);
 	}
 }

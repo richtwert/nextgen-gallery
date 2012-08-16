@@ -58,7 +58,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			}
 
 			// Get the gallery storage component
-			$storage = $this->object->_get_registry()->get_utility(
+			$storage = $this->object->get_registry()->get_utility(
 				'I_Gallery_Storage'
 			);
 

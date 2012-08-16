@@ -15,7 +15,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_upload_abspath($gallery=FALSE)
 	{
 		// Base upload path
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$retval = $settings->get('gallerypath');
 
 		// If a gallery has been specified, then we'll
@@ -210,7 +210,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$filename = $this->object->get_full_abspath($image);
 
 			// Get the thumbnail settings
-			$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 			// Generate the thumbnail using WordPress
 			$existing_thumbnail_abpath = $this->object->get_thumbnail_abspath($image);

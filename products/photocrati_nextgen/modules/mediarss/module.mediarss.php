@@ -33,7 +33,7 @@ class M_MediaRss extends C_Base_Module
 	 */
 	function _add_routes()
 	{
-		$router = $this->_get_registry()->get_utility('I_Router');
+		$router = $this->get_registry()->get_utility('I_Router');
 		$router->add_route(__CLASS__, 'C_MediaRSS_Controller', array(
             'uri'=>$router->routing_pattern('mediarss')
         ));

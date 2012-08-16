@@ -245,18 +245,18 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$condition = str_replace($column, '', $condition);
 		}
 
-		if (preg_match("/(NOT )?IN|(NOT )?LIKE|[=!<>]+/i", $condition, $match)) {
+		if (preg_match("/(NOT )?IN|(NOT )?LIKE|(NOT )?BETWEEN|[=!<>]+/i", $condition, $match)) {
 			$operator = trim(array_shift($match));
 			$condition = str_replace($operator, '', $condition);
-			$operatior = strtolower($operator);
+			$operator = strtolower($operator);
 			$value = trim($condition);
 		}
 
 		// Values will automatically be quoted, so remove them
-		// If the value is part of an IN clause and has multiple values,
-		// we attempt to split the values apart into an array and iterate
-		// over them individually
-		$values = preg_split("/'\s?,\s?'/", $value);
+		// If the value is part of an IN clause or BETWEEN clause and
+		// has multiple values, we attempt to split the values apart into an
+		// array and iterate over them individually
+		$values = preg_split("/'?\s?(,|AND)\s?'?/i", $value);
 
 		// If there's a single value, treat it as an array so that we
 		// can still iterate
@@ -306,7 +306,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		$retval = NULL;
 
 		try {
-			$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
+			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {

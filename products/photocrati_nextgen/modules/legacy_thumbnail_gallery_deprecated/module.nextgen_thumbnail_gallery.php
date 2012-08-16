@@ -42,11 +42,11 @@ class M_NextGen_Thumbnail_Gallery extends C_Base_Module
      */
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter(
+        $this->get_registry()->add_adapter(
             'I_Component_Factory', 'A_NextGen_Thumbnail_Gallery_Factory'
         );
         
-        $this->_get_registry()->add_adapter(
+        $this->get_registry()->add_adapter(
             'I_Resource_Loader', 'A_NextGen_Thumbnail_Gallery_Resources'
         );
     }

@@ -28,7 +28,7 @@ class M_Shutter_Reloaded extends C_Base_Module
 
     function _register_adapters()
     {
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_NextGen_Activator',
 			'A_Shutter_Library_Activation'
 		);

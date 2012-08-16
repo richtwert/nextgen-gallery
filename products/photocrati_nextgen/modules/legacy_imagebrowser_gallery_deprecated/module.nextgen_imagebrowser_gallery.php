@@ -33,8 +33,8 @@ class M_NextGen_ImageBrowser_Gallery extends C_Base_Module
     
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_NextGen_ImageBrowser_Factory');
-        $this->_get_registry()->add_adapter('I_Resource_Loader', 'A_NextGen_ImageBrowser_Resources');
+        $this->get_registry()->add_adapter('I_Component_Factory', 'A_NextGen_ImageBrowser_Factory');
+        $this->get_registry()->add_adapter('I_Resource_Loader', 'A_NextGen_ImageBrowser_Resources');
     }
 }
 new M_NextGen_ImageBrowser_Gallery();

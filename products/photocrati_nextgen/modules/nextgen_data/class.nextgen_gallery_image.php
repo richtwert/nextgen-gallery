@@ -67,7 +67,7 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 
 		// Get the mapper is not specified
 		if (!$mapper) {
-			$mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
+			$mapper = $this->get_registry()->get_utility($this->_mapper_interface);
 		}
 
 		// Initialize
@@ -80,7 +80,7 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 	 */
     function get_gallery($model=FALSE)
     {
-		$gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
+		$gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
         return $gallery_mapper->find($this->galleryid, $model);
     }
 }

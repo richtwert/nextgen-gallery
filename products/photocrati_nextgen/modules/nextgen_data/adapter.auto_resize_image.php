@@ -18,7 +18,7 @@ class A_Auto_Resize_Image extends Hook
 		if (!$this->object->is_valid()) return;
 
 		// Get the settings class
-        $options = $this->_get_registry()->get_utility('I_NextGen_Settings');
+        $options = $this->get_registry()->get_utility('I_NextGen_Settings');
 
         // Resize
         if ($options->imgAutoResize) {

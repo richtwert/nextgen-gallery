@@ -219,5 +219,20 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		$this->assertEqual(count($images), 5);
 		$this->assertEqual($images[0]->pid, $this->image_ids[count($this->image_ids)-2]);
 	}
+
+
+	function test_get_random_images()
+	{
+		// Test retrieving 5 random images, from the test galleries we've created
+		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
+		$displayed_gallery->source = 'random';
+		$displayed_gallery->container_ids = $this->gallery_ids;
+		$images = $displayed_gallery->get_images();
+		$this->assertEqual(count($images), 6);
+		$this->assertEqual($displayed_gallery->get_image_count(), 6);
+		foreach ($images as $image) {
+			$this->assertTrue(in_array($image->pid, $this->image_ids));
+		}
+	}
 }
 ?>

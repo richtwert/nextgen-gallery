@@ -394,7 +394,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
-			$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
+			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$retval = $image = $factory->create('gallery_image');
 			$image->alttext		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
@@ -468,8 +468,8 @@ class C_GalleryStorage_Driver_Base extends C_GalleryStorage_Base
 	function initialize()
 	{
 		parent::initialize();
-		$this->_gallery_mapper = $this->_get_registry()->get_utility('I_Gallery_Mapper');
-		$this->_image_mapper = $this->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->_gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->_image_mapper = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
 	}
 
     public static function get_instance($context = False)

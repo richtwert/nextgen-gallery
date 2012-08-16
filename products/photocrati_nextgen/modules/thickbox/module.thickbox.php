@@ -23,7 +23,7 @@ class M_Thickbox extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_NextGen_Activator', 'A_Thickbox_Library_Activation');
+        $this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Thickbox_Library_Activation');
     }
 }
 

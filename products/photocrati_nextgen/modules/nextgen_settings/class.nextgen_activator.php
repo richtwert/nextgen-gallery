@@ -35,7 +35,7 @@ class Mixin_NextGen_Activator extends Mixin
 	function install()
 	{
 		// We need a custom lightbox library option
-		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$mapper->save((object)array(
 			'name'	=>	'Custom',
 		));
@@ -47,13 +47,13 @@ class Mixin_NextGen_Activator extends Mixin
 		));
 
 		// Install multisite options
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings', 'multisite');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings', 'multisite');
 		$settings->save();
 
 		// Install blog specific options
 		// TODO: Need to determine if this was network activated, and if so, to
 		// install blog specific options for every blog
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$settings->save();
 	}
 }

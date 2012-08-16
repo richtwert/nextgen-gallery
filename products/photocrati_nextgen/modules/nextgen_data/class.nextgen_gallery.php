@@ -32,7 +32,7 @@ class Mixin_NextGen_Gallery_Validation
 		$this->object->set_defaults();
 
 		// Set what will be the path to the gallery
-		$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
+		$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 		$this->object->path = $storage->get_upload_relpath($this->object);
 		unset($storage);
 
@@ -93,7 +93,7 @@ class C_NextGen_Gallery extends C_DataMapper_Model
 
 		// Get the mapper is not specified
 		if (!$mapper) {
-			$mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
+			$mapper = $this->get_registry()->get_utility($this->_mapper_interface);
 		}
 		parent::initialize($mapper, $properties);
 	}

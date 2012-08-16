@@ -36,13 +36,20 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	 */
 	function order_by($order_by, $direction='ASC')
 	{
-		$order_by	= $this->object->_clean_column($order_by);
+		// We treat the rand() function as an exception
+		if (preg_match("/rand\(\s*\)/", $order_by)) {
+			$order = 'rand()';
+		}
+		else {
+			$order_by	= $this->object->_clean_column($order_by);
 
-		// If the order by clause is a column, then it should be backticked
-		if ($this->object->has_column($order_by)) $order_by = "`{$order_by}`";
+			// If the order by clause is a column, then it should be backticked
+			if ($this->object->has_column($order_by)) $order_by = "`{$order_by}`";
 
-		$direction	= $this->object->_clean_column($direction);
-		$order		= "{$order_by} {$direction}";
+			$direction	= $this->object->_clean_column($direction);
+			$order		= "{$order_by} {$direction}";
+		}
+
 		$this->object->_order_clauses[] = $order;
 
 		return $this->object;
@@ -82,8 +89,13 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 				$v = $clause['type'] == 'numeric' ? $v : "'{$v}'";
 				$value[$index] = $v;
 			}
-			$value = implode(', ', $value);
-			if (strpos($compare, 'IN') !== FALSE) $value = "({$value})";
+			if ($compare == 'BETWEEN') {
+				$value = "{$value[0]} AND {$value[1]}";
+			}
+			else {
+				$value = implode(', ', $value);
+				if (strpos($compare, 'IN') !== FALSE) $value = "({$value})";
+			}
 
 			$clauses[] = "{$column} {$compare} {$value}";
 		}
