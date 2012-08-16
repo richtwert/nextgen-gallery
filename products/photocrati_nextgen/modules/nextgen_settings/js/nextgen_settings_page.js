@@ -11,7 +11,7 @@ jQuery(function($){
 	}).change();
 
 	// Toggle the advanced settings for lightbox libraries
-	$('#lightbox_library_advanced_toggle').click(function(){
+	$('#lightbox_library_advanced_toggle').click(function(e){
 		e.preventDefault();
 		$("#lightbox_library_advanced_settings").toggle(500, 'swing', function(){
 			var btn = $('#lightbox_library_advanced_toggle');
