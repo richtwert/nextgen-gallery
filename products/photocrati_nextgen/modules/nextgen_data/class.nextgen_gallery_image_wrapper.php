@@ -10,7 +10,7 @@ class C_NextGen_Gallery_Image_Wrapper
     public $_storage;    // I_Gallery_Storage cache
     public $_galleries;  // cache of I_Gallery_Mapper (plural)
     public $_orig_image; // original provided image
-
+    public $_orig_image_id;
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
      *
@@ -63,6 +63,9 @@ class C_NextGen_Gallery_Image_Wrapper
         }
         ksort($image);
         $this->_cache = $image;
+        
+        $id_field = $image['id_field'];
+        $this->_orig_image_id = $image[$id_field];
     }
 
     public function __set($name, $value)
@@ -98,7 +101,7 @@ class C_NextGen_Gallery_Image_Wrapper
                 return $this->_cache['author'];
 
             case 'caption':
-                $caption = html_entity_decode(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('pid') . '_description')));
+                $caption = html_entity_decode(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('id') . '_description')));
                 if (empty($caption))
                 {
                     $caption = '&nbsp;';
@@ -124,10 +127,13 @@ class C_NextGen_Gallery_Image_Wrapper
 
             case 'href':
                 return $this->__get('imageHTML');
+            
+            case 'id':
+                return $this->_orig_image_id;
 
             case 'imageHTML':
                 $tmp  = '<a href="' . $this->__get('imageURL') . '" title="'
-                      . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('pid') . '_description')))
+                      . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('id') . '_description')))
                       . '" ' . $this->get_thumbcode($this->__get('name')) . '>' . '<img alt="' . $this->__get('alttext')
                       . '" src="' . $this->__get('imageURL') . '"/>' . '</a>';
                 $this->_cache['href'] = $tmp;
@@ -165,6 +171,9 @@ class C_NextGen_Gallery_Image_Wrapper
                 $this->_cache['permalink'] = $this->__get('imageURL');
                 return $this->_cache['permalink'];
 
+            case 'pid':
+                return $this->_orig_image_id;
+
             case 'pidlink':
                 // TODO : implement this. nggfunctions.php : 350
                 break;
@@ -191,12 +200,12 @@ class C_NextGen_Gallery_Image_Wrapper
                 break;
 
             case 'tags':
-                $this->_cache['tags'] = wp_get_object_terms($this->__get('pid'), 'ngg_tag', 'fields=all');
+                $this->_cache['tags'] = wp_get_object_terms($this->__get('id'), 'ngg_tag', 'fields=all');
                 return $this->_cache['tags'];
 
             case 'thumbHTML':
                 $tmp = '<a href="' . $this->__get('imageURL') . '" title="'
-                     . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('pid') . '_description')))
+                     . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('id') . '_description')))
                      . '" ' . $this->get_thumbcode($this->__get('name')) . '>' . '<img alt="' . $this->alttext
                      . '" src="' . $this->thumbURL . '"/>' . '</a>';
                 $this->_cache['href'] = $tmp;
@@ -225,7 +234,7 @@ class C_NextGen_Gallery_Image_Wrapper
 
             case 'url':
                 $storage = $this->get_storage();
-                $this->_cache['url'] = $storage->get_image_abspath($this->_orig_image);
+                $this->_cache['url'] = $storage->get_image_url($this->_orig_image);
                 return $this->_cache['url'];
 
             default:

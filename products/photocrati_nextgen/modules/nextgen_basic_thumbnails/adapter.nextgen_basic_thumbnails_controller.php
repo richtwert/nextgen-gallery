@@ -27,9 +27,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		$total	= $displayed_gallery->get_image_count();
 		$pagination = FALSE;
 
-//        print "<h1>images:</h1>";
-//        var_dump($images);
-
 		// Are there images to display?
 		if ($images) {
 
@@ -63,16 +60,44 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
             if (!empty($displayed_gallery->display_settings['template']))
             {
-                ///// This is the 'gallery' item passed to the templates
+                $pid = get_query_var('pid');
+                if (!is_numeric($pid) && !empty($pid))
+                {
+                    $picture = $this->object
+                                    ->get_registry()
+                                    ->get_utility('I_Gallery_Image_Mapper')
+                                    ->find_first(array('image_slug = %s', '2176305717_7e602fbfbe_o'));
+                    $id_field = $picture->id_field;
+                    $pid = $picture->$id_field;
+                }
+
+                $picture_list = array();
+                $current_pid = null;
+                foreach ($images as $image) {
+                    $tmp = new C_NextGen_Gallery_Image_Wrapper($image);
+                    if ($pid == $tmp->id)
+                    {
+                        $current_pid = $tmp;
+                    }
+                    $picture_list[] = $tmp;
+                }
+                reset($picture_list);
+                $current_pid = (is_null($current_pid)) ? current($picture_list) : $current_pid;
+                $page = (get_the_ID() == FALSE) ? 0 : get_the_ID();
+
+                $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
+                $orig_gallery = $gallery_map->find(current($picture_list)->galleryid);
+                $id_field = $orig_gallery->id_field;
+
                 $gallery = new stdclass;
-                $gallery->ID = 4; // (int) $galleryID;
+                $gallery->ID = $orig_gallery->$id_field;
                 $gallery->show_slideshow = false;
                 $gallery->show_piclens = false;
-                $gallery->name = 'avatars'; // stripslashes ( $first_image->name  );
-                $gallery->title = 'avatars'; // stripslashes( $first_image->title );
-                $gallery->description = 'avatars'; // html_entity_decode(stripslashes( $first_image->galdesc));
-                $gallery->pageid = 5783; // $first_image->pageid;
-                $gallery->anchor = 'ngg-gallery-' . '4-2'; // $galleryID . '-' . $current_page;
+                $gallery->name = stripslashes($orig_gallery->name);
+                $gallery->title = stripslashes($orig_gallery->title);
+                $gallery->description = html_entity_decode(stripslashes($orig_gallery->galdesc));
+                $gallery->pageid = $orig_gallery->pageid;
+                $gallery->anchor = 'ngg-gallery-' . $orig_gallery->$id_field . '-' . $page;
                 $gallery->displayed_gallery = &$displayed_gallery;
                 $gallery->columns = intval($displayed_gallery->display_settings['number_of_columns']);
                 $gallery->imagewidth = ($gallery->columns > 0) ? 'style="width:' . floor(100/$gallery->columns) . '%;"' : '';
@@ -90,22 +115,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                         $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
                     }
                 }
-                //// end of gallery item
-
-                $picture_list = array();
-                foreach ($images as $image) {
-                    $tmp = new C_NextGen_Gallery_Image_Wrapper($image);
-                    // var_dump($tmp->caption);
-                    $picture_list[] = $tmp;
-                }
-
                 $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
                 $params = array(
                     'pagination' => $pagination,
                     'gallery' => $gallery,
                     'images' => $picture_list,
-                    'current' => FALSE,
+                    'current' => $current_pid,
                     'next' => FALSE,
                     'prev' => FALSE
                 );
