@@ -27,6 +27,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		$total	= $displayed_gallery->get_image_count();
 		$pagination = FALSE;
 
+        print "<h1>images:</h1>";
+        var_dump($images);
+
 		// Are there images to display?
 		if ($images) {
 
@@ -42,43 +45,82 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// Create pagination
 			if ($images_per_page) {
 				$pagination = new nggNavigation;
-				$pagination = $pagination->create_navigation(
-					$current_page, $total, $images_per_page
-				);
+				$pagination = $pagination->create_navigation($current_page, $total, $images_per_page);
 			}
 
-			// Determine what the slideshow link would be
-			// TODO: Figure this out
+			// Determine what the slideshow link would be. TODO: Figure this out
 			$slideshow_link = 'http://www.google.ca';
 
 			// Determine what the piclens link would be
 			if ($displayed_gallery->display_settings['show_piclens_link']) {
 				$params = json_encode($displayed_gallery->get_entity());
-				$mediarss_link	= real_site_url('/mediarss?source=displayed_gallery&params='.$params);
-				$piclens_link	= "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
+				$mediarss_link = real_site_url('/mediarss?source=displayed_gallery&params='.$params);
+				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
 			// Get the gallery storage component
-			$storage = $this->object->_get_registry()->get_utility(
-				'I_Gallery_Storage'
-			);
+			$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
 
-			$params = $displayed_gallery->display_settings;
-			$params['storage']				= &$storage;
-			$params['images']				= &$images;
-			$params['displayed_gallery_id'] = $displayed_gallery->id();
-			$params['current_page']			= $current_page;
-			$params['slideshow_link']		= $slideshow_link;
-			$params['piclens_link']			= $piclens_link;
-			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
-			$params['pagination']			= $pagination;
+            print "<h1>displayed_gallery:</h1>";
+            var_dump($displayed_gallery);
+            print '<hr/>';
 
             if (!empty($displayed_gallery->display_settings['template']))
             {
-                // the parameters for this are *not* yet correct
-                $this->object->legacy_render($params['template'], $params, False);
+                ///// This is the 'gallery' item passed to the templates
+                $gallery = new stdclass;
+                $gallery->ID = 4; // (int) $galleryID;
+                $gallery->show_slideshow = false;
+                $gallery->show_piclens = false;
+                $gallery->name = 'avatars'; // stripslashes ( $first_image->name  );
+                $gallery->title = 'avatars'; // stripslashes( $first_image->title );
+                $gallery->description = 'avatars'; // html_entity_decode(stripslashes( $first_image->galdesc));
+                $gallery->pageid = 5783; // $first_image->pageid;
+                $gallery->anchor = 'ngg-gallery-' . '4-2'; // $galleryID . '-' . $current_page;
+                $gallery->displayed_gallery = &$displayed_gallery;
+                $gallery->columns = intval($displayed_gallery->display_settings['number_of_columns']);
+                $gallery->imagewidth = ($gallery->columns > 0) ? 'style="width:' . floor(100/$gallery->columns) . '%;"' : '';
+
+                if (is_integer($gallery->ID)) {
+                    if ($displayed_gallery->display_settings['show_slideshow_link']) {
+                        $gallery->show_slideshow = TRUE;
+                        $gallery->slideshow_link = $slideshow_link; // $nggRewrite->get_permalink(array ( 'show' => 'slide') );
+                        $gallery->slideshow_link_text = $displayed_gallery->display_settings['slideshow_text_link'];
+                    }
+
+                    if ($displayed_gallery->display_settings['show_piclens_link']) {
+                        $gallery->show_piclens = true;
+                        $gallery->piclens_link = $piclens_link;
+                        $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
+                    }
+                }
+                //// end of gallery item
+
+                //// build 'picturelist' item passed to the templates
+                $picturelist = array();
+                foreach ($images as $image) {
+                    $tmp = new C_NextGen_Gallery_Image_Wrapper($image);
+                }
+
+                $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
+
+                $params = array(
+                    'pagination' => $pagination,
+                    'gallery' => $gallery
+                );
+
+                $this->object->legacy_render($displayed_gallery->display_settings['template'], $params, False);
             }
             else {
+                $params = $displayed_gallery->display_settings;
+                $params['storage']				= &$storage;
+                $params['images']				= &$images;
+                $params['displayed_gallery_id'] = $displayed_gallery->id();
+                $params['current_page']			= $current_page;
+                $params['slideshow_link']		= $slideshow_link;
+                $params['piclens_link']			= $piclens_link;
+                $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
+                $params['pagination']			= $pagination;
                 $this->object->render_partial('nextgen_basic_thumbnails', $params);
             }
 		}
