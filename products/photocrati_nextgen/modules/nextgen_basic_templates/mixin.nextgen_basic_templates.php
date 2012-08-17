@@ -31,7 +31,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         }
         else if (file_exists (NGGALLERY_ABSPATH . "/view/{$template_name}.php"))
         {
-            // include (NGGALLERY_ABSPATH . "/view/{$template_name}.php");
+            include (NGGALLERY_ABSPATH . "/view/{$template_name}.php");
         }
         else if ($callback === true)
         {

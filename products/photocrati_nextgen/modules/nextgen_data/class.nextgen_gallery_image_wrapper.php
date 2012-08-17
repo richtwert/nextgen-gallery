@@ -5,8 +5,11 @@
  */
 class C_NextGen_Gallery_Image_Wrapper
 {
-    /** @var stdClass Container of image attributes used to copy already known data */
-    public $_cache;
+    public $_cache;      // cache of retrieved values
+    public $_settings;   // I_NextGen_Settings cache
+    public $_storage;    // I_Gallery_Storage cache
+    public $_galleries;  // cache of I_Gallery_Mapper (plural)
+    public $_orig_image; // original provided image
 
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
@@ -50,6 +53,7 @@ class C_NextGen_Gallery_Image_Wrapper
             'permalink' => '',
             'tags'      => '',
         );
+        $this->_orig_image = $image;
         $image = (array)$image;
         foreach ($defaults as $key => $val) {
             if (!isset($image[$key]))
@@ -76,37 +80,50 @@ class C_NextGen_Gallery_Image_Wrapper
         unset($this->_cache[$name]);
     }
 
+    /**
+     * Lazy-loader for image variables.
+     *
+     * @param string $name Parameter name
+     * @return mixed
+     */
     public function __get($name)
     {
-        // at the bottom we default to returning $this->_cache[$name] (for now) as we assume the attribute
-        // requested has been assigned and is provided by the image retrieved from our display gallery's get_images()
-        // the other instances are fields that we'll lazy-load and fill in as requested
+        // at the bottom we default to returning $this->_cache[$name].
         switch ($name)
         {
             case 'author':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['author'] = $gallery->name;
+                return $this->_cache['author'];
 
             case 'caption':
-                break;
-
-            case 'errmsg':
-                break;
-
-            case 'error':
-                break;
+                $caption = html_entity_decode(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('pid') . '_description')));
+                if (empty($caption))
+                {
+                    $caption = '&nbsp;';
+                }
+                $this->_cache['caption'] = $caption;
+                return $this->_cache['caption'];
 
             case 'galdesc':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['galdesc'] = $gallery->name;
+                return $this->_cache['galdesc'];
 
             case 'gid':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['gid'] = $gallery->name;
+                return $this->_cache['gid'];
 
             case 'hidden':
+                // TODO : how to get this?
                 break;
 
             case 'href':
                 return $this->__get('imageHTML');
-                break;
 
             case 'imageHTML':
                 $tmp  = '<a href="' . $this->__get('imageURL') . '" title="'
@@ -122,42 +139,64 @@ class C_NextGen_Gallery_Image_Wrapper
                 return $this->_cache['imagePath'];
 
             case 'imageURL':
-                $this->_cache['imageURL'] = site_url() . '/' . $this->__get('path') . '/' . $this->__get('filename');
+                $storage = $this->get_storage();
+                $this->_cache['imageURL'] = $storage->get_image_url($this->_orig_image);
                 return $this->_cache['imageURL'];
 
             case 'name':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['name'] = $gallery->name;
+                return $this->_cache['name'];
 
             case 'pageid':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['pageid'] = $gallery->name;
+                return $this->_cache['pageid'];
 
             case 'path':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['path'] = $gallery->name;
+                return $this->_cache['path'];
 
             case 'permalink':
-                break;
+                $this->_cache['permalink'] = $this->__get('imageURL');
+                return $this->_cache['permalink'];
 
             case 'pidlink':
+                // TODO : implement this. nggfunctions.php : 350
                 break;
 
             case 'previewpic':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['previewpic'] = $gallery->name;
+                return $this->_cache['previewpic'];
 
             case 'size':
-                break;
+                $w = $this->_orig_image->meta_data->thumbnail['width'];
+                $h = $this->_orig_image->meta_data->thumbnail['height'];
+                return "width='{$w}' height='{$h}'";
 
             case 'slug':
-                break;
+                $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                $gallery = $gallery_map->find($this->__get('galleryid'));
+                $this->_cache['slug'] = $gallery->name;
+                return $this->_cache['slug'];
 
             case 'style':
+                // TODO : how to get this?
                 break;
 
-            case 'thumbFolder':
-                break;
+            case 'tags':
+                $this->_cache['tags'] = wp_get_object_terms($this->__get('pid'), 'ngg_tag', 'fields=all');
+                return $this->_cache['tags'];
 
             case 'thumbHTML':
                 $tmp = '<a href="' . $this->__get('imageURL') . '" title="'
-                     . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->pid . '_description')))
+                     . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('pid') . '_description')))
                      . '" ' . $this->get_thumbcode($this->__get('name')) . '>' . '<img alt="' . $this->alttext
                      . '" src="' . $this->thumbURL . '"/>' . '</a>';
                 $this->_cache['href'] = $tmp;
@@ -165,49 +204,83 @@ class C_NextGen_Gallery_Image_Wrapper
                 return $this->_cache['thumbHTML'];
 
             case 'thumbPath':
-                $this->_cache['thumbPath'] = WINABSPATH . $this->__get('path') . '/thumbs/thumbs_'
-                                           . $this->__get('filename');
+                $this->_cache['thumbPath'] = $this->__get('thumbnailURL');
                 return $this->_cache['thumbPath'];
 
-            case 'thumbPrefix':
-                break;
-
-            case 'thumbURL':
-                $this->_cache['thumbURL'] = site_url() . '/' . $this->__get('path') . '/thumbs/thumbs_'
-                                          . $this->__get('filename');
-                return $this->_cache['thumbURL'];
+            case 'thumbnailURL':
+                $storage = $this->get_storage();
+                $this->_cache['thumbnailURL'] = $storage->get_thumb_url($this->_orig_image);
+                return $this->_cache['thumbnailURL'];
 
             case 'thumbcode':
-                break;
+                $this->_cache['thumbcode'] = $this->get_thumbcode($this->__get('name'));
+                return $this->_cache['thumbcode'];
 
-            case 'thumbnailURL':
-                break;
+            case 'thumbURL':
+                return $this->__get('thumbnailURL');
 
             case 'title':
-                break;
+                $this->_cache['title'] = stripslashes($this->__get('name'));
+                return $this->_cache['title'];
 
             case 'url':
-                break;
+                $storage = $this->get_storage();
+                $this->_cache['url'] = $storage->get_image_abspath($this->_orig_image);
+                return $this->_cache['url'];
 
             default:
                 return $this->_cache[$name];
         }
     }
 
+    // called on initial nggLegacy image at construction. not sure what to do with it now.
     function construct_ngg_Image($gallery)
     {
-        $this->name       = $gallery->name;
-        $this->path       = $gallery->path;
-        $this->title      = stripslashes($gallery->title);
-        $this->pageid     = $gallery->pageid;
-        $this->previewpic = $gallery->previewpic;
-
         do_action_ref_array('ngg_get_image', array(&$this));
-
-        // Note wp_cache_add will increase memory needs (4-8 kb)
-        // wp_cache_add($this->pid, $this, 'ngg_image');
-        // Get tags only if necessary
         unset($this->tags);
+    }
+
+    /**
+     * Retrieves and caches an I_NextGen_Settings instance
+     *
+     * @return mixed
+     */
+    function get_settings()
+    {
+        if (is_null($this->_settings))
+        {
+            $this->_settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
+        }
+        return $this->_settings;
+    }
+
+    /**
+     * Retrieves and caches an I_Gallery_Storage instance
+     *
+     * @return mixed
+     */
+    function get_storage()
+    {
+        if (is_null($this->_storage))
+        {
+            $this->_storage = C_Component_Registry::get_instance()->get_utility('I_Gallery_Storage');
+        }
+        return $this->_storage;
+    }
+
+    /**
+     * Retrieves and caches an I_Gallery_Mapper instance for this gallery id
+     *
+     * @param int $gallery_id Gallery ID
+     * @return mixed
+     */
+    function get_gallery($gallery_id)
+    {
+        if (is_null($this->_galleries[$gallery_id]))
+        {
+            $this->_galleries[$gallery_id] = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
+        }
+        return $this->_galleries[$gallery_id];
     }
 
     /**
@@ -217,7 +290,7 @@ class C_NextGen_Gallery_Image_Wrapper
     */
     function get_thumbcode($gallery_name = '')
     {
-        $settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
+        $settings = $this->get_settings();
 
         // clean up the name
         $gallery_name = sanitize_title($gallery_name);
@@ -231,20 +304,30 @@ class C_NextGen_Gallery_Image_Wrapper
         // for highslide to a different approach
         if ('highslide' == $settings->get('thumbEffect'))
         {
-            $this->_cache['thumbcode'] = str_replace('%GALLERY_NAME%', "'{$gallery_name}'", $this->__get('thumbcode'));
+            $this->_cache['thumbcode'] = str_replace('%GALLERY_NAME%', "'{$gallery_name}'", $this->_cache['thumbcode']);
         }
         else {
-            $this->_cache['thumbcode'] = str_replace('%GALLERY_NAME%', $gallery_name, $this->__get('thumbcode'));
+            $this->_cache['thumbcode'] = str_replace('%GALLERY_NAME%', $gallery_name, $this->_cache['thumbcode']);
         }
 
         return apply_filters('ngg_get_thumbcode', $this->_cache['thumbcode'], $this);
     }
 
+    /**
+     * For compatibility support
+     *
+     * @return mixed
+     */
     function get_href_link()
     {
         return $this->__get('imageHTML');
     }
 
+    /**
+     * For compatibility support
+     *
+     * @return mixed
+     */
     function get_href_thumb_link()
     {
         return $this->__get('thumbHTML');
@@ -267,10 +350,6 @@ class C_NextGen_Gallery_Image_Wrapper
      */
     function get_tags()
     {
-        if (!isset($this->_cache['tags']))
-        {
-            $this->_cache['tags'] = wp_get_object_terms($this->__get('pid'), 'ngg_tag', 'fields=all');
-        }
         return $this->__get('tags');
     }
 
@@ -280,10 +359,6 @@ class C_NextGen_Gallery_Image_Wrapper
      * TODO: Get a permalink to a page presenting the image
      */
     function get_permalink() {
-        if ('' == $this->__get('permalink'))
-        {
-            $this->_cache['permalink'] = $this->__get('imageURL');
-        }
         return $this->__get('permalink');
     }
 

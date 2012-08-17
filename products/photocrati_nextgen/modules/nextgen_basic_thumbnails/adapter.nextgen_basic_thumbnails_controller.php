@@ -61,10 +61,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// Get the gallery storage component
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
-//            print "<h1>displayed_gallery:</h1>";
-//            var_dump($displayed_gallery);
-//            print '<hr/>';
-
             if (!empty($displayed_gallery->display_settings['template']))
             {
                 ///// This is the 'gallery' item passed to the templates
@@ -96,20 +92,22 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 }
                 //// end of gallery item
 
+                $picture_list = array();
                 foreach ($images as $image) {
-//                    $tmp = new C_NextGen_Gallery_Image_Wrapper($image);
-//                    var_dump(
-//                        $tmp->imageHTML,
-//                        $tmp->thumbHTML
-//                    );
-//                    print "<hr/>";
+                    $tmp = new C_NextGen_Gallery_Image_Wrapper($image);
+                    // var_dump($tmp->caption);
+                    $picture_list[] = $tmp;
                 }
 
                 $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
                 $params = array(
                     'pagination' => $pagination,
-                    'gallery' => $gallery
+                    'gallery' => $gallery,
+                    'images' => $picture_list,
+                    'current' => FALSE,
+                    'next' => FALSE,
+                    'prev' => FALSE
                 );
 
                 $this->object->legacy_render($displayed_gallery->display_settings['template'], $params, False);
