@@ -80,12 +80,13 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 		}
 
 		// Validate the display settings
-		$display_type = $this->object->get_display_type();
-		$display_type->settings = $this->object->display_settings;
-		if (!$display_type->validate()) {
-			foreach ($display_type->get_errors() as $property => $errors) {
-				foreach ($errors as $error) {
-					$this->object->add_error($error, $property);
+		if (($display_type = $this->object->get_display_type())) {
+			$display_type->settings = $this->object->display_settings;
+			if (!$display_type->validate()) {
+				foreach ($display_type->get_errors() as $property => $errors) {
+					foreach ($errors as $error) {
+						$this->object->add_error($error, $property);
+					}
 				}
 			}
 		}
@@ -232,7 +233,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				array("galleryid in (%s)", $this->object->container_ids)
 			);
 
-			// We can excluse images from those galleries we're not
+			// We can exclude images from those galleries we're not
 			// interested in...
 			if ($this->object->exclusions) {
 				$mapper->where(
