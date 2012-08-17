@@ -54,6 +54,7 @@ class M_Ajax extends C_Base_Module
 	function _register_hooks()
 	{
 		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+		add_action('admin_init', array(&$this, 'enqueue_scripts'));
 	}
 
 

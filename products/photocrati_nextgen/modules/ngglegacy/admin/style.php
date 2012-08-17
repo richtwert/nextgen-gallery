@@ -1,4 +1,4 @@
-<?php  
+<?php
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
 function nggallery_admin_style()  {
@@ -9,16 +9,16 @@ if ( $theme_css_exists = file_exists (TEMPLATEPATH . "/nggallery.css") ) {
 
 	$real_file = TEMPLATEPATH . "/nggallery.css";
 	$file_show = 'nggallery.css ' . __('(From the theme folder)','nggallery');
-	
+
 } else {
 
 	if (isset($_POST['css'])) {
 		check_admin_referer('ngg_style');
-		$act_cssfile = $_POST['css']; 
-		
+		$act_cssfile = $_POST['css'];
+
 		if ( isset( $_POST['activate'] ) ) {
 			// save option now
-			$ngg->options['activateCSS'] = $_POST['activateCSS']; 
+			$ngg->options['activateCSS'] = $_POST['activateCSS'];
 			$ngg->options['CSSfile'] = $act_cssfile;
 			update_option('ngg_options', $ngg->options);
 			nggGallery::show_message(__('Update Successfully','nggallery'));
@@ -28,15 +28,15 @@ if ( $theme_css_exists = file_exists (TEMPLATEPATH . "/nggallery.css") ) {
 		if (isset($_POST['file']))
 			$act_cssfile = $_POST['file'];
 		else
-			$act_cssfile = $ngg->options['CSSfile'];	
+			$act_cssfile = $ngg->options['CSSfile'];
 	}
-	
+
 	// set the path
 	$real_file = NGGALLERY_ABSPATH . "css/" . $act_cssfile;
 }
 
 if (isset($_POST['updatecss'])) {
-	
+
 	check_admin_referer('ngg_style');
 
 	if ( !current_user_can('edit_themes') )
@@ -60,7 +60,7 @@ $error = ( !is_file($real_file) );
 if (!$error && filesize($real_file) > 0) {
 	$f = fopen($real_file, 'r');
 	$content = fread($f, filesize($real_file));
-	$content = htmlspecialchars($content); 
+	$content = htmlspecialchars($content);
 }
 
 ?>
@@ -85,13 +85,11 @@ if (!$error && filesize($real_file) > 0) {
 <div class="wrap">
 
 	<div class="bordertitle">
-        <?php screen_icon( 'nextgen-gallery' ); ?>
-		<h2><?php _e('Style Editor','nggallery') ?></h2>
 		<?php if (!$theme_css_exists) : ?>
 		<form id="themeselector" name="cssfiles" method="post">
 		<?php wp_nonce_field('ngg_style') ?>
 		<strong><?php _e('Activate and use style sheet:','nggallery') ?></strong>
-		<input type="checkbox" name="activateCSS" value="1" <?php checked('1', $ngg->options['activateCSS']); ?> /> 
+		<input type="checkbox" name="activateCSS" value="1" <?php checked('1', $ngg->options['activateCSS']); ?> />
 			<select name="css" id="theme" style="margin: 0pt; padding: 0pt;" onchange="this.form.submit();">
 			<?php
 				$csslist = ngg_get_cssfiles();
@@ -115,9 +113,9 @@ if (!$error && filesize($real_file) > 0) {
 		<?php endif; ?>
 	</div>
 	<br style="clear: both;"/>
-	
+
 <?php if (!is_multisite() || wpmu_site_admin() ) { ?>
-	<div class="tablenav"> 
+	<div class="tablenav">
 	  <?php
 		if ( is_writeable($real_file) ) {
 			echo '<big>' . sprintf(__('Editing <strong>%s</strong>','nggallery'), $file_show) . '</big>';
@@ -127,7 +125,7 @@ if (!$error && filesize($real_file) > 0) {
 		?>
 	</div>
 	<br style="clear: both;"/>
-	
+
 	<div id="templateside">
 	<?php if (!$theme_css_exists) : ?>
 		<ul>
@@ -168,10 +166,10 @@ if (!$error && filesize($real_file) > 0) {
 		?>
 	<div class="clear"> &nbsp; </div>
 </div> <!-- wrap-->
-	
+
 <?php
 	}
-	
+
 } // END nggallery_admin_style()
 
 /**********************************************************/
@@ -185,10 +183,10 @@ function ngg_get_cssfiles() {
 	}
 
 	$cssfiles = array ();
-	
+
 	// Files in wp-content/plugins/nggallery/css directory
 	$plugin_root = NGGALLERY_ABSPATH . "css";
-	
+
 	$plugins_dir = @ dir($plugin_root);
 	if ($plugins_dir) {
 		while (($file = $plugins_dir->read()) !== false) {
