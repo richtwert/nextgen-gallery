@@ -80,7 +80,7 @@ class Mixin_Render_Display_Type extends Mixin
 
 			// Galleries?
 			if ($args['gallery_ids']) {
-				if ($args['source'] == 'galleries') {
+				if ($args['source'] != 'albums' AND $args['source'] != 'album') {
 					$args['source']					= 'galleries';
 					$args['container_ids']		= $args['gallery_ids'];
 				}
@@ -106,7 +106,7 @@ class Mixin_Render_Display_Type extends Mixin
 
 			// Specific images selected
 			elseif ($args['image_ids']) {
-				$source = 'gallery';
+				$source = 'galleries';
 				$entity_ids = $args['image_ids'];
 				unset($args['image_ids']);
 			}

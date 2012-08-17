@@ -42,7 +42,7 @@ class C_Display_Type_Controller extends C_MVC_Controller
 	 * @param string|array $context
 	 * @return C_Display_Type_Controller
 	 */
-    public static function get_instance($context = False)
+    public static function get_instance($context = FALSE)
     {
         if (!isset(self::$_instances[$context]))
         {
