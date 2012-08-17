@@ -1,19 +1,21 @@
 <table>
 	<tr>
-		<td>
+		<td class="column1">
 			<label for="watermark_source">
 				<?php echo_h($watermark_source_label)?>
 			</label>
 		</td>
 		<td>
-			<select name="settings[wmType]" id="watermark_source">
-			<?php foreach ($watermark_sources as $label => $value): ?>
-				<option
-					value="<?php echo esc_attr($value)?>"
-					<?php selected($value, $watermark_source) ?>
-					><?php echo_h($label)?></option>
-			<?php endforeach ?>
-			</select>
+			<div class="column_wrapper">
+				<select name="settings[wmType]" id="watermark_source">
+				<?php foreach ($watermark_sources as $label => $value): ?>
+					<option
+						value="<?php echo esc_attr($value)?>"
+						<?php selected($value, $watermark_source) ?>
+						><?php echo_h($label)?></option>
+				<?php endforeach ?>
+				</select>
+			</div>
 		</td>
 	</tr>
 	<tr>

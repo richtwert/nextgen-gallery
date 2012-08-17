@@ -6,12 +6,6 @@
 	width: 100%;
 }
 
-.gallery_page_ngg_other_options table td {
-	/*
-     * The below should be used, but it doesn't display correctly on Chrome.
-	 * vertical-align: top;
-	*/
-}
 .gallery_page_ngg_other_options table td.column1 {
 	width: 240px;
 }

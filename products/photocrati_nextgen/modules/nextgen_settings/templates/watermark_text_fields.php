@@ -1,5 +1,5 @@
 <tr>
-	<td class="column1">
+	<td class="column1 align-to-top">
 		<label for="watermark_text">
 			<?php echo_h($watermark_text_label)?>
 		</label>
@@ -55,7 +55,7 @@
 	</td>
 </tr>
 <tr>
-	<td>
+	<td class="align-to-top">
 		<label for="font_color">
 			<?php echo_h($font_color_label)?>
 		</label>
