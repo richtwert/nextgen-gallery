@@ -42,7 +42,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function _add_routes()
 	{
-		$router = $this->_get_registry()->get_utility('I_Router');
+		$router = $this->get_registry()->get_utility('I_Router');
         $router->add_route(__CLASS__, 'C_Ajax_Controller', array(
             'uri'=>$router->routing_pattern('photocrati_ajax')
         ));
@@ -54,6 +54,7 @@ class M_Ajax extends C_Base_Module
 	function _register_hooks()
 	{
 		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+		add_action('admin_init', array(&$this, 'enqueue_scripts'));
 	}
 
 

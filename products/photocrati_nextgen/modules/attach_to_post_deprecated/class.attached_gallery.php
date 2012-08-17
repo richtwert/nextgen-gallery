@@ -35,7 +35,7 @@ class Mixin_Attached_Gallery_Methods extends Mixin
 	 */
    function get_gallery()
     {
-		$gallery_mapper = $this->object->_get_registry()->get_utility('I_Gallery_Mapper');
+		$gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
 		return $gallery_mapper->find($this->object->gallery_id);
     }
 
@@ -74,7 +74,7 @@ class Mixin_Attached_Gallery_Methods extends Mixin
 		$retval = NULL;
 
 		if ($this->object->images) {
-			$mapper = $this->object->_get_registry()->get_utility('I_Gallery_Image_Mapper');
+			$mapper = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 			$retval = $mapper->find(array_shift($image->object->images));
 		}
 
@@ -137,7 +137,7 @@ class C_Attached_Gallery extends C_DataMapper_Model
 
 		// Get the mapper is not specified
 		if (!$mapper) {
-			$mapper = $this->_get_registry()->get_utility($this->_mapper_interface);
+			$mapper = $this->get_registry()->get_utility($this->_mapper_interface);
 		}
 		parent::initialize($mapper, $properties, $context);
 

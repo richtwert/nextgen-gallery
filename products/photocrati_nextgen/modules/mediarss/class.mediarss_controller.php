@@ -33,7 +33,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 	function render_displayed_gallery()
 	{
 		$displayed_gallery = NULL;
-		$mapper = $this->object->_get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 
 		// Find the displayed gallery.
 		if (($id = $this->object->param('id'))) {
@@ -43,7 +43,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 		// Create the displayed gallery, based on the parameters
 		elseif (($params = $this->object->param('params')))
 		{
-			$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
+			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create(
 				'displayed_gallery', $mapper, json_decode($params)
 			);
@@ -51,7 +51,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 
 		// Assuming we have a displayed gallery, display it!
 		if ($displayed_gallery) {
-			$storage = $this->object->_get_registry()->get_utility('I_Gallery_Storage');
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$this->render_view('mediarss_feed', array(
 				'storage'			=>	$storage,
 				'images'			=>	$displayed_gallery->get_images(),

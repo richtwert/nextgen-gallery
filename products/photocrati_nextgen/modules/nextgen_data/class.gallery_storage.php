@@ -24,7 +24,7 @@ class Mixin_GalleryStorage extends Mixin
 		if (!defined('GALLERYSTORAGE_DRIVER')) {
 
 			// Get the datamapper configured in the database
-			$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 			$factory_method = $settings->gallerystorage_driver;
 			if (!$factory_method) throw new GalleryStorageDriverNotSelectedException();
 
@@ -72,7 +72,7 @@ class C_Gallery_Storage extends C_GalleryStorage_Base
 		$object_name = $args[0];
 		$context = $args[1];
 		$factory_method = $this->_get_driver_factory_method($context);
-		$factory = $this->_get_registry()->get_utility('I_Component_Factory');
+		$factory = $this->get_registry()->get_utility('I_Component_Factory');
 		return $factory->create($factory_method, $object_name, $context);
 	}
 }

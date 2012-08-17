@@ -54,7 +54,7 @@ class Mixin_Substitute_Gallery_Placeholders extends Mixin
 					$attached_gallery_id = $match[1];
 
 					// Instantiate factory
-					$factory = $this->object->_get_registry()->get_utility('I_Component_Factory');
+					$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 
 					// Create gallery instance
 					$attached_gallery = $factory->create('attached_gallery');

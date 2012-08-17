@@ -39,7 +39,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	 */
 	function index()
 	{
-		$settings = $this->object->_get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Is this post a request? If so, process the request
 		if ($this->is_post_request()) {
@@ -72,6 +72,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			// Save lightbox effects settings
 			if ($settings->is_valid()) {
 				$this->object->_save_lightbox_library($settings);
+				$this->object->_save_stylesheet_contents($settings->CSSfile);
 			}
 
 			// Save the changes made to the settings
@@ -114,8 +115,12 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	function _get_tabs($settings)
 	{
 		$tabs = array(
-			_('Lightbox Effect') =>$this->object->_render_lightbox_library_tab($settings),
-			_('Image Sorting')	 =>$this->object->_render_image_sorting_tab($settings),
+			_('Image Options')			=> $this->object->_render_image_options_tab($settings),
+			_('Lightbox Effect')		=> $this->object->_render_lightbox_library_tab($settings),
+			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
+			_('Styles')					=> $this->object->_render_styling_tab($settings),
+			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
+			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings)
 		);
 
 		if (is_multisite()) {
@@ -135,28 +140,122 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
 
 	/**
-	 * Renders the image sorting tab
+	 * Renders the roles tab
 	 * @param C_NextGen_Settings $settings
 	 * @return string
 	 */
-	function _render_image_sorting_tab($settings)
+	function _render_roles_tab($settings)
 	{
-		return $this->render_partial('image_sorting_tab', array(
-			'sorting_order_label'		=>	_('Sorting Order'),
-			'sorting_order_options'		=>	array(
-				'Custom'				=>	'sortorder',
-				'Image ID'				=>	'pid',
-				'Filename'				=>	'filename',
-				'Alt/Title Text'		=>	'alttext',
-				'Date/Time'				=>	'imagedate'
-			),
-			'sorting_order'				=>	$settings->galSort,
-			'sorting_direction_label'	=>	_('Sorting Direction'),
-			'sorting_direction_options'	=>	array(
-				'Ascending'				=>	'ASC',
-				'Descending'			=>	'DESC'
-			),
-			'sorting_direction'			=>	$settings->galSortDir
+		$view = path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array(
+			'admin', 'roles.php'
+		)));
+		include_once ( $view );
+		ob_start();
+		nggallery_admin_roles();
+		$retval = ob_get_contents();
+		ob_end_clean();
+		return $retval;
+	}
+
+
+	function _render_misc_tab($settings)
+	{
+		return $this->object->render_partial('misc_tab', array(
+			'mediarss_activated'		=>		$settings->useMediaRSS,
+			'mediarss_activated_label'	=>		_('Add MediaRSS link?'),
+			'mediarss_activated_help'	=>		_('When enabled, adds a MediaRSS link to your header. Third-party web services can use this to publish your galleries'),
+			'mediarss_activated_no'		=>		_('No'),
+			'mediarss_activated_yes'	=>		_('Yes'),
+		), TRUE);
+	}
+
+
+	/**
+	 * Renders the tab to customize the styles used for the galleries
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_styling_tab($settings)
+	{
+		return $this->object->render_partial('styling_tab', array(
+			'select_stylesheet_label'	=>	'What stylesheet would you like to use?',
+			'stylesheets'				=>	$this->object->_get_cssfiles(),
+			'activated_stylesheet'		=>	$settings->CSSfile,
+			'hidden_label'				=>	_('(Show Customization Options)'),
+			'active_label'				=>	_('(Hide Customization Options)'),
+			'cssfile_contents_label'	=>	_('File Content:'),
+			'writable_label'			=>	_('Changes you make to the contents will be saved'),
+			'readonly_label'			=>	_('You could edit this file if it were writable')
+		), TRUE);
+	}
+
+
+	function _render_watermarks_tab($settings)
+	{
+		return $this->render_partial('watermarks_tab', array(
+			'notice'					=>	_('Please note : You can only activate the watermark under -> Manage Gallery . This action cannot be undone.'),
+			'watermark_source_label'	=>	_('How will you generate a watermark?'),
+			'watermark_sources'			=>	$this->object->_get_watermark_sources(),
+			'watermark_fields'			=>	$this->object->_get_watermark_source_fields($settings),
+			'watermark_source'			=>	$settings->wmType,
+			'position_label'			=>	_('Position:'),
+			'position'					=>	$settings->wmPos,
+			'offset_label'				=>	_('Offset:'),
+			'offset_x'					=>	$settings->wmXpos,
+			'offset_y'					=>	$settings->wmYpos,
+			'hidden_label'				=>	_('(Show Customization Options)'),
+			'active_label'				=>	_('(Hide Customization Options)')
+		), TRUE);
+	}
+
+	/**
+	 * Renders the global options tab
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_image_options_tab($settings)
+	{
+		return $this->render_partial('image_options_tab', array(
+			'gallery_path_label'			=>	_('Where would you like galleries stored?'),
+			'gallery_path_help'				=>	_('This is the default path for all galleries'),
+			'gallery_path'					=>	$settings->gallerypath,
+			'delete_image_files_label'		=>	_('Delete Image Files?'),
+			'delete_image_files_help'		=>	_('When enabled, image files will be removed after a Gallery has been deleted'),
+			'delete_image_files'			=>	$settings->deleteImg,
+			'show_related_images_label'		=>	_('Show Related Images on Posts?'),
+			'show_related_images_help'		=>	_('When enabled, related images will be appended to each post'),
+			'show_related_images'			=>	$settings->activateTags,
+			'related_images_hidden_label'	=>	_('(Show Customization Settings)'),
+			'related_images_active_label'	=>	_('(Hide Customization Settings)'),
+			'match_related_images_label'	=>	_('How should related images be match?'),
+			'match_related_images'			=>	$settings->appendType,
+			'match_related_image_options'	=>	$this->object->_get_related_image_match_options(),
+			'max_related_images_label'		=>	_('Maximum # of related images to display'),
+			'max_related_images'			=>	$settings->maxImages,
+			'sorting_order_label'			=>	_("What's the default sorting method?"),
+			'sorting_order_options'			=>	$this->object->_get_image_sorting_options(),
+			'sorting_order'					=>	$settings->galSort,
+			'sorting_direction_label'		=>	_('Sort in what direction?'),
+			'sorting_direction_options'		=>	$this->object->_get_sorting_direction_options(),
+			'sorting_direction'				=>	$settings->galSortDir,
+			'automatic_resize_label'		=>	'Automatically resize images after upload',
+			'automatic_resize_help'			=>	'It is recommended that your images be resized to be web friendly',
+			'automatic_resize'				=>	$settings->imgAutoResize,
+			'resize_images_label'			=>	_('What should images be resized to?'),
+			'resize_images_help'			=>	_('After images are uploaded, they will be resized to the above dimensions and quality'),
+			'resized_image_width_label'		=>	_('Width:'),
+			'resized_image_height_label'	=>	_('Height:'),
+			'resized_image_quality_label'	=>	_('Quality:'),
+			'resized_image_width'			=>	$settings->imgWidth,
+			'resized_image_height'			=>  $settings->imgHeight,
+			'resized_image_quality'			=>	$settings->imgQuality,
+			'backup_images_label'			=>	_('Backup the original images?'),
+			'backup_images_yes_label'		=>	_('Yes'),
+			'backup_images_no_label'		=>	_('No'),
+			'backup_images'					=>	$settings->imgBackup,
+			'thumbnail_quality_label'		=>	_('Adjust Thumbnail Quality?'),
+			'thumbnail_quality_help'		=>	_('When generating thumbnails, what image quality do you desire?'),
+			'thumbnail_quality'				=>	$settings->thumbquality
 		), TRUE);
 	}
 
@@ -173,14 +272,15 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		// set_defaults() method executed for them.
 		// TODO: Adjust datamapper drivers to call a set_defaults() method
 		// from the convert_to_entity() method
-		$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$libs = $mapper->find_all(array(), TRUE);
 
 		// Render tab
 		return $this->render_partial('lightbox_library_tab', array(
-			'libs'		=>	$libs,
-			'id_field'	=>	$mapper->get_primary_key_column(),
-			'selected'	=>	$settings->thumbEffect,
+			'lightbox_library_label'	=>	_('What effect would you like to use?'),
+			'libs'						=>	$libs,
+			'id_field'					=>	$mapper->get_primary_key_column(),
+			'selected'					=>	$settings->thumbEffect,
 		), TRUE);
 	}
 
@@ -195,7 +295,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		if (($id = $this->object->param('lightbox_library_id'))) {
 
 			// Get the lightbox library mapper and find the library selected
-			$mapper = $this->object->_get_registry()->get_utility('I_Lightbox_Library_Mapper');
+			$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 			$library = $mapper->find($id, TRUE);
 
 			// If a valid library, we have updated settings from the user, then
@@ -222,5 +322,233 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns the options available for sorting images
+	 * @return array
+	 */
+	function _get_image_sorting_options()
+	{
+		return array(
+			'Custom'					=>	'sortorder',
+			'Image ID'					=>	'pid',
+			'Filename'					=>	'filename',
+			'Alt/Title Text'			=>	'alttext',
+			'Date/Time'					=>	'imagedate'
+		);
+	}
+
+
+	/**
+	 * Returns the options available for sorting directions
+	 * @return array
+	 */
+	function _get_sorting_direction_options()
+	{
+		return array(
+			'Ascending'					=>	'ASC',
+			'Descending'				=>	'DESC'
+		);
+	}
+
+
+	/**
+	 * Returns the options available for matching related images
+	 */
+	function _get_related_image_match_options()
+	{
+		return array(
+			'Categories'				=>	'category',
+			'Tags'						=>	'tags'
+		);
+	}
+
+	/**
+	 * Gets watermark sources, along with their respective fields
+	 * @param C_NextGen_Settings $settings
+	 * @return array
+	 */
+	function _get_watermark_sources()
+	{
+		// We do this so that an adapter can add new sources
+		return array(
+			'Using an Image'	=>	'image',
+			'Using Text'		=>	'text',
+		);
+	}
+
+
+	function _get_watermark_source_fields($settings)
+	{
+		$retval = array();
+		foreach ($this->object->_get_watermark_sources() as $label => $value) {
+			$method = "_render_watermark_{$value}_fields";
+			$retval[$value] = $this->object->call_method($method, array($settings));
+		}
+		return $retval;
+	}
+
+	/**
+	 * Gets all fonts installed for watermarking
+	 * @return array
+	 */
+	function _get_watermark_fonts()
+	{
+		$retval = array();
+		foreach (scandir(path_join(NGGALLERY_ABSPATH, 'fonts')) as $filename) {
+			if (strpos($filename, '.') === 0) continue;
+			else $retval[] = $filename;
+		}
+		return $retval;
+	}
+
+
+	/**
+	 * Render fields that are needed when 'image' is selected as a watermark
+	 * source
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_watermark_image_fields($settings)
+	{
+		return $this->object->render_partial('watermark_image_fields', array(
+			'image_url_label'			=>	_('Image URL:'),
+			'watermark_image_url'		=>	$settings->wmPath,
+		), TRUE);
+	}
+
+	/**
+	 * Render fields that are needed when 'text is selected as a watermark
+	 * source
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_watermark_text_fields($settings)
+	{
+		return $this->object->render_partial('watermark_text_fields', array(
+			'fonts'						=>	$this->object->_get_watermark_fonts($settings),
+			'font_family_label'			=>	_('Font Family:'),
+			'font_family'				=>	$settings->wmFont,
+			'font_size_label'			=>	_('Font Size:'),
+			'font_size'					=>	$settings->wmSize,
+			'font_color_label'			=>	_('Font Color:'),
+			'font_color'				=>	strpos($settings->wmColor, '#') === 0 ?
+											$settings->wmColor : "#{$settings->wmColor}",
+			'watermark_text_label'		=>	_('Text:'),
+			'watermark_text'			=>	$settings->wmText,
+			'opacity_label'				=>	_('Opacity:'),
+			'opacity'					=>	$settings->wmOpaque,
+		), TRUE);
+	}
+
+	/**
+	 * Saves the contents of a stylesheet
+	 */
+	function _save_stylesheet_contents($css_file)
+	{
+		// Need to verify role
+		if (($contents = $this->object->param('cssfile_contents'))) {
+
+			// Find filename
+			$filename = path_join(TEMPLATEPATH, $css_file);
+			$alt_filename = path_join(
+				NGGALLERY_ABSPATH,
+				implode(DIRECTORY_SEPARATOR, array('css', $css_file))
+			);
+			$found = FALSE;
+			if (file_exists($filename)) {
+				if (is_writable($filename)) $found = $filename;
+			}
+			elseif (file_exists($alt_filename)) {
+				if (is_writable($alt_filename)) $found = $alt_filename;
+			}
+
+			// Write file contents
+			if ($found) {
+				$fp = fopen($found, 'w');
+				fwrite($fp, $contents);
+				fclose($fp);
+			}
+		}
+	}
+
+	/**
+	 * Gets the CSS files available in the installation
+	 * @return array
+	 */
+	function _get_cssfiles()
+	{
+		/** THIS FUNCTION WAS TAKEN FROM NGGLEGACY **/
+		$cssfiles = array ();
+
+		// Files in nggallery/css directory
+		$plugin_root = NGGALLERY_ABSPATH . "css";
+
+		$plugins_dir = @ dir($plugin_root);
+		if ($plugins_dir) {
+			while (($file = $plugins_dir->read()) !== false) {
+				if (preg_match('|^\.+$|', $file))
+					continue;
+				if (is_dir($plugin_root.'/'.$file)) {
+					$plugins_subdir = @ dir($plugin_root.'/'.$file);
+					if ($plugins_subdir) {
+						while (($subfile = $plugins_subdir->read()) !== false) {
+							if (preg_match('|^\.+$|', $subfile))
+								continue;
+							if (preg_match('|\.css$|', $subfile))
+								$plugin_files[] = "$file/$subfile";
+						}
+					}
+				} else {
+					if (preg_match('|\.css$|', $file))
+						$plugin_files[] = $file;
+				}
+			}
+		}
+
+		if ( !$plugins_dir || !$plugin_files )
+			return $cssfiles;
+
+		foreach ( $plugin_files as $plugin_file ) {
+			if ( !is_readable("$plugin_root/$plugin_file"))
+				continue;
+
+			$plugin_data = $this->object->_get_cssfiles_data("$plugin_root/$plugin_file");
+
+			if ( empty ($plugin_data['Name']) )
+				continue;
+
+			$cssfiles[plugin_basename($plugin_file)] = $plugin_data;
+		}
+
+		uasort($cssfiles, create_function('$a, $b', 'return strnatcasecmp($a["Name"], $b["Name"]);'));
+
+		return $cssfiles;
+	}
+
+
+	/**
+	 * Parses the CSS header
+	 * @param string $plugin_file
+	 * @return array
+	 */
+	function _get_cssfiles_data($plugin_file)
+	{
+		$plugin_data = implode('', file($plugin_file));
+		preg_match("|CSS Name:(.*)|i", $plugin_data, $plugin_name);
+		preg_match("|Description:(.*)|i", $plugin_data, $description);
+		preg_match("|Author:(.*)|i", $plugin_data, $author_name);
+		if (preg_match("|Version:(.*)|i", $plugin_data, $version))
+			$version = trim($version[1]);
+		else
+			$version = '';
+
+		$description = wptexturize(trim($description[1]));
+
+		$name = trim($plugin_name[1]);
+		$author = trim($author_name[1]);
+
+		return array ('Name' => $name, 'Description' => $description, 'Author' => $author, 'Version' => $version );
 	}
 }

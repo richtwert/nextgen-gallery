@@ -32,7 +32,7 @@ class M_Gallery_Display extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->controller = $this->_get_registry()->get_utility('I_Display_Settings_Controller');
+		$this->controller = $this->get_registry()->get_utility('I_Display_Settings_Controller');
 	}
 
 
@@ -41,20 +41,20 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function _register_utilities()
 	{
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_Display_Settings_Controller',
 			'C_Display_Settings_Controller'
 		);
 
 		// This utility provides a controller to render the settings form
 		// for a display type, or render the front-end of a display type
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_Display_Type_Controller',
 			'C_Display_Type_Controller'
 		);
 
 		// This utility provides a datamapper for Display Types
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_Display_Type_Mapper',
 			'C_Display_Type_Mapper'
 		);
@@ -62,7 +62,7 @@ class M_Gallery_Display extends C_Base_Module
 		// This utility provides a datamapper for Displayed Galleries. A
 		// displayed gallery is the association between some entities (images
 		//or galleries) and a display type
-		$this->_get_registry()->add_utility(
+		$this->get_registry()->add_utility(
 			'I_Displayed_Gallery_Mapper',
 			'C_Displayed_Gallery_Mapper'
 		);
@@ -76,7 +76,7 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		// Provides factory methods for creating display type and
 		// displayed gallery instances
-		$this->_get_registry()->add_adapter(
+		$this->get_registry()->add_adapter(
 			'I_Component_Factory', 'A_Gallery_Display_Factory'
 		);
 	}

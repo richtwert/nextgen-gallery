@@ -107,6 +107,7 @@ class C_NextGen_Settings_Defaults
                 // Framework settings
                 'datamapper_driver' => 'custom_table_datamapper',
                 'gallerystorage_driver' => 'ngglegacy_gallery_storage',
+				'gallery_display_limit'	=> 1000
             );
 
 			// Thumbnail sizes
@@ -145,7 +146,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
         {
             $this->object->restore_missing_options();
         } else {
-            $tmp = $this->_get_registry()->get_utility('I_NextGen_Settings');
+            $tmp = $this->get_registry()->get_utility('I_NextGen_Settings');
             $tmp->restore_missing_options();
             unset($tmp);
         }
@@ -157,7 +158,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
             {
                 $this->object->restore_missing_multisite_options();
             } else {
-                $tmp = $this->_get_registry()->get_utility('I_NextGen_Settings', array('multisite'));
+                $tmp = $this->get_registry()->get_utility('I_NextGen_Settings', array('multisite'));
                 $tmp->restore_missing_multisite_options();
                 unset($tmp);
             }
@@ -520,7 +521,7 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
             $this->add_mixin('Mixin_NextGen_Multisite_Settings');
 		else
             $this->add_mixin('Mixin_NextGen_Settings');
-		
+
         $this->implement('I_NextGen_Settings');
 	}
 
