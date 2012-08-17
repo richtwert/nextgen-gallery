@@ -119,7 +119,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Lightbox Effect')		=> $this->object->_render_lightbox_library_tab($settings),
 			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
 			_('Styles')					=> $this->object->_render_styling_tab($settings),
-			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings)
+			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
+			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings)
 		);
 
 		if (is_multisite()) {
@@ -154,6 +155,18 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		$retval = ob_get_contents();
 		ob_end_clean();
 		return $retval;
+	}
+
+
+	function _render_misc_tab($settings)
+	{
+		return $this->object->render_partial('misc_tab', array(
+			'mediarss_activated'		=>		$settings->useMediaRSS,
+			'mediarss_activated_label'	=>		_('Add MediaRSS link?'),
+			'mediarss_activated_help'	=>		_('When enabled, adds a MediaRSS link to your header. Third-party web services can use this to publish your galleries'),
+			'mediarss_activated_no'		=>		_('No'),
+			'mediarss_activated_yes'	=>		_('Yes'),
+		), TRUE);
 	}
 
 
