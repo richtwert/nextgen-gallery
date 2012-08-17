@@ -110,7 +110,7 @@ if (!class_exists('nggLoader')) {
 			add_action('init', array(&$this, 'handle_upload_request'));
 
 			// Adds scripts used for social media buttons
-			add_action('admin_init', array(&$this, 'enqueue_social_media_resources'));
+//			add_action('admin_init', array(&$this, 'enqueue_social_media_resources'));
 
 			// Display "Photocrati Acquisition Announcement"
 			add_action('admin_init', array(&$this, 'display_update_notice'));

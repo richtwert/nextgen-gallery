@@ -36,7 +36,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             case 'javascript':
             case 'jscript':
             case 'emcascript':
-                $type = 'x-application/javascript';
+                $type = 'text/javascript';
                 break;
             case 'jpeg':
             case 'jpg':
