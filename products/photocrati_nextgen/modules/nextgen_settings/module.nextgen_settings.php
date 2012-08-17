@@ -89,6 +89,11 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_MVC_Controller',
 			'A_MVC_Validation'
 		);
+
+		$this->get_registry()->add_adapter(
+			'I_Ajax_Controller',
+			'A_Stylesheet_Ajax_Actions'
+		);
 	}
 
 	/**

@@ -72,6 +72,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			// Save lightbox effects settings
 			if ($settings->is_valid()) {
 				$this->object->_save_lightbox_library($settings);
+				$this->object->_save_stylesheet_contents($settings->CSSfile);
 			}
 
 			// Save the changes made to the settings
@@ -117,7 +118,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Image Options')			=> $this->object->_render_image_options_tab($settings),
 			_('Lightbox Effect')		=> $this->object->_render_lightbox_library_tab($settings),
 			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
-			_('Custom Styling')			=> $this->object->_render_custom_styling_tab($settings),
+			_('Styles')					=> $this->object->_render_styling_tab($settings),
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings)
 		);
 
@@ -138,25 +139,6 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
 
 	/**
-	 * Renders the custom styling tab
-	 * @param C_NextGen_Settings $settings
-	 * @return string
-	 */
-	function _render_custom_styling_tab($settings)
-	{
-		$view = path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array(
-			'admin', 'style.php'
-		)));
-		ob_start();
-		include_once($view);
-		nggallery_admin_style();
-		$retval = ob_get_contents();
-		ob_end_clean();
-		return $retval;
-	}
-
-
-	/**
 	 * Renders the roles tab
 	 * @param C_NextGen_Settings $settings
 	 * @return string
@@ -172,6 +154,26 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		$retval = ob_get_contents();
 		ob_end_clean();
 		return $retval;
+	}
+
+
+	/**
+	 * Renders the tab to customize the styles used for the galleries
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_styling_tab($settings)
+	{
+		return $this->object->render_partial('styling_tab', array(
+			'select_stylesheet_label'	=>	'What stylesheet would you like to use?',
+			'stylesheets'				=>	$this->object->_get_cssfiles(),
+			'activated_stylesheet'		=>	$settings->CSSfile,
+			'hidden_label'				=>	_('(Show Customization Options)'),
+			'active_label'				=>	_('(Hide Customization Options)'),
+			'cssfile_contents_label'	=>	_('File Content:'),
+			'writable_label'			=>	_('Changes you make to the contents will be saved'),
+			'readonly_label'			=>	_('You could edit this file if it were writable')
+		), TRUE);
 	}
 
 
@@ -427,4 +429,113 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		), TRUE);
 	}
 
+	/**
+	 * Saves the contents of a stylesheet
+	 */
+	function _save_stylesheet_contents($css_file)
+	{
+		// Need to verify role
+		if (($contents = $this->object->param('cssfile_contents'))) {
+
+			// Find filename
+			$filename = path_join(TEMPLATEPATH, $css_file);
+			$alt_filename = path_join(
+				NGGALLERY_ABSPATH,
+				implode(DIRECTORY_SEPARATOR, array('css', $css_file))
+			);
+			$found = FALSE;
+			if (file_exists($filename)) {
+				if (is_writable($filename)) $found = $filename;
+			}
+			elseif (file_exists($alt_filename)) {
+				if (is_writable($alt_filename)) $found = $alt_filename;
+			}
+
+			// Write file contents
+			if ($found) {
+				$fp = fopen($found, 'w');
+				fwrite($fp, $contents);
+				fclose($fp);
+			}
+		}
+	}
+
+	/**
+	 * Gets the CSS files available in the installation
+	 * @return array
+	 */
+	function _get_cssfiles()
+	{
+		/** THIS FUNCTION WAS TAKEN FROM NGGLEGACY **/
+		$cssfiles = array ();
+
+		// Files in nggallery/css directory
+		$plugin_root = NGGALLERY_ABSPATH . "css";
+
+		$plugins_dir = @ dir($plugin_root);
+		if ($plugins_dir) {
+			while (($file = $plugins_dir->read()) !== false) {
+				if (preg_match('|^\.+$|', $file))
+					continue;
+				if (is_dir($plugin_root.'/'.$file)) {
+					$plugins_subdir = @ dir($plugin_root.'/'.$file);
+					if ($plugins_subdir) {
+						while (($subfile = $plugins_subdir->read()) !== false) {
+							if (preg_match('|^\.+$|', $subfile))
+								continue;
+							if (preg_match('|\.css$|', $subfile))
+								$plugin_files[] = "$file/$subfile";
+						}
+					}
+				} else {
+					if (preg_match('|\.css$|', $file))
+						$plugin_files[] = $file;
+				}
+			}
+		}
+
+		if ( !$plugins_dir || !$plugin_files )
+			return $cssfiles;
+
+		foreach ( $plugin_files as $plugin_file ) {
+			if ( !is_readable("$plugin_root/$plugin_file"))
+				continue;
+
+			$plugin_data = $this->object->_get_cssfiles_data("$plugin_root/$plugin_file");
+
+			if ( empty ($plugin_data['Name']) )
+				continue;
+
+			$cssfiles[plugin_basename($plugin_file)] = $plugin_data;
+		}
+
+		uasort($cssfiles, create_function('$a, $b', 'return strnatcasecmp($a["Name"], $b["Name"]);'));
+
+		return $cssfiles;
+	}
+
+
+	/**
+	 * Parses the CSS header
+	 * @param string $plugin_file
+	 * @return array
+	 */
+	function _get_cssfiles_data($plugin_file)
+	{
+		$plugin_data = implode('', file($plugin_file));
+		preg_match("|CSS Name:(.*)|i", $plugin_data, $plugin_name);
+		preg_match("|Description:(.*)|i", $plugin_data, $description);
+		preg_match("|Author:(.*)|i", $plugin_data, $author_name);
+		if (preg_match("|Version:(.*)|i", $plugin_data, $version))
+			$version = trim($version[1]);
+		else
+			$version = '';
+
+		$description = wptexturize(trim($description[1]));
+
+		$name = trim($plugin_name[1]);
+		$author = trim($author_name[1]);
+
+		return array ('Name' => $name, 'Description' => $description, 'Author' => $author, 'Version' => $version );
+	}
 }
