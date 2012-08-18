@@ -183,10 +183,12 @@ class M_Gallery_Display extends C_Base_Module
 		// There are many jQuery UI themes available via Google's CDN:
 		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
 		wp_enqueue_style(
-			'jquery-ui-south-street',
-			(is_ssl()?'https':'http').'://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css',
+			PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
+			is_ssl() ?
+				 str_replace('http:', 'https:', PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL) :
+				 PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
 			array(),
-			'1.7.0'
+			PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
 		);
 
 		wp_enqueue_style(
