@@ -188,7 +188,7 @@ class nggAdminPanel{
 			return;
 			
 		// If we're on a NextGen Page
-		if (strpos($_GET['page'], 'ngg') !== FALSE) {
+		if (preg_match("/ngg|nextgen-gallery/", $_GET['page'])) {
 			wp_register_script('ngg_social_media', path_join(
 				NGGALLERY_URLPATH,
 				'admin/js/ngg_social_media.js'
