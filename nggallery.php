@@ -105,9 +105,6 @@ if (!class_exists('nggLoader')) {
 			// Handle upload requests
 			add_action('init', array(&$this, 'handle_upload_request'));
 
-			// Adds scripts used for social media buttons
-			add_action('admin_init', array(&$this, 'enqueue_social_media_resources'));
-
 			// Display "Photocrati Acquisition Announcement"
 			add_action('admin_init', array(&$this, 'display_update_notice'));
 
@@ -576,26 +573,6 @@ if (!class_exists('nggLoader')) {
 		function get_notice_flag()
 		{
 			return str_replace('.', '', $this->update_notice_setting.$this->version);
-		}
-
-
-		/**
-		 * Enqueues JS required for Social Media Buttons
-		 */
-		function enqueue_social_media_resources()
-		{
-			wp_register_script('ngg_social_media', path_join(
-				NGGALLERY_URLPATH,
-				'admin/js/ngg_social_media.js'
-			), array('jquery'));
-
-			wp_register_style('ngg_social_media', path_join(
-				NGGALLERY_URLPATH,
-				'admin/css/ngg_social_media.css'
-			));
-
-			wp_enqueue_style('ngg_social_media');
-			wp_enqueue_script('ngg_social_media');
 		}
 
 
