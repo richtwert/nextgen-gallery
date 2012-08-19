@@ -575,21 +575,7 @@ if (!class_exists('nggLoader')) {
 		 */
 		function get_notice_flag()
 		{
-			return $this->update_notice_setting.$this->version;
-		}
-
-
-		/**
-		 * Hides the update notice
-		 */
-		function hide_news_notice()
-		{
-			if (wp_verify_nonce($_POST['nonce'])) {
-				update_user_meta(get_current_user_id(), $this->get_notice_flag(), -1);
-				echo "-1\n";
-			}
-			else
-				echo "1\n";
+			return str_replace('.', '', $this->update_notice_setting.$this->version);
 		}
 
 
@@ -620,7 +606,7 @@ if (!class_exists('nggLoader')) {
 		{
 			if (is_admin() &&
 				current_user_can('administrator') &&
-				get_user_meta(get_current_user_id(), $this->get_notice_flag(), TRUE) != -1) {
+				!(get_user_setting($this->get_notice_flag(), FALSE))) {
 
 				// Register a new script
 				wp_register_script('ngg_news_notice', path_join(
