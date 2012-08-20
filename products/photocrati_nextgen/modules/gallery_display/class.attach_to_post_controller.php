@@ -5,6 +5,7 @@
  */
 class C_Attach_To_Post_Controller extends C_MVC_Controller
 {
+	static $_instances = array();
 	var $_displayed_gallery;
 
 	/**
@@ -15,7 +16,22 @@ class C_Attach_To_Post_Controller extends C_MVC_Controller
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Attach_To_Post_Controller');
+		$this->add_mixin('Mixin_Attach_To_Post_Display_Tab');
 		$this->implement('I_Attach_To_Post_Controller');
+	}
+
+	/**
+	 * Returns an instance of the controller
+	 * @param mixed $context
+	 * @return C_Attach_To_Post_Controller
+	 */
+	static function get_instance($context=FALSE)
+	{
+		$klass = get_class();
+		if (!isset(self::$_instances[$context])) {
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
 	}
 }
 
@@ -52,8 +68,9 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		define('WP_ADMIN', TRUE);
 
-		// There are many jQuery UI themes available via Google's CDN:
-		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
+		// Enqueue JQuery UI
+		wp_enqueue_script('jquery-ui-tabs');
+		wp_enqueue_Script('jquery-ui-accordion');
 		wp_enqueue_style(
 			PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
 			is_ssl() ?
@@ -63,9 +80,16 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
 		);
 
-		wp_enqueue_script('jquery-ui-tabs');
-		wp_enqueue_Script('jquery-ui-accordion');
+		// Enqueue chosen, a library to make our drop-downs look pretty
+		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
+		wp_enqueue_script(
+			'chosen', $this->static_url('chosen.js'), array('jquery')
+		);
 
+		// Ensure we have the AJAX module ready
+		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
+
+		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
 			'ngg_attach_to_post', $this->static_url('attach_to_post.js')
 		);
@@ -73,6 +97,23 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			'ngg_attach_to_post', $this->static_url('attach_to_post.css')
 		);
 
+		// Enqueue our Ember.js application for the "Display Tab"
+		wp_enqueue_script(
+			'handlebars',
+			$this->static_url('handlebars-1.0.0.beta.6.js')
+		);
+		wp_enqueue_script(
+			'ember',
+			$this->static_url('ember-1.0.pre.js'),
+			array('jquery', 'handlebars')
+		);
+		wp_enqueue_script(
+			'ngg_attach_to_post_display_tab_app',
+			$this->static_url('display_tab_app.js'),
+			array('ember')
+		);
+
+		// Tell WordPress to continue print all enqueued resources
 		do_action('admin_enqueue_scripts');
 		do_action('admin_print_styles');
 		do_action('admin_print_scripts');
@@ -198,85 +239,5 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	function _render_tags_tab()
 	{
 		return $this->object->_render_ngg_page_in_frame('nggallery-tags');
-	}
-
-
-	/**
-	 * Gets a list of tabs to render for the "Display" tab
-	 */
-	function _get_display_tabs()
-	{
-		return array(
-			$this->object->_render_display_source_tab(),
-			$this->object->_render_display_types_tab(),
-			$this->object->_render_display_settings_tab(),
-			$this->object->_render_preview_tab()
-		);
-	}
-
-
-	/**
-	 * Renders the accordion tab, "What would you like to display?"
-	 */
-	function _render_display_source_tab()
-	{
-		return $this->object->render_partial('accordion_tab', array(
-			'id'			=> 'source_tab',
-			'title'		=>	_('What would you like to display?'),
-			'content'	=>	$this->object->_render_display_source_tab_contents()
-		), TRUE);
-	}
-
-
-	function _render_display_source_tab_contents()
-	{
-		return 'here';
-	}
-
-
-	function _render_display_types_tab()
-	{
-		return $this->object->render_partial('accordion_tab', array(
-			'id'			=> 'display_type_tab',
-			'title'		=>	_('Select a display type'),
-			'content'	=>	$this->object->_render_display_type_tab_contents()
-		), TRUE);
-	}
-
-
-	function _render_display_type_tab_contents()
-	{
-
-	}
-
-
-	function _render_display_settings_tab()
-	{
-		return $this->object->render_partial('accordion_tab', array(
-			'id'			=> 'display_settings_tab',
-			'title'		=>	_('Customize the display settings'),
-			'content'	=>	$this->object->_render_display_settings_contents()
-		), TRUE);
-	}
-
-
-	function _render_display_settings_contents()
-	{
-		return 'here';
-	}
-
-	function _render_preview_tab()
-	{
-		return $this->object->render_partial('accordion_tab', array(
-			'id'			=> 'preview_tab',
-			'title'		=>	_('Select individual images to display'),
-			'content'	=>	$this->object->_render_preview_tab_contents()
-		), TRUE);
-	}
-
-
-	function _render_preview_tab_contents()
-	{
-		return 'here';
 	}
 }

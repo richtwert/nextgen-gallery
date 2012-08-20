@@ -107,6 +107,11 @@ class M_Gallery_Display extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Component_Factory', 'A_Gallery_Display_Factory'
 		);
+
+		// Provides AJAX actions for the Attach To Post interface
+		$this->get_registry()->add_adapter(
+			'I_Ajax_Controller',   'A_Attach_To_Post_Ajax'
+		);
 	}
 
 	/**
@@ -171,11 +176,11 @@ class M_Gallery_Display extends C_Base_Module
 	/**
 	 * Enqueues static resources needed for the Display Settings page
 	 */
-	function enqueue_display_settings_resources()
+	function _enqueue_display_settings_resources()
 	{
 		wp_enqueue_script(
 			'nextgen_display_settings_page',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_display_settings_page.js',
+			$this->static_url('nextgen_display_settings_page.js'),
 			array('jquery-ui-accordion'),
 			$this->module_version
 		);
@@ -193,7 +198,7 @@ class M_Gallery_Display extends C_Base_Module
 
 		wp_enqueue_style(
 			'nextgen_display_settings_page',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_display_settings_page.css'
+			$this->static_url('nextgen_display_settings_page.css')
 		);
 	}
 
@@ -236,11 +241,9 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
-		$plugins[$this->attach_to_post_tinymce_plugin] = implode('/', array(
-			PHOTOCRATI_GALLERY_MODULE_URL,
-			basename(__DIR__),
-			'js/ngg_attach_to_post_tinymce_plugin.js'
-		));
+		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url(
+			'ngg_attach_to_post_tinymce_plugin.js'
+		);
 
 		return $plugins;
 	}
