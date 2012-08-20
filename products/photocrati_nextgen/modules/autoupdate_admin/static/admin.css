@@ -17,9 +17,9 @@ font-size:115%;
 padding:8px 5;
 }
 #update-content .details-alert .message {
-font-weight:bold;
-color:#dd3322;
-line-height:25px;
+font-size:100%;
+color:#553322;
+line-height:30px;
 }
 #update-content .details .log {
 background:#f8f8f8;

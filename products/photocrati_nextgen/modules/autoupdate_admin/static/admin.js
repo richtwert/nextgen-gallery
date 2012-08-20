@@ -380,7 +380,7 @@ jQuery(document).ready(function () {
 				invalidLink += invalidLink.indexOf('?') == -1 ? '?' : '&';
 				invalidLink += 'pclst' + '=' + escape(Photocrati_AutoUpdate_Admin_Settings.request_site);
 				
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount, updateCount, '<br/>') + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary" target="_blank">' + textList['updates_license_get'] + '</a></div>');
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_license_invalid'].format(invalidCount, updateCount, '') + '</span> &nbsp; <a href="' + invalidLink + '" class="button-secondary" target="_blank">' + textList['updates_license_get'] + '</a></div>');
 			}
 		
 			if (expiredCount > 0)
@@ -388,7 +388,7 @@ jQuery(document).ready(function () {
 				expiredLink += expiredLink.indexOf('?') == -1 ? '?' : '&';
 				expiredLink += 'pclst' + '=' + escape(Photocrati_AutoUpdate_Admin_Settings.request_site);
 				
-				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount, updateCount, '<br/>') + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary" target="_blank">' + textList['updates_renew'] + '</a></div>');
+				content.append('<div class="details details-alert"><span class="message">' + textList['updates_expired'].format(expiredCount, updateCount, '') + '</span> &nbsp; <a href="' + expiredLink + '" class="button-secondary" target="_blank">' + textList['updates_renew'] + '</a></div>');
 			}
 			
 			if (installCount > 0)
