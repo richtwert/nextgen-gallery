@@ -61,7 +61,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             // The render functions require different processing
             if (!empty($displayed_gallery->display_settings['template']))
             {
-                $params = $this->object->_prepare_legacy_render(
+                $params = $this->object->prepare_legacy_parameters(
                     $images,
                     $displayed_gallery,
                     $slideshow_link,
@@ -87,85 +87,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			$this->object->render_partial("no_images_found");
 		}
 	}
-
-    /**
-     * Prepares the objects necessary for legacy template rendering.
-     *
-     * This function is separated for code clarity.
-     * @param array $images Array of image objects
-     * @param string $slideshow_link Slideshow HTML string
-     * @param string string $piclens_link Piclens HTML string
-     * @param string $pagination Pagination HTML string
-     * @return array
-     */
-    function _prepare_legacy_render($images, $displayed_gallery, $slideshow_link, $piclens_link, $pagination)
-    {
-        $pid = get_query_var('pid');
-        if (!is_numeric($pid) && !empty($pid))
-        {
-            $picture = $this->object
-                            ->get_registry()
-                            ->get_utility('I_Gallery_Image_Mapper')
-                            ->find_first(array('image_slug = %s', '2176305717_7e602fbfbe_o'));
-            $id_field = $picture->id_field;
-            $pid = $picture->$id_field;
-        }
-
-        $picture_list = array();
-        $current_pid = null;
-        foreach ($images as $image) {
-            $new_image = new C_NextGen_Gallery_Image_Wrapper($image);
-            if ($pid == $new_image->id)
-            {
-                $current_pid = $new_image;
-            }
-            $picture_list[] = $new_image;
-        }
-        reset($picture_list);
-        $current_pid = (is_null($current_pid)) ? current($picture_list) : $current_pid;
-        $current_page = (get_the_ID() == FALSE) ? 0 : get_the_ID();
-
-        $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
-        $orig_gallery = $gallery_map->find(current($picture_list)->galleryid);
-        $id_field = $orig_gallery->id_field;
-
-        $gallery = new stdclass;
-        $gallery->ID = $orig_gallery->$id_field;
-        $gallery->show_slideshow = false;
-        $gallery->show_piclens = false;
-        $gallery->name = stripslashes($orig_gallery->name);
-        $gallery->title = stripslashes($orig_gallery->title);
-        $gallery->description = html_entity_decode(stripslashes($orig_gallery->galdesc));
-        $gallery->pageid = $orig_gallery->pageid;
-        $gallery->anchor = 'ngg-gallery-' . $orig_gallery->$id_field . '-' . $current_page;
-        $gallery->displayed_gallery = &$displayed_gallery;
-        $gallery->columns = intval($displayed_gallery->display_settings['number_of_columns']);
-        $gallery->imagewidth = ($gallery->columns > 0) ? 'style="width:' . floor(100/$gallery->columns) . '%;"' : '';
-
-        if (is_integer($gallery->ID)) {
-            if ($displayed_gallery->display_settings['show_slideshow_link']) {
-                $gallery->show_slideshow = TRUE;
-                $gallery->slideshow_link = $slideshow_link; // $nggRewrite->get_permalink(array ( 'show' => 'slide') );
-                $gallery->slideshow_link_text = $displayed_gallery->display_settings['slideshow_text_link'];
-            }
-
-            if ($displayed_gallery->display_settings['show_piclens_link']) {
-                $gallery->show_piclens = true;
-                $gallery->piclens_link = $piclens_link;
-                $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
-            }
-        }
-        $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
-
-        return array(
-            'pagination' => $pagination,
-            'gallery' => $gallery,
-            'images' => $picture_list,
-            'current' => $current_pid,
-            'next' => FALSE,
-            'prev' => FALSE
-        );
-    }
 
 	/**
 	 * Enqueues all static resources required by this display type

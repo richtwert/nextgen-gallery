@@ -5,12 +5,13 @@
  */
 class C_NextGen_Gallery_Image_Wrapper
 {
-    public $_cache;      // cache of retrieved values
-    public $_settings;   // I_NextGen_Settings cache
-    public $_storage;    // I_Gallery_Storage cache
-    public $_galleries;  // cache of I_Gallery_Mapper (plural)
-    public $_orig_image; // original provided image
-    public $_orig_image_id;
+    public $_cache;         // cache of retrieved values
+    public $_settings;      // I_NextGen_Settings cache
+    public $_storage;       // I_Gallery_Storage cache
+    public $_galleries;     // cache of I_Gallery_Mapper (plural)
+    public $_orig_image;    // original provided image
+    public $_orig_image_id; // original image ID
+
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
      *
@@ -53,6 +54,8 @@ class C_NextGen_Gallery_Image_Wrapper
             'permalink' => '',
             'tags'      => '',
         );
+
+        // convert the image to an array and apply the defaults
         $this->_orig_image = $image;
         $image = (array)$image;
         foreach ($defaults as $key => $val) {
@@ -61,9 +64,10 @@ class C_NextGen_Gallery_Image_Wrapper
                 $image[$key] = $val;
             }
         }
+
+        // cache the results
         ksort($image);
         $this->_cache = $image;
-        
         $id_field = $image['id_field'];
         $this->_orig_image_id = $image[$id_field];
     }
