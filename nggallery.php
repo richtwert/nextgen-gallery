@@ -586,10 +586,18 @@ if (!class_exists('nggLoader')) {
 				!(get_user_setting($this->get_notice_flag(), FALSE))) {
 
 				// Register a new script
+				wp_register_style('ngg_social_media', path_join(
+					NGGALLERY_URLPATH,
+					'admin/css/ngg_social_media.css'
+				));
+				wp_register_script('ngg_social_media', path_join(
+					NGGALLERY_URLPATH,
+					'admin/js/ngg_social_media.js'
+				), array('jquery'));
 				wp_register_script('ngg_news_notice', path_join(
 					NGGALLERY_URLPATH,
 					'admin/js/ngg_news_notice.js'
-				), array('wp-pointer'));
+				), array('wp-pointer', 'ngg_social_media'));
 
 				// Get the announcement notice content
 				ob_start();
@@ -603,6 +611,7 @@ if (!class_exists('nggLoader')) {
 				// Display the pointer
 				wp_enqueue_style( 'wp-pointer' );
 				wp_enqueue_script( 'utils' ); // for user settings
+				wp_enqueue_style('ngg_social_media');
 				wp_enqueue_script('ngg_news_notice');
 				wp_localize_script('ngg_news_notice', 'nggAdmin', array(
 					'content'	=>	$content,
