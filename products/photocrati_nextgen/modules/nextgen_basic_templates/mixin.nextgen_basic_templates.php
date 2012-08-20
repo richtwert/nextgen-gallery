@@ -59,7 +59,22 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      */
     function prepare_legacy_parameters($images, $displayed_gallery, $slideshow_link, $piclens_link, $pagination)
     {
-        $pid = get_query_var('pid');
+        // setup
+        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+
+        $nggpage = get_query_var('nggpage');
+        $pageid  = get_query_var('pageid');
+        $pid     = get_query_var('pid');
+
+        $maxElement = $settings->galImages;
+
+        $picture_list = array();
+        $current_pid  = NULL;
+
+        // begin processing
+        $current_page = (get_the_ID() == FALSE) ? 0 : get_the_ID();
+
+        // determine what the "current image" is; used mostly for carousel
         if (!is_numeric($pid) && !empty($pid))
         {
             $picture = $this->object->get_registry()
@@ -69,10 +84,9 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             $pid = $picture->$id_field;
         }
 
-        $picture_list = array();
-        $current_pid = null;
+        // create our new wrappers
         foreach ($images as $image) {
-            $new_image = new C_NextGen_Gallery_Image_Wrapper($image);
+            $new_image = new C_NextGen_Gallery_Image_Wrapper($image, $displayed_gallery);
             if ($pid == $new_image->id)
             {
                 $current_pid = $new_image;
@@ -80,13 +94,49 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             $picture_list[] = $new_image;
         }
         reset($picture_list);
-        $current_pid = (is_null($current_pid)) ? current($picture_list) : $current_pid;
-        $current_page = (get_the_ID() == FALSE) ? 0 : get_the_ID();
 
+        // assign current_pid
+        $current_pid = (is_null($current_pid)) ? current($picture_list) : $current_pid;
+
+        // the entire next chunk is related to 'hidden images' support; I (BOwens) don't think it works ATM
+        if ($maxElement > 0)
+        {
+            if (!is_home() || $pageid == $current_page)
+            {
+                $page = (!empty($nggpage)) ? (int)$nggpage : 1;
+            }
+            else {
+                $page = 1;
+            }
+            $start = $offset = ($page - 1) * $maxElement;
+            if (!$settings->galHiddenImg)
+            {
+                if ($start > 0 )
+                {
+                    array_splice($picture_list, 0, $start);
+                }
+                array_splice($picture_list, $maxElement);
+            }
+        }
+        $index = 0;
+        foreach ($picture_list as $image) {
+            if ($maxElement > 0 && $settings->galHiddenImg)
+            {
+                if (($index < $start) || ($index > ($start + $maxElement -1)) ){
+                    $image->hidden = true;
+                    $tmp = intval($displayed_gallery->display_settings['number_of_columns']);
+                    $image->style  = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
+                }
+                $index++;
+            }
+        }
+
+        // find our gallery to build the new one on
         $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
         $orig_gallery = $gallery_map->find(current($picture_list)->galleryid);
         $id_field = $orig_gallery->id_field;
 
+        // create the 'gallery' object
         $gallery = new stdclass;
         $gallery->ID = $orig_gallery->$id_field;
         $gallery->show_slideshow = false;
@@ -113,6 +163,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
                 $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
             }
         }
+
         $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
         return array(

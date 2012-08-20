@@ -18,8 +18,11 @@ class C_NextGen_Gallery_Image_Wrapper
      * @param object $gallery Individual result from displayed_gallery->get_images()
      * @return void
      */
-    public function __construct($image)
+    public function __construct($image, $displayed_gallery)
     {
+        // for clarity
+        $columns = $displayed_gallery->display_settings['number_of_columns'];
+
         // Public variables
         $defaults = array(
             'errmsg'    => '',    // Error message to display, if any
@@ -51,6 +54,8 @@ class C_NextGen_Gallery_Image_Wrapper
             'pageid'     => 0, // Gallery page ID
             'previewpic' => 0,  // Gallery preview pic
 
+            'style'     => ($columns > 0) ? 'style="width:' . floor(100 / $columns) . '%;"' : '',
+            'hidden'    => FALSE,
             'permalink' => '',
             'tags'      => '',
         );
@@ -125,10 +130,6 @@ class C_NextGen_Gallery_Image_Wrapper
                 $this->_cache['gid'] = $gallery->name;
                 return $this->_cache['gid'];
 
-            case 'hidden':
-                // TODO : how to get this?
-                break;
-
             case 'href':
                 return $this->__get('imageHTML');
             
@@ -179,8 +180,26 @@ class C_NextGen_Gallery_Image_Wrapper
                 return $this->_orig_image_id;
 
             case 'pidlink':
-                // TODO : implement this. nggfunctions.php : 350
-                break;
+                // only needed for carousel template
+                $settings = $this->get_settings();
+                $nggpage = get_query_var('nggpage');
+                $post = &get_post(get_the_ID());
+                $url = trailingslashit(get_permalink($post->ID)) . $settings->permalinkSlug;
+
+                if (!empty($nggpage))
+                {
+                    $url .= '/page-' . $nggpage;
+                }
+
+                if (TRUE == $settings->usePermalinks)
+                {
+                    $url .= '/image/' . $this->__get('slug');
+                }
+                else {
+                    $url .= '/image/' . $this->__get('id');
+                }
+                $this->_cache['pidlink'] = $url;
+                return $this->_cache['pidlink'];
 
             case 'previewpic':
                 $gallery_map = $this->get_gallery($this->__get('galleryid'));
@@ -198,10 +217,6 @@ class C_NextGen_Gallery_Image_Wrapper
                 $gallery = $gallery_map->find($this->__get('galleryid'));
                 $this->_cache['slug'] = $gallery->name;
                 return $this->_cache['slug'];
-
-            case 'style':
-                // TODO : how to get this?
-                break;
 
             case 'tags':
                 $this->_cache['tags'] = wp_get_object_terms($this->__get('id'), 'ngg_tag', 'fields=all');
