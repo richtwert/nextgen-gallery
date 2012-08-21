@@ -3,11 +3,32 @@
 class Mixin_NextGen_Basic_Templates extends Mixin
 {
 
+    /**
+     * Renders 'template' settings field
+     *
+     * @param $display_type
+     * @return mixed
+     */
     function _render_nextgen_basic_templates_template_field($display_type)
     {
+        // add a label to our files listing so the user can make an informed choice
+        $files_available = $this->object->get_available_templates();
+        $files_list = array();
+        foreach ($files_available as $label => $files)
+        {
+            foreach ($files as $file) {
+                $tmp = explode(DIRECTORY_SEPARATOR, $file);
+                $files_list[] = "[{$label}]: " . end($tmp);
+            }
+        }
+        $files_list = json_encode($files_list);
+
+        wp_enqueue_script('jquery-ui-autocomplete');
+
         return $this->object->render_partial(
             'nextgen_basic_templates_settings_template',
             array(
+                'files' => $files_list,
                 'display_type_name' => $display_type->name,
                 'template_label' => _('Template:'),
                 'template' => $display_type->settings['template'],
@@ -16,6 +37,66 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         );
     }
 
+    /**
+     * Returns an array of template storing directories
+     *
+     * @return array Template storing directories
+     */
+    function get_template_directories()
+    {
+        return array(
+            'Overrides' => STYLESHEETPATH . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR,
+            'NextGen' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR
+        );
+    }
+
+    /**
+     * Returns an array of all available template files
+     *
+     * @return array All available template files
+     */
+    function get_available_templates()
+    {
+        $files = array();
+        foreach ($this->object->get_template_directories() as $label => $dir) {
+            $tmp = $this->object->get_templates_from_dir($dir);
+            if ($tmp)
+            {
+                $files[$label] = $tmp;
+            }
+        }
+        return $files;
+    }
+
+    /**
+     * Recursively scans $dir for files ending in .php
+     *
+     * @param string $dir Directory
+     * @return array All php files in $dir
+     */
+    function get_templates_from_dir($dir)
+    {
+        if (!is_dir($dir))
+        {
+            return;
+        }
+        $dir = new RecursiveDirectoryIterator($dir);
+        $iterator = new RecursiveIteratorIterator($dir);
+        $regex_iterator = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+        $files = array();
+        foreach ($regex_iterator as $filename) {
+            $files[] = reset($filename);
+        }
+        return $files;
+    }
+
+    /**
+     * Renders NextGen-Legacy style templates
+     *
+     * @param string $template_name File name
+     * @param array $vars Specially formatted array of parameters
+     * @param bool $callback
+     */
     function legacy_render($template_name, $vars = array(), $callback = false)
     {
         foreach ($vars as $key => $val) {
@@ -24,27 +105,30 @@ class Mixin_NextGen_Basic_Templates extends Mixin
 
         // hook into the render feature to allow other plugins to include templates
         $custom_template = apply_filters('ngg_render_template', false, $template_name);
-
         if (($custom_template != false) && file_exists($custom_template))
         {
             include($custom_template);
+            return;
         }
-        else if (file_exists(STYLESHEETPATH . "/nggallery/{$template_name}.php"))
-        {
-            include (STYLESHEETPATH . "/nggallery/{$template_name}.php");
+
+        $template_name = $template_name . '.php';
+
+        foreach ($this->object->get_template_directories() as $dir) {
+            if (file_exists($dir . DIRECTORY_SEPARATOR . $template_name))
+            {
+                include ($dir . DIRECTORY_SEPARATOR . $template_name);
+                return;
+            }
         }
-        else if (file_exists (NGGALLERY_ABSPATH . "/view/{$template_name}.php"))
-        {
-            include (NGGALLERY_ABSPATH . "/view/{$template_name}.php");
-        }
-        else if ($callback === true)
+
+        if ($callback === true)
         {
             echo "<p>Rendering of template {$template_name}.php failed</p>";
         }
         else {
             // test without the "-template" name one time more
             $template_name = array_shift(explode('-', $template_name , 2));
-            $this->render($template_name, $vars , true);
+            $this->object->legacy_render($template_name, $vars , true);
         }
     }
 
