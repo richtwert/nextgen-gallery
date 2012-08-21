@@ -1,7 +1,7 @@
 <table id="source_configuration">
 	<tr>
 		<td>
-			<label for="attached_gallery_source">
+			<label for="displayed_gallery_source">
 				<?php echo_h($source_label)?>
 			</label>
 		</td>
@@ -11,10 +11,10 @@
 				{{view Ember.Select
 					viewName="select"
 					contentBinding="NggDisplayTab.sources"
-					selectionBinding="NggDisplayTab.attached_gallery.source"
+					selectionBinding="NggDisplayTab.displayed_gallery.source"
 					optionLabelPath="content.title"
 					optionValuePath="content.id"
-					id="attached_gallery_source"
+					id="displayed_gallery_source"
 					prompt="--Select--"
 				}}
 			</script>

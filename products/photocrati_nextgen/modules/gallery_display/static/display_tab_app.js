@@ -52,26 +52,105 @@ var NggDisplayTab = Em.Application.create({
 /************************************************************
 * The associated attached gallery
 */
-NggDisplayTab.attached_gallery				= Em.Object.create({
-   source:			'',
-   container_ids:	[],
+NggDisplayTab.displayed_gallery				= Em.Object.create({
+	source:			'',
+	containers:		[],
+	entities:		[],
 
-   /**
-	* When the source is changed, we add the associated template
-	* to the DOM
-	*/
-   _sourceChanged:	Ember.observer(function(){
-		var view = NggDisplayTab.get('attached_source_view');
-		if (view) view.remove();
-		var source = this.get('source');
-		if (source) {
-			var view_name = source.get('id')+'_source_view';
-			var view = NggDisplayTab.get(view_name);
-			view.set('templateName', view_name);
-			NggDisplayTab.set('attached_source_view', view);
-			view.appendTo('#source_configuration');
+	/**
+	 * Returns the ID of the selected source
+	 */
+	source_id:		function(){
+		return this.get('source').get('id');
+	}.property('source'),
+
+
+	/**
+	 * Returns an array of container ids
+	 */
+	container_ids:	function(){
+		var ids = [];
+		this.get('containers').forEach(function(item){
+			ids.push(item.get('id'));
+		});
+		return ids;
+	}.property('containers'),
+
+
+	/**
+	 * Returns an array of entity ids
+	 */
+	entity_ids:		function(){
+		var ids = [];
+		this.get('entities').forEach(function(item){
+			ids.push(item.get('id'));
+		});
+		return ids;
+	}.property('entities'),
+
+
+	/**
+	 * When the source is changed, we add the associated template
+	 * to the DOM
+	 */
+	_source_Changed:	Ember.observer(function(){
+		 var view = NggDisplayTab.get('attached_source_view');
+		 if (view) view.remove();
+		 var source = this.get('source');
+		 if (source) {
+			 var view_name = source.get('id')+'_source_view';
+			 var view = NggDisplayTab.get(view_name);
+			 view.set('templateName', view_name);
+			 NggDisplayTab.set('attached_source_view', view);
+			 view.appendTo('#source_configuration');
+		 }
+	}).observes('source'),
+
+	/**
+	 * When the container id is changed, we update the list
+	 * of images or albums we're displaying
+	 */
+	_container_ids_Changed: Ember.observer(function(){
+		if (this.get('source').get('id') == 'galleries' && this.get('containers').length > 0) {
+			this.fetch_gallery_images()
 		}
-   }).observes('source')
+	}).observes('containers'),
+
+	/**
+	 * Fetches images from a selected list of galleries
+	 */
+	fetch_gallery_images:	function(offset, limit){
+
+		// Set default parameters
+		if (typeof limit != "number") {
+			offset	= 0;
+			limit	= 0;
+		}
+
+		// Create request
+		var self = this;
+		debugger
+		var request = {
+			action:	'get_displayed_gallery_images',
+			displayed_gallery: {
+				source:			self.get('source_id'),
+				container_ids:	self.get('container_ids'),
+				entity_ids:		self.get('entity_ids')
+			}
+		};
+		jQuery.post(photocrati_ajax_url, request, function(response){
+		if (typeof response != 'object') response = JSON.parse(response);
+			console.log(response);
+			// If no error...
+			if (typeof response.error != 'undefined') {
+				response.images.forEach(function(item){
+					var image = Ember.Object.create(item);
+					image.set('id', image[image.get('id_field')]);
+					self.get('entities').pushObject(image);
+				});
+			}
+		});
+	}
 });
 
 
@@ -94,10 +173,9 @@ NggDisplayTab.galleries_source_view		= Ember.View.create({
 			// chosen widget doesn't do this itself yet.
 			// See: https://github.com/harvesthq/chosen/issues/533
 			jQuery('#existing_galleries').bind('liszt:updated', function(){
-				 var $this = jQuery(this);
-				 jQuery('#existing_galleries_chzn').width($this.width());
-				 jQuery('#existing_galleries_chzn .search-field input').width($this.width());
-				 jQuery('#existing_galleries_chzn .chzn-drop').width($this.width()-2);
+				 var width = jQuery('#existing_galleries_chzn').width(400).width();
+				 jQuery('#existing_galleries_chzn .search-field input').width(width);
+				 jQuery('#existing_galleries_chzn .chzn-drop').width(width-2);
 
 				 // Update the height of the accordion
 				 var dropdown_height = jQuery('#existing_galleries_chzn .chzn-choices').height();

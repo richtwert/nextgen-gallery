@@ -9,7 +9,7 @@
 				{{view Ember.Select
 					viewName="select"
 					contentBinding="NggDisplayTab.galleries"
-					selectionBinding="NggDisplayTab.attached_gallery.container_ids"
+					selectionBinding="NggDisplayTab.displayed_gallery.containers"
 					optionLabelPath="content.title"
 					optionValuePath="content.id"
 					multiple="multiple"

@@ -53,4 +53,27 @@ class A_Attach_To_Post_Ajax extends Mixin
 
 		return $response;
 	}
+
+	/**
+	 * Gets images for a displayed gallery (attached gallery)
+	 */
+	function get_displayed_gallery_images_action()
+	{
+		$response = array();
+		if (($params = $this->object->param('displayed_gallery'))) {
+			$limit	 = $this->object->param('limit');
+			$offset  = $this->object->param('offset');
+			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+			$displayed_gallery = $factory->create('displayed_gallery');
+			foreach ($params as $key => $value) $displayed_gallery->$key = $value;
+			$response['limit'] = $limit = $limit ? $limit : 0;
+			$response['offset'] = $offset = $offset ? $offset : 0;
+			$response['count']	= $displayed_gallery->get_image_count();
+			$response['images'] = $displayed_gallery->get_images($limit,$offset);
+		}
+		else {
+			$response['error'] = _('Missing parameters');
+		}
+		return $response;
+	}
 }
