@@ -8,6 +8,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function initialize()
 	{
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
+        $this->add_mixin('Mixin_NextGen_Basic_Templates');
 	}
 
 	/**
@@ -41,39 +42,46 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// Create pagination
 			if ($images_per_page) {
 				$pagination = new nggNavigation;
-				$pagination = $pagination->create_navigation(
-					$current_page, $total, $images_per_page
-				);
+				$pagination = $pagination->create_navigation($current_page, $total, $images_per_page);
 			}
 
-			// Determine what the slideshow link would be
-			// TODO: Figure this out
+			// Determine what the slideshow link would be. TODO: Figure this out
 			$slideshow_link = 'http://www.google.ca';
 
 			// Determine what the piclens link would be
 			if ($displayed_gallery->display_settings['show_piclens_link']) {
 				$params = json_encode($displayed_gallery->get_entity());
-				$mediarss_link	= real_site_url('/mediarss?source=displayed_gallery&params='.$params);
-				$piclens_link	= "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
+				$mediarss_link = real_site_url('/mediarss?source=displayed_gallery&params='.$params);
+				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
 			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility(
-				'I_Gallery_Storage'
-			);
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
-			$params = $displayed_gallery->display_settings;
-			$params['storage']				= &$storage;
-			$params['images']				= &$images;
-			$params['displayed_gallery_id'] = $displayed_gallery->id();
-			$params['current_page']			= $current_page;
-			$params['slideshow_link']		= $slideshow_link;
-			$params['piclens_link']			= $piclens_link;
-			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
-			$params['pagination']			= $pagination;
-
-			$this->object->render_partial('nextgen_basic_thumbnails', $params);
-
+            // The render functions require different processing
+            if (!empty($displayed_gallery->display_settings['template']))
+            {
+                $params = $this->object->prepare_legacy_parameters(
+                    $images,
+                    $displayed_gallery,
+                    $pagination,
+                    $slideshow_link,
+                    $piclens_link
+                );
+                $this->object->legacy_render($displayed_gallery->display_settings['template'], $params);
+            }
+            else {
+                $params = $displayed_gallery->display_settings;
+                $params['storage']				= &$storage;
+                $params['images']				= &$images;
+                $params['displayed_gallery_id'] = $displayed_gallery->id();
+                $params['current_page']			= $current_page;
+                $params['slideshow_link']		= $slideshow_link;
+                $params['piclens_link']			= $piclens_link;
+                $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
+                $params['pagination']			= $pagination;
+                $this->object->render_partial('nextgen_basic_thumbnails', $params);
+            }
 		}
 		else {
 			$this->object->render_partial("no_images_found");
@@ -220,7 +228,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_slideshow_link_text',
             'nextgen_basic_thumbnails_piclens_link_text',
             'nextgen_basic_thumbnails_show_slideshow_link',
-            'nextgen_basic_thumbnails_show_piclens_link'
+            'nextgen_basic_thumbnails_show_piclens_link',
+            'nextgen_basic_templates_template'
 		);
 	}
 }
