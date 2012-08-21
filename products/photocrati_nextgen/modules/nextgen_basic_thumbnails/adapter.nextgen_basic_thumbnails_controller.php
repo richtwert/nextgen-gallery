@@ -61,14 +61,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             // The render functions require different processing
             if (!empty($displayed_gallery->display_settings['template']))
             {
-					$params = $this->object->prepare_legacy_parameters(
+                $params = $this->object->prepare_legacy_parameters(
                     $images,
                     $displayed_gallery,
+                    $pagination,
                     $slideshow_link,
-					$piclens_link,
-                    $pagination
+                    $piclens_link
                 );
-                $this->object->legacy_render($displayed_gallery->display_settings['template'], $params, False);
+                $this->object->legacy_render($displayed_gallery->display_settings['template'], $params);
             }
             else {
                 $params = $displayed_gallery->display_settings;

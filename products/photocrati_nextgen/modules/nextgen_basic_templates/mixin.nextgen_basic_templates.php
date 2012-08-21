@@ -2,6 +2,34 @@
 
 class Mixin_NextGen_Basic_Templates extends Mixin
 {
+    /**
+     * Adds required JS libraries for the admin side
+     */
+    function initialize()
+    {
+        $this->object->add_post_hook(
+            'enqueue_backend_resources',
+            'Enqueue Template Settings Resources for the Backend',
+            get_class($this),
+            '_enqueue_resources_for_settings'
+        );
+    }
+
+    /**
+     * Enqueues resources needed for template settings display
+     *
+     * @param type $displayed_gallery
+     */
+    function _enqueue_resources_for_settings($displayed_gallery)
+    {
+        wp_enqueue_script(
+            'ngg_template_settings',
+            PHOTOCRATI_GALLERY_MODULE_URL . DIRECTORY_SEPARATOR
+                . basename(__DIR__) . DIRECTORY_SEPARATOR . 'js'
+                . DIRECTORY_SEPARATOR . 'ngg_template_settings.js',
+            array('jquery-ui-autocomplete') // deps
+        );
+    }
 
     /**
      * Renders 'template' settings field
@@ -22,8 +50,6 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             }
         }
         $files_list = json_encode($files_list);
-
-        wp_enqueue_script('jquery-ui-autocomplete');
 
         return $this->object->render_partial(
             'nextgen_basic_templates_settings_template',
@@ -55,15 +81,13 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      *
      * @return array All available template files
      */
-    function get_available_templates()
+    function get_available_templates($prefix = FALSE)
     {
         $files = array();
         foreach ($this->object->get_template_directories() as $label => $dir) {
-            $tmp = $this->object->get_templates_from_dir($dir);
-            if ($tmp)
-            {
-                $files[$label] = $tmp;
-            }
+            $tmp = $this->object->get_templates_from_dir($dir, $prefix);
+            if (!$tmp) { continue; }
+            $files[$label] = $tmp;
         }
         return $files;
     }
@@ -74,19 +98,41 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      * @param string $dir Directory
      * @return array All php files in $dir
      */
-    function get_templates_from_dir($dir)
+    function get_templates_from_dir($dir, $prefix = FALSE)
     {
         if (!is_dir($dir))
         {
             return;
         }
+
         $dir = new RecursiveDirectoryIterator($dir);
         $iterator = new RecursiveIteratorIterator($dir);
-        $regex_iterator = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+
+        // convert single-item arrays to string
+        if (is_array($prefix) && count($prefix) <= 1)
+        {
+            $prefix = end($prefix);
+        }
+
+        // we can filter results by allowing a set of prefixes, one prefix, or by showing all available files
+        if (is_array($prefix))
+        {
+            $str = implode('|', $prefix);
+            $regex_iterator = new RegexIterator($iterator, "/({$str})-.+\.php$/i", RecursiveRegexIterator::GET_MATCH);
+        }
+        elseif (is_string($prefix))
+        {
+            $regex_iterator = new RegexIterator($iterator, "/{$prefix}-.+\.php$/i", RecursiveRegexIterator::GET_MATCH);
+        }
+        else {
+            $regex_iterator = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+        }
+
         $files = array();
         foreach ($regex_iterator as $filename) {
             $files[] = reset($filename);
         }
+
         return $files;
     }
 
@@ -97,7 +143,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      * @param array $vars Specially formatted array of parameters
      * @param bool $callback
      */
-    function legacy_render($template_name, $vars = array(), $callback = false)
+    function legacy_render($template_name, $vars = array())
     {
         foreach ($vars as $key => $val) {
             $$key = $val;
@@ -121,15 +167,9 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             }
         }
 
-        if ($callback === true)
-        {
-            echo "<p>Rendering of template {$template_name}.php failed</p>";
-        }
-        else {
-            // test without the "-template" name one time more
-            $template_name = array_shift(explode('-', $template_name , 2));
-            $this->object->legacy_render($template_name, $vars , true);
-        }
+        // test without the "-template" name one time more
+        $template_name = array_shift(explode('-', $template_name , 2));
+        $this->object->legacy_render($template_name, $vars);
     }
 
     /**
@@ -141,7 +181,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      * @param string $pagination Pagination HTML string
      * @return array
      */
-    function prepare_legacy_parameters($images, $displayed_gallery, $slideshow_link, $piclens_link, $pagination)
+    function prepare_legacy_parameters($images, $displayed_gallery, $pagination, $slideshow_link = False, $piclens_link = False)
     {
         // setup
         $settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
@@ -156,7 +196,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
 
         $maxElement = $settings->galImages;
 
-        $picture_list = array();
+        $picture_list = new C_NextGen_Gallery_Image_Wrapper_Collection();
         $current_pid  = NULL;
 
         // begin processing
@@ -198,9 +238,9 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             {
                 if ($start > 0 )
                 {
-                    array_splice($picture_list, 0, $start);
+                    array_splice($picture_list->container, 0, $start);
                 }
-                array_splice($picture_list, $maxElement);
+                array_splice($picture_list->container, $maxElement);
             }
         }
         $index = 0;
@@ -250,9 +290,10 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
         return array(
+            'registry' => C_Component_Registry::get_instance(),
             'pagination' => $pagination,
             'gallery' => $gallery,
-            'images' => $picture_list,
+            'images' => $picture_list->container,
             'current' => $current_pid,
             'next' => $pagination->next,
             'prev' => $pagination->prev

@@ -297,18 +297,17 @@ class C_NextGen_Gallery_Image_Wrapper
     }
 
     /**
-     * Retrieves and caches an I_Gallery_Mapper instance for this gallery id
+     * Retrieves I_Gallery_Mapper instance.
      *
      * @param int $gallery_id Gallery ID
      * @return mixed
      */
     function get_gallery($gallery_id)
     {
-        if (is_null($this->_galleries[$gallery_id]))
+        if (isset($this->container) && method_exists($this->container, 'get_gallery'))
         {
-            $this->_galleries[$gallery_id] = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
+            return $this->container->get_gallery($gallery_id);
         }
-        return $this->_galleries[$gallery_id];
     }
 
     /**
