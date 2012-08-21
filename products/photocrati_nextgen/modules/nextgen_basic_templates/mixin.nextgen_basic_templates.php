@@ -144,7 +144,11 @@ class Mixin_NextGen_Basic_Templates extends Mixin
     function prepare_legacy_parameters($images, $displayed_gallery, $slideshow_link, $piclens_link, $pagination)
     {
         // setup
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$image_map	  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$gallery_map  = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
+		$image_key	  = $image_map->get_primary_key_column();
+		$gallery_key  = $gallery_map->get_primary_key_column();
 
         $nggpage = get_query_var('nggpage');
         $pageid  = get_query_var('pageid');
@@ -161,17 +165,14 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         // determine what the "current image" is; used mostly for carousel
         if (!is_numeric($pid) && !empty($pid))
         {
-            $picture = $this->object->get_registry()
-                                    ->get_utility('I_Gallery_Image_Mapper')
-                                    ->find_first(array('image_slug = %s', $pid));
-            $id_field = $picture->id_field;
-            $pid = $picture->$id_field;
+            $picture = $image_map->find_first(array('image_slug = %s', $pid));
+            $pid = $picture->$image_key;
         }
 
         // create our new wrappers
         foreach ($images as $image) {
             $new_image = new C_NextGen_Gallery_Image_Wrapper($image, $displayed_gallery);
-            if ($pid == $new_image->id)
+            if ($pid == $new_image->$image_key)
             {
                 $current_pid = $new_image;
             }
@@ -216,20 +217,18 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         }
 
         // find our gallery to build the new one on
-        $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
         $orig_gallery = $gallery_map->find(current($picture_list)->galleryid);
-        $id_field = $orig_gallery->id_field;
 
         // create the 'gallery' object
         $gallery = new stdclass;
-        $gallery->ID = $orig_gallery->$id_field;
-        $gallery->show_slideshow = false;
-        $gallery->show_piclens = false;
+        $gallery->ID = $orig_gallery->$gallery_key;
+        $gallery->show_slideshow = FALSE;
+        $gallery->show_piclens = FALSE;
         $gallery->name = stripslashes($orig_gallery->name);
         $gallery->title = stripslashes($orig_gallery->title);
         $gallery->description = html_entity_decode(stripslashes($orig_gallery->galdesc));
         $gallery->pageid = $orig_gallery->pageid;
-        $gallery->anchor = 'ngg-gallery-' . $orig_gallery->$id_field . '-' . $current_page;
+        $gallery->anchor = 'ngg-gallery-' . $orig_gallery->$gallery_key . '-' . $current_page;
         $gallery->displayed_gallery = &$displayed_gallery;
         $gallery->columns = intval($displayed_gallery->display_settings['number_of_columns']);
         $gallery->imagewidth = ($gallery->columns > 0) ? 'style="width:' . floor(100 / $gallery->columns) . '%;"' : '';
