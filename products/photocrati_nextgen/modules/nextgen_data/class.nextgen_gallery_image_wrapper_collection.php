@@ -45,7 +45,7 @@ class C_NextGen_Gallery_Image_Wrapper_Collection implements ArrayAccess
      */
     public function get_gallery($gallery_id)
     {
-        if (is_null($this->galleries[$gallery_id]))
+        if (!isset($this->galleries[$gallery_id]) || is_null($this->galleries[$gallery_id]))
         {
             $this->galleries[$gallery_id] = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
         }

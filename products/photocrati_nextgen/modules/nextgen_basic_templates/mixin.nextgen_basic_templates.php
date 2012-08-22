@@ -157,7 +157,10 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             return;
         }
 
-        $template_name = $template_name . '.php';
+        if ('.php' != substr($template_name, -4))
+        {
+            $template_name = $template_name . '.php';
+        }
 
         foreach ($this->object->get_template_directories() as $dir) {
             if (file_exists($dir . DIRECTORY_SEPARATOR . $template_name))
@@ -184,18 +187,14 @@ class Mixin_NextGen_Basic_Templates extends Mixin
     function prepare_legacy_parameters($images, $displayed_gallery, $pagination, $slideshow_link = False, $piclens_link = False)
     {
         // setup
-        $settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$image_map	  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 		$gallery_map  = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
 		$image_key	  = $image_map->get_primary_key_column();
 		$gallery_key  = $gallery_map->get_primary_key_column();
+        $pid          = get_query_var('pid');
 
-        $nggpage = get_query_var('nggpage');
-        $pageid  = get_query_var('pageid');
-        $pid     = get_query_var('pid');
-
-        $maxElement = $settings->galImages;
-
+        // because picture_list implements ArrayAccess any array-specific actions must be taken on
+        // $picture_list->container or they won't do anything
         $picture_list = new C_NextGen_Gallery_Image_Wrapper_Collection();
         $current_pid  = NULL;
 
@@ -218,46 +217,21 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             }
             $picture_list[] = $new_image;
         }
-        reset($picture_list);
+        reset($picture_list->container);
 
         // assign current_pid
-        $current_pid = (is_null($current_pid)) ? current($picture_list) : $current_pid;
+        $current_pid = (is_null($current_pid)) ? current($picture_list->container) : $current_pid;
 
-        // the entire next chunk is related to 'hidden images' support; I (BOwens) don't think it works ATM
-        if ($maxElement > 0)
-        {
-            if (!is_home() || $pageid == $current_page)
+        foreach ($picture_list as &$image) {
+            if ($image->hidden)
             {
-                $page = (!empty($nggpage)) ? (int)$nggpage : 1;
-            }
-            else {
-                $page = 1;
-            }
-            $start = $offset = ($page - 1) * $maxElement;
-            if (!$settings->galHiddenImg)
-            {
-                if ($start > 0 )
-                {
-                    array_splice($picture_list->container, 0, $start);
-                }
-                array_splice($picture_list->container, $maxElement);
-            }
-        }
-        $index = 0;
-        foreach ($picture_list as $image) {
-            if ($maxElement > 0 && $settings->galHiddenImg)
-            {
-                if (($index < $start) || ($index > ($start + $maxElement -1)) ){
-                    $image->hidden = true;
-                    $tmp = intval($displayed_gallery->display_settings['number_of_columns']);
-                    $image->style  = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
-                }
-                $index++;
+                $tmp = $displayed_gallery->display_settings['number_of_columns'];
+                $image->style = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
             }
         }
 
         // find our gallery to build the new one on
-        $orig_gallery = $gallery_map->find(current($picture_list)->galleryid);
+        $orig_gallery = $gallery_map->find(current($picture_list->container)->galleryid);
 
         // create the 'gallery' object
         $gallery = new stdclass;
