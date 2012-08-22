@@ -215,6 +215,21 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         ), True);
     }
 
+    /**
+     * Renders the show_piclens_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_thumbnails_hidden_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_hidden', array(
+            'display_type_name' => $display_type->name,
+            'hidden_label' => _('Add Hidden Images:'),
+            'hidden_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.). Note : This increases page load.'),
+            'hidden' => $display_type->settings['galHiddenImg']
+        ), True);
+    }
 
     /**
 	 * Returns a list of fields to render on the settings page
@@ -229,6 +244,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_piclens_link_text',
             'nextgen_basic_thumbnails_show_slideshow_link',
             'nextgen_basic_thumbnails_show_piclens_link',
+            'nextgen_basic_thumbnails_hidden',
             'nextgen_basic_templates_template'
 		);
 	}
