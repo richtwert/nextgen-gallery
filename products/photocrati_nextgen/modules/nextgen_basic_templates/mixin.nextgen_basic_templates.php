@@ -187,17 +187,11 @@ class Mixin_NextGen_Basic_Templates extends Mixin
     function prepare_legacy_parameters($images, $displayed_gallery, $pagination, $slideshow_link = False, $piclens_link = False)
     {
         // setup
-        $settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$image_map	  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 		$gallery_map  = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
 		$image_key	  = $image_map->get_primary_key_column();
 		$gallery_key  = $gallery_map->get_primary_key_column();
-
-        $nggpage = get_query_var('nggpage');
-        $pageid  = get_query_var('pageid');
-        $pid     = get_query_var('pid');
-
-        $maxElement = $settings->galImages;
+        $pid          = get_query_var('pid');
 
         // because picture_list implements ArrayAccess any array-specific actions must be taken on
         // $picture_list->container or they won't do anything
@@ -228,28 +222,11 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         // assign current_pid
         $current_pid = (is_null($current_pid)) ? current($picture_list->container) : $current_pid;
 
-        // the entire next chunk is related to 'hidden images' support; I (BOwens) don't think it works ATM
-        if ($maxElement > 0)
-        {
-            if (!is_home() || $pageid == $current_page)
+        foreach ($picture_list as &$image) {
+            if ($image->hidden)
             {
-                $page = (!empty($nggpage)) ? (int)$nggpage : 1;
-            }
-            else {
-                $page = 1;
-            }
-            $start = $offset = ($page - 1) * $maxElement;
-        }
-        $index = 0;
-        foreach ($picture_list as $image) {
-            if ($maxElement > 0 && $settings->galHiddenImg)
-            {
-                if (($index < $start) || ($index > ($start + $maxElement -1)) ){
-                    $image->hidden = true;
-                    $tmp = intval($displayed_gallery->display_settings['number_of_columns']);
-                    $image->style  = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
-                }
-                $index++;
+                $tmp = $displayed_gallery->display_settings['number_of_columns'];
+                $image->style = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
             }
         }
 

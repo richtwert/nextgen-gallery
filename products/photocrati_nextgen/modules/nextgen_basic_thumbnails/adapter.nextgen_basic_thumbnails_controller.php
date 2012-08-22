@@ -18,14 +18,42 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function index($displayed_gallery)
 	{
-		// Get the images to be displayed
-		$current_page = get_query_var('nggpage');
-		if (!$current_page) $current_page = 1;
-		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
-		$offset = $images_per_page * ($current_page-1);
-		$images = $displayed_gallery->get_images($images_per_page, $offset);
-		$total	= $displayed_gallery->get_image_count();
-		$pagination = FALSE;
+        $display_settings = $displayed_gallery->display_settings;
+        $current_page = get_query_var('nggpage');
+        if (!$current_page) $current_page = 1;
+        $offset = $display_settings['images_per_page'] * ($current_page - 1);
+        $pagination = FALSE;
+
+        // this is always returning 0 at the moment
+        // $total = $displayed_gallery->get_image_count();
+        $total = 9999;
+
+        // Get the images to be displayed
+        if ($display_settings['images_per_page'] > 0 && $display_settings['galHiddenImg'])
+        {
+            // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
+            // as hidden (style="display: none")
+            $images = $displayed_gallery->get_images($total);
+            $i = 0;
+            foreach ($images as &$image) {
+                if ($i < $display_settings['images_per_page'] * ($current_page - 1))
+                {
+                    $image->hidden = TRUE;
+                }
+                elseif ($i >= $display_settings['images_per_page'] * ($current_page))
+                {
+                    $image->hidden = TRUE;
+                }
+                $i++;
+            }
+        }
+        else {
+            // just display the images for this page, as normal
+            $images = $displayed_gallery->get_images($display_settings['images_per_page'], $offset);
+        }
+
+        // remove when the total count is fixed
+        $total = count($images);
 
 		// Are there images to display?
 		if ($images) {
@@ -40,16 +68,18 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			***/
 
 			// Create pagination
-			if ($images_per_page) {
+			if ($display_settings['images_per_page']) {
 				$pagination = new nggNavigation;
-				$pagination = $pagination->create_navigation($current_page, $total, $images_per_page);
+				$pagination = $pagination->create_navigation($current_page,
+                                                             $total,
+                                                             $display_settings['images_per_page']);
 			}
 
 			// Determine what the slideshow link would be. TODO: Figure this out
 			$slideshow_link = 'http://www.google.ca';
 
 			// Determine what the piclens link would be
-			if ($displayed_gallery->display_settings['show_piclens_link']) {
+			if ($display_settings['show_piclens_link']) {
 				$params = json_encode($displayed_gallery->get_entity());
 				$mediarss_link = real_site_url('/mediarss?source=displayed_gallery&params='.$params);
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
@@ -59,7 +89,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
             // The render functions require different processing
-            if (!empty($displayed_gallery->display_settings['template']))
+            if (!empty($display_settings['template']))
             {
                 $params = $this->object->prepare_legacy_parameters(
                     $images,
@@ -68,10 +98,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $slideshow_link,
                     $piclens_link
                 );
-                $this->object->legacy_render($displayed_gallery->display_settings['template'], $params);
+                $this->object->legacy_render($display_settings['template'], $params);
             }
             else {
-                $params = $displayed_gallery->display_settings;
+                $params = $display_settings;
                 $params['storage']				= &$storage;
                 $params['images']				= &$images;
                 $params['displayed_gallery_id'] = $displayed_gallery->id();
