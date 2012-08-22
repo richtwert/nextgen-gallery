@@ -60,7 +60,12 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	/**
 	 * Returns the ID of the selected source
 	 */
-	source_id:		function(){
+	source_id:			function(){
+		var source = this.get('source');
+		if (source)
+			return source.get('id');
+		else
+			return null;
 		return this.get('source').get('id');
 	}.property('source'),
 
@@ -68,7 +73,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	/**
 	 * Returns an array of container ids
 	 */
-	container_ids:	function(){
+	container_ids:		function(){
 		var ids = [];
 		this.get('containers').forEach(function(item){
 			ids.push(item.get('id'));
@@ -78,9 +83,39 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 
 
 	/**
+	 * Returns a string of container titles
+	 */
+	container_titles:	function(){
+		var titles = this.get('containers').join(', ');
+		if (titles) {
+			var index = titles.lastIndexOf(', ');
+			titles = titles.slice(0, index);
+			titles += ", and "+this.get('containers')[0];
+			return titles;
+		}
+		return titles;
+	}.property('containers'),
+
+
+
+	/** Returns the name of the entity types associated with this
+	 *  attached gallery
+	 */
+	entity_type:		function(){
+		$retval = 'images';
+		switch(this.get('source_id')) {
+			case 'album':
+			case 'albums':
+				$retval = 'galleries';
+				break;
+		}
+		return $retval;
+	}.property('source'),
+
+	/**
 	 * Returns an array of entity ids
 	 */
-	entity_ids:		function(){
+	entity_ids:			function(){
 		var ids = [];
 		this.get('entities').forEach(function(item){
 			ids.push(item.get('id'));
@@ -96,9 +131,9 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	_source_Changed:	Ember.observer(function(){
 		 var view = NggDisplayTab.get('attached_source_view');
 		 if (view) view.remove();
-		 var source = this.get('source');
-		 if (source) {
-			 var view_name = source.get('id')+'_source_view';
+		 var source_id = this.get('source_id');
+		 if (source_id) {
+			 var view_name = source_id+'_source_view';
 			 var view = NggDisplayTab.get(view_name);
 			 view.set('templateName', view_name);
 			 NggDisplayTab.set('attached_source_view', view);
@@ -106,15 +141,19 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		 }
 	}).observes('source'),
 
+
 	/**
 	 * When the container id is changed, we update the list
 	 * of images or albums we're displaying
 	 */
 	_container_ids_Changed: Ember.observer(function(){
-		if (this.get('source').get('id') == 'galleries' && this.get('containers').length > 0) {
+		if (this.get('source_id') != 'albums' && this.get('containers').length > 0) {
 			this.fetch_gallery_images()
+			NggDisplayTab.preview_view.remove();
+			NggDisplayTab.preview_view.appendTo('#preview_tab_content');
 		}
 	}).observes('containers'),
+
 
 	/**
 	 * Fetches images from a selected list of galleries
@@ -129,7 +168,6 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 
 		// Create request
 		var self = this;
-		debugger
 		var request = {
 			action:	'get_displayed_gallery_images',
 			displayed_gallery: {
@@ -139,15 +177,23 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			}
 		};
 		jQuery.post(photocrati_ajax_url, request, function(response){
-		if (typeof response != 'object') response = JSON.parse(response);
-			console.log(response);
+			if (typeof response != 'object') response = JSON.parse(response);
+
 			// If no error...
-			if (typeof response.error != 'undefined') {
+			if (typeof response.error == 'undefined') {
+
 				response.images.forEach(function(item){
 					var image = Ember.Object.create(item);
 					image.set('id', image[image.get('id_field')]);
 					self.get('entities').pushObject(image);
 				});
+
+				// If we haven't retrieved all of the images,
+				// and the "source" selected is still "galleries",
+				// then we continue to fetch galleries
+				if (response['offset'] < response['total'] && self.get('source_id') != 'albums') {
+					self.fetch_gallery_images(response['offset']+response['limit'], response['limit']);
+				}
 			}
 		});
 	}
@@ -160,6 +206,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
  */
 NggDisplayTab.galleries_source_view		= Ember.View.create({
 	tagName:			'tbody',
+	source_idBinding:	'NggDisplayTab.displayed_gallery.source_id',
 	galleriesBinding:	'NggDisplayTab.galleries',
 	galleriesChanged:	function(){
 		// flush the RunLoop so changes are written to DOM?
@@ -221,8 +268,8 @@ NggDisplayTab.galleries_source_view		= Ember.View.create({
 			// If we haven't retrieved all of the galleries,
 			// and the "source" selected is still "galleries",
 			// then we continue to fetch galleries
-			if (response['offset'] < response['total']) {
-				this.fetch_galleries(response['offset']+response['limit'], response['limit']);
+			if (response['offset'] < response['total'] && self.get('source_id') == 'galleries') {
+				self.fetch_galleries(response['offset']+response['limit'], response['limit']);
 			}
 		});
 	},
@@ -238,4 +285,13 @@ NggDisplayTab.galleries_source_view		= Ember.View.create({
 		// Prettify the dropdown using the chosen library
 		var chosen = jQuery('.pretty-dropdown').chosen();
 	}
+});
+
+
+/**
+ * Represents the view for displaying the image/gallery preview area
+ */
+NggDisplayTab.preview_view = Ember.View.create({
+	templateName:		'preview_area',
+	entitiesBinding:	'NggDisplayTab.displayed_gallery.entities'
 });

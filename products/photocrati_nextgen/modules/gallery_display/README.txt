@@ -88,11 +88,42 @@ A display type should always do the following:
 		For an example, see "A_NextGen_Basic_Thumbnails".
 
 	3.	Define an adapter for the C_Display_Type_Controller class..
-		MIKE: Add more details here.
+
+		There are several important methods that each display type must override. 
+		=> index(), details the logic of how to render the display type on the front-end
+		
+		=> enqueue_frontend_resources(), used to enqueue any static resources (CSS or JS) using
+		   wp_enqueue_script() / wp_enqueue_style() for the front-end
+		
+		=> get_field_names(), returns a list of field names to render for the settings of
+		   the display tab. This settings tab is used both on the "Display Settings Page" as
+		   well in the "Display Settings Tab" of the "Attach to Post" interface. For each
+		   field name in the returned array, the C_Display_Type_Controller will try to execute
+		   a corresponding method in the format "_render_[field_name]_field($display_type)".
+		   For example, if you defined the following:
+		
+				function get_field_names()
+				{
+					return array(
+						'foobar'
+					);
+				}
+		
+			Then the C_Display_Type_Controller will try to execute: 
+			$this->_render_foobar_field($display_type);
+		   
+		
+		=> enqueue_backend_resources(), used to enqueue any used to enqueue any static 
+		   resources (CSS or JS) using wp_enqueue_script() / wp_enqueue_style() for the
+		   backend (settings)
 
 	4.	Define an adapter for the C_NextGen_Activator class.
-		MIKE: Add more details here.
 
+		The C_NextGen_Activator's install() method gets called when the WordPress plugin is
+		activated. Each display type needs an adapter that adds a post hook to the install()
+		method that will install the new display type, and perform any other initialization
+		for the module required. See adapter.nextgen_basic_thumbnails_activation.php for
+		an example.
 
 
 == Display Settings Page ==

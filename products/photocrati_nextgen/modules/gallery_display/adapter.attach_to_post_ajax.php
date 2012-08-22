@@ -66,10 +66,16 @@ class A_Attach_To_Post_Ajax extends Mixin
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create('displayed_gallery');
 			foreach ($params as $key => $value) $displayed_gallery->$key = $value;
-			$response['limit'] = $limit = $limit ? $limit : 0;
+			$response['limit']	= $limit = $limit ? $limit : 0;
 			$response['offset'] = $offset = $offset ? $offset : 0;
 			$response['count']	= $displayed_gallery->get_image_count();
-			$response['images'] = $displayed_gallery->get_images($limit,$offset);
+			$response['images'] = array();
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			foreach ($displayed_gallery->get_images($limit,$offset) as $image) {
+				$image->thumb_url	=	$storage->get_thumb_url($image);
+				$image->thumb_size	=	$storage->get_thumb_dimensions($image);
+				$response['images']	[]= $image;
+			}
 		}
 		else {
 			$response['error'] = _('Missing parameters');

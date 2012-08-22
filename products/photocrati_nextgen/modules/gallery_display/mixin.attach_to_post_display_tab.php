@@ -76,6 +76,11 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 		return 'here';
 	}
 
+
+	/**
+	 * Renders the tab used to preview included images
+	 * @return string
+	 */
 	function _render_preview_tab()
 	{
 		return $this->object->render_partial('accordion_tab', array(
@@ -86,9 +91,15 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the contents of the "Preview" tab.
+	 * @return string
+	 */
 	function _render_preview_tab_contents()
 	{
-		return 'here';
+		return $this->object->render_partial('preview_tab', array(
+			'exclude_all_label'	=>	_('Exclude from displaying ?'),
+		), TRUE);
 	}
 
 

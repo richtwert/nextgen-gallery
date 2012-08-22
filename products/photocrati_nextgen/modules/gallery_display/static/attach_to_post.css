@@ -28,3 +28,40 @@ iframe {
 	margin: 0px;
 	background: transparent;
 }
+
+/** Display Tab **/
+#preview_tab_content .previewed_entity {
+	width: 100%;
+}
+
+
+#preview_tab_content .inclusion_column {
+	width: 50px;
+	text-align: center;
+	vertical-align: center;
+	float: left;
+}
+
+#preview_tab_content .preview_column {
+	float: left;
+}
+
+#preview_tab_content .preview_column .image_container {
+	width: 100px;
+	height: 100px;
+	background-color: white;
+	padding: 20px;
+	margin: 20px;
+	border: solid 1px black;
+	display: table-cell;
+	vertical-align: middle
+}
+
+#preview_tab_content .preview_column .image_container img {
+	border: 0px;
+}
+
+.clear {
+	clear: both;
+	float: none;
+}
