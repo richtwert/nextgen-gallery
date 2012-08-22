@@ -208,8 +208,8 @@ class C_NextGen_Gallery_Image_Wrapper
                 return $this->_cache['previewpic'];
 
             case 'size':
-                $w = $this->_orig_image->meta_data->thumbnail['width'];
-                $h = $this->_orig_image->meta_data->thumbnail['height'];
+                $w = $this->_orig_image->meta_data['thumbnail']['width'];
+                $h = $this->_orig_image->meta_data['thumbnail']['height'];
                 return "width='{$w}' height='{$h}'";
 
             case 'slug':

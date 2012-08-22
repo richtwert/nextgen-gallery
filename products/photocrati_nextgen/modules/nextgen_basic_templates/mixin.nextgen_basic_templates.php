@@ -157,7 +157,10 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             return;
         }
 
-        $template_name = $template_name . '.php';
+        if ('.php' != substr($template_name, -4))
+        {
+            $template_name = $template_name . '.php';
+        }
 
         foreach ($this->object->get_template_directories() as $dir) {
             if (file_exists($dir . DIRECTORY_SEPARATOR . $template_name))
@@ -196,6 +199,8 @@ class Mixin_NextGen_Basic_Templates extends Mixin
 
         $maxElement = $settings->galImages;
 
+        // because picture_list implements ArrayAccess any array-specific actions must be taken on
+        // $picture_list->container or they won't do anything
         $picture_list = new C_NextGen_Gallery_Image_Wrapper_Collection();
         $current_pid  = NULL;
 
@@ -218,10 +223,10 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             }
             $picture_list[] = $new_image;
         }
-        reset($picture_list);
+        reset($picture_list->container);
 
         // assign current_pid
-        $current_pid = (is_null($current_pid)) ? current($picture_list) : $current_pid;
+        $current_pid = (is_null($current_pid)) ? current($picture_list->container) : $current_pid;
 
         // the entire next chunk is related to 'hidden images' support; I (BOwens) don't think it works ATM
         if ($maxElement > 0)
@@ -234,14 +239,6 @@ class Mixin_NextGen_Basic_Templates extends Mixin
                 $page = 1;
             }
             $start = $offset = ($page - 1) * $maxElement;
-            if (!$settings->galHiddenImg)
-            {
-                if ($start > 0 )
-                {
-                    array_splice($picture_list->container, 0, $start);
-                }
-                array_splice($picture_list->container, $maxElement);
-            }
         }
         $index = 0;
         foreach ($picture_list as $image) {
@@ -257,7 +254,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         }
 
         // find our gallery to build the new one on
-        $orig_gallery = $gallery_map->find(current($picture_list)->galleryid);
+        $orig_gallery = $gallery_map->find(current($picture_list->container)->galleryid);
 
         // create the 'gallery' object
         $gallery = new stdclass;

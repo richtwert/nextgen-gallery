@@ -35,6 +35,7 @@ Follow variables are useable :
 <?php } ?>
 	
 	<!-- Thumbnails -->
+    <?php $i = 0; ?>
 	<?php foreach ( $images as $image ) : ?>
 	
 	<div id="ngg-image-<?php echo $image->pid ?>" class="ngg-gallery-thumbnail-box" <?php echo $image->style ?> >
@@ -46,11 +47,14 @@ Follow variables are useable :
 			</a>
 		</div>
 	</div>
-	
-	<?php if ( $image->hidden ) continue; ?>
-	<?php if ( $gallery->columns > 0 && ++$i % $gallery->columns == 0 ) { ?>
-		<br style="clear: both" />
-	<?php } ?>
+
+    <?php if ( $image->hidden ) continue; ?>
+    <?php if ($gallery->columns > 0): ?>
+        <?php if ((($i + 1) % $gallery->columns) == 0 ): ?>
+            <br style="clear: both" />
+        <?php endif; ?>
+    <?php endif; ?>
+    <?php $i++; ?>
 
  	<?php endforeach; ?>
  	
