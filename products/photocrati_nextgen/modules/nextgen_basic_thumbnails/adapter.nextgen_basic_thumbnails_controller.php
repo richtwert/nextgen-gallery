@@ -23,6 +23,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         if (!$current_page) $current_page = 1;
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $pagination = FALSE;
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
         // this is always returning 0 at the moment
         // $total = $displayed_gallery->get_image_count();
@@ -84,9 +85,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 				$mediarss_link = real_site_url('/mediarss?source=displayed_gallery&params='.$params);
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
-
-			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
             // The render functions require different processing
             if (!empty($display_settings['template']))
@@ -262,6 +260,22 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
     }
 
     /**
+     * Renders the show_piclens_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_thumbnails_ajax_pagination_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_ajax_pagination', array(
+            'display_type_name' => $display_type->name,
+            'ajax_pagination_label' => _('Enable AJAX pagination:'),
+            'ajax_pagination_desc' => _('Browse images without reloading the page.'),
+            'ajax_pagination' => $display_type->settings['galAjaxNav']
+        ), True);
+    }
+
+    /**
 	 * Returns a list of fields to render on the settings page
 	 */
 	function _get_field_names()
@@ -275,6 +289,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_show_slideshow_link',
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_hidden',
+            'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_templates_template'
 		);
 	}

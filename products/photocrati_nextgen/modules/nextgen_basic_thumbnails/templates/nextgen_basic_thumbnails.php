@@ -33,14 +33,17 @@
 
         <div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-thumbnail-box" <?php print $image->style; ?>>
             <div class="ngg-gallery-thumbnail">
+
+                <?php var_dump($storage->get_image_url($image)); ?>
+
                 <a
-                    href="<?php echo esc_attr($storage->get_image_url($image))?>"
+                    href="<?php // echo esc_attr($storage->get_image_url($image))?>"
                     title="<?php echo esc_attr($image->description)?>"
                     <?php echo $effect_code ?>>
                     <img
                         title="<?php echo esc_attr($image->alttext)?>"
                         alt="<?php echo esc_attr($image->alttext)?>"
-                        src="<?php echo esc_attr($storage->get_thumb_url($image))?>"
+                        src="<?php // echo esc_attr($storage->get_thumb_url($image))?>"
                         width="<?php echo esc_attr($thumb_size['width'])?>"
                         height="<?php echo esc_attr($thumb_size['height'])?>"
                     />
