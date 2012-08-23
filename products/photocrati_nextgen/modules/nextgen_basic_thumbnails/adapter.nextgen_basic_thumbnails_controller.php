@@ -26,11 +26,12 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
         // this is always returning 0 at the moment
-        // $total = $displayed_gallery->get_image_count();
-        $total = 9999;
+        $total = $displayed_gallery->get_image_count();
 
         // Get the images to be displayed
-        if ($display_settings['images_per_page'] > 0 && $display_settings['galHiddenImg'])
+        if ($display_settings['images_per_page'] > 0
+        &&  isset($display_settings['galHiddenImg'])
+        &&  $display_settings['galHiddenImg'])
         {
             // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
             // as hidden (style="display: none")
@@ -52,9 +53,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             // just display the images for this page, as normal
             $images = $displayed_gallery->get_images($display_settings['images_per_page'], $offset);
         }
-
-        // remove when the total count is fixed
-        $total = count($images);
 
 		// Are there images to display?
 		if ($images) {
