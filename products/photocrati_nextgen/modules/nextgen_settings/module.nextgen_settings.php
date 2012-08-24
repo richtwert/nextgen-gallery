@@ -151,7 +151,7 @@ class M_NextGen_Settings extends C_Base_Module
 
 			wp_enqueue_script(
 				'nextgen_settings_page',
-				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_settings_page.js',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js/nextgen_settings_page.js',
 				array('jquery-ui-accordion'),
 				$this->module_version
 			);
@@ -167,7 +167,7 @@ class M_NextGen_Settings extends C_Base_Module
 
 			wp_enqueue_style(
 				'nextgen_settings_page',
-				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_settings_page.css',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/css/nextgen_settings_page.css',
 				array(),
 				$this->module_version
 			);
