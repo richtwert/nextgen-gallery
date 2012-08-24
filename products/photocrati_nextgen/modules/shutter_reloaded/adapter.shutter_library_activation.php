@@ -19,9 +19,9 @@ class A_Shutter_Library_Activation extends Mixin
 		$mapper->save((object)array(
 			'name'				=>	'shutter',
 			'code'				=>	'class="shutterset_%GALLERY_NAME%"',
-			'css_stylesheets'	=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/static/shutter/shutter.css',
-			'scripts'			=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/static/shutter/shutter.js'."\n".
-									PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/static/nextgen_shutter_reloaded.js'
+			'css_stylesheets'	=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/static/shutter/shutter.css',
+			'scripts'			=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/static/shutter/shutter.js'."\n".
+									PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/static/nextgen_shutter_reloaded.js'
 		));
 	}
 }

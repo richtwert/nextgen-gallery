@@ -40,7 +40,7 @@ class M_NggLegacy extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		include_once(path_join(__DIR__, 'nggallery.php'));
+		include_once(path_join(dirname(__FILE__), 'nggallery.php'));
 	}
 }
 
