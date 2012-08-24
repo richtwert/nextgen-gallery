@@ -1,0 +1,25 @@
+hs.graphicsDir = '/wp-content/plugins/nextgen-gallery/products/photocrati_nextgen/modules/highslide/static/highslide/graphics/';
+
+var galleryOptions = {
+    align: 'center',
+    dimmingOpacity: 0.8,
+    fadeInOut: true,
+    marginBottom: 80,
+    marginLeft: 100,
+    numberPosition: 'caption',
+    slideshowGroup: 'gallery',
+    transitions: ['expand', 'crossfade'],
+    wrapperClassName: 'dark borderless floating-caption'
+};
+
+hs.addSlideshow({
+    fixedControls: true,
+    interval: 5000,
+    overlayOptions: {
+        hideOnMouseOut: true,
+        opacity: .6,
+        position: 'top center'
+    },
+    repeat: true,
+    useControls: true
+});

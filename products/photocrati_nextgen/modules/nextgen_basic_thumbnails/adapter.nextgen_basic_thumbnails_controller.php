@@ -23,10 +23,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         if (!$current_page) $current_page = 1;
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $pagination = FALSE;
-
-        // this is always returning 0 at the moment
-        // $total = $displayed_gallery->get_image_count();
-        $total = 9999;
+        $total = $displayed_gallery->get_image_count();
 
         // Get the images to be displayed
         if ($display_settings['images_per_page'] > 0 && $display_settings['galHiddenImg'])
@@ -51,9 +48,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             // just display the images for this page, as normal
             $images = $displayed_gallery->get_images($display_settings['images_per_page'], $offset);
         }
-
-        // remove when the total count is fixed
-        $total = count($images);
 
 		// Are there images to display?
 		if ($images) {
