@@ -126,7 +126,7 @@ class M_Gallery_Display extends C_Base_Module
 		if (isset($_REQUEST['page']) && $_REQUEST['page'] == $this->page_name) {
 			wp_enqueue_script(
 				'nextgen_display_settings_page',
-				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/nextgen_display_settings_page.js',
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js/nextgen_display_settings_page.js',
 				array('jquery-ui-accordion'),
 				$this->module_version
 			);
@@ -142,7 +142,7 @@ class M_Gallery_Display extends C_Base_Module
 
 			wp_enqueue_style(
 				'nextgen_display_settings_page',
-				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/css/nextgen_display_settings_page.css'
+				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/css/nextgen_display_settings_page.css'
 			);
 		}
 	}
