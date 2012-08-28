@@ -294,7 +294,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	}
 
     /**
-     * Copies images into another gallery
+     * Copies (or moves) images into another gallery
      *
      * @param array $images
      * @param int|object $gallery
@@ -307,6 +307,8 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
         // return values
         $message        = '';
         $new_image_pids = array();
+
+        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
         // move_images() is a wrapper to this function so we implement both features here
         $func = $move ? 'rename' : 'copy';
@@ -340,13 +342,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
         foreach ($images as $image) {
 
-            /*
-            // WPMU action
-            if (nggWPMU::check_quota())
+            // Ensure that there is capacity available
+            if ((is_multisite()) && $settings->get('wpmuQuotaCheck'))
             {
-                return;
+                if (upload_is_user_over_quota(FALSE)) {
+                    $message .= sprintf(__('Sorry, you have used your space allocation. Please delete some files to upload more files.', 'nggallery'));
+                    throw new E_NoSpaceAvailableException();
+                }
             }
-            */
 
             // Copy the db entry
             if (is_numeric($image))
@@ -369,54 +372,50 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
             // Copy each image size
             foreach ($this->object->get_image_sizes() as $size) {
 
-                $image_path = $this->object->get_image_abspath($image, $size, TRUE);
-                if (!$image_path)
+                $orig_path = $this->object->get_image_abspath($image, $size, TRUE);
+                if (!$orig_path)
                 {
                     $message .= sprintf(__('Failed to get image path for %s', 'nggallery'), esc_html($image->filename)) . '<br/>';
                     continue;
                 }
 
-                $dst = basename($image_path);
+                $new_path = basename($orig_path);
 
-                $i = 0;
-                $prefix = '';
-                while (file_exists($gallery->path . '/' . $dst))
+                $prefix       = '';
+                $prefix_count = 0;
+                while (file_exists($gallery->path . DIRECTORY_SEPARATOR . $new_path))
                 {
-                    $prefix = 'copy_' . ($i++) . '_';
-                    $dst = $prefix . $dst;
+                    $prefix = 'copy_' . ($prefix_count++) . '_';
+                    $new_path = $prefix . $new_path;
                 }
-                $dst = path_join($gallery->path, $dst);
+                $new_path = path_join($gallery->path, $new_path);
 
                 // Copy files
-                if (!@$func($image_path, $dst))
+                if (!@$func($orig_path, $new_path))
                 {
-                    $message .= sprintf(__('Failed to copy image %1$s to %2$s', 'nggallery'), esc_html($image_path), esc_html($dst)) . '<br/>';
+                    $message .= sprintf(__('Failed to copy image %1$s to %2$s', 'nggallery'), esc_html($orig_path), esc_html($new_path)) . '<br/>';
                     continue;
                 }
                 else {
-                    $message .= sprintf(__('Copied image %1$s to %2$s', 'nggallery'), esc_html($image_path), esc_html($dst)) . '<br/>';
+                    $message .= sprintf(__('Copied image %1$s to %2$s', 'nggallery'), esc_html($orig_path), esc_html($new_path)) . '<br/>';
                 }
 
                 // Copy backup file, if possible
-                @$func($image_path . '_backup', $dst . '_backup');
+                @$func($orig_path . '_backup', $new_path . '_backup');
 
                 if ($prefix != '')
                 {
-                    $message .= sprintf(__('Image %1$s (%2$s) copied as image %3$s (%4$s) &raquo; The file already existed in the destination gallery.', 'nggallery'), $old_pid, esc_html($image_path), $new_pid, esc_html($dst)) . '<br />';
+                    $message .= sprintf(__('Image %1$s (%2$s) copied as image %3$s (%4$s) &raquo; The file already existed in the destination gallery.', 'nggallery'), $old_pid, esc_html($orig_path), $new_pid, esc_html($new_path)) . '<br />';
                 }
                 else
                 {
-                    $message .= sprintf(__('Image %1$s (%2$s) copied as image %3$s (%4$s)', 'nggallery'), $old_pid, esc_html($image_path), $new_pid, esc_html($dst)) . '<br />';
+                    $message .= sprintf(__('Image %1$s (%2$s) copied as image %3$s (%4$s)', 'nggallery'), $old_pid, esc_html($orig_path), $new_pid, esc_html($new_path)) . '<br />';
                 }
 
                 // Copy tags
-                // nggTags::copy_tags($image->pid, $new_pid);
-
-                // Copy meta information
-                // $meta = new nggMeta($image->pid);
-                // nggdb::update_image_meta( $new_pid, $meta->image->meta_data);
-
-                // $success = $move ? rename($image_path, $dst) : copy($image_path, $dst);
+                $tags = wp_get_object_terms($old_pid, 'ngg_tag', 'fields=ids');
+                $tags = array_map('intval', $tags);
+                wp_set_object_terms($new_pid, $tags, 'ngg_tag', true);
             }
         }
 

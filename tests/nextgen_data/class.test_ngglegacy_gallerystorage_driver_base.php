@@ -388,32 +388,30 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         );
         $this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
 
-        $images = array($this->image);
+        // for comparison
+        $orig_image = $this->image_mapper->find($this->image);
 
-        $new_image_ids = $this->storage->move_images($images, $gallery);
+        $new_image_ids = $this->storage->copy_images(array($this->image), $gallery);
 
+        // validate returned data
         $this->assertTrue(is_array($new_image_ids));
+        $this->assertEqual(1, count($new_image_ids));
 
-        // check that count(new_image_ids) == 1
-
-        // Ensure that the new new images have the correct paths
-        // $gallery_path = $this->storage->get_gallery_abspath($gallery);
-        // $gallery_thumb_path = $this->storage->get_gallery_thumbnail_abspath($gallery);
-
-        // print "<h3>gallery_path, gallery_thumb_path</h3>";
-        // var_dump($gallery_path, $gallery_thumb_path);
-        // print "<hr/>";
-
+        // compare our image to the original; only pid and galleryid should be changed
         foreach ($new_image_ids as $image_id) {
-//            $this->assertEqual(
-//                path_join($gallery_thumb_path, $this->image->filename),
-//                $this->storage->get_thumbnail_abspath($image_id)
-//            );
-//
-//            $this->assertEqual(
-//                path_join($gallery_path, $this->image->filename),
-//                $this->storage->get_image_abspath($image_id)
-//            );
+            $new_image = $this->image_mapper->find($image_id);
+            $this->assertEqual(
+                array(
+                    'pid',
+                    'galleryid'
+                ),
+                array_keys(
+                    array_diff(
+                    (array)$orig_image,
+                    (array)$new_image
+                    )
+                )
+            );
         }
     }
 
