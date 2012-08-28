@@ -46,7 +46,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		// Create image to work with
 		$this->image = (object) array(
 			'alttext'		=>	'test-image',
-			'filename'	=>	'test.jpg',
+			'filename'	=>	'test-base64.jpg',
 			'galleryid'	=>	$this->gid
 		);
 		$this->pid = $this->image_mapper->save($this->image);
@@ -379,35 +379,44 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 //		);
 //	}
 //
+
+    function test_copy_images()
+    {
+        // Test copy operation
+        $gallery = (object) array(
+            'title'	=>	'Another Gallery'
+        );
+        $this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
+
+        $images = array($this->image);
+
+        $new_image_ids = $this->storage->move_images($images, $gallery);
+
+        $this->assertTrue(is_array($new_image_ids));
+
+        // check that count(new_image_ids) == 1
+
+        // Ensure that the new new images have the correct paths
+        // $gallery_path = $this->storage->get_gallery_abspath($gallery);
+        // $gallery_thumb_path = $this->storage->get_gallery_thumbnail_abspath($gallery);
+
+        // print "<h3>gallery_path, gallery_thumb_path</h3>";
+        // var_dump($gallery_path, $gallery_thumb_path);
+        // print "<hr/>";
+
+        foreach ($new_image_ids as $image_id) {
+//            $this->assertEqual(
+//                path_join($gallery_thumb_path, $this->image->filename),
+//                $this->storage->get_thumbnail_abspath($image_id)
+//            );
 //
-//	function test_copy_images()
-//	{
-//		// Test copy operation
-//		$gallery = (object) array(
-//			'title'	=>	'Another Gallery'
-//		);
-//		$this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
-//		$image = $this->image_mapper->find($this->images_to_cleanup[1]);
-//		$images = array($image);
-//		$new_image_ids = $this->storage->move_images($images, $gallery);
-//		$this->assertTrue(is_array($new_image_ids));
-//
-//		// Ensure that the new new images have the correct paths
-//		$gallery_path = $this->storage->get_gallery_abspath($gallery);
-//		$gallery_thumb_path = $this->storage->get_gallery_thumbnail_abspath($gallery);
-//		foreach ($new_image_ids as $image_id) {
-//			$this->assertEqual(
-//				path_join($gallery_thumb_path, $image->filename),
-//				$this->storage->get_thumbnail_abspath($image)
-//			);
-//
-//			$this->assertEqual(
-//				path_join($gallery_path, $image->filename),
-//				$this->storage->get_image_abspath($image)
-//			);
-//		}
-//	}
-//
+//            $this->assertEqual(
+//                path_join($gallery_path, $this->image->filename),
+//                $this->storage->get_image_abspath($image_id)
+//            );
+        }
+    }
+
 //
 //	/*** HELPER METHODS ******************************************************/
 //
