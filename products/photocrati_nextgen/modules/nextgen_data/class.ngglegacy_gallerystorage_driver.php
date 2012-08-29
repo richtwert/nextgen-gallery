@@ -357,10 +357,17 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
                 $image = $this->object->_image_mapper->find($image);
             }
             $old_pid = $image->$image_key;
-            unset($image->$image_key);
-            $image->galleryid = $gallery_id;
-            $new_pid = $this->object->_image_mapper->save($image);
-            $image = $this->object->_image_mapper->find($image);
+
+            if ($db)
+            {
+                $new_image = clone $image;
+                unset($new_image->$image_key);
+                $new_image->galleryid = $gallery_id;
+                $new_pid = $this->object->_image_mapper->save($new_image);
+                $new_image = $this->object->_image_mapper->find($new_image);
+            } else {
+                $new_pid = $old_pid;
+            }
 
             if (!$new_pid) {
                 $message .= sprintf(__('Failed to copy database row for picture %s', 'nggallery'), $old_pid) . '<br />';
@@ -413,9 +420,12 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
                 }
 
                 // Copy tags
-                $tags = wp_get_object_terms($old_pid, 'ngg_tag', 'fields=ids');
-                $tags = array_map('intval', $tags);
-                wp_set_object_terms($new_pid, $tags, 'ngg_tag', true);
+                if ($db)
+                {
+                    $tags = wp_get_object_terms($old_pid, 'ngg_tag', 'fields=ids');
+                    $tags = array_map('intval', $tags);
+                    wp_set_object_terms($new_pid, $tags, 'ngg_tag', true);
+                }
             }
         }
 
