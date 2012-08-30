@@ -26,7 +26,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         $total = $displayed_gallery->get_image_count();
 
         // Get the images to be displayed
-        if ($display_settings['images_per_page'] > 0 && $display_settings['galHiddenImg'])
+        if ($display_settings['images_per_page'] > 0 && $display_settings['show_all_in_lightbox'])
         {
             // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
             // as hidden (style="display: none")
@@ -157,11 +157,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_images_per_page_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_images_per_page', array(
-            'display_type_name' => $display_type->name,
-            'images_per_page_label' => _('Images per page:'),
-            'images_per_page' => $display_type->settings['images_per_page'],
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_images_per_page',
+            array(
+                'display_type_name' => $display_type->name,
+                'images_per_page_label' => _('Images per page:'),
+                'images_per_page' => $display_type->settings['images_per_page'],
+            ),
+            True
+        );
     }
 
     /**
@@ -172,11 +176,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_number_of_columns_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_number_of_columns', array(
-            'display_type_name' => $display_type->name,
-            'number_of_columns_label' => _('Number of columns to display:'),
-            'number_of_columns' => $display_type->settings['number_of_columns']
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_number_of_columns',
+            array(
+                'display_type_name' => $display_type->name,
+                'number_of_columns_label' => _('Number of columns to display:'),
+                'number_of_columns' => $display_type->settings['number_of_columns']
+            ),
+            True
+        );
     }
 
     /**
@@ -187,11 +195,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_slideshow_link_text_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_slideshow_link_text', array(
-            'display_type_name' => $display_type->name,
-            'slideshow_link_text_label' => _('Slideshow text link:'),
-            'slideshow_link_text' => $display_type->settings['slideshow_link_text'],
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_slideshow_link_text',
+            array(
+                'display_type_name' => $display_type->name,
+                'slideshow_link_text_label' => _('Slideshow text link:'),
+                'slideshow_link_text' => $display_type->settings['slideshow_link_text'],
+            ),
+            True
+        );
     }
 
     /**
@@ -202,11 +214,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_piclens_link_text_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_piclens_link_text', array(
-            'display_type_name' => $display_type->name,
-            'piclens_link_text_label' => _('Piclens text link:'),
-            'piclens_link_text' => $display_type->settings['piclens_link_text']
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_piclens_link_text',
+            array(
+                'display_type_name' => $display_type->name,
+                'piclens_link_text_label' => _('Piclens text link:'),
+                'piclens_link_text' => $display_type->settings['piclens_link_text']
+            ),
+            True
+        );
     }
 
     /**
@@ -217,11 +233,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_show_slideshow_link_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_show_slideshow_link', array(
-            'display_type_name' => $display_type->name,
-            'show_slideshow_link_label' => _('Show slideshow link:'),
-            'show_slideshow_link' => $display_type->settings['show_slideshow_link']
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_show_slideshow_link',
+            array(
+                'display_type_name' => $display_type->name,
+                'show_slideshow_link_label' => _('Show slideshow link:'),
+                'show_slideshow_link' => $display_type->settings['show_slideshow_link']
+            ),
+            True
+        );
     }
 
     /**
@@ -232,11 +252,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_show_piclens_link_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_show_piclens_link', array(
-            'display_type_name' => $display_type->name,
-            'show_piclens_link_label' => _('Show piclens link:'),
-            'show_piclens_link' => $display_type->settings['show_piclens_link']
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_show_piclens_link',
+            array(
+                'display_type_name' => $display_type->name,
+                'show_piclens_link_label' => _('Show piclens link:'),
+                'show_piclens_link' => $display_type->settings['show_piclens_link']
+            ),
+            True
+        );
     }
 
     /**
@@ -247,12 +271,16 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_hidden_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_hidden', array(
-            'display_type_name' => $display_type->name,
-            'hidden_label' => _('Add Hidden Images:'),
-            'hidden_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.). Note : This increases page load.'),
-            'hidden' => $display_type->settings['galHiddenImg']
-        ), True);
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_hidden',
+            array(
+                'display_type_name' => $display_type->name,
+                'show_all_in_lightbox_label' => _('Add Hidden Images:'),
+                'show_all_in_lightbox_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.). Note : This increases page load.'),
+                'show_all_in_lightbox' => $display_type->settings['show_all_in_lightbox']
+            ),
+            True
+        );
     }
 
     /**
