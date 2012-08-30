@@ -447,6 +447,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
             $image = $this->object->_image_mapper->find($image);
         }
 
+        if (isset($image->meta_data))
+        {
+            $orig_metadata = $image->meta_data;
+        }
+
         $path = $this->object->get_registry()->get_utility('I_Gallery_Storage')->get_image_abspath($image);
 
         if (!is_object($image))
@@ -469,12 +474,15 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
             return ' <strong>' . __("Could not restore original image", 'nggallery') . '</strong>';
         }
 
-        // $meta_data = new C_NextGen_Metadata($image);
-        // $common = $meta_data->get_common_meta();
-        // $this->object->_image_mapper->update_image_meta($image, $common);
+        if (isset($orig_metadata))
+        {
+            $NextGen_Metadata = new C_NextGen_Metadata($image);
+            $new_metadata = $NextGen_Metadata->get_common_meta();
+            $image->meta_data = array_merge((array)$orig_metadata, (array)$new_metadata);
+            $this->object->_image_mapper->save($image);
+        }
 
         return '1';
-
     }
 }
 
