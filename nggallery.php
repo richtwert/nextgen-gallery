@@ -147,8 +147,8 @@ if (!class_exists('nggLoader')) {
 				add_action('parse_request',  array(&$this, 'check_request') );
 
 				// Add the script and style files
-				add_action('template_redirect', array(&$this, 'load_scripts') );
-				add_action('template_redirect', array(&$this, 'load_styles') );
+				add_action('wp_enqueue_scripts', array(&$this, 'load_scripts') );
+				add_action('wp_enqueue_scripts', array(&$this, 'load_styles') );
 
 			}
 		}
