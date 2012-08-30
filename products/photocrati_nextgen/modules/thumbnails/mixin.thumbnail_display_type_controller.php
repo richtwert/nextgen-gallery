@@ -71,7 +71,7 @@ class Mixin_Thumbnail_Display_Type_Controller extends Mixin
 	{
 		wp_enqueue_script(
 			'ngg_thumbnail_dimensions',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js/ngg_thumbnail_dimensions.js',
+			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js/ngg_thumbnail_dimensions.js',
 			array('jquery')
 		);
 	}

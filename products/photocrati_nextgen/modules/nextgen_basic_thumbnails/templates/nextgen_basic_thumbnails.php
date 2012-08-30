@@ -22,31 +22,38 @@
 
 	<!-- Thumbnails -->
 	<?php for ($i=0; $i<count($images); $i++): ?>
-	<?php $image = $images[$i]; ?>
-	<?php $thumb_size = $storage->get_thumb_dimensions($image); ?>
-	<div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-thumbnail-box">
-		<div class="ngg-gallery-thumbnail">
-			<a
-				href="<?php echo esc_attr($storage->get_image_url($image))?>"
-				title="<?php echo esc_attr($image->description)?>"
-				<?php echo $effect_code ?>>
-				<img
-					title="<?php echo esc_attr($image->alttext)?>"
-					alt="<?php echo esc_attr($image->alttext)?>"
-					src="<?php echo esc_attr($storage->get_thumb_url($image))?>"
-					width="<?php echo esc_attr($thumb_size['width'])?>"
-					height="<?php echo esc_attr($thumb_size['height'])?>"
-				/>
+        <?php $image = $images[$i]; ?>
+        <?php $thumb_size = $storage->get_thumb_dimensions($image); ?>
 
-			</a>
-		</div>
-	</div>
-
-	<?php if ($number_of_columns > 0): ?>
-        <?php if ((($i + 1) % $number_of_columns) == 0 ): ?>
-		    <br style="clear: both" />
+        <?php if ($image->hidden): ?>
+            <?php $image->style = 'style="display: none;"'?>
+        <?php else: ?>
+            <?php $image->style = ''; ?>
         <?php endif; ?>
-	<?php endif; ?>
+
+        <div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-thumbnail-box" <?php print $image->style; ?>>
+            <div class="ngg-gallery-thumbnail">
+                <a
+                    href="<?php echo esc_attr($storage->get_image_url($image))?>"
+                    title="<?php echo esc_attr($image->description)?>"
+                    <?php echo $effect_code ?>>
+                    <img
+                        title="<?php echo esc_attr($image->alttext)?>"
+                        alt="<?php echo esc_attr($image->alttext)?>"
+                        src="<?php echo esc_attr($storage->get_thumb_url($image))?>"
+                        width="<?php echo esc_attr($thumb_size['width'])?>"
+                        height="<?php echo esc_attr($thumb_size['height'])?>"
+                    />
+
+                </a>
+            </div>
+        </div>
+
+        <?php if ($number_of_columns > 0): ?>
+            <?php if ((($i + 1) % $number_of_columns) == 0 ): ?>
+                <br style="clear: both" />
+            <?php endif; ?>
+        <?php endif; ?>
 
 	<?php endfor ?>
 
