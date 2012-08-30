@@ -334,23 +334,32 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 	}
 
 
-//	/**
-//	 * Tests getting the backup path
-//	 */
-//	function test_backups()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//
-//			$path = $this->storage->get_image_backup_abspath($image);
-//			$this->assertEqual(
-//				path_join($this->storage->get_image_abspath($image), '_backup'),
-//				$path
-//			);
-//
-//			$this->assertTrue($this->storage->backup_image($image));
-//			$this->assertTrue(file_exists($path));
-//		}
-//	}
+	/**
+	 * Tests getting the backup path
+	 */
+	function test_recover_image()
+	{
+        $orig_image_path = $this->storage->get_image_abspath($this->image);
+        $new_image_path  = $orig_image_path . '_backup';
+
+        @copy($orig_image_path, $new_image_path);
+
+        $this->assertTrue(file_exists($orig_image_path));
+        $this->assertTrue(file_exists($new_image_path));
+
+        unlink($orig_image_path);
+
+        $this->assertFalse(file_exists($orig_image_path));
+        $this->assertTrue(file_exists($new_image_path));
+
+        $retcode = $this->storage->recover_image($this->image);
+        $this->assertEqual(1, $retcode, 'recover_images() did not return success');
+
+        $this->assertTrue(file_exists($orig_image_path));
+        $this->assertTrue(file_exists($new_image_path));
+
+        unlink($new_image_path);
+	}
 
     /**
      * Tests copy_images() with db=FALSE

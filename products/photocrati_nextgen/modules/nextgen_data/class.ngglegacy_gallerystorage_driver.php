@@ -434,6 +434,48 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
         return $new_image_pids;
     }
 
+    /**
+     * Recover image from backup copy and reprocess it
+     *
+     * @param int|stdClass|C_NextGen_Gallery_Image $image
+     * @return string result code
+     */
+    function recover_image($image) {
+
+        if (is_numeric($image))
+        {
+            $image = $this->object->_image_mapper->find($image);
+        }
+
+        $path = $this->object->get_registry()->get_utility('I_Gallery_Storage')->get_image_abspath($image);
+
+        if (!is_object($image))
+        {
+            return __("Could not find image", 'nggallery');
+        }
+
+        if (!is_writable($path) && !is_writable(dirname($path)))
+        {
+            return ' <strong>' . esc_html($image->filename) . __(' is not writeable', 'nggallery') . '</strong>';
+        }
+
+        if (!file_exists($path . '_backup'))
+        {
+            return ' <strong>' . __('Backup file does not exist', 'nggallery') . '</strong>';
+        }
+
+        if (!@copy($path . '_backup', $path))
+        {
+            return ' <strong>' . __("Could not restore original image", 'nggallery') . '</strong>';
+        }
+
+        // $meta_data = new C_NextGen_Metadata($image);
+        // $common = $meta_data->get_common_meta();
+        // $this->object->_image_mapper->update_image_meta($image, $common);
+
+        return '1';
+
+    }
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base

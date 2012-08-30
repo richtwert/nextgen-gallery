@@ -44,6 +44,22 @@ class Mixin_Gallery_Image_Mapper extends Mixin
 	{
 		return $entity->alttext;
 	}
+
+    /**
+     * Update or add meta data for an image
+     *
+     * @param int $id The image ID
+     * @param array $values An array with existing or new values
+     * @return bool result of query
+     */
+    function update_image_meta($id, $new_values)
+    {
+        // may not be necessary after all
+        // $old_values = unserialize($old_values);
+        // $meta = array_merge((array)$old_values, (array)$new_values);
+        // $image->meta_data = serialize($meta);
+        // return $result;
+    }
 }
 
 /**
