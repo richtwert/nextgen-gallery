@@ -66,7 +66,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	{
 		return $this->object->render_partial('display_tab_type', array(
 			'display_types'	=>	$this->object->_get_display_types()
-		));
+		), TRUE);
 	}
 
 
@@ -155,7 +155,11 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _get_display_types()
 	{
+		// TODO: This is returning display type models. It doesn't need to, other
+		// than the fact that we need the set_defaults() method executed. When
+		// we move the operation of setting defaults to the datamapper, then
+		// we can return simple entities instead
 		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-		return $mapper->find_all();
+		return $mapper->find_all(array(), TRUE);
 	}
 }

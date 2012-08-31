@@ -56,6 +56,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	source:			'',
 	containers:		[],
 	entities:		[],
+	display_type_id:false,
 
 	/**
 	 * Returns the ID of the selected source
@@ -328,4 +329,18 @@ NggDisplayTab.preview_view = Ember.View.create({
 			last_offset = ui.offset.top;
 		});
 	}
+});
+
+Ember.RadioButton = Ember.View.extend({
+  classNames: ['ember-radio-button'],
+  attributeBindings: ['type', 'checked', 'value', 'name'],
+  tagName: 'input',
+  type: 'radio',
+  name: "radio_button",
+  checked: function(){
+	  return this.get('value') == this.get('selection');
+  }.property('value', 'selection'),
+  change: function(){
+	  this.set('selection', this.get('value'));
+  }
 });

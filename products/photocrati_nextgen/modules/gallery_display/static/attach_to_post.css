@@ -29,8 +29,25 @@ iframe {
 	background: transparent;
 }
 
+/** Would would you like to display tab? **/
 #source_configuration td{
 	vertical-align: top;
+}
+
+/** Select a display type tab **/
+.display_type_preview {
+	float: left;
+	width: 25%;
+}
+.display_type_preview .image_container {
+	width: 100%;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 12px;
+	font-weight: 600;
+}
+.display_type_preview .image_container p {
+	display: inline-block;
 }
 
 /** Display Tab **/

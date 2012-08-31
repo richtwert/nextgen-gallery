@@ -1,6 +1,11 @@
 jQuery(function($){
+	// Activate horizontal tabs
 	$('#attach_to_post_tabs').tabs();
+
+	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
+
+	// Resize iframes to be height of the content
 	$('iframe').load(function(){
 		var iframe = this;
 		$(iframe).data('parent_resizing', {

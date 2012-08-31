@@ -69,5 +69,7 @@ class Mixin_Display_Type_Validation extends Mixin
 	function set_defaults()
 	{
 		if (!isset($this->object->settings)) $this->object->settings = array();
+		if (!isset($this->object->preview_image_relpath))
+			$this->object->preview_image_relpath = '';
 	}
 }

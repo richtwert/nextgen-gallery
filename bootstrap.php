@@ -33,6 +33,8 @@ class C_NextGEN_Bootstrap
 		$this->_define_constants();
 		$this->_register_hooks();
 
+		@ini_set('xdebug.max_nesting_level', 200);
+
 		// Include pope framework
 		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
 			DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')

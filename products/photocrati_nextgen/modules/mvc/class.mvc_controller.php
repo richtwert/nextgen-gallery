@@ -123,10 +123,11 @@ class Mixin_MVC_Controller_Rendering extends Mixin
 
     /**
      * Finds a static resource
-     * @param type $name
-     * @return type
+     * @param string $name
+	 * @param bool	 $relative
+     * @return string
      */
-    function find_static_file($name)
+    function find_static_file($name, $relative=FALSE)
     {
         $found = FALSE;
 
@@ -149,7 +150,12 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             if ($found) break;
         }
 
-        return $found ? realpath((array_pop($found))) : NULL;
+		$found = $found ? realpath((array_pop($found))) : NULL;
+		if ($relative && !is_null($found)) {
+			$found = str_replace(ABSPATH, '', $found);
+		}
+
+        return $found;
     }
 
 
