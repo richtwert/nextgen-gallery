@@ -45,6 +45,10 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the accordion tab for selecting a display type
+	 * @return string
+	 */
 	function _render_display_types_tab()
 	{
 		return $this->object->render_partial('accordion_tab', array(
@@ -55,9 +59,14 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the contents of the display type tab
+	 */
 	function _render_display_type_tab_contents()
 	{
-
+		return $this->object->render_partial('display_tab_type', array(
+			'display_types'	=>	$this->object->_get_display_types()
+		));
 	}
 
 
@@ -139,5 +148,14 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			'template_name'				=>	'galleries_source_view',
 			'existing_galleries_label'	=>	_('Galleries:'),
 		), TRUE);
+	}
+
+	/**
+	 * Gets a list of display types available
+	 */
+	function _get_display_types()
+	{
+		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
+		return $mapper->find_all();
 	}
 }
