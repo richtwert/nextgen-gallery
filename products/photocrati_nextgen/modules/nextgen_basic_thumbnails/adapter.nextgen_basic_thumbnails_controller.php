@@ -74,8 +74,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 			// Determine what the piclens link would be
 			if ($display_settings['show_piclens_link']) {
-				$params = json_encode($displayed_gallery->get_entity());
-				$mediarss_link = real_site_url('/mediarss?source=displayed_gallery&params='.$params);
+                $entity = $displayed_gallery->get_entity();
+                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $entity->ID);
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
