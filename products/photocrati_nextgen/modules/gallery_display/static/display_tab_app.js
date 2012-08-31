@@ -293,5 +293,39 @@ NggDisplayTab.galleries_source_view		= Ember.View.create({
  */
 NggDisplayTab.preview_view = Ember.View.create({
 	templateName:		'preview_area',
-	entitiesBinding:	'NggDisplayTab.displayed_gallery.entities'
+	entitiesBinding:	'NggDisplayTab.displayed_gallery.entities',
+	didInsertElement:	function(){
+		var last_offset = 0;
+		jQuery('#preview_entity_list').sortable({
+			axis:	'y',
+			opacity: 0.7,
+			items:	'li:not(.header)',
+			containment: 'parent'
+		}).bind('sort', function(event, ui){
+			var direction = ui.offset.top > last_offset ? 'down' : 'up';
+			var win_height = jQuery(window).height();
+			var doc_height = jQuery(document).height();
+			ui.offset.bottom = doc_height - ui.offset.top;
+
+			// Determine if the user is scrolling down
+			if (direction == 'down' && win_height + window.scrollY >= ui.offset.top) {
+
+				// Calculate how to autoscroll
+				if (jQuery(window).height() - (ui.item.height() + ui.offset.top) <= 1) {
+					window.scrollBy(0, ui.offset.top - last_offset);
+				}
+			}
+
+			// Determine if the user is scrolling up
+			else if (direction == 'up' && ui.offset.top <= window.scrollY) {
+
+				// Calculate how to autoscroll
+				if (jQuery(window).height() - jQuery(document).height() - ui.offset.top <= ui.item.height()) {
+					window.scrollBy(0, ui.offset.top - last_offset);
+				}
+			}
+
+			last_offset = ui.offset.top;
+		});
+	}
 });

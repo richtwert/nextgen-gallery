@@ -71,6 +71,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue JQuery UI
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_Script('jquery-ui-accordion');
+		wp_enqueue_script('jquery-ui-sortable');
 		wp_enqueue_style(
 			PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
 			is_ssl() ?

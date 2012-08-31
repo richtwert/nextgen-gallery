@@ -29,24 +29,53 @@ iframe {
 	background: transparent;
 }
 
+#source_configuration td{
+	vertical-align: top;
+}
+
 /** Display Tab **/
 #preview_tab_content .previewed_entity {
 	width: 100%;
+	border-bottom: solid 1px #E0E0D6;
+	background-color: #FAFAF0;
+}
+
+#preview_tab_content .previewed_entity .container {
+	padding-top: 15px;
+}
+
+#preview_tab_content .previewed_entity.header {
+	background-color: #F0F0E6;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+#preview_tab_content .header label {
+	font-size: 12px;
+	color: rgb(100,150,100);
+	font-weight: 600;
+}
+
+#preview_tab_content .ui-sortable-helper {
+	background: none;
+}
+
+#preview_tab_content ul {
+	list-style-type: none;
+	display: block;
+	border: solid 2px #E0E0D6;
+	padding: 0px;
+	position: relative;
 }
 
 
-#preview_tab_content .inclusion_column {
-	width: 50px;
-	text-align: center;
-	vertical-align: center;
+#preview_tab_content .inclusion_checkbox {
+	margin-right: 7px;
+	display: block;
 	float: left;
 }
 
-#preview_tab_content .preview_column {
-	float: left;
-}
-
-#preview_tab_content .preview_column .image_container {
+#preview_tab_content .image_container {
 	width: 100px;
 	height: 100px;
 	background-color: white;
@@ -54,10 +83,10 @@ iframe {
 	margin: 20px;
 	border: solid 1px black;
 	display: table-cell;
-	vertical-align: middle
+	vertical-align: middle;
 }
 
-#preview_tab_content .preview_column .image_container img {
+#preview_tab_content .image_container img {
 	border: 0px;
 }
 
