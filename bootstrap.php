@@ -29,6 +29,13 @@ class C_NextGEN_Bootstrap
 {
 	function __construct()
 	{
+        // Pope requires a a higher limit
+        $tmp = ini_get('xdebug.max_nesting_level');
+        if ($tmp && (int)$tmp <= 200)
+        {
+            ini_set('xdebug.max_nesting_level', 200);
+        }
+
 		// Boostrap
 		$this->_define_constants();
 		$this->_register_hooks();
@@ -171,10 +178,10 @@ class C_NextGEN_Bootstrap
 
 			// Define the NextGEN Test Suite
 			$suites['nextgen'] = array(
-				path_join($tests_dir, 'mvc'),
-				path_join($tests_dir, 'datamapper'),
+//				path_join($tests_dir, 'mvc'),
+//				path_join($tests_dir, 'datamapper'),
 				path_join($tests_dir, 'nextgen_data'),
-				path_join($tests_dir, 'gallery_display')
+// 				path_join($tests_dir, 'gallery_display')
 			);
 		}
 

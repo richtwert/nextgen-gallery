@@ -102,7 +102,7 @@ class A_Thumbnail_Gallery_Storage extends Mixin
 	 */
 	function get_gallery_thumbnail_abspath($gallery)
 	{
-		return path_join($this->object->get_gallery_path($gallery), 'thumbs');
+		return path_join($this->object->get_gallery_abspath($gallery), 'thumbs');
 	}
 
 

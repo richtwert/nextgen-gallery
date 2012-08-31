@@ -19,7 +19,7 @@ class A_Thickbox_Library_Activation extends Mixin
 			'name'				=>	'thickbox',
 			'code'				=>	"class='thickbox' rel='%GALLERY_NAME%'",
 			'css_stylesheets'	=>	$this->_get_url_for_registered_resource('thickbox', 'style'),
-			'scripts'			=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__)."/js/nextgen_thickbox_init.js\n".
+			'scripts'			=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__))."/js/nextgen_thickbox_init.js\n".
 									$this->_get_url_for_registered_resource('thickbox', 'script')
 		));
 	}

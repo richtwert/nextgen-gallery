@@ -9,7 +9,7 @@
 
 define(
 	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL',
-	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(__DIR__).'/js'
+	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
 );
 
 define(

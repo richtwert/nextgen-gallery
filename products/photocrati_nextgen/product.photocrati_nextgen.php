@@ -65,6 +65,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load various lightbox effect libraries
 		$this->get_registry()->load_module('photocrati-thickbox');
 		$this->get_registry()->load_module('photocrati-shutter_reloaded');
+        $this->get_registry()->load_module('photocrati-highslide');
+        $this->get_registry()->load_module('photocrati-fancybox-1x');
 
 		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
 		$this->get_registry()->load_module('photocrati-mediarss');

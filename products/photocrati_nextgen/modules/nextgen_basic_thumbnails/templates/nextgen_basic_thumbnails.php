@@ -33,7 +33,6 @@
 
         <div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-thumbnail-box" <?php print $image->style; ?>>
             <div class="ngg-gallery-thumbnail">
-
                 <a
                     href="<?php echo esc_attr($storage->get_image_url($image))?>"
                     title="<?php echo esc_attr($image->description)?>"

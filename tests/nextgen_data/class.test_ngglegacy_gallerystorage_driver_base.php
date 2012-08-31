@@ -46,7 +46,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		// Create image to work with
 		$this->image = (object) array(
 			'alttext'		=>	'test-image',
-			'filename'	=>	'test.jpg',
+			'filename'	=>	'test-base64.jpg',
 			'galleryid'	=>	$this->gid
 		);
 		$this->pid = $this->image_mapper->save($this->image);
@@ -334,80 +334,188 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 	}
 
 
-//	/**
-//	 * Tests getting the backup path
-//	 */
-//	function test_backups()
-//	{
-//		foreach (array($this->image, $this->pid) as $image) {
-//
-//			$path = $this->storage->get_image_backup_abspath($image);
-//			$this->assertEqual(
-//				path_join($this->storage->get_image_abspath($image), '_backup'),
-//				$path
-//			);
-//
-//			$this->assertTrue($this->storage->backup_image($image));
-//			$this->assertTrue(file_exists($path));
-//		}
-//	}
-//
-//
-//	function test_move_images()
-//	{
-//		// Test move operation
-//		$gallery = (object) array(
-//			'title'	=>	'Another Gallery'
-//		);
-//		$this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
-//		$image = $this->image_mapper->find($this->images_to_cleanup[0]);
-//		$images = array($image);
-//		$this->assertTrue($this->storage->move_images($images, $gallery));
-//
-//		// Ensure that new image path has been set
-//		$gallery_path = $this->storage->get_gallery_abspath($gallery);
-//		$this->assertEqual(
-//			path_join($gallery_path, $image->filename),
-//			$this->storage->get_image_abspath($image)
-//		);
-//
-//		// Ensure that new image thumbnail path has been set
-//		$gallery_thumb_path = $this->storage->get_gallery_thumbnail_abspath($gallery);
-//		$this->assertEqual(
-//			path_join($gallery_thumb_path, $image->filename),
-//			$this->storage->get_thumbnail_abspath($image)
-//		);
-//	}
-//
-//
-//	function test_copy_images()
-//	{
-//		// Test copy operation
-//		$gallery = (object) array(
-//			'title'	=>	'Another Gallery'
-//		);
-//		$this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
-//		$image = $this->image_mapper->find($this->images_to_cleanup[1]);
-//		$images = array($image);
-//		$new_image_ids = $this->storage->move_images($images, $gallery);
-//		$this->assertTrue(is_array($new_image_ids));
-//
-//		// Ensure that the new new images have the correct paths
-//		$gallery_path = $this->storage->get_gallery_abspath($gallery);
-//		$gallery_thumb_path = $this->storage->get_gallery_thumbnail_abspath($gallery);
-//		foreach ($new_image_ids as $image_id) {
-//			$this->assertEqual(
-//				path_join($gallery_thumb_path, $image->filename),
-//				$this->storage->get_thumbnail_abspath($image)
-//			);
-//
-//			$this->assertEqual(
-//				path_join($gallery_path, $image->filename),
-//				$this->storage->get_image_abspath($image)
-//			);
-//		}
-//	}
-//
+	/**
+	 * Tests getting the backup path
+	 */
+	function test_recover_image()
+	{
+        $orig_image_path = $this->storage->get_image_abspath($this->image);
+        $new_image_path  = $orig_image_path . '_backup';
+
+        @copy($orig_image_path, $new_image_path);
+
+        $this->assertTrue(file_exists($orig_image_path));
+        $this->assertTrue(file_exists($new_image_path));
+
+        unlink($orig_image_path);
+
+        $this->assertFalse(file_exists($orig_image_path));
+        $this->assertTrue(file_exists($new_image_path));
+
+        $retcode = $this->storage->recover_image($this->image);
+        $this->assertEqual(1, $retcode, 'recover_images() did not return success');
+
+        $this->assertTrue(file_exists($orig_image_path));
+        $this->assertTrue(file_exists($new_image_path));
+
+        unlink($new_image_path);
+	}
+
+    /**
+     * Tests copy_images() with db=FALSE
+     *
+     * move_images() is a wrapper to copy_images(). The tests for both operations build up together.
+     *
+     * Disabled until gallery storage unit tests are fixed
+     */
+    function test_copy_images()
+    {
+        return;
+
+        $gallery = (object) array('title' => 'Test Copy Images Gallery');
+        $this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
+        $gallery = $this->gallery_mapper->find($gallery);
+        $orig_image = $this->image_mapper->find($this->image);
+
+        // when db=FALSE copy_images() returns an array of the images successfully copied
+        $new_image_ids = $this->storage->copy_images(array($this->image), $gallery, FALSE);
+
+        // find our original image again so we can make sure it's db entry wasn't altered
+        $new_image = $this->image_mapper->find(reset($new_image_ids));
+
+        $this->assertTrue(
+            is_array($new_image_ids),
+            'copy_images() return value was not an array'
+        );
+        $this->assertEqual(
+            1,
+            count($new_image_ids),
+            'copy_images() returned multiple values for a single image'
+        );
+        $this->assertTrue(
+            is_file($this->storage->get_image_abspath($orig_image)),
+            'Original file was removed during copy operation'
+        );
+        $this->assertTrue(
+            is_file($gallery->path . DIRECTORY_SEPARATOR . $orig_image->filename),
+            'Test file was not copied'
+        );
+        $this->assertEqual(
+            $orig_image,
+            $new_image,
+            'DB entry for original image was altered'
+        );
+
+        // because no db entry was created for automatic purging
+        if (is_file($gallery->path . DIRECTORY_SEPARATOR . $orig_image->filename))
+        {
+            unlink($gallery->path . DIRECTORY_SEPARATOR . $orig_image->filename);
+        }
+    }
+
+    /**
+     * Tests copy_images() with db=TRUE
+     *
+     * Disabled until gallery storage unit tests are fixed
+     */
+    function test_copy_images_db()
+    {
+        return;
+
+        $gallery = (object) array('title' => 'Test Copy Images DB Gallery');
+        $this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
+
+        $gallery          = $this->gallery_mapper->find($gallery);
+        $gallery_id_field = $gallery->id_field;
+
+        $orig_image    = $this->image_mapper->find($this->image);
+        $new_image_ids = $this->storage->copy_images(array($this->image), $gallery, TRUE);
+        $new_image     = $this->image_mapper->find(reset($new_image_ids));
+        $this->images_to_cleanup[] = $new_image;
+
+        $this->assertEqual(
+            $new_image->galleryid,
+            $gallery->$gallery_id_field
+        );
+
+        $this->assertEqual(
+            array('pid', 'galleryid'),
+            array_keys(
+                array_diff(
+                    (array)$orig_image,
+                    (array)$new_image
+                )
+            ),
+            'DB entry for new image has not changed or has changed too much'
+        );
+    }
+
+    /**
+     * Tests move_images() with db=FALSE
+     *
+     * Disabled until gallery storage unit tests are fixed
+     */
+    function test_move_images()
+    {
+        return;
+
+        $gallery = (object) array('title' => 'Test Move Images Gallery');
+        $this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
+        $gallery = $this->gallery_mapper->find($gallery);
+
+        $orig_image    = $this->image_mapper->find($this->image);
+        $new_image_ids = $this->storage->move_images(array($this->image), $gallery, FALSE);
+        $new_image     = $this->image_mapper->find(reset($new_image_ids));
+        $this->images_to_cleanup[] = $new_image;
+
+        $this->assertFalse(
+            is_file($this->storage->get_image_abspath($orig_image)),
+            'Original file was not moved'
+        );
+
+        $this->assertTrue(
+            is_file($gallery->path . DIRECTORY_SEPARATOR . $orig_image->filename),
+            'move_images() destination file does not exist'
+        );
+    }
+
+    /**
+     * Tests move_images() with db=TRUE
+     *
+     * Disabled until gallery storage unit tests are fixed
+     */
+    function test_move_images_db()
+    {
+        return;
+
+        $gallery = (object) array('title' => 'Test Move Images DB Gallery');
+        $this->galleries_to_cleanup[] = $this->gallery_mapper->save($gallery);
+
+        $gallery          = $this->gallery_mapper->find($gallery);
+        $gallery_id_field = $gallery->id_field;
+
+        $orig_image    = $this->image_mapper->find($this->image);
+        $new_image_ids = $this->storage->move_images(array($this->image), $gallery, TRUE);
+        $new_image     = $this->image_mapper->find(reset($new_image_ids));
+        $this->images_to_cleanup[] = $new_image;
+
+        $this->assertEqual(
+            $new_image->galleryid,
+            $gallery->$gallery_id_field
+        );
+
+        $this->assertEqual(
+            array('pid', 'galleryid'),
+            array_keys(
+                array_diff(
+                    (array)$orig_image,
+                    (array)$new_image
+                )
+            ),
+            'DB entry for new image has not changed or has changed too much'
+        );
+    }
+
 //
 //	/*** HELPER METHODS ******************************************************/
 //
