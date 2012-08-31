@@ -249,7 +249,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 		// Ensure we have a valid gallery
 		if (($gallery = $this->object->_get_gallery_id($gallery))) {
-			$gallery_path = $this->object->get_gallery_path($gallery);
+			$gallery_path = $this->object->get_gallery_abspath($gallery);
 			$image_key = $this->object->_image_mapper->get_primary_key_column();
 			$retval = TRUE;
 

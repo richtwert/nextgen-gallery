@@ -29,6 +29,13 @@ class C_NextGEN_Bootstrap
 {
 	function __construct()
 	{
+        // Pope requires a a higher limit
+        $tmp = ini_get('xdebug.max_nesting_level');
+        if ($tmp && (int)$tmp <= 200)
+        {
+            ini_set('xdebug.max_nesting_level', 200);
+        }
+
 		// Boostrap
 		$this->_define_constants();
 		$this->_register_hooks();
