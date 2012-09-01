@@ -53,6 +53,11 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			'I_Display_Type',
 			'A_NextGen_Basic_Thumbnails'
 		);
+
+        $this->get_registry()->add_adapter(
+            'I_Ajax_Controller',
+            'A_Ajax_Pagination_Actions'
+        );
 	}
 }
 

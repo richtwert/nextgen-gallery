@@ -25,7 +25,7 @@
         <?php $image = $images[$i]; ?>
         <?php $thumb_size = $storage->get_thumb_dimensions($image); ?>
 
-        <?php if (isset($image->hidden)): ?>
+        <?php if (isset($image->hidden) && $image->hidden): ?>
             <?php $image->style = 'style="display: none;"'?>
         <?php else: ?>
             <?php $image->style = ''; ?>
