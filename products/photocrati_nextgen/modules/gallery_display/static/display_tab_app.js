@@ -53,15 +53,15 @@ var NggDisplayTab = Em.Application.create({
 * The associated attached gallery
 */
 NggDisplayTab.displayed_gallery				= Em.Object.create({
-	source:			'',
-	containers:		[],
-	entities:		[],
-	display_type_id:false,
+	source:					'',
+	containers:				[],
+	entities:				[],
+	display_type_id:		false,
 
 	/**
 	 * Returns the ID of the selected source
 	 */
-	source_id:			function(){
+	source_id:				function(){
 		var source = this.get('source');
 		if (source)
 			return source.get('id');
@@ -74,19 +74,15 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	/**
 	 * Returns an array of container ids
 	 */
-	container_ids:		function(){
-		var ids = [];
-		this.get('containers').forEach(function(item){
-			ids.push(item.get('id'));
-		});
-		return ids;
-	}.property('containers'),
+	container_ids:			function(){
+		return this.get('containers').getEach('id');
+	}.property('containers.@each.length'),
 
 
 	/**
 	 * Returns a string of container titles
 	 */
-	container_titles:	function(){
+	container_titles:		function(){
 		var titles = this.get('containers').join(', ');
 		if (titles) {
 			var index = titles.lastIndexOf(', ');
@@ -95,14 +91,14 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			return titles;
 		}
 		return titles;
-	}.property('containers'),
+	}.property('containers.@each.length'),
 
 
 
 	/** Returns the name of the entity types associated with this
 	 *  attached gallery
 	 */
-	entity_type:		function(){
+	entity_type:			function(){
 		$retval = 'images';
 		switch(this.get('source_id')) {
 			case 'album':
@@ -116,20 +112,40 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	/**
 	 * Returns an array of entity ids
 	 */
-	entity_ids:			function(){
-		var ids = [];
-		this.get('entities').forEach(function(item){
-			ids.push(item.get('id'));
-		});
-		return ids;
-	}.property('entities'),
+	entity_ids:				function(){
+		return this.get('entities').getEach('id');
+	}.property('entities.@each.length'),
+
+
+	/**
+	 * Gets excluded entities
+	 */
+	excluded_entities:		function(){
+		return this.get('entities').filterProperty('exclude', true);
+	}.property('entities.@each.exclude'),
+
+
+	/**
+	 * Gets the ids of all excluded entities
+	 */
+	excluded_entity_ids:	function(){
+		return this.get('excluded_entities').getEach('id');
+	}.property('excluded_entities.@each.length'),
+
+
+	/**
+	 * Gets included entities
+	 */
+	included_entities:		function(){
+		return this.get('entities').filterProperty('exclude', false);
+	}.property('entities.@each.exclude'),
 
 
 	/**
 	 * When the source is changed, we add the associated template
 	 * to the DOM
 	 */
-	_source_Changed:	Ember.observer(function(){
+	_source_Changed:		Ember.observer(function(){
 		 var view = NggDisplayTab.get('attached_source_view');
 		 if (view) view.remove();
 		 var source_id = this.get('source_id');
@@ -148,12 +164,24 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * of images or albums we're displaying
 	 */
 	_container_ids_Changed: Ember.observer(function(){
-		if (this.get('source_id') != 'albums' && this.get('containers').length > 0) {
-			this.fetch_gallery_images()
-			NggDisplayTab.preview_view.remove();
-			NggDisplayTab.preview_view.appendTo('#preview_tab_content');
+
+		NggDisplayTab.preview_view.remove();
+
+		if (this.get('source_id') != 'albums') {
+			if (this.get('containers').length > 0) {
+				this.fetch_gallery_images()
+				NggDisplayTab.preview_view.appendTo('#preview_tab_content');
+			}
 		}
 	}).observes('containers'),
+
+
+	/**
+	 * Finds an entity by it's ID
+	 */
+	get_entity_by_id:		function(id){
+		return this.get('entities').findProperty('id', id);
+	},
 
 
 	/**
@@ -174,7 +202,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			displayed_gallery: {
 				source:			self.get('source_id'),
 				container_ids:	self.get('container_ids'),
-				entity_ids:		self.get('entity_ids')
+				exclusions:		self.get('excluded_entity_ids')
 			}
 		};
 		jQuery.post(photocrati_ajax_url, request, function(response){
@@ -183,9 +211,15 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			// If no error...
 			if (typeof response.error == 'undefined') {
 
+				// Reset the entities array.
+				// TODO: This is probably not the best way of handling this.
+				// If a user selects "Gallery 1", makes some exclusions, and then
+				// selects "Gallery 2", the exclusions will get reset
+				self.set('entities', []);
 				response.images.forEach(function(item){
 					var image = Ember.Object.create(item);
 					image.set('id', image[image.get('id_field')]);
+					image.set('exclude', image.get('exclude') == 0 ? false : true);
 					self.get('entities').pushObject(image);
 				});
 
@@ -293,9 +327,12 @@ NggDisplayTab.galleries_source_view		= Ember.View.create({
  * Represents the view for displaying the image/gallery preview area
  */
 NggDisplayTab.preview_view = Ember.View.create({
-	templateName:		'preview_area',
-	entitiesBinding:	'NggDisplayTab.displayed_gallery.entities',
-	didInsertElement:	function(){
+	templateName:				'preview_area',
+	entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
+	displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
+	didInsertElement:			function(){
+
+		// Enable sorting!
 		var last_offset = 0;
 		jQuery('#preview_entity_list').sortable({
 			axis:	'y',
@@ -312,8 +349,8 @@ NggDisplayTab.preview_view = Ember.View.create({
 			if (direction == 'down' && win_height + window.scrollY >= ui.offset.top) {
 
 				// Calculate how to autoscroll
-				if (jQuery(window).height() - (ui.item.height() + ui.offset.top) <= 1) {
-					window.scrollBy(0, ui.offset.top - last_offset);
+				if (jQuery(window).height() - ui.offset.top <= ui.item.height()) {
+					window.scrollBy(0, ui.item.height()/15);
 				}
 			}
 
@@ -322,22 +359,71 @@ NggDisplayTab.preview_view = Ember.View.create({
 
 				// Calculate how to autoscroll
 				if (jQuery(window).height() - jQuery(document).height() - ui.offset.top <= ui.item.height()) {
-					window.scrollBy(0, ui.offset.top - last_offset);
+					window.scrollBy(0, ui.item.height()/15*-1);
 				}
 			}
 
 			last_offset = ui.offset.top;
 		});
-	}
+	},
+
+	/**
+	 * Provides an exclude button for a particular entities in the preview area
+	 */
+	ExcludeButton:	Ember.View.extend({
+		tagName:					'input',
+		type:						'checkbox',
+		classBindings:				['checked'],
+		attributeBindings:			['checked', 'value', 'type'],
+		displayed_galleryBinding:	'parentView.displayed_gallery',
+
+		/**
+		 * Determines if the entity is included or excluded
+		 */
+		checked:					function(){
+
+			var retval = false;
+			var item = this.get('displayed_gallery').get_entity_by_id(this.get('value'));
+			return typeof(item) != 'undefined' && item.exclude == true ? true : false;
+		}.property('displayed_gallery.excluded_entities.@each.length', 'value'),
+
+
+		/**
+		 * Includes/excludes an entity
+		 */
+		click:						function(e){
+			var item = this.get('displayed_gallery').get_entity_by_id(this.get('value'));
+			if (item) {
+				item.set('exclude', e.currentTarget.checked);
+			}
+		}
+	}),
+
+	/**
+	 * Provides a button to exclude all entities
+	 */
+	ExcludeAllButton: Ember.View.extend({
+		tagName:			'input',
+		type:				'checkbox',
+		attributeBindings:	['type'],
+		entitiesBinding:	'parentView.displayed_gallery.entities',
+		click:				function(e){
+			this.get('entities').setEach('exclude', e.currentTarget.checked);
+		}
+	})
 });
 
+
+/**
+ * Provides a radio button widget for Ember
+ */
 Ember.RadioButton = Ember.View.extend({
-  classNames: ['ember-radio-button'],
-  attributeBindings: ['type', 'checked', 'value', 'name'],
-  tagName: 'input',
-  type: 'radio',
-  name: "radio_button",
-  checked: function(){
+  classNames:			['ember-radio-button'],
+  attributeBindings:	['type', 'checked', 'value', 'name'],
+  tagName:				'input',
+  type:					'radio',
+  name:					"radio_button",
+  checked:				function(){
 	  return this.get('value') == this.get('selection');
   }.property('value', 'selection'),
   change: function(){
