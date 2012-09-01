@@ -19,7 +19,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function index($displayed_gallery)
 	{
         $display_settings = $displayed_gallery->display_settings;
-        $current_page = get_query_var('nggpage');
+        $current_page = (get_query_var('nggpage') == '') ? (int)$_GET['nggpage'] : get_query_var('nggpage');
         if (!$current_page) $current_page = 1;
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $pagination = FALSE;
