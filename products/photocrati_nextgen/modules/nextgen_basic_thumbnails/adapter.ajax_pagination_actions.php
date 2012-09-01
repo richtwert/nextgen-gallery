@@ -4,8 +4,6 @@ class A_Ajax_Pagination_Actions extends Mixin
 {
     function get_page_action()
     {
-        $retval = array();
-
         $displayed_gallery = NULL;
         $mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 
@@ -28,9 +26,7 @@ class A_Ajax_Pagination_Actions extends Mixin
         $output = ob_get_contents();
         ob_end_clean();
 
-        $retval['output'] = $output;
-
-        return $retval;
-
+        print $output;
+        exit;
     }
 }
