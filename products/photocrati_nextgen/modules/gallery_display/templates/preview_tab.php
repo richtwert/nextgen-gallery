@@ -2,7 +2,7 @@
 
 <ul id="preview_entity_list">
 	<li class="previewed_entity header">
-		{{view ExcludeAllButton}}
+		{{view ExcludeAllButton id="exclude_toggle_all"}}
 		<label for="exclude_toggle_all">
 			<?php echo_h($exclude_all_label)?>
 		</label>
