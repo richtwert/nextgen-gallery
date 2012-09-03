@@ -25,7 +25,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         wp_enqueue_script(
             'ngg_template_settings',
             PHOTOCRATI_GALLERY_MODULE_URL . DIRECTORY_SEPARATOR
-                . basename(__DIR__) . DIRECTORY_SEPARATOR . 'js'
+                . basename(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'js'
                 . DIRECTORY_SEPARATOR . 'ngg_template_settings.js',
             array('jquery-ui-autocomplete') // deps
         );
