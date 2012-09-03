@@ -382,11 +382,6 @@ NggDisplayTab.galleries_source_view		= Ember.View.create({
 				 var width = jQuery('#existing_galleries_chzn').width(400).width();
 				 jQuery('#existing_galleries_chzn .search-field input').width(width);
 				 jQuery('#existing_galleries_chzn .chzn-drop').width(width-2);
-
-				 // Update the height of the accordion
-				 var dropdown_height = jQuery('#existing_galleries_chzn .chzn-choices').height();
-				 var source_tab_height = jQuery('#source_tab_content').height();
-			 jQuery('#source_tab_content').height(dropdown_height + source_tab_height);
 			}).trigger('liszt:updated');
 		});
 	}.observes('galleries.@each.id'),

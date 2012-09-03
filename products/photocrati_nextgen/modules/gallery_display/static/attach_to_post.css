@@ -29,6 +29,10 @@ iframe {
 	background: transparent;
 }
 
+#source_tab_content {
+	overflow: visible;
+}
+
 /** Would would you like to display tab? **/
 #source_configuration td{
 	vertical-align: top;
