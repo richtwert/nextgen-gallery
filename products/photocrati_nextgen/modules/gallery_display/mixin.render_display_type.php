@@ -44,6 +44,9 @@ class Mixin_Render_Display_Type extends Mixin
 	 */
 	function display_images($params, $inner_content=NULL)
 	{
+        print "<h2>params:</h2>";
+        print var_dump($params);
+        print "<hr/>";
 		$displayed_gallery = NULL;
 
 		// Get the NextGEN settings to provide some defaults
@@ -147,4 +150,91 @@ class Mixin_Render_Display_Type extends Mixin
 		}
 		else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
 	}
+
+    /**
+     * Convenience method; by passing an array of parameters and an array of which fields to strip this function will
+     * remove the fields to strip and generate shortcode parameter texts with the remaining fields.
+     *
+     * @param array $params Shortcode parameters
+     * @param array $fields_to_remove Parameters to remove
+     * @return array
+     */
+    function _process($params, $fields_to_remove = array())
+    {
+        $str = '';
+        $removed_fields = array();
+
+        foreach ($fields_to_remove as $field) {
+            $removed_fields[$field] = $params[$field];
+            unset($params[$field]);
+        }
+
+        foreach ($params as $name => $val) {
+            $str .= ' ' . $name . '="' . $val . '" ';
+        }
+
+        return array($removed_fields, $str);
+    }
+
+    function wrap_shortcode_singlepic($params, $inner_content=NULL)
+    {
+        // not yet implemented / does not work
+        // returns "source should be present"
+        // list($tmp, $str) = $this->object->_process($params, array('id'));
+        // do_shortcode('[ngg_images image_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+    }
+
+    function wrap_shortcode_album($params, $inner_content=NULL)
+    {
+        // not yet implemented / does not work
+        // returns "no images were found"
+        // list($tmp, $str) = $this->object->_process($params, array('id'));
+        // do_shortcode('[ngg_images album_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+    }
+
+    function wrap_shortcode_nggallery($params, $inner_content=NULL)
+    {
+        list($tmp, $str) = $this->object->_process($params, array('id'));
+        do_shortcode('[ngg_images gallery_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+    }
+
+    function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+    function wrap_shortcode_slideshow($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+    function wrap_shortcode_nggtags($params, $inner_content=NULL)
+    {
+        // not yet implemented / does not work
+        // list($tmp, $str) = $this->object->_process($params, array('gallery'));
+        // do_shortcode('[ngg_images tag_ids="' . $tmp['gallery'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+    }
+
+    function wrap_shortcode_thumb($params, $inner_content=NULL)
+    {
+        // not yet implemented / does not work
+        // returns "source should be present"
+        // list($tmp, $str) = $this->object->_process($params, array('id'));
+        // do_shortcode('[ngg_images image_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+    }
+
+    function wrap_shortcode_random($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+    function wrap_shortcode_recent($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+    function wrap_shortcode_tagcloud($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
 }

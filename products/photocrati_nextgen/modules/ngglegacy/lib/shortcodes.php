@@ -22,16 +22,16 @@ class NextGEN_shortcodes {
         // add_filter('the_excerpt', array(&$this, 'convert_shortcode'));
         // add_filter('the_excerpt', 'do_shortcode', 11);
         
-        add_shortcode( 'singlepic', array(&$this, 'show_singlepic' ) );
-        add_shortcode( 'album', array(&$this, 'show_album' ) );
-        add_shortcode( 'nggallery', array(&$this, 'show_gallery') );
-        add_shortcode( 'imagebrowser', array(&$this, 'show_imagebrowser' ) );
-        add_shortcode( 'slideshow', array(&$this, 'show_slideshow' ) );
-        add_shortcode( 'nggtags', array(&$this, 'show_tags' ) );
-        add_shortcode( 'thumb', array(&$this, 'show_thumbs' ) );
-        add_shortcode( 'random', array(&$this, 'show_random' ) );
-        add_shortcode( 'recent', array(&$this, 'show_recent' ) );
-        add_shortcode( 'tagcloud', array(&$this, 'show_tagcloud' ) );
+        // add_shortcode( 'singlepic', array(&$this, 'show_singlepic' ) );
+        // add_shortcode( 'album', array(&$this, 'show_album' ) );
+        // add_shortcode( 'nggallery', array(&$this, 'show_gallery') );
+        // add_shortcode( 'imagebrowser', array(&$this, 'show_imagebrowser' ) );
+        // add_shortcode( 'slideshow', array(&$this, 'show_slideshow' ) );
+        // add_shortcode( 'nggtags', array(&$this, 'show_tags' ) );
+        // add_shortcode( 'thumb', array(&$this, 'show_thumbs' ) );
+        // add_shortcode( 'random', array(&$this, 'show_random' ) );
+        // add_shortcode( 'recent', array(&$this, 'show_recent' ) );
+        // add_shortcode( 'tagcloud', array(&$this, 'show_tagcloud' ) );
     }
 
      /**
