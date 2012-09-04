@@ -82,4 +82,44 @@ class A_Attach_To_Post_Ajax extends Mixin
 		}
 		return $response;
 	}
+
+
+	/**
+	 * Saves the displayed gallery
+	 */
+	function save_displayed_gallery_action()
+	{
+		$response = array();
+		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+
+		// Do we have fields to work with?
+		if (($params = $this->object->param('displayed_gallery'))) {
+
+			// Existing displayed gallery ?
+			if (($id = $this->object->param('id'))) {
+				$displayed_gallery = $mapper->find($id);
+				if ($displayed_gallery) {
+					foreach ($params as $key => $value) $displayed_gallery->$key = $value;
+				}
+			}
+			else {
+				$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+				$displayed_gallery = $factory->create('displayed_gallery', $mapper, $params);
+			}
+
+			// Save the changes
+			if ($displayed_gallery) {
+				if ($displayed_gallery->save()) $response['displayed_gallery'] = $displayed_gallery->get_entity();
+				else $response['validation_errors'] = $displayed_gallery->get_errors();
+
+			}
+			else
+			{
+				$response['error'] = _('Displayed gallery does not exist');
+			}
+		}
+		else $response['error'] = _('Invalid request');
+
+		return $response;
+	}
 }

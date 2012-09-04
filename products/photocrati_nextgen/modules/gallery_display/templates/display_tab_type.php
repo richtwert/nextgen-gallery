@@ -4,9 +4,9 @@
 	<div class="image_container">
 		<div>
 			{{view Ember.RadioButton
-				selectionBinding="NggDisplayTab.displayed_gallery.display_type_id"
-				value="<?php echo esc_attr($display_type->id())?>"
-				name="display_type_id"
+				selectionBinding="NggDisplayTab.displayed_gallery.display_type"
+				value="<?php echo esc_attr($display_type->name)?>"
+				name="display_type"
 			}}
 			<?php echo_h($display_type->title)?>
 		</div>

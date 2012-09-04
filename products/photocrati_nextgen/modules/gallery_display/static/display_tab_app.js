@@ -22,6 +22,44 @@ var NggDisplayTab = Em.Application.create({
 
 
 	/**
+	 * Saves the displayed gallery
+	 */
+	save:							function(e){
+		// Initiate the request to save...
+		var request = {
+			id:					NggDisplayTab.displayed_gallery.get('id'),
+			displayed_gallery:	{
+				source:			NggDisplayTab.displayed_gallery.get('source_id'),
+				container_ids:	NggDisplayTab.displayed_gallery.get('container_ids'),
+				entities:		NggDisplayTab.displayed_gallery.get('entity_ids'),
+				display_type:	NggDisplayTab.displayed_gallery.get('display_type')
+			},
+			action:				'save_displayed_gallery'
+		};
+		jQuery.post(photocrati_ajax_url, request, function(response){
+			if (typeof response != 'object') response  = JSON.parse(response);
+
+			// Alert any errors
+			if (response.error) alert(error);
+
+			// Display validation errors
+			else if (response.validation_errors) jQuery('#displayed_tab').prepend(response.validation_errors);
+
+			// Succesful save...
+			else if (response.displayed_gallery) {
+
+				// Update the ID of the displayed gallery
+				var id_field = response.displayed_gallery.id_field;
+				NggDisplayTab.displayed_gallery.set('id', response.displayed_gallery[id_field]);
+
+				// Insert placeholder into tinyMCE content area
+				debugger;
+			}
+		});
+	},
+
+
+	/**
 	 * Fetches a list of image/gallery sources to be used in the Attach To Post
 	 * interface
 	 */
@@ -111,7 +149,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	containers:					Ember.A(),
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
-	display_type_id:			false,
+	display_type:				false,
 
 	/**
 	 * Initializes the object

@@ -5,6 +5,17 @@ html,body {
 	margin: 0px;
 }
 
+.entity_errors {
+	color: red;
+}
+
+.entity_errors ul {
+	margin-left: 30px;
+}
+.entity_errors ul li{
+	list-style-type: disc;
+}
+
 .ui-helper-reset {
 	font-size: 99%;
 }

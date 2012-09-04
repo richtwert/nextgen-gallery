@@ -54,6 +54,7 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 				$this->object->add_error('Invalid display type', 'display_type');
 			}
 			else {
+				if (!isset($this->object->display_settings)) $this->object->display_settings = array();
 				$this->object->display_settings = $this->object->array_merge_assoc(
 					$display_type->settings, $this->object->display_settings
 				);

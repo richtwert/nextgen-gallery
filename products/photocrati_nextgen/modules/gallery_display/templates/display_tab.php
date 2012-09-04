@@ -10,6 +10,13 @@
 	<?php endforeach ?>
 	</div>
 	<p>
-		<input type="submit" value="Save" class="button-primary"/>
+		<script type="text/x-handlebars">
+			<input
+				type="submit"
+				value="Save"
+				class="button-primary"
+				{{action "save" target="NggDisplayTab" on="click"}}
+			/>
+		</script>
 	</p>
 </form>
