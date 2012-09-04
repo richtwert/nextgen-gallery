@@ -46,6 +46,8 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			$this->object->settings['effect_code'] = $settings->thumbCode;
         if (!isset($this->object->settings['show_all_in_lightbox']))
             $this->object->settings['show_all_in_lightbox'] = $settings->galHiddenImg;
+        if (!isset($this->object->settings['ajax_pagination']))
+            $this->object->settings['ajax_pagination'] = $settings->galAjaxNav;
 
 		// Show slideshow link ?
 		if (!isset($this->object->settings['show_slideshow_link']))

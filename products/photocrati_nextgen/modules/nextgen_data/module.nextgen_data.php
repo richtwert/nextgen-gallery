@@ -62,6 +62,7 @@ class M_NextGen_Data extends C_Base_Module
     {
 		$this->get_registry()->add_utility('I_Gallery_Mapper', 'C_Gallery_Mapper');
 		$this->get_registry()->add_utility('I_Gallery_Image_Mapper', 'C_Gallery_Image_Mapper');
+        $this->get_registry()->add_utility('I_Transients', 'C_NextGen_Transients');
     }
 }
 new M_NextGen_Data();

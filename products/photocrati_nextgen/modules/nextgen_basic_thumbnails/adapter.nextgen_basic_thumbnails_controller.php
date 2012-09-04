@@ -19,10 +19,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function index($displayed_gallery)
 	{
         $display_settings = $displayed_gallery->display_settings;
-        $current_page = get_query_var('nggpage');
+        $current_page = (get_query_var('nggpage') == '') ? (int)$_GET['nggpage'] : get_query_var('nggpage');
         if (!$current_page) $current_page = 1;
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $pagination = FALSE;
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $total = $displayed_gallery->get_image_count();
 
         // Get the images to be displayed
@@ -61,6 +62,25 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// and deprecate the nggShowGallery() method
 			***/
 
+            if ($display_settings['ajax_pagination'] || $display_settings['show_piclens_link'])
+            {
+                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+                $entity = $displayed_gallery->get_entity();
+                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+            }
+            if ($display_settings['ajax_pagination'])
+            {
+                wp_localize_script(
+                    'nextgen-basic-thumbnails-ajax-pagination',
+                    'ngg_ajax',
+                    array(
+                        'path' => NGGALLERY_URLPATH,
+                        'callback' => trailingslashit(home_url()) . 'photocrati_ajax?action=get_page&transient_id=' . $entity->ID,
+                        'loading' => __('loading', 'nggallery')
+                    )
+                );
+            }
+
 			// Create pagination
 			if ($display_settings['images_per_page']) {
 				$pagination = new nggNavigation;
@@ -77,13 +97,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
-				$params = json_encode($displayed_gallery->get_entity());
-				$mediarss_link = real_site_url('/mediarss?source=displayed_gallery&params='.$params);
+                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $entity->ID);
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
-
-			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
             // The render functions require different processing
             if (!empty($display_settings['template']))
@@ -128,7 +144,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			);
 		}
 
-		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
+        wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL . DIRECTORY_SEPARATOR . 'ajax_pagination.js');
+
+        $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
 
@@ -287,6 +305,22 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
     }
 
     /**
+     * Renders the show_piclens_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_thumbnails_ajax_pagination_field($display_type)
+    {
+        return $this->render_partial('nextgen_basic_thumbnails_settings_ajax_pagination', array(
+            'display_type_name' => $display_type->name,
+            'ajax_pagination_label' => _('Enable AJAX pagination:'),
+            'ajax_pagination_desc' => _('Browse images without reloading the page.'),
+            'ajax_pagination' => $display_type->settings['ajax_pagination']
+        ), True);
+    }
+
+    /**
 	 * Returns a list of fields to render on the settings page
 	 */
 	function _get_field_names()
@@ -300,6 +334,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_show_slideshow_link',
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_hidden',
+            'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_templates_template'
 		);
 	}
