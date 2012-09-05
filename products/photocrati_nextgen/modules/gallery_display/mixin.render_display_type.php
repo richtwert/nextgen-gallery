@@ -153,14 +153,18 @@ class Mixin_Render_Display_Type extends Mixin
         return (isset($params[$name])) ? $params[$name] : $default;
     }
 
-    function wrap_shortcode_singlepic($params, $inner_content=NULL)
+    function wrap_shortcode_album($params, $inner_content=NULL)
     {
         // not yet implemented
     }
 
-    function wrap_shortcode_album($params, $inner_content=NULL)
+    function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
     {
-        // not yet implemented
+        $params['image_ids']    = $this->_get_param('id', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_nggallery($params, $inner_content=NULL)
@@ -173,20 +177,6 @@ class Mixin_Render_Display_Type extends Mixin
         $this->object->display_images($params, $inner_content);
     }
 
-    function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
-    {
-        $params['image_ids']    = $this->_get_param('id', NULL, $params);
-        $params['source']       = $this->_get_param('source', 'galleries', $params);
-        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
-        unset($params['id']);
-        $this->object->display_images($params, $inner_content);
-    }
-
-    function wrap_shortcode_slideshow($params, $inner_content=NULL)
-    {
-        // not yet implemented
-    }
-
     function wrap_shortcode_nggtags($params, $inner_content=NULL)
     {
         $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
@@ -196,24 +186,23 @@ class Mixin_Render_Display_Type extends Mixin
         $this->object->display_images($params, $inner_content);
     }
 
-    function wrap_shortcode_thumb($params, $inner_content=NULL)
-    {
-        $params['entity_ids']   = $this->_get_param('id', NULL, $params);
-        $params['source']       = $this->_get_param('source', 'galleries', $params);
-        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
-        unset($params['id']);
-        $this->object->display_images($params, $inner_content);
-    }
-
     function wrap_shortcode_random($params, $inner_content=NULL)
     {
-        $params['source']             = $this->_get_param('source', 'recent', $params);
+        $params['source']             = $this->_get_param('source', 'random', $params);
         $params['images_per_page']    = $this->_get_param('max', NULL, $params);
-        $params['gallery_ids']        = $this->_get_param('id', NULL, $params);
         $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
         $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+
+        // inside if because Mixin_Displayed_Gallery_Instance_Methods->get_images() doesn't handle NULL container_ids
+        // correctly
+        if (isset($params['id']))
+        {
+            $params['container_ids'] = $this->_get_param('id', NULL, $params);
+        }
+
         unset($params['max']);
         unset($params['id']);
+
         $this->object->display_images($params, $inner_content);
     }
 
@@ -221,10 +210,35 @@ class Mixin_Render_Display_Type extends Mixin
     {
         $params['source']             = $this->_get_param('source', 'recent', $params);
         $params['images_per_page']    = $this->_get_param('max', NULL, $params);
-        $params['gallery_ids']        = $this->_get_param('id', NULL, $params);
         $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
         $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+
+        if (isset($params['id']))
+        {
+            $params['container_ids'] = $this->_get_param('id', NULL, $params);
+        }
+
         unset($params['max']);
+        unset($params['id']);
+
+        $this->object->display_images($params, $inner_content);
+    }
+
+    function wrap_shortcode_singlepic($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+    function wrap_shortcode_slideshow($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+    function wrap_shortcode_thumb($params, $inner_content=NULL)
+    {
+        $params['entity_ids']   = $this->_get_param('id', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
         unset($params['id']);
         $this->object->display_images($params, $inner_content);
     }
