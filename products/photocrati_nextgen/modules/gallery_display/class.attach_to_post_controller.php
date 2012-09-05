@@ -135,7 +135,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			wp_localize_script(
 				'ngg_attach_to_post_display_tab_app',
 				'ngg_displayed_gallery_preview_url',
-				real_admin_url('/attach_to_post/preview')
+				PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
 			);
 			wp_localize_script(
 				'ngg_attach_to_post_display_tab_app',

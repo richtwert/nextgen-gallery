@@ -87,7 +87,7 @@ var NggDisplayTab = Em.Application.create({
 			if (response.sources) {
 				response.sources.forEach(function(item){
 					app.get('sources').pushObject(item);
-					if (item.id == existing.source) app.get('displayed_gallery').set('source', item);
+					if (existing && item.id == existing.source) app.get('displayed_gallery').set('source', item);
 				});
 			}
 		});

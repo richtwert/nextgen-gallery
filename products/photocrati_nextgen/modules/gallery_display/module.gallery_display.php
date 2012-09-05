@@ -7,6 +7,11 @@
 	}
 ***/
 
+define(
+	'PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
+	real_admin_url('/attach_to_post/preview')
+);
+
 class M_Gallery_Display extends C_Base_Module
 {
 	var $display_settings_page_name = 'ngg_display_settings';
@@ -132,6 +137,10 @@ class M_Gallery_Display extends C_Base_Module
 
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
+
+		// Add hook to delete displayed galleries when removed from a post
+		add_action('pre_post_update', array(&$this, 'locate_stale_displayed_galleries'));
+		add_action('post_updated',	array(&$this, 'cleanup_displayed_galleries'));
 	}
 
 
@@ -246,6 +255,29 @@ class M_Gallery_Display extends C_Base_Module
 		);
 
 		return $plugins;
+	}
+
+
+	function locate_stale_displayed_galleries($post_id)
+	{
+		global $displayed_galleries_to_cleanup;
+		$displayed_galleries_to_cleanup = array();
+		$post = get_post($post_id);
+		$preview_url = preg_quote(PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
+		if (preg_match_all("/{$preview_url}\?id=(\d+)/", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
+			foreach ($matches as $match) {
+				$preview_url = preg_quote($match[0], '/');
+				if (!preg_match("/{$preview_url}/", $_POST['post_content']))
+					$displayed_galleries_to_cleanup[] = intval($match[1]);
+			}
+		}
+	}
+
+	function cleanup_displayed_galleries($post_id)
+	{
+		global $displayed_galleries_to_cleanup;
+		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		foreach ($displayed_galleries_to_cleanup as $id) $mapper->destroy($id);
 	}
 }
 
