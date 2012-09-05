@@ -44,11 +44,6 @@ class Mixin_Render_Display_Type extends Mixin
 	 */
 	function display_images($params, $inner_content=NULL)
 	{
-
-//        print "<h2>params:</h2>";
-//        print var_dump($params);
-//        print "<hr/>";
-
 		$displayed_gallery = NULL;
 
 		// Get the NextGEN settings to provide some defaults
