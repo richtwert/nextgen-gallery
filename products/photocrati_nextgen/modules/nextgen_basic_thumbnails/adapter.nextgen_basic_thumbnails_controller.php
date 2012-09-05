@@ -82,12 +82,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             }
 
 			// Create pagination
-			if ($display_settings['images_per_page']) {
+			if ($display_settings['images_per_page'] && !$display_settings['disable_pagination']) {
 				$pagination = new nggNavigation;
 				$pagination = $pagination->create_navigation($current_page,
                                                              $total,
                                                              $display_settings['images_per_page']);
-			}
+			} else {
+                $pagination = NULL;
+            }
 
 			// Determine what the slideshow link would be. TODO: Figure this out
 			$slideshow_link = 'http://www.google.ca';

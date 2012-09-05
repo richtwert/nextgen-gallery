@@ -100,17 +100,13 @@ class M_Gallery_Display extends C_Base_Module
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
-        // override the old nextgen tags to point into a wrapper to ngg_images
-        add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
-        add_shortcode('album',        array(&$this, 'wrap_shortcode_album'));
-        add_shortcode('nggallery',    array(&$this, 'wrap_shortcode_nggallery'));
+        // wrap the old nextgen tags to call our display_images()
         add_shortcode('imagebrowser', array(&$this, 'wrap_shortcode_imagebrowser'));
-        add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
+        add_shortcode('nggallery',    array(&$this, 'wrap_shortcode_nggallery'));
         add_shortcode('nggtags',      array(&$this, 'wrap_shortcode_nggtags'));
-        add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
         add_shortcode('random',       array(&$this, 'wrap_shortcode_random'));
         add_shortcode('recent',       array(&$this, 'wrap_shortcode_recent'));
-        add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
+        add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
 	}
 
 

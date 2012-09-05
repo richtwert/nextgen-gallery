@@ -44,9 +44,11 @@ class Mixin_Render_Display_Type extends Mixin
 	 */
 	function display_images($params, $inner_content=NULL)
 	{
-        print "<h2>params:</h2>";
-        print var_dump($params);
-        print "<hr/>";
+
+//        print "<h2>params:</h2>";
+//        print var_dump($params);
+//        print "<hr/>";
+
 		$displayed_gallery = NULL;
 
 		// Get the NextGEN settings to provide some defaults
@@ -151,56 +153,38 @@ class Mixin_Render_Display_Type extends Mixin
 		else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
 	}
 
-    /**
-     * Convenience method; by passing an array of parameters and an array of which fields to strip this function will
-     * remove the fields to strip and generate shortcode parameter texts with the remaining fields.
-     *
-     * @param array $params Shortcode parameters
-     * @param array $fields_to_remove Parameters to remove
-     * @return array
-     */
-    function _process($params, $fields_to_remove = array())
+    function _get_param($name, $default, $params)
     {
-        $str = '';
-        $removed_fields = array();
-
-        foreach ($fields_to_remove as $field) {
-            $removed_fields[$field] = $params[$field];
-            unset($params[$field]);
-        }
-
-        foreach ($params as $name => $val) {
-            $str .= ' ' . $name . '="' . $val . '" ';
-        }
-
-        return array($removed_fields, $str);
+        return (isset($params[$name])) ? $params[$name] : $default;
     }
 
     function wrap_shortcode_singlepic($params, $inner_content=NULL)
     {
-        // not yet implemented / does not work
-        // returns "source should be present"
-        // list($tmp, $str) = $this->object->_process($params, array('id'));
-        // do_shortcode('[ngg_images image_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+        // not yet implemented
     }
 
     function wrap_shortcode_album($params, $inner_content=NULL)
     {
-        // not yet implemented / does not work
-        // returns "no images were found"
-        // list($tmp, $str) = $this->object->_process($params, array('id'));
-        // do_shortcode('[ngg_images album_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+        // not yet implemented
     }
 
     function wrap_shortcode_nggallery($params, $inner_content=NULL)
     {
-        list($tmp, $str) = $this->object->_process($params, array('id'));
-        do_shortcode('[ngg_images gallery_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+        $params['gallery_ids']     = $this->_get_param('id', NULL, $params);
+        $params['images_per_page'] = $this->_get_param('images', NULL, $params);
+        $params['display_type']    = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['id']);
+        unset($params['images']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
     {
-        // not yet implemented
+        $params['image_ids']    = $this->_get_param('id', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_slideshow($params, $inner_content=NULL)
@@ -210,31 +194,43 @@ class Mixin_Render_Display_Type extends Mixin
 
     function wrap_shortcode_nggtags($params, $inner_content=NULL)
     {
-        // not yet implemented / does not work
-        // list($tmp, $str) = $this->object->_process($params, array('gallery'));
-        // do_shortcode('[ngg_images tag_ids="' . $tmp['gallery'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+        $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['gallery']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_thumb($params, $inner_content=NULL)
     {
-        // not yet implemented / does not work
-        // returns "source should be present"
-        // list($tmp, $str) = $this->object->_process($params, array('id'));
-        // do_shortcode('[ngg_images image_ids="' . $tmp['id'] . '" display_type="photocrati-nextgen_basic_thumbnails"' . $str . ']');
+        $params['entity_ids']   = $this->_get_param('id', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_random($params, $inner_content=NULL)
     {
-        // not yet implemented
+        $params['source']             = $this->_get_param('source', 'recent', $params);
+        $params['images_per_page']    = $this->_get_param('max', NULL, $params);
+        $params['gallery_ids']        = $this->_get_param('id', NULL, $params);
+        $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
+        $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['max']);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_recent($params, $inner_content=NULL)
     {
-        // not yet implemented
-    }
-
-    function wrap_shortcode_tagcloud($params, $inner_content=NULL)
-    {
-        // not yet implemented
+        $params['source']             = $this->_get_param('source', 'recent', $params);
+        $params['images_per_page']    = $this->_get_param('max', NULL, $params);
+        $params['gallery_ids']        = $this->_get_param('id', NULL, $params);
+        $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
+        $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['max']);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
     }
 }
