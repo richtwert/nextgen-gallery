@@ -62,63 +62,93 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 
 	/**
+	 * Displays a preview image for the displayed gallery
+	 */
+	function preview()
+	{
+		$filename = $this->static_file('invalid_image.png');
+		$this->set_content_type('jpeg');
+		if ($this->object->_validate_request()) {
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			$images = $this->object->_displayed_gallery->get_images(1);
+			if ($images) $filename = $storage->get_thumb_abspath($images[0]);
+		}
+		readfile($filename);
+		$this->render();
+	}
+
+
+	/**
 	 * Enqueues resources needed for the Attach To Post Interface
 	 */
 	function enqueue_resources()
 	{
 		define('WP_ADMIN', TRUE);
 
-		// Enqueue JQuery UI
-		wp_enqueue_script('jquery-ui-tabs');
-		wp_enqueue_Script('jquery-ui-accordion');
-		wp_enqueue_script('jquery-ui-sortable');
-		wp_enqueue_style(
-			PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
-			is_ssl() ?
-				 str_replace('http:', 'https:', PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL) :
-				 PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
-			array(),
-			PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
-		);
+		if ($this->object->_validate_request()) {
 
-		// Enqueue chosen, a library to make our drop-downs look pretty
-		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
-		wp_enqueue_script(
-			'chosen', $this->static_url('chosen.js'), array('jquery')
-		);
+			// Enqueue JQuery UI
+			wp_enqueue_script('jquery-ui-tabs');
+			wp_enqueue_Script('jquery-ui-accordion');
+			wp_enqueue_script('jquery-ui-sortable');
+			wp_enqueue_style(
+				PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
+				is_ssl() ?
+					 str_replace('http:', 'https:', PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL) :
+					 PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
+				array(),
+				PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
+			);
 
-		// Ensure we have the AJAX module ready
-		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
+			// Enqueue chosen, a library to make our drop-downs look pretty
+			wp_enqueue_style('chosen', $this->static_url('chosen.css'));
+			wp_enqueue_script(
+				'chosen', $this->static_url('chosen.js'), array('jquery')
+			);
 
-		// Enqueue logic for the Attach to Post interface as a whole
-		wp_enqueue_script(
-			'ngg_attach_to_post', $this->static_url('attach_to_post.js')
-		);
-		wp_enqueue_style(
-			'ngg_attach_to_post', $this->static_url('attach_to_post.css')
-		);
+			// Ensure we have the AJAX module ready
+			wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
 
-		// Enqueue our Ember.js application for the "Display Tab"
-		wp_enqueue_script(
-			'handlebars',
-			$this->static_url('handlebars-1.0.0.beta.6.js')
-		);
-		wp_enqueue_script(
-			'ember',
-			$this->static_url('ember-1.0.pre.js'),
-			array('jquery', 'handlebars')
-		);
-		wp_enqueue_script(
-			'ngg_attach_to_post_display_tab_app',
-			$this->static_url('display_tab_app.js'),
-			array('ember')
-		);
+			// Enqueue logic for the Attach to Post interface as a whole
+			wp_enqueue_script(
+				'ngg_attach_to_post', $this->static_url('attach_to_post.js')
+			);
+			wp_enqueue_style(
+				'ngg_attach_to_post', $this->static_url('attach_to_post.css')
+			);
 
-		// Tell WordPress to continue print all enqueued resources
-		do_action('admin_enqueue_scripts');
-		do_action('admin_print_styles');
-		do_action('admin_print_scripts');
-		do_action('wp_print_scripts');
+			// Enqueue our Ember.js application for the "Display Tab"
+			wp_enqueue_script(
+				'handlebars',
+				$this->static_url('handlebars-1.0.0.beta.6.js')
+			);
+			wp_enqueue_script(
+				'ember',
+				$this->static_url('ember-1.0.pre.js'),
+				array('jquery', 'handlebars')
+			);
+			wp_enqueue_script(
+				'ngg_attach_to_post_display_tab_app',
+				$this->static_url('display_tab_app.js'),
+				array('ember')
+			);
+			wp_localize_script(
+				'ngg_attach_to_post_display_tab_app',
+				'ngg_displayed_gallery_preview_url',
+				real_admin_url('/attach_to_post/preview')
+			);
+			wp_localize_script(
+				'ngg_attach_to_post_display_tab_app',
+				'existing',
+				isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
+			);
+
+			// Tell WordPress to continue print all enqueued resources
+			do_action('admin_enqueue_scripts');
+			do_action('admin_print_styles');
+			do_action('admin_print_scripts');
+			do_action('wp_print_scripts');
+		}
 	}
 
 	/**
@@ -133,10 +163,11 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// retrieving the displayed gallery to edit.
 		// If the displayed gallery doesn't exist, then it's an
 		// invalid request
-		if (($id = $this->object->param('id'))) {
-			$mapper = $this->get_registry('I_Displayed_Gallery_Mapper');
-			$this->object->_displayed_gallery = $mapper->find($id);
+		if (($id = $this->object->param('id')) && !isset($this->object->_displayed_gallery)) {
+			$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+			$this->object->_displayed_gallery = $mapper->find($id, TRUE);
 			if (is_null($this->object->_displayed_gallery)) $valid_request = FALSE;
+			else $this->object->_displayed_gallery->id = $this->object->_displayed_gallery->id();
 		}
 
 		return $valid_request;

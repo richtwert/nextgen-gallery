@@ -97,7 +97,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 
 			// Existing displayed gallery ?
 			if (($id = $this->object->param('id'))) {
-				$displayed_gallery = $mapper->find($id);
+				$displayed_gallery = $mapper->find($id, TRUE);
 				if ($displayed_gallery) {
 					foreach ($params as $key => $value) $displayed_gallery->$key = $value;
 				}
@@ -110,7 +110,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 			// Save the changes
 			if ($displayed_gallery) {
 				if ($displayed_gallery->save()) $response['displayed_gallery'] = $displayed_gallery->get_entity();
-				else $response['validation_errors'] = $displayed_gallery->get_errors();
+				else $response['validation_errors'] = $this->attach_to_post->show_errors_for($displayed_gallery, TRUE);
 
 			}
 			else

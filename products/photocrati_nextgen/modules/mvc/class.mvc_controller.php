@@ -66,11 +66,25 @@ class Mixin_MVC_Controller_Rendering extends Mixin
     }
 
 
+	/**
+	 * Renders a template and outputs the response headers
+	 * @param string $name
+	 * @param array $vars
+	 */
     function render_view($name, $vars=array())
     {
-        if (!headers_sent()) header('Content-Type: '.$this->object->_content_type);
+		$this->render();
         $this->object->render_partial($name, $vars);
     }
+
+
+	/**
+	 * Outputs the response headers
+	 */
+	function render()
+	{
+		if (!headers_sent()) header('Content-Type: '.$this->object->_content_type);
+	}
 
 
     /**

@@ -1,3 +1,10 @@
+// Provides a function to close the TinyMCE popup window
+function close_attach_to_post_window()
+{
+	parent.tinyMCE.activeEditor.windowManager.close(window);
+}
+
+// Activates the attach to post screen elements
 jQuery(function($){
 	// Activate horizontal tabs
 	$('#attach_to_post_tabs').tabs();
@@ -58,5 +65,11 @@ jQuery(function($){
 		setTimeout(function(){
 			callback(iframe);
 		}, 5);
+	});
+
+	// Close the window when the escape key is pressed
+	$(this).keydown(function(e){
+		if (e.keyCode == 27) close_attach_to_post_window();
+		return;
 	});
 });

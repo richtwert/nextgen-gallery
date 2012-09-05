@@ -184,8 +184,8 @@ class C_NextGEN_Bootstrap
 			$suites['nextgen'] = array(
 //				path_join($tests_dir, 'mvc'),
 //				path_join($tests_dir, 'datamapper'),
-				path_join($tests_dir, 'nextgen_data'),
-// 				path_join($tests_dir, 'gallery_display')
+//				path_join($tests_dir, 'nextgen_data'),
+ 				path_join($tests_dir, 'gallery_display')
 			);
 		}
 

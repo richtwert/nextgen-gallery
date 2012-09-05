@@ -40,13 +40,39 @@
 				cmd:	'ngg_attach_to_post',
 				image:	'http://www.mricons.com/store/png/110948_27864_24_gallery_image_landscape_photo_icon.png'
 			});
+
+			// When the shortcode is clicked, open the attach to post interface
+			editor.settings.extended_valid_elements += ",shortcode";
+			editor.settings.custom_elements = "shortcode";
+			var self = this;
+			editor.onMouseDown.addToTop(function(editor, e){
+				if (e.srcElement.tagName == 'IMG' && e.srcElement.className == 'ngg_displayed_gallery') {
+					editor.dom.events.cancel(e);
+					editor.dom.events.stop(e);
+					var id = e.srcElement.src.match(/\d+$/);
+					if (id) id = id.pop();
+					var obj = tinymce.extend(self, {
+						editor: editor,
+						plugin: editor.plugins.NextGEN_AttachToPost,
+						id:		id
+					});
+					self.render_attach_to_post_interface.call(obj);
+				}
+				return false;
+			});
 		},
 
 
 		/**
 		 * Renders the attach to post interface
 		 */
-		render_attach_to_post_interface:	function() {
+		render_attach_to_post_interface:	function(id) {
+
+			// Determine the attach to post url
+			var attach_to_post_url = this.plugin.siteurl+'/wp-admin/attach_to_post';
+			if (typeof(this.id) != 'undefined') {
+				attach_to_post_url += "?id="+this.id;
+			}
 
 			// We're going to open a dialog window. TinyMCE doesn't
 			// get the positioning exactly right, so we add an event
@@ -68,9 +94,9 @@
 
 			// Open a window, occupying 97% of the screen real estate
 			this.editor.windowManager.open({
-				file:	this.plugin.siteurl+'/wp-admin/attach_to_post',
-				width:	innerWidth * .97,
-				height:	(innerHeight * .95),
+				file:	attach_to_post_url,
+				width:	window.innerWidth * .97,
+				height:	(window.innerHeight * .95),
 				inline: true,
 				title:	"NextGEN Gallery - Attach To Post"
 			});

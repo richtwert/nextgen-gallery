@@ -119,7 +119,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		switch ($this->object->source) {
 			case 'gallery':
 			case 'galleries':
-				$mapper = $this->_create_image_query_for_galleries(
+				$mapper = $this->object->_create_image_query_for_galleries(
 					$mapper, $image_key, $settings, $limit, $offset, $id_only
 				);
 				break;
@@ -140,7 +140,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				break;
 			case 'random':
 			case 'random_images':
-				$mapper = $this->_create_random_image_query(
+				$mapper = $this->object->_create_random_image_query(
 					$mapper, $image_key, $settings, $limit, $offset, $id_only
 				);
 				break;
