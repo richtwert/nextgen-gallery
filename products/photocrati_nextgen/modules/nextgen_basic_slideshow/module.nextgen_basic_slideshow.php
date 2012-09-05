@@ -54,6 +54,17 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 			'A_NextGen_Basic_Slideshow'
 		);
 	}
+
+
+	function _register_hooks()
+	{
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+	}
+
+	function enqueue_scripts()
+	{
+		wp_enqueue_script('swfobject');
+	}
 }
 
 new M_NextGen_Basic_Slideshow();

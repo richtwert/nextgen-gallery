@@ -1,4 +1,5 @@
 <?php
+
 $anchor = 'ngg-slideshow-' . $displayed_gallery_id . '-' . $current_page;
 $aspect_ratio = $gallery_width / $gallery_height;
 ?>
@@ -56,7 +57,7 @@ $aspect_ratio = $gallery_width / $gallery_height;
 	</div>
 	
 <div
-	class="ngg-galleryoverview"
+	class="ngg-galleryoverview ngg-slideshow"
 	id="<?php echo_h($anchor)?>"
 	style="width:<?php echo_h($gallery_width) ?>px; height:<?php echo_h($gallery_height) ?>px;">
 
