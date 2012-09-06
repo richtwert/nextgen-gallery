@@ -15,13 +15,16 @@ class A_Thickbox_Library_Activation extends Mixin
 	function install_thickbox_library()
 	{
 		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
-		$mapper->save((object)array(
-			'name'				=>	'thickbox',
-			'code'				=>	"class='thickbox' rel='%GALLERY_NAME%'",
-			'css_stylesheets'	=>	$this->_get_url_for_registered_resource('thickbox', 'style'),
-			'scripts'			=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__))."/js/nextgen_thickbox_init.js\n".
-									$this->_get_url_for_registered_resource('thickbox', 'script')
+		$thickbox = $mapper->find_by_name('thickbox');
+		if (!$thickbox) $thickbox = new stdClass();
+		$thickbox->name = 'thickbox';
+		$thickbox->code = "class='thickbox' rel='%GALLERY_NAME%'";
+		$thickbox->css_stylesheets = $this->_get_url_for_registered_resource('thickbox', 'style');
+		$thickbox->scripts = implode("\n", array(
+			$this->_get_url_for_registered_resource('thickbox', 'script'),
+			$this->static_url('/nextgen_thickbox_init.js')
 		));
+		$mapper->save($thickbox);
 	}
 
 	function _get_url_for_registered_resource($handle, $type)

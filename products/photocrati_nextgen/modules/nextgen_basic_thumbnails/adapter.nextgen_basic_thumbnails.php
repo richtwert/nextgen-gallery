@@ -42,8 +42,6 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			$this->object->settings['thumbnail_width'] = $settings->thumbwidth;
 		if (!isset($this->object->settings['thumbnail_height']))
 			$this->object->settings['thumbnail_height'] = $settings->thumbheight;
-		if (!isset($this->object->settings['effects_code']))
-			$this->object->settings['effect_code'] = $settings->thumbCode;
         if (!isset($this->object->settings['show_all_in_lightbox']))
             $this->object->settings['show_all_in_lightbox'] = $settings->galHiddenImg;
         if (!isset($this->object->settings['ajax_pagination']))
@@ -68,10 +66,6 @@ class Hook_NextGen_Basic_Thumbnails_Validation extends Hook
 			else
 				$this->object->settings['show_piclens_link'] = FALSE;
 		}
-
-		// Set the effect code
-		$this->object->settings['effect_code'] = $settings->thumbCode;
-
 	}
 
 	function validation()

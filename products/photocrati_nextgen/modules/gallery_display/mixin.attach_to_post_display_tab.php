@@ -120,7 +120,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 		return array(
 			array('id'	=>	'galleries',	'title'	=>	'Galleries'),
 			array('id'	=>	'albums',		'title'	=>	'Albums'),
-			array('id'	=>	'tags',			'title'	=>	'Image Tags'),
+			array('id'	=>	'image_tags',	'title'	=>	'Image Tags'),
 			array('id'	=>	'recent_images','title' =>	'Recent Images'),
 			array('id'	=>	'random_images','title'	=>	'Random Images')
 		);
@@ -148,6 +148,15 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			'template_name'				=>	'galleries_source_view',
 			'existing_galleries_label'	=>	_('Galleries:'),
 		), TRUE);
+	}
+
+
+	function _render_image_tags_source_template()
+	{
+		return $this->object->render_partial('image_tags_source', array(
+			'template_name'				=>	'image_tags_source_view',
+			'tags_label'				=>	_('Tags'),
+		));
 	}
 
 	/**
