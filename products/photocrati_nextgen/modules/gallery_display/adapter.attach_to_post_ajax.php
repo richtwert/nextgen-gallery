@@ -55,9 +55,31 @@ class A_Attach_To_Post_Ajax extends Mixin
 	}
 
 	/**
-	 * Gets images for a displayed gallery (attached gallery)
+	 * Gets existing image tags
+	 * @return array
 	 */
-	function get_displayed_gallery_images_action()
+	function get_image_tags_action()
+	{
+		$response = array();
+
+		$limit = $this->object->param('limit');
+		$offset = $this->object->param('offset');
+		$response['limit'] = $limit = $limit ? $limit : 0;
+		$response['offset'] = $offset = $offset ? $offset : 0;
+
+		$response['image_tags'] = get_terms('ngg_tag', array(
+			'number'	=>	$limit,
+			'offset'	=>	$offset,
+		));
+		$response['total'] = count(get_terms('ngg_tag', array('ids')));
+
+		return $response;
+	}
+
+	/**
+	 * Gets entities (such as images) for a displayed gallery (attached gallery)
+	 */
+	function get_displayed_gallery_entities_action()
 	{
 		$response = array();
 		if (($params = $this->object->param('displayed_gallery'))) {
@@ -69,12 +91,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 			$response['limit']	= $limit = $limit ? $limit : 0;
 			$response['offset'] = $offset = $offset ? $offset : 0;
 			$response['count']	= $displayed_gallery->get_image_count();
-			$response['images'] = array();
+			$response['entities'] = array();
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			foreach ($displayed_gallery->get_images($limit,$offset) as $image) {
 				$image->thumb_url	=	$storage->get_thumb_url($image);
 				$image->thumb_size	=	$storage->get_thumb_dimensions($image);
-				$response['images']	[]= $image;
+				$response['entities']	[]= $image;
 			}
 		}
 		else {

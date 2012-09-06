@@ -144,6 +144,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 					$mapper, $image_key, $settings, $limit, $offset, $id_only
 				);
 				break;
+			case 'image_tags':
 			case 'tags':
 				$term_ids = $wpdb->get_col( $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$this->object->container_ids}) ORDER BY term_id ASC "));
 				$image_ids = get_objects_in_term($term_ids, 'ngg_tag');
