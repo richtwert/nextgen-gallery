@@ -316,8 +316,13 @@ class nggOptions {
 			<table class="form-table ngg-options">
 				<tr valign="top">
 					<th align="left"><?php _e('Width x height (in pixel)','nggallery'); ?></th>
-					<td><input type="text" size="4" maxlength="4" name="thumbwidth" value="<?php echo $ngg->options['thumbwidth']; ?>" /> x <input type="text" size="4" maxlength="4" name="thumbheight" value="<?php echo $ngg->options['thumbheight']; ?>" />
-					<span class="setting-description"><?php _e('These values are maximum values ','nggallery'); ?></span></td>
+					<td>
+					<?php // TODO, use template here as well? I don't think this file is used anymore...
+								// include(dirname(__FILE__) . '/thumbnails-template.php'); 
+					?>
+					<input type="text" size="4" maxlength="4" name="thumbwidth" value="<?php echo $ngg->options['thumbwidth']; ?>" /> x <input type="text" size="4" maxlength="4" name="thumbheight" value="<?php echo $ngg->options['thumbheight']; ?>" />
+					<span class="setting-description"><?php _e('These values are maximum values ','nggallery'); ?></span>
+					</td>
 				</tr>
 				<tr valign="top">
 					<th align="left"><?php _e('Set fix dimension','nggallery'); ?></th>
