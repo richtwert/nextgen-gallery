@@ -185,7 +185,7 @@ class nggAdminPanel{
 		// no need to go on if it's not a plugin page
 		if( !isset($_GET['page']) )
 			return;
-			
+
 		// If we're on a NextGen Page
 		if (preg_match("/ngg|nextgen-gallery/", $_GET['page'])) {
 			wp_register_script('ngg_social_media', path_join(
@@ -199,7 +199,7 @@ class nggAdminPanel{
 			));
 
 			wp_enqueue_style('ngg_social_media');
-			wp_enqueue_script('ngg_social_media');
+//			wp_enqueue_script('ngg_social_media');
 		}
 
 		wp_register_script('ngg-ajax', NGGALLERY_URLPATH . 'admin/js/ngg.ajax.js', array('jquery'), '1.4.1');
