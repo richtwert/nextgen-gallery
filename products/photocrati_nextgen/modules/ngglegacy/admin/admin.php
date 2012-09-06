@@ -121,6 +121,7 @@ class nggAdminPanel{
 			update_option('ngg_options', $ngg->options);
 		}
 
+		echo '<div id="ngg_page_content">';
   		switch ($_GET['page']){
 			case "nggallery-add-gallery" :
 				include_once ( dirname (__FILE__) . '/functions.php' );		// admin functions
@@ -175,6 +176,7 @@ class nggAdminPanel{
 				nggallery_admin_overview();
 				break;
 		}
+		echo "</div>";
 	}
 
 	function load_scripts() {

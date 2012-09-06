@@ -57,11 +57,11 @@ class C_Display_Type_Controller extends C_MVC_Controller
  */
 class Mixin_Display_Type_Controller extends Mixin
 {
-/**
-	 * This method should be overwritten by other adapters/mixins, and call
-	 * wp_enqueue_script() / wp_enqueue_style()
+	/**
+	 * Enqueues static resources required for lightbox effects
+	 * @param type $displayed_gallery
 	 */
-	function enqueue_frontend_resources($displayed_gallery)
+	function enqueue_lightbox_resources($displayed_gallery)
 	{
 		// Enqueue the lightbox effect library
 		$settings	= $this->object->get_registry()->get_utility('I_NextGen_Settings');
@@ -85,6 +85,16 @@ class Mixin_Display_Type_Controller extends Mixin
 				$i+=1;
 			}
 		}
+	}
+
+
+	/**
+	 * This method should be overwritten by other adapters/mixins, and call
+	 * wp_enqueue_script() / wp_enqueue_style()
+	 */
+	function enqueue_frontend_resources($displayed_gallery)
+	{
+		$this->object->enqueue_lightbox_resources($displayed_gallery);
 
 		// Enqueue the display type library
 		wp_enqueue_script(

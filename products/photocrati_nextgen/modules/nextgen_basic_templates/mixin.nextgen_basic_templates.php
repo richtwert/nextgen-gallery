@@ -142,8 +142,9 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      * @param string $template_name File name
      * @param array $vars Specially formatted array of parameters
      * @param bool $callback
+	 * @param bool $return
      */
-    function legacy_render($template_name, $vars = array())
+    function legacy_render($template_name, $vars = array(), $return=FALSE)
     {
         foreach ($vars as $key => $val) {
             $$key = $val;
@@ -165,8 +166,17 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         foreach ($this->object->get_template_directories() as $dir) {
             if (file_exists($dir . DIRECTORY_SEPARATOR . $template_name))
             {
-                include ($dir . DIRECTORY_SEPARATOR . $template_name);
-                return;
+				if ($return) {
+					ob_start();
+					include ($dir . DIRECTORY_SEPARATOR . $template_name);
+					$retval = ob_get_contents();
+					ob_end_clean();
+					return $retval;
+				}
+				else {
+					include ($dir . DIRECTORY_SEPARATOR . $template_name);
+					return;
+				}
             }
         }
 

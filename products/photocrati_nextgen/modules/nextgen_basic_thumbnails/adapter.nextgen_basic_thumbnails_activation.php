@@ -28,6 +28,7 @@ class A_NextGen_Basic_Thumbnails_Activation extends Mixin
 		$display_type->name = PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS;
 		$display_type->title = "NextGEN Basic Thumbnails";
 		$display_type->entity_type = 'gallery';
+		$display_type->preview_image_relpath = $this->find_static_file('preview.jpg', TRUE);
 		$mapper->save($display_type);
 		unset($mapper);
 	}

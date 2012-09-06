@@ -352,7 +352,10 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		$model->validate();
 
 		if ($model->is_valid()) {
-			$retval = $this->object->_save_entity($model->get_entity());
+			$saved_entity = $model->get_entity();
+			unset($saved_entity->_errors);
+			$retval = $this->object->_save_entity($saved_entity);
+
 		}
 
 		// We always return the same type of entity that we given

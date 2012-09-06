@@ -54,6 +54,7 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 				$this->object->add_error('Invalid display type', 'display_type');
 			}
 			else {
+				if (!isset($this->object->display_settings)) $this->object->display_settings = array();
 				$this->object->display_settings = $this->object->array_merge_assoc(
 					$display_type->settings, $this->object->display_settings
 				);
@@ -118,7 +119,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		switch ($this->object->source) {
 			case 'gallery':
 			case 'galleries':
-				$mapper = $this->_create_image_query_for_galleries(
+				$mapper = $this->object->_create_image_query_for_galleries(
 					$mapper, $image_key, $settings, $limit, $offset, $id_only
 				);
 				break;
@@ -139,7 +140,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				break;
 			case 'random':
 			case 'random_images':
-				$mapper = $this->_create_random_image_query(
+				$mapper = $this->object->_create_random_image_query(
 					$mapper, $image_key, $settings, $limit, $offset, $id_only
 				);
 				break;

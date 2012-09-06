@@ -40,6 +40,8 @@ class C_NextGEN_Bootstrap
 		$this->_define_constants();
 		$this->_register_hooks();
 
+		@ini_set('xdebug.max_nesting_level', 200);
+
 		// Include pope framework
 		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
 			DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')
@@ -133,8 +135,10 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
 		define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'module.photocrati_gallery_plugin.php'));
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
-		define('PHOTOCRATI_GALLERY_OPTION_PREFIX', 'nggallery');
-		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.5');
+		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.9');
+		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME', 'jquery-ui-south-street');
+		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css');
+		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
 		define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
@@ -180,8 +184,8 @@ class C_NextGEN_Bootstrap
 			$suites['nextgen'] = array(
 //				path_join($tests_dir, 'mvc'),
 //				path_join($tests_dir, 'datamapper'),
-				path_join($tests_dir, 'nextgen_data'),
-// 				path_join($tests_dir, 'gallery_display')
+//				path_join($tests_dir, 'nextgen_data'),
+ 				path_join($tests_dir, 'gallery_display')
 			);
 		}
 
