@@ -2,22 +2,15 @@
  * Define the application
  */
 var NggDisplayTab = Em.Application.create({
-	/**
-	 * The available image/gallery sources
-	 */
-	sources:						[],
 
+	sources:						Ember.A(),
+	galleries:						Ember.A(),
+	image_tags:						Ember.A(),
 
 	/**
 	 * The currently displayed source view
 	 */
 	attached_source_view:			null,
-
-
-	/**
-	 * The galleries available in NextGen Gallery
-	 */
-	galleries:	[],
 
 
 	/**
@@ -349,7 +342,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * of images or albums we're displaying
 	 */
 	_containersChanged:		Ember.observer(function(){
-		NggDisplayTab.preview_view.remove();
+		if (NggDisplayTab.preview_view) NggDisplayTab.preview_view.remove();
 		if (this.get('containers').length > 0) {
 			// We then call a method to handle the logic of updating the
 			// entities. We do this for extensibility - a module can simply
@@ -392,7 +385,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	/**
 	 * Fetches images from a selected list of galleries
 	 */
-	fetch_images:	function(offset, limit){
+	fetch_images:	function(limit, offset){
 		var self = this;
 		NggDisplayTab.fetch_entities(
 			this.get('entities'),
@@ -421,17 +414,23 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	}
 });
 
+Ember.Chosen = Ember.Select.extend({
+	tagName:			'select',
+	classNameBindings:	['pretty-dropdown'],
+	chosen_items:		function(){
+		return this.get('content');
+	}.property('content.@each.length'),
 
-/************************************************************
-* Gets the view used to render source configuration fields
-* for the "galleries" source
-*/
-NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
-	tagName:					'tbody',
-	containersBinding:			'NggDisplayTab.displayed_gallery.containers',
-	source_idBinding:			'NggDisplayTab.displayed_gallery.source_id',
-	galleriesBinding:			'NggDisplayTab.galleries',
-	galleriesChanged:			function(){
+	update:								function(){
+		this.chosen_items_Changed();
+	},
+
+	/**
+	 * Observes when the content changes and adjusts the width of the
+	 * chosen widget
+	 */
+	chosen_items_Changed:				function(){
+
 		// flush the RunLoop so changes are written to DOM?
 		Ember.run.sync();
 
@@ -442,18 +441,34 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 			// and the height of the accordion tab. Oddly enough, the
 			// chosen widget doesn't do this itself yet.
 			// See: https://github.com/harvesthq/chosen/issues/533
-			jQuery('#existing_galleries').bind('liszt:updated', function(){
-				 var width = jQuery('#existing_galleries_chzn').width(400).width();
-				 jQuery('#existing_galleries_chzn .search-field input').width(width);
-				 jQuery('#existing_galleries_chzn .chzn-drop').width(width-2);
+			jQuery(this.$()).bind('liszt:updated', function(){
+				var chosen_ddl_selector = '#'+jQuery(this).attr('id')+'_chzn';
+				var width = jQuery(chosen_ddl_selector).width(400).width();
+				jQuery(chosen_ddl_selector+' .search-field input').width(width);
+				jQuery(chosen_ddl_selector+' .chzn-drop').width(width-2);
 			}).trigger('liszt:updated');
-		});
-	}.observes('galleries.@each.id'),
+			console.log('Updating chosen drop-down');
 
-	/**
-	 * Fetches galleries from the server in groups of 25
-	 */
-	fetch_galleries: function(offset, limit) {
+		});
+	}.observes('chosen_items'),
+
+	didInsertElement:		function(){
+		var parentView = this.get('parentView');
+		parentView[this.get('fillCallback')].call(parentView, 25, 0, this.get('content'), this);
+		jQuery(this.$()).chosen();
+		console.log('Creating chosen drop-down');
+	}
+});
+
+
+/************************************************************
+* Gets the view used to render source configuration fields
+* for the "galleries" source
+*/
+NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
+	tagName:			'tbody',
+	templateName:		'galleries_source_view',
+	fetch_galleries: function(limit, offset, collection, chosen_ddl) {
 
 		// Set default parameters
 		if (typeof limit != "number") {
@@ -475,8 +490,8 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 			response.galleries.forEach(function(item){
 				item = Ember.Object.create(item);
 				item.set('id', item[item.id_field].toString());
-				var existing_gallery = self.get('galleries').findProperty('id', item.get('id'));
-				if (!existing_gallery) self.get('galleries').pushObject(Ember.Object.create(item));
+				var existing_gallery = collection.findProperty('id', item.get('id'));
+				if (!existing_gallery) collection.pushObject(Ember.Object.create(item));
 				else for (var key in item) existing_gallery.set(key, item[key]);
 			});
 
@@ -484,26 +499,29 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 			// and the "source" selected is still "galleries",
 			// then we continue to fetch galleries
 			if (response['offset'] < response['total'] && self.get('source_id') == 'galleries') {
-				self.fetch_galleries(response['offset']+response['limit'], response['limit']);
+				self.fetch_galleries(response['limit'], response['offset']+response['limit'], collection, chosen_ddl);
 			}
+
+			chosen_ddl.update();
 		});
-	},
-
-	/**
-	 * Executes immediately after appending to the DOM
-	 */
-	didInsertElement:	function(){
-
-		// Retrieve missing galleries
-		var limit = NggDisplayTab.get('galleries').length;
-		if (existing != null) limit -= existing.container_ids.length;
-		this.fetch_galleries(limit, 25);
-
-		// Prettify the dropdown using the chosen library
-		var chosen = jQuery('.pretty-dropdown').chosen();
 	}
 });
 
+
+/************************************************************
+* Gets the view used to render source configuration fields
+* for the "image_tags" source
+*/
+NggDisplayTab.displayed_gallery.image_tags_source_view	=	Ember.View.create({
+	tagName:			'tbody',
+	templateName:		'image_tags_source_view',
+	fetch_image_tags:	function(limit, offset, collection){
+		collection.pushObject({
+			id:	'test',
+			title:	'Test'
+		});
+	}
+});
 
 /**
  * Represents the view for displaying the image/gallery preview area

@@ -164,6 +164,7 @@ class nggAddGallery {
     	resize_width = <?php echo (int) $ngg->options['imgWidth']; ?>;
 
     jQuery(document).ready(function($) {
+		if ($(this).data('ready')) return;
     	window.uploader = new plupload.Uploader({
     		runtimes: '<?php echo apply_filters('plupload_runtimes', 'html5,flash,silverlight,html4,'); ?>',
     		browse_button: 'plupload-browse-button',
@@ -234,6 +235,7 @@ class nggAddGallery {
 		  	maxStep: 100
 		};
 
+		$(this).data('ready', true);
     });
     //]]>
     </script>
