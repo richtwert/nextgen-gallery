@@ -170,8 +170,11 @@ class Mixin_Render_Display_Type extends Mixin
     function wrap_shortcode_nggallery($params, $inner_content=NULL)
     {
         $params['gallery_ids']     = $this->_get_param('id', NULL, $params);
-        $params['images_per_page'] = $this->_get_param('images', NULL, $params);
         $params['display_type']    = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        if (isset($params['images']))
+        {
+            $params['images_per_page'] = $this->_get_param('images', NULL, $params);
+        }
         unset($params['id']);
         unset($params['images']);
         $this->object->display_images($params, $inner_content);
