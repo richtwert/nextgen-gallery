@@ -1,0 +1,10 @@
+html,
+html.wp-toolbar{
+	padding: 0px;
+	overflow: visible;
+}
+
+#wpbody-content {
+	float: none;
+	padding: 0px;
+}

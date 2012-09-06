@@ -37,7 +37,7 @@ class C_Ajax_Controller extends C_MVC_Controller
 	function js()
 	{
 		$this->set_content_type('javascript');
-		$this->render_partial('ajax_js', array(
+		$this->render_view('ajax_js', array(
 			'ajax_url'	=>	PHOTOCRATI_GALLERY_AJAX_URL,
 			'site_url'	=> real_site_url()
 		));

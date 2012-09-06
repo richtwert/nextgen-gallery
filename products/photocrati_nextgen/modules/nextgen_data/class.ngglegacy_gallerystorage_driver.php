@@ -292,6 +292,198 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
+
+    /**
+     * Copies (or moves) images into another gallery
+     *
+     * @param array $images
+     * @param int|object $gallery
+     * @param boolean $db optionally only copy the image files
+     * @param boolean $move move the image instead of copying
+     * @return mixed NULL on failure, array|image-ids on success
+     */
+    function copy_images($images, $gallery, $db = TRUE, $move = FALSE)
+    {
+        // return values
+        $message        = '';
+        $new_image_pids = array();
+
+        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+
+        // move_images() is a wrapper to this function so we implement both features here
+        $func = $move ? 'rename' : 'copy';
+
+        // ngg-legacy allows for arrays of just the ID
+        if (!is_array($images))
+        {
+            $images = array($images);
+        }
+
+        // Ensure we have a valid gallery
+        $gallery_id = $this->object->_get_gallery_id($gallery);
+        if (!$gallery_id)
+        {
+            return;
+        }
+
+        $image_key = $this->object->_image_mapper->get_primary_key_column();
+
+        // Check for folder permission
+        if (!is_dir($gallery->path) && !wp_mkdir_p($gallery->path))
+        {
+            $message .= sprintf(__('Unable to create directory %s.', 'nggallery'), esc_html(WINABSPATH . $gallery->path));
+            return;
+        }
+        if (!is_writable(WINABSPATH . $gallery->path))
+        {
+            $message .= sprintf(__('Unable to write to directory %s. Is this directory writable by the server?', 'nggallery'), esc_html(WINABSPATH . $gallery->path));
+            return;
+        }
+
+        foreach ($images as $image) {
+
+            // Ensure that there is capacity available
+            if ((is_multisite()) && $settings->get('wpmuQuotaCheck'))
+            {
+                if (upload_is_user_over_quota(FALSE)) {
+                    $message .= sprintf(__('Sorry, you have used your space allocation. Please delete some files to upload more files.', 'nggallery'));
+                    throw new E_NoSpaceAvailableException();
+                }
+            }
+
+            // Copy the db entry
+            if (is_numeric($image))
+            {
+                $image = $this->object->_image_mapper->find($image);
+            }
+            $old_pid = $image->$image_key;
+
+            if ($db)
+            {
+                $new_image = clone $image;
+                unset($new_image->$image_key);
+                $new_image->galleryid = $gallery_id;
+                $new_pid = $this->object->_image_mapper->save($new_image);
+                $new_image = $this->object->_image_mapper->find($new_image);
+            } else {
+                $new_pid = $old_pid;
+            }
+
+            if (!$new_pid) {
+                $message .= sprintf(__('Failed to copy database row for picture %s', 'nggallery'), $old_pid) . '<br />';
+                continue;
+            }
+
+            $new_image_pids[] = $new_pid;
+
+            // Copy each image size
+            foreach ($this->object->get_image_sizes() as $size) {
+
+                $orig_path = $this->object->get_image_abspath($image, $size, TRUE);
+                if (!$orig_path)
+                {
+                    $message .= sprintf(__('Failed to get image path for %s', 'nggallery'), esc_html($image->filename)) . '<br/>';
+                    continue;
+                }
+
+                $new_path = basename($orig_path);
+
+                $prefix       = '';
+                $prefix_count = 0;
+                while (file_exists($gallery->path . DIRECTORY_SEPARATOR . $new_path))
+                {
+                    $prefix = 'copy_' . ($prefix_count++) . '_';
+                    $new_path = $prefix . $new_path;
+                }
+                $new_path = path_join($gallery->path, $new_path);
+
+                // Copy files
+                if (!@$func($orig_path, $new_path))
+                {
+                    $message .= sprintf(__('Failed to copy image %1$s to %2$s', 'nggallery'), esc_html($orig_path), esc_html($new_path)) . '<br/>';
+                    continue;
+                }
+                else {
+                    $message .= sprintf(__('Copied image %1$s to %2$s', 'nggallery'), esc_html($orig_path), esc_html($new_path)) . '<br/>';
+                }
+
+                // Copy backup file, if possible
+                @$func($orig_path . '_backup', $new_path . '_backup');
+
+                if ($prefix != '')
+                {
+                    $message .= sprintf(__('Image %1$s (%2$s) copied as image %3$s (%4$s) &raquo; The file already existed in the destination gallery.', 'nggallery'), $old_pid, esc_html($orig_path), $new_pid, esc_html($new_path)) . '<br />';
+                }
+                else
+                {
+                    $message .= sprintf(__('Image %1$s (%2$s) copied as image %3$s (%4$s)', 'nggallery'), $old_pid, esc_html($orig_path), $new_pid, esc_html($new_path)) . '<br />';
+                }
+
+                // Copy tags
+                if ($db)
+                {
+                    $tags = wp_get_object_terms($old_pid, 'ngg_tag', 'fields=ids');
+                    $tags = array_map('intval', $tags);
+                    wp_set_object_terms($new_pid, $tags, 'ngg_tag', true);
+                }
+            }
+        }
+
+        $message .= '<hr />' . sprintf(__('Copied %1$s picture(s) to gallery %2$s .', 'nggallery'), count($new_image_pids), $gallery->title);
+
+        return $new_image_pids;
+    }
+
+    /**
+     * Recover image from backup copy and reprocess it
+     *
+     * @param int|stdClass|C_NextGen_Gallery_Image $image
+     * @return string result code
+     */
+    function recover_image($image) {
+
+        if (is_numeric($image))
+        {
+            $image = $this->object->_image_mapper->find($image);
+        }
+
+        if (isset($image->meta_data))
+        {
+            $orig_metadata = $image->meta_data;
+        }
+
+        $path = $this->object->get_registry()->get_utility('I_Gallery_Storage')->get_image_abspath($image);
+
+        if (!is_object($image))
+        {
+            return __("Could not find image", 'nggallery');
+        }
+
+        if (!is_writable($path) && !is_writable(dirname($path)))
+        {
+            return ' <strong>' . esc_html($image->filename) . __(' is not writeable', 'nggallery') . '</strong>';
+        }
+
+        if (!file_exists($path . '_backup'))
+        {
+            return ' <strong>' . __('Backup file does not exist', 'nggallery') . '</strong>';
+        }
+
+        if (!@copy($path . '_backup', $path))
+        {
+            return ' <strong>' . __("Could not restore original image", 'nggallery') . '</strong>';
+        }
+
+        if (isset($orig_metadata))
+        {
+            $NextGen_Metadata = new C_NextGen_Metadata($image);
+            $new_metadata = $NextGen_Metadata->get_common_meta();
+            $image->meta_data = array_merge((array)$orig_metadata, (array)$new_metadata);
+            $this->object->_image_mapper->save($image);
+        }
+
+        return '1';
+    }
 }
 
 class C_NggLegacy_GalleryStorage_Driver extends C_GalleryStorage_Driver_Base

@@ -139,12 +139,79 @@ class Mixin_Render_Display_Type extends Mixin
 			$displayed_gallery->id(uniqid('temp'));
 
 			// Display!
-			$controller = $this->get_registry()->get_utility(
-				'I_Display_Type_Controller', $displayed_gallery->display_type
-			);
-			$controller->enqueue_frontend_resources($displayed_gallery);
-			$controller->index($displayed_gallery);
+			$this->render_displayed_gallery($displayed_gallery);
 		}
 		else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
 	}
+
+
+	/**
+	 * Renders a displayed gallery on the frontend
+	 * @param C_Displayed_Gallery|stdClass $displayed_gallery
+	 */
+	function render_displayed_gallery($displayed_gallery, $return=FALSE)
+	{
+		// Display!
+		$controller = $this->get_registry()->get_utility(
+			'I_Display_Type_Controller', $displayed_gallery->display_type
+		);
+		$controller->enqueue_frontend_resources($displayed_gallery);
+		return $controller->index($displayed_gallery, $return);
+	}
+
+
+    /**
+     * Substitutes the gallery placeholder content with the gallery type frontend
+     * view, returns a list of static resources that need to be loaded
+     * @param stdClass $post
+     */
+    function substitute_placeholder_imgs($content)
+    {
+        // Load html into parser
+        $doc = new simple_html_dom();
+		if ($content) {
+			$doc->load($content);
+
+			// Find all placeholder images
+			$imgs = $doc->find("img[class='ngg_displayed_gallery']");
+			if ($imgs) {
+
+				// Get the displayed gallery mapper
+				$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+
+				// Substitute each image for the gallery type frontent content
+				foreach ($imgs as $img) {
+
+					// The placeholder MUST have a gallery instance id
+					$preview_url = preg_quote(PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
+					if (preg_match("/{$preview_url}\?id=(\d+)/", $img->src, $match)) {
+
+						// Find the displayed gallery
+						$displayed_gallery_id = $match[1];
+						$displayed_gallery = $mapper->find($displayed_gallery_id, TRUE);
+
+						// Get the content for the displayed gallery
+						$content = '<p>'._('Invalid Displayed Gallery').'</p>';
+						if ($displayed_gallery) {
+							$content = $this->object->render_displayed_gallery($displayed_gallery, TRUE);
+						}
+
+						// Replace the placeholder with the displayed gallery content
+						$img->outertext = $this->object->compress_html($content);
+					}
+				}
+				$content = (string)$doc->save();
+			}
+			return $content;
+		}
+    }
+
+    //  this function gets rid of tabs, line breaks, and white space
+    function compress_html($html)
+    {
+        $html = preg_replace("/>\s+/", ">", $html);
+        $html = preg_replace("/\s+</", "<", $html);
+        $html = preg_replace("/<!--(?:(?!-->).)*-->/m", "", $html);
+        return $html;
+    }
 }

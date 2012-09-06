@@ -35,14 +35,23 @@ class Mixin_MediaRSS_Controller extends Mixin
 		$displayed_gallery = NULL;
 		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 
-		// Find the displayed gallery.
+		// Find the displayed gallery by it's database id
 		if (($id = $this->object->param('id'))) {
 			$displayed_gallery = $mapper->find($id, TRUE);
 		}
-
-		// Create the displayed gallery, based on the parameters
-		elseif (($params = $this->object->param('params')))
+        elseif ($transient_id = $this->object->param('transient_id'))
+        {
+            // retrieve by transient id
+            $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+            $factory           = $this->object->get_registry()->get_utility('I_Component_Factory');
+            $transient = $transient_handler->get_value('displayed_gallery_' . $transient_id);
+            $displayed_gallery = $factory->create(
+                'displayed_gallery', $mapper, $transient
+            );
+        }
+        elseif (($params = $this->object->param('params')))
 		{
+            // Create the displayed gallery based on the URL parameters
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create(
 				'displayed_gallery', $mapper, json_decode($params)

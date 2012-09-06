@@ -1,0 +1,128 @@
+html,body {
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+.entity_errors {
+	color: red;
+}
+
+.entity_errors ul {
+	margin-left: 30px;
+}
+.entity_errors ul li{
+	list-style-type: disc;
+}
+
+.ui-helper-reset {
+	font-size: 99%;
+}
+
+#attach_to_post_tabs {
+	border: 0px;
+	background: none;
+}
+
+.ui-widget-header {
+	border: 0px;
+	border-bottom: 1px solid #D4CCB0;
+	background: none;
+}
+
+iframe {
+	width: 100%;
+	height: 100%;
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+	background: transparent;
+}
+
+#source_tab_content {
+	overflow: visible;
+}
+
+/** Would would you like to display tab? **/
+#source_configuration td{
+	vertical-align: top;
+}
+
+/** Select a display type tab **/
+.display_type_preview {
+	float: left;
+	width: 25%;
+}
+.display_type_preview .image_container {
+	width: 100%;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 12px;
+	font-weight: 600;
+}
+.display_type_preview .image_container p {
+	display: inline-block;
+}
+
+/** Display Tab **/
+#preview_tab_content .previewed_entity {
+	width: 100%;
+	border-bottom: solid 1px #E0E0D6;
+	background-color: #FAFAF0;
+}
+
+#preview_tab_content .previewed_entity .container {
+	padding-top: 15px;
+}
+
+#preview_tab_content .previewed_entity.header {
+	background-color: #F0F0E6;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+#preview_tab_content .header label {
+	font-size: 12px;
+	color: rgb(100,150,100);
+	font-weight: 600;
+}
+
+#preview_tab_content .ui-sortable-helper {
+	background: none;
+}
+
+#preview_tab_content ul {
+	list-style-type: none;
+	display: block;
+	border: solid 2px #E0E0D6;
+	padding: 0px;
+	position: relative;
+}
+
+
+#preview_tab_content .inclusion_checkbox {
+	margin-right: 7px;
+	display: block;
+	float: left;
+}
+
+#preview_tab_content .image_container {
+	width: 100px;
+	height: 100px;
+	background-color: white;
+	padding: 20px;
+	margin: 20px;
+	border: solid 1px black;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#preview_tab_content .image_container img {
+	border: 0px;
+}
+
+.clear {
+	clear: both;
+	float: none;
+}
