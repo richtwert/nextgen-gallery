@@ -48,6 +48,11 @@ class M_MVC extends C_Base_Module
         $this->get_registry()->add_utility('I_Router', 'C_Router');
     }
 
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Activator_Rendering');
+	}
+
     function _register_hooks()
     {
         add_action('wp_loaded', array(&$this, 'route'), 99);

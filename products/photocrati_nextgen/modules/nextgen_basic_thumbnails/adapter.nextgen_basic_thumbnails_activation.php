@@ -7,7 +7,6 @@ class A_NextGen_Basic_Thumbnails_Activation extends Mixin
 	 */
 	function initialize()
 	{
-		$this->object->add_mixin('Mixin_MVC_Controller_Rendering');
 		$this->object->add_post_hook(
 			'install',
 			'NextGEN Basic Thumbnails - Activation',

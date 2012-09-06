@@ -16,11 +16,12 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 * This method deprecated use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
-	function index($displayed_gallery)
+	function index($displayed_gallery, $return=FALSE)
 	{
         $display_settings = $displayed_gallery->display_settings;
-        $current_page = (get_query_var('nggpage') == '') ? (int)$_GET['nggpage'] : get_query_var('nggpage');
-        if (!$current_page) $current_page = 1;
+		$current_page = get_query_var('nggpage') ?
+			get_query_var('nggpage') :
+			(isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $pagination = FALSE;
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
@@ -111,7 +112,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $slideshow_link,
                     $piclens_link
                 );
-                $this->object->legacy_render($display_settings['template'], $params);
+                return $this->object->legacy_render($display_settings['template'], $params, $return);
             }
             else {
                 $params = $display_settings;
@@ -123,11 +124,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
-                $this->object->render_partial('nextgen_basic_thumbnails', $params);
+                return $this->object->render_partial('nextgen_basic_thumbnails', $params, $return);
             }
 		}
 		else {
-			$this->object->render_partial("no_images_found");
+			return $this->object->render_partial("no_images_found", array(), $return);
 		}
 	}
 

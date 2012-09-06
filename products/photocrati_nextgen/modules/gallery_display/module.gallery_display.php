@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-gallery_display,
-		Depends: { photocrati-lazy_resources }
+		Depends: { photocrati-lazy_resources, photocrati-simple_html_dom }
 	}
 ***/
 
@@ -141,6 +141,10 @@ class M_Gallery_Display extends C_Base_Module
 		// Add hook to delete displayed galleries when removed from a post
 		add_action('pre_post_update', array(&$this, 'locate_stale_displayed_galleries'));
 		add_action('post_updated',	array(&$this, 'cleanup_displayed_galleries'));
+
+		// Add hook to subsitute displayed gallery placeholders
+		add_filter('the_content', array(&$this, 'substitute_placeholder_imgs'), 100, 1);
+		remove_filter('the_content',    'wpautop');
 	}
 
 
@@ -258,6 +262,12 @@ class M_Gallery_Display extends C_Base_Module
 	}
 
 
+	/**
+	 * Locates the ids of displayed galleries that have been
+	 * removed from the post, and flags then for cleanup (deletion)
+	 * @global array $displayed_galleries_to_cleanup
+	 * @param int $post_id
+	 */
 	function locate_stale_displayed_galleries($post_id)
 	{
 		global $displayed_galleries_to_cleanup;
@@ -273,6 +283,12 @@ class M_Gallery_Display extends C_Base_Module
 		}
 	}
 
+	/**
+	 * Deletes any displayed galleries that are no longer associated with
+	 * a post/page
+	 * @global array $displayed_galleries_to_cleanup
+	 * @param int $post_id
+	 */
 	function cleanup_displayed_galleries($post_id)
 	{
 		global $displayed_galleries_to_cleanup;

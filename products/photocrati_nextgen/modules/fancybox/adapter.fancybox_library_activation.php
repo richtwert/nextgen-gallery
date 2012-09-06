@@ -21,13 +21,16 @@ class A_Fancybox_Library_Activation extends Mixin
     function install_fancybox_library()
     {
         $mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
-        $mapper->save((object)array(
-            'name'            => 'fancybox',
-            'code'            => 'class="ngg-fancybox" rel="%GALLERY_NAME%"',
-            'css_stylesheets' => PHOTOCRATI_GALLERY_JQUERY_FANCYBOX_CSS_URL,
-            'scripts'         => PHOTOCRATI_GALLERY_JQUERY_EASING_JS_URL . "\n"
-                              .  PHOTOCRATI_GALLERY_FANCYBOX_JS_URL . "\n"
-                              .  PHOTOCRATI_GALLERY_FANCYBOXY_JS_INIT_URL
-        ));
+		$fancybox = $mapper->find_by_name('fancybox');
+		if (!$fancybox) $fancybox = new stdClass();
+		$fancybox->name = 'fancybox';
+		$fancybox->code = 'class="ngg-fancybox" rel="%GALLERY_NAME%"';
+		$fancybox->css_stylesheets = $this->static_url('/fancybox/jquery.fancybox-'.PHOTOCRATI_GALLERY_FANCYBOX_VERSION.'.css');
+		$fancybox->scripts = implode("\n", array(
+			$this->static_url('/fancybox/jquery.easing-1.3.pack.js'),
+			$this->static_url('/fancybox/jquery.fancybox-'.PHOTOCRATI_GALLERY_FANCYBOX_VERSION.'.pack.js' ),
+			$this->static_url('/nextgen_fancybox_init.js')
+		));
+		$mapper->save($fancybox);
     }
 }
