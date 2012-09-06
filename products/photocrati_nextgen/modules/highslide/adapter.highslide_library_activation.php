@@ -21,12 +21,15 @@ class A_Highslide_Library_Activation extends Mixin
     function install_highslide_library()
     {
         $mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
-        $mapper->save((object)array(
-            'name'            => 'highslide',
-            'code'            => 'class="highslide" onclick="return hs.expand(this, galleryOptions);"',
-            'css_stylesheets' => PHOTOCRATI_GALLERY_MOD_HIGHSLIDE_CSS_URL,
-            'scripts'         => PHOTOCRATI_GALLERY_MOD_HIGHSLIDE_JS_URL . "\n"
-                              .  PHOTOCRATI_GALLERY_MOD_HIGHSLIDE_JS_INIT_URL
-        ));
+		$highslide = $mapper->find_by_name('highslide');
+		if (!$highslide) $highslide = new stdClass();
+		$highslide->name =			 'highslide';
+		$highslide->code			= 'class="highslide" onclick="return hs.expand(this, galleryOptions);"';
+		$highslide->css_stylesheets = $this->static_url('/highslide/highslide.css');
+		$highslide->scripts			= implode("\n", array(
+			$this->static_url('/highslide/highslide-full.packed.js'),
+			$this->static_url('/nextgen_highslide_init.js')
+		));
+        $mapper->save($highslide);
     }
 }
