@@ -61,6 +61,13 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			
 			if ($displayed_gallery->display_settings['flash_enabled'])
 			{
+        $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+        $entity = $displayed_gallery->get_entity();
+        $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+        $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+        
+				$params['mediarss_link'] = $mediarss_link;
+        
 				$this->object->render_partial('nextgen_basic_slideshow_flash', $params);
 			}
 			else

@@ -25,7 +25,8 @@ $height = $gallery_height;
     $swfobject->add_attributes('name', 'so' . $displayed_gallery_id);
 
     // adding the flash parameter
-    $swfobject->add_flashvars( 'file', urlencode ( trailingslashit ( home_url() ) . 'index.php?callback=imagerotator&gid=' . $displayed_gallery_id ) );
+    //$swfobject->add_flashvars( 'file', urlencode ( trailingslashit ( home_url() ) . 'index.php?callback=imagerotator&gid=' . $displayed_gallery_id ) );
+    $swfobject->add_flashvars( 'file', urlencode ( $mediarss_link ) );
     $swfobject->add_flashvars( 'shuffle', $flash_shuffle, 'true', 'bool');
     // option has oposite meaning : true should switch to next image
     $swfobject->add_flashvars( 'linkfromdisplay', !$flash_next_on_click, 'false', 'bool');
