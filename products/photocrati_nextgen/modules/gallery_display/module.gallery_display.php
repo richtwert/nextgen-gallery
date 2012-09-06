@@ -138,6 +138,14 @@ class M_Gallery_Display extends C_Base_Module
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
+        // wrap the old nextgen tags to call our display_images()
+        add_shortcode('imagebrowser', array(&$this, 'wrap_shortcode_imagebrowser'));
+        add_shortcode('nggallery',    array(&$this, 'wrap_shortcode_nggallery'));
+        add_shortcode('nggtags',      array(&$this, 'wrap_shortcode_nggtags'));
+        add_shortcode('random',       array(&$this, 'wrap_shortcode_random'));
+        add_shortcode('recent',       array(&$this, 'wrap_shortcode_recent'));
+        add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
+
 		// Add hook to delete displayed galleries when removed from a post
 		add_action('pre_post_update', array(&$this, 'locate_stale_displayed_galleries'));
 		add_action('post_updated',	array(&$this, 'cleanup_displayed_galleries'));

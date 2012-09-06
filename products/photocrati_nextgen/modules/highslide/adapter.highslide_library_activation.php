@@ -30,6 +30,10 @@ class A_Highslide_Library_Activation extends Mixin
 			$this->static_url('/highslide/highslide-full.packed.js'),
 			$this->static_url('/nextgen_highslide_init.js')
 		));
+        $highslide->values = array(
+            'hs.graphicsDir' => $this->static_url('/highslide/graphics/')
+        );
+
         $mapper->save($highslide);
     }
 }

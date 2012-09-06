@@ -34,6 +34,11 @@ class Mixin_MediaRSS_Controller extends Mixin
 	{
 		$displayed_gallery = NULL;
 		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		$template = $this->object->param('template');
+		
+		if (!in_array($template, array('mediarss_feed', 'playlist_feed'))) {
+			$template = 'mediarss_feed';
+		}
 
 		// Find the displayed gallery by it's database id
 		if (($id = $this->object->param('id'))) {
@@ -61,7 +66,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 		// Assuming we have a displayed gallery, display it!
 		if ($displayed_gallery) {
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-			$this->render_view('mediarss_feed', array(
+			$this->render_view($template, array(
 				'storage'			=>	$storage,
 				'images'			=>	$displayed_gallery->get_images(),
 				'feed_title'		=>	$this->object->_get_feed_title($displayed_gallery),
