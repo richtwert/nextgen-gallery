@@ -1,5 +1,3 @@
-hs.graphicsDir = '/wp-content/plugins/nextgen-gallery/products/photocrati_nextgen/modules/highslide/static/highslide/graphics/';
-
 var galleryOptions = {
     align: 'center',
     dimmingOpacity: 0.8,

@@ -4,7 +4,7 @@
     {
         Module: photocrati-highslide
     }
- ***/
+***/
 
 class M_Highslide extends C_Base_Module
 {
