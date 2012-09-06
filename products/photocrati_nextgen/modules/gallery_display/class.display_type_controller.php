@@ -67,7 +67,8 @@ class Mixin_Display_Type_Controller extends Mixin
 		$settings	= $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$library	= $mapper->find_by_name($settings->thumbEffect);
-		if ($library) {
+		if ($library)
+        {
 			$i=0;
 			foreach (explode("\n", $library->scripts) as $script) {
 				wp_enqueue_script(
@@ -84,7 +85,18 @@ class Mixin_Display_Type_Controller extends Mixin
 				);
 				$i+=1;
 			}
-		}
+
+            if (isset($library->values))
+            {
+                foreach ($library->values as $name => $value) {
+                    wp_localize_script(
+                        $library->name . '-0',
+                        $name,
+                        $value
+                    );
+                }
+            }
+        }
 	}
 
 
