@@ -25,6 +25,7 @@ class NextGEN_shortcodes {
          add_shortcode( 'singlepic', array(&$this, 'show_singlepic' ) );
          add_shortcode( 'album', array(&$this, 'show_album' ) );
          add_shortcode( 'tagcloud', array(&$this, 'show_tagcloud' ) );
+         add_shortcode( 'slideshow', array(&$this, 'show_slideshow' ) );
     }
 
      /**
