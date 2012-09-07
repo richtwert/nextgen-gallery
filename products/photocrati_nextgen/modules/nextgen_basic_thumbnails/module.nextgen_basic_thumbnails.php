@@ -25,7 +25,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			'photocrati-nextgen_basic_thumbnails',
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
-			'1.9.5',
+			'1.9.6',
 			'http://www.photocrati.com',
 			'Photocrati Media',
 			'http://www.photocrati.com'

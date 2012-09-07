@@ -298,12 +298,12 @@ class Mixin_NextGen_Settings extends Mixin
 	 * @param string $option_name
 	 * @return mixed
 	 */
-	function get($option_name)
+	function &get($option_name)
 	{
 		$retval = Null;
 
         if (isset($this->object->_options[$option_name])) {
-            $retval = $this->object->_options[$option_name];
+            $retval = &$this->object->_options[$option_name];
         }
 
 		return $retval;
@@ -424,12 +424,12 @@ class Mixin_NextGen_Multisite_Settings extends Mixin
      * @param string $option_name
      * @return mixed
      */
-    function get($option_name)
+    function &get($option_name)
     {
         $retval = Null;
 
         if (isset($this->object->_global_options[$option_name])) {
-            $retval = $this->object->_global_options[$option_name];
+            $retval = &$this->object->_global_options[$option_name];
         }
 
         return $retval;
@@ -531,9 +531,10 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
 		$this->object->reload();
 	}
 
-    function __get($option_name)
+    function &__get($option_name)
     {
-        return $this->get($option_name);
+		$retval = &$this->get($option_name);
+        return $retval;
     }
 
     function __set($option_name, $value)
@@ -597,7 +598,7 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
      * @param mixed $offset
      * @return mixed Can return all value types.
      */
-    public function offsetGet($offset)
+    public function &offsetGet($offset)
     {
         return $this->get($offset);
     }

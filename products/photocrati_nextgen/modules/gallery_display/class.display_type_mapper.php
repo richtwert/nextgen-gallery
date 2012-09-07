@@ -13,6 +13,11 @@ class C_Display_Type_Mapper extends C_CustomPost_DataMapper_Driver
 		$this->add_mixin('Mixin_Display_Type_Mapper');
 		$this->implement('I_Display_Type_Mapper');
 		$this->set_model_factory_method('display_type');
+		$this->add_post_hook(
+			'save',
+			'Propagate thumbnail dimensions',
+			'Hook_Propagate_Thumbnail_Dimensions_To_Settings'
+		);
 	}
 
 	function initialize($context=FALSE)

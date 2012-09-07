@@ -9,6 +9,11 @@ class C_Displayed_Gallery_Mapper extends C_CustomPost_DataMapper_Driver
 		parent::define(NULL, array($context, 'display_gallery'));
 		$this->implement('I_Displayed_Gallery_Mapper');
 		$this->set_model_factory_method('displayed_gallery');
+		$this->add_post_hook(
+			'save',
+			'Propagate thumbnail dimensions',
+			'Hook_Propagate_Thumbnail_Dimensions_To_Settings'
+		);
 	}
 
 
