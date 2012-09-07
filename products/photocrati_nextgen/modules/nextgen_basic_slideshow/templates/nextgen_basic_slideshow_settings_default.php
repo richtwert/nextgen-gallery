@@ -10,5 +10,8 @@
                value="<?php print (($type == 'checkbox') ? 'true' : $value); ?>"
                <?php if ($type == 'checkbox') { print checked($value, true, false); } ?>
         />
+        <?php if (!is_null($text)) { ?>
+            <?php print $text; ?>
+        <?php } ?>
     </td>
 </tr>

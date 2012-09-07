@@ -179,7 +179,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 break;
             case 'flash_path':
                 // XXX button search
-                $label = __('Path to the Imagerotator (URL)', 'nggallery');
+                $label = __('Path to the imagerotator (URL)', 'nggallery');
                 break;
             case 'flash_shuffle':
                 $label = __('Shuffle mode', 'nggallery');
@@ -201,22 +201,22 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $label = __('Stretch image', 'nggallery');
                 break;
             case 'flash_transition_effect':
-                $label = __('Transition / Fade effect', 'nggallery');
+                $label = __('Transition / fade effect', 'nggallery');
                 break;
             case 'flash_slow_zoom':
                 $label = __('Use slow zooming effect', 'nggallery');
                 break;
             case 'flash_background_color':
-                $label = __('Background Color', 'nggallery');
+                $label = __('Background color', 'nggallery');
                 break;
             case 'flash_text_color':
-                $label = __('Texts / Buttons Color', 'nggallery');
+                $label = __('Texts / buttons color', 'nggallery');
                 break;
             case 'flash_rollover_color':
-                $label = __('Rollover / Active Color', 'nggallery');
+                $label = __('Rollover / active color', 'nggallery');
                 break;
             case 'flash_screen_color':
-                $label = __('Screen Color','nggallery');
+                $label = __('Screen color','nggallery');
                 break;
             case 'flash_background_music':
                 $label = __('Background music (URL)', 'nggallery');
