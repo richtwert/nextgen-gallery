@@ -151,6 +151,10 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the Handlebars template for the image tags source
+	 * @return string
+	 */
 	function _render_image_tags_source_template()
 	{
 		return $this->object->render_partial('image_tags_source', array(
@@ -158,6 +162,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			'tags_label'				=>	_('Tags'),
 		));
 	}
+	
 
 	/**
 	 * Gets a list of display types available

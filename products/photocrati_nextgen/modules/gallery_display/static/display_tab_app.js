@@ -227,17 +227,18 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			var containers			= this.get('containers');
 			var method				= 'push_to_'+existing.source;
 			var self = this;
-			existing.container_ids.forEach(function(item){
-				var item = Ember.Object.create({
-					id: item.toString(),
-					title: ''
+			if (existing.container_ids) {
+				existing.container_ids.forEach(function(item){
+					var item = Ember.Object.create({
+						id: item.toString(),
+						title: ''
+					});
+					self[method].call(self, item);
+					containers.pushObject(item);
 				});
-				self[method].call(self, item);
-				containers.pushObject(item);
-			});
+				this.fetch_images();
+			}
 			console.log("Adding preselected values");
-
-			this.fetch_images();
 		}
 
 		// Adds an observer for 'containers' to get it's value and assign to
@@ -381,13 +382,87 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		 if (view) view.remove();
 		 var source_id = this.get('source_id');
 		 if (source_id) {
-			 var view_name = source_id+'_source_view';
-			 var view = this.get(view_name);
-			 view.set('templateName', view_name);
-			 NggDisplayTab.set('attached_source_view', view);
-			 view.appendTo('#source_configuration');
+			 this[source_id+'_selected_as_source'].call(this);
+
 		 }
 	}).observes('source'),
+
+
+	/**
+	 * Attaches a view for a particular source
+	 */
+	attach_source_view:		function(){
+		var view_name = this.get('source_id')+'_source_view';
+		var view = this.get(view_name);
+		if (view) {
+		   view.set('templateName', view_name);
+		   NggDisplayTab.set('attached_source_view', view);
+		   view.appendTo('#source_configuration');
+		}
+	},
+
+
+	/**
+	 * The source has been changed to galleries
+	 */
+	galleries_selected_as_source:		function(){
+		this.attach_source_view();
+	},
+
+
+	/**
+	 * The source has been changed to Image Tags
+	 */
+	image_tags_selected_as_source:		function(){
+		this.attach_source_view();
+	},
+
+
+	/**
+	 * The source has been changed to Recent Images
+	**/
+	recent_images_selected_as_source:	function(){
+		this.attach_preview_area();
+	},
+
+
+	/**
+	 * The source has been changed to Random Images
+	 */
+	random_images_selected_as_source:	function(){
+		this.attach_preview_area();
+	},
+
+	/**
+	 * Attach the preview area view
+	 */
+	attach_preview_area:			function(){
+		if (NggDisplayTab.preview_area) NggDisplayTab.preview_area.remove();
+
+		// We then call a method to handle the logic of updating the
+		// entities. We do this for extensibility - a module can simply
+		// monkey patch this object
+		var method = '_update_entities_for_'+this.get('source_id');
+		if (typeof(this[method]) !== 'undefined') this[method]();
+
+		// If the preview area is supported
+		if (this.is_preview_area_supported()) {
+			NggDisplayTab.preview_area = NggDisplayTab.Preview_View.create();
+		}
+		else {
+			NggDisplayTab.preview_area = NggDisplayTab.Preview_Not_Supported_View.create();
+		}
+
+		NggDisplayTab.preview_area.appendTo('#preview_tab_content');
+
+	},
+
+	/**
+	 * Determines whether the preview area is supported for the selected source
+	 */
+	is_preview_area_supported:				function(){
+		return !this.get('source_id').match(/recent_images|random_images/);
+	},
 
 
 	/**
@@ -409,14 +484,9 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * of images or albums we're displaying
 	 */
 	_containersChanged:		Ember.observer(function(){
-		if (NggDisplayTab.preview_view) NggDisplayTab.preview_view.remove();
+		if (NggDisplayTab.preview_area) NggDisplayTab.preview_area.remove();
 		if (this.get('containers').length > 0) {
-			// We then call a method to handle the logic of updating the
-			// entities. We do this for extensibility - a module can simply
-			// monkey patch this object
-			var method = '_update_entities_for_'+this.get('source_id');
-			this[method]();
-			NggDisplayTab.preview_view.appendTo('#preview_tab_content');
+			this.attach_preview_area();
 		}
 	}).observes('containers'),
 
@@ -487,6 +557,22 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	_update_entities_for_image_tags: function(){
 		this.set('entities', Ember.A());
 		NggDisplayTab.fetch_image_tag_images();
+	},
+
+	/**
+	 * The list of containers changed. We don't display
+	 * recent images
+	 */
+	_update_entities_for_recent_images:	function(){
+		this.set('entities', Ember.A());
+	},
+
+	/**
+	 * The list of containers changed. We don't display
+	 * random images
+	 */
+	_update_entities_for_random_images:	function(){
+		this.set('entities', Ember.A());
 	}
 });
 
@@ -611,12 +697,16 @@ NggDisplayTab.displayed_gallery.image_tags_source_view	=	Ember.View.create({
 /**
  * Represents the view for displaying the image/gallery preview area
  */
-NggDisplayTab.preview_view = Ember.View.create({
+NggDisplayTab.Preview_View	= Ember.View.extend({
 	templateName:				'preview_area',
 	entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
 	displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
-	didInsertElement:			function(){
+	source_idBinding:			'NggDisplayTab.displayed_gallery.source_id',
 
+	/**
+	 * Once the element has been added to the DOM, execute some JQuery
+	 */
+	didInsertElement:			function(){
 		// Enable sorting!
 		var last_offset = 0;
 		jQuery('#preview_entity_list').sortable({
@@ -696,6 +786,10 @@ NggDisplayTab.preview_view = Ember.View.create({
 			this.get('entities').setEach('exclude', e.currentTarget.checked);
 		}
 	})
+});
+
+NggDisplayTab.Preview_Not_Supported_View		= Ember.View.extend({
+	templateName:	'preview_not_supported'
 });
 
 

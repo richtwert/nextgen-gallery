@@ -146,23 +146,32 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				break;
 			case 'image_tags':
 			case 'tags':
-                global $wpdb;
-                $container_ids = $this->object->container_ids;
-                foreach ($container_ids as &$container) {
-                    $container = "'{$container}'";
-                }
-                $container_ids = implode(',', $container_ids);
-				$query = $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$container_ids}) ORDER BY term_id ASC ");
-				$term_ids = array();
-				foreach ($wpdb->get_results($query) as $row) {
-					$term_ids[] = $row->term_id;
-				}
-				$image_ids = get_objects_in_term($term_ids, 'ngg_tag');
-				if (empty($image_ids)) $run_query = FALSE;
-				else {
-					$mapper->where(
-						array("{$image_key} IN (%s)", $image_ids)
-					);
+                // Continue if we have container ids
+				if (($container_ids = $this->object->container_ids)) {
+
+					// Convert container ids to a string suitable for WHERE IN
+					// clause
+					foreach ($container_ids as &$container) {
+						$container = "'{$container}'";
+					}
+					$container_ids = implode(',', $container_ids);
+
+					// Get all term_ids for each image tag slug
+					global $wpdb;
+					$term_ids = array();
+					$query = $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$container_ids}) ORDER BY term_id ASC ");
+					foreach ($wpdb->get_results($query) as $row) {
+						$term_ids[] = $row->term_id;
+					}
+
+					// Get all images using the provided image tags
+					$image_ids = get_objects_in_term($term_ids, 'ngg_tag');
+					if (empty($image_ids)) $run_query = FALSE;
+					else {
+						$mapper->where(
+							array("{$image_key} IN (%s)", $image_ids)
+						);
+					}
 				}
 				break;
 			default:
