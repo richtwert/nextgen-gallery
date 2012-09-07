@@ -65,78 +65,130 @@ var NggDisplayTab = Em.Application.create({
 		});
 	},
 
+	/**
+	 * Fetch entities from the server in chunks
+	 */
+	fetch_in_chunks:				function(request, object_name, obj_container, limit, offset, filter, condition, done){
+		// Set default parameters
+		if (typeof limit != "number") {
+			offset	= 0;
+			limit	= 0;
+		}
+		request['limit'] = limit;
+		request['offset'] = offset;
+
+		// Ensure we have a reference to this object
+		var self = this;
+
+		jQuery.post(photocrati_ajax_url, request, function(response){
+			if (typeof response != 'object') response = JSON.parse(response);
+
+			// Get each item from the response, manipulate the item using
+			// the filter, and then add to the object container
+			response[object_name].forEach(function(item){
+				item = Ember.Object.create(item);
+
+				// Default filter is to set the id property
+				if (item.get('id_field')) {
+					item.set('id', item.get(item.get('id_field')));
+				}
+
+				// We'll let a custom filter be applied
+				if (filter) {
+					var retval = filter.call(self, item);
+					if (retval) item = retval;
+				}
+
+				// Add the item to a container
+				obj_container.pushObject(item);
+			});
+
+			// If we haven't retrieved all of the items,
+			// then we continue to fetch galleries
+			if (response['offset'] <  response['total']) {
+				var continue_fetching = true;
+				if (condition) {
+					if (!condition.call(self, response))
+						continue_fetching = false;
+				}
+				if (continue_fetching) {
+					self.fetch_in_chunks(
+						request,
+						object_name,
+						obj_container,
+						limit,
+						offset,
+						filter,
+						condition
+					);
+				}
+			}
+
+			// when finished, call the done handler is available
+			if (done) done.call(self, response);
+		});
+	},
+
 
 	/**
 	 * Fetches a list of image/gallery sources to be used in the Attach To Post
 	 * interface
 	 */
 	fetch_sources:					function(){
-		var app = this;
-		var request = {
-			action:	'get_attach_to_post_sources'
-		};
-		jQuery.post(photocrati_ajax_url, request, function(response){
-			if (typeof response != 'object') response  = JSON.parse(response);
-			if (response.sources) {
-				response.sources.forEach(function(item){
-					app.get('sources').pushObject(item);
-					if (existing && item.id == existing.source) app.get('displayed_gallery').set('source', item);
-				});
+		this.fetch_in_chunks(
+			{action: 'get_attach_to_post_sources'},
+			'sources',
+			this.get('sources'),
+			25,
+			0,
+			function(item){
+				if (existing && item.id == existing.source) this.get('displayed_gallery').set('source', item);
+				return item;
 			}
-		});
+		);
 	},
 
 	/**
-	 * Fetches entities to be used with an attached gallery. Can be used as
-	 * a cursor, fetching chunks of the result if a limit and offset are specified
+	 * Fetches entities of a displayed gallery or gallery
 	 */
-	fetch_entities:					function(obj_container, container_id_field, params, offset, limit){
-		// Set default parameters
-		if (typeof limit != "number") {
-			offset	= 0;
-			limit	= 0;
-		}
-
-		// Create request
-		var self = this;
-		var request = {
-			action:	'get_displayed_gallery_images',
-			displayed_gallery: params
-		};
-		jQuery.post(photocrati_ajax_url, request, function(response){
-			if (typeof response != 'object') response = JSON.parse(response);
-
-			// If no error, then add the images to the displayed gallery
-			if (typeof response.error == 'undefined') {
-				response.images.forEach(function(item){
-					var image = Ember.Object.create(item);
-					image.set('id', image[image.get('id_field')]);
-					image.set('container_id', image.get(container_id_field));
-					image.set('exclude', image.get('exclude') == 0 ? false : true);
-					obj_container.pushObject(image);
-				});
-
-				// If we haven't retrieved all of the images,
-				// and the "source" selected is still "galleries",
-				// then we continue to fetch galleries
-				if (response['offset'] < response['total'] && self.get('source_id') != 'albums') {
-					self.fetch_entities(obj_container, container_id_field, params, response['offset']+response['limit'], response['limit']);
-				}
+	fetch_entities:					function(obj_container, container_id_field, params){
+		this.fetch_in_chunks(
+			{action:	'get_displayed_gallery_entities', displayed_gallery: params},
+			'entities',
+			obj_container,
+			25,
+			0,
+			function(item){
+				item.set('container_id', item.get(container_id_field));
+				item.set('exclude', item.get('exclude') == 0 ? false : true);
+				return item;
+			},
+			function(){
+				return this.get('source_id') != 'albums'
 			}
-		});
+		);
 	},
-
 
 	/**
 	 * Fetches images for a particular gallery
 	 */
-	fetch_gallery_images:			function(obj_container, gallery_id, offset, limit){
+	fetch_gallery_images:			function(obj_container, gallery_id){
 		this.fetch_entities(
 			obj_container,
 			'galleryid',
 			{source: 'galleries', container_ids: [gallery_id]},
-			offset,
-			limit
+			25,
+			0
+		);
+	},
+
+	fetch_image_tag_images:			function(){
+		this.fetch_entities(
+			this.displayed_gallery.get('entities'),
+			'term_id',
+			{source: 'image_tags', container_ids:	this.displayed_gallery.get('container_ids')},
+			25,
+			0
 		);
 	}
 });
@@ -150,6 +202,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	source:						'',
 	containers:					Ember.A(),
 	galleriesBinding:			'NggDisplayTab.galleries',
+	image_tagsBinding:			'NggDisplayTab.image_tags',
 	sourcesBinding:				'NggDisplayTab.sources',
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
@@ -168,18 +221,21 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			this.set('display_type',  existing.display_type);
 			this.set('display_settings', Ember.Object.create(existing.display_settings));
 
-			// Update containers
-			var containers	= this.get('containers');
-			var galleries	= this.get('galleries');
+			// Update containers. We update both the selected containers
+			// for the displayed gallery, as well as the source of containers.
+			// We let a method handle that so that this can be extended
+			var containers			= this.get('containers');
+			var method				= 'push_to_'+existing.source;
+			var self = this;
 			existing.container_ids.forEach(function(item){
 				var item = Ember.Object.create({
-					id: item,
+					id: item.toString(),
 					title: ''
 				});
+				self[method].call(self, item);
 				containers.pushObject(item);
-				galleries.pushObject(item);
-
 			});
+			console.log("Adding preselected values");
 
 			this.fetch_images();
 		}
@@ -187,6 +243,17 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		// Adds an observer for 'containers' to get it's value and assign to
 		// 'previous_containers' before it's value get's changed
 		Ember.addBeforeObserver(this, 'containers', this, '_set_previous_containers');
+	},
+
+	/**
+	 * Used by init() to preload an existing displayed gallery with galleries
+	 */
+	push_to_galleries:			function(item){
+		this.get('galleries').pushObject(item);
+	},
+
+	push_to_image_tags:			function(item){
+		this.get('image_tags').pushObject(item);
 	},
 
 	/**
@@ -385,19 +452,19 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	/**
 	 * Fetches images from a selected list of galleries
 	 */
-	fetch_images:	function(limit, offset){
-		var self = this;
+	fetch_images:	function(){
 		NggDisplayTab.fetch_entities(
 			this.get('entities'),
 			'galleryid',
 			existing,
-			offset,
-			limit
+			25,
+			0
 		);
 	},
 
 	/**
 	 * The list of containers changed. Adjust what entities are present
+	 * based on the selected galleries
 	 */
 	_update_entities_for_galleries:	function() {
 		var self = this;
@@ -411,6 +478,15 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		diff.removals.forEach(function(id){
 			self.remove_entities(id);
 		});
+	},
+
+	/**
+	 * The list of containers changed. Adjust what entries are present
+	 * based on the selected image tags
+	 */
+	_update_entities_for_image_tags: function(){
+		this.set('entities', Ember.A());
+		NggDisplayTab.fetch_image_tag_images();
 	}
 });
 
@@ -421,6 +497,10 @@ Ember.Chosen = Ember.Select.extend({
 		return this.get('content');
 	}.property('content.@each.length'),
 
+
+	/**
+	 * Updates the chosen widget to include all options
+	 */
 	update:								function(){
 		this.chosen_items_Changed();
 	},
@@ -454,7 +534,7 @@ Ember.Chosen = Ember.Select.extend({
 
 	didInsertElement:		function(){
 		var parentView = this.get('parentView');
-		parentView[this.get('fillCallback')].call(parentView, 25, 0, this.get('content'), this);
+		parentView[this.get('fillCallback')].call(this, this.get('content'), this);
 		jQuery(this.$()).chosen();
 		console.log('Creating chosen drop-down');
 	}
@@ -468,42 +548,29 @@ Ember.Chosen = Ember.Select.extend({
 NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 	tagName:			'tbody',
 	templateName:		'galleries_source_view',
-	fetch_galleries: function(limit, offset, collection, chosen_ddl) {
+	fetch_galleries: function(collection, chosen_ddl) {
+		collection.clear();
+		NggDisplayTab.fetch_in_chunks(
+			{action: 'get_existing_galleries'},
+			'galleries',
+			collection,
+			25,
+			0,
+			function(item){
+				var arr = this.get('displayed_gallery').get('containers').map(function(obj, index, arr){
+					return (item.get('id') == obj.get('id')) ? item : obj
+				});
+				this.get('displayed_gallery').set('containers', arr);
 
-		// Set default parameters
-		if (typeof limit != "number") {
-			offset	= 0;
-			limit	= 0;
-		}
-
-		// Create AJAX resquest
-		var request = {
-			action:	'get_existing_galleries',
-			offset:	offset,
-			limit:	limit
-		};
-		var self = this;
-		jQuery.post(photocrati_ajax_url, request, function(response){
-			if (typeof response != 'object') response = JSON.parse(response);
-
-			// Add each gallery
-			response.galleries.forEach(function(item){
-				item = Ember.Object.create(item);
-				item.set('id', item[item.id_field].toString());
-				var existing_gallery = collection.findProperty('id', item.get('id'));
-				if (!existing_gallery) collection.pushObject(Ember.Object.create(item));
-				else for (var key in item) existing_gallery.set(key, item[key]);
-			});
-
-			// If we haven't retrieved all of the galleries,
-			// and the "source" selected is still "galleries",
-			// then we continue to fetch galleries
-			if (response['offset'] < response['total'] && self.get('source_id') == 'galleries') {
-				self.fetch_galleries(response['limit'], response['offset']+response['limit'], collection, chosen_ddl);
+				return item;
+			},
+			function(){
+				return this.get('source_id') == 'galleries';
+			},
+			function(){
+				chosen_ddl.update();
 			}
-
-			chosen_ddl.update();
-		});
+		);
 	}
 });
 
@@ -515,11 +582,29 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 NggDisplayTab.displayed_gallery.image_tags_source_view	=	Ember.View.create({
 	tagName:			'tbody',
 	templateName:		'image_tags_source_view',
-	fetch_image_tags:	function(limit, offset, collection){
-		collection.pushObject({
-			id:	'test',
-			title:	'Test'
-		});
+	fetch_image_tags:	function(collection, chosen_ddl){
+		collection.clear();
+		NggDisplayTab.fetch_in_chunks(
+			{action:	'get_image_tags'},
+			'image_tags',
+			collection,
+			25,
+			0,
+			function(item){
+				var arr = this.get('displayed_gallery').get('containers').map(function(obj, index, arr){
+					return (item.get('id') == obj.get('id')) ? item : obj
+				});
+				this.get('displayed_gallery').set('containers', arr);
+
+				return item;
+			},
+			function(){
+				return this.get('source_id') == 'image_tags';
+			},
+			function(){
+				chosen_ddl.update();
+			}
+		);
 	}
 });
 
