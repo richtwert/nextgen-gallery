@@ -221,6 +221,7 @@ class nggManageGallery {
 			$ngg->options['thumbfix']    = isset ($_POST['thumbfix']) ? true : false; 
 			// What is in the case the user has no if cap 'NextGEN Change options' ? Check feedback
 			update_option('ngg_options', $ngg->options);
+			ngg_refreshSavedSettings();
 			
 			$gallery_ids  = explode(',', $_POST['TB_imagelist']);
 			// A prefix 'gallery_' will first fetch all ids from the selected galleries
@@ -299,6 +300,7 @@ class nggManageGallery {
 			$ngg->options['thumbheight'] = (int) $_POST['thumbheight'];
 			$ngg->options['thumbfix']    = isset ( $_POST['thumbfix'] ) ? true : false; 
 			update_option('ngg_options', $ngg->options);
+			ngg_refreshSavedSettings();
 			
 			$pic_ids  = explode(',', $_POST['TB_imagelist']);
 			nggAdmin::do_ajax_operation( 'create_thumbnail' , $pic_ids, __('Create new thumbnails','nggallery') );
