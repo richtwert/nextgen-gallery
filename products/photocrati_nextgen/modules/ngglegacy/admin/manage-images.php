@@ -616,11 +616,12 @@ if ( $counter == 0 )
 		<input type="hidden" id="new_thumbnail_imagelist" name="TB_imagelist" value="" />
 		<input type="hidden" id="new_thumbnail_bulkaction" name="TB_bulkaction" value="" />
 		<input type="hidden" name="page" value="manage-images" />
-        <table width="100%" border="0" cellspacing="3" cellpadding="3" >
+    <table width="100%" border="0" cellspacing="3" cellpadding="3" >
 			<tr valign="top">
 				<th align="left"><?php _e('Width x height (in pixel)','nggallery') ?></th>
-				<td><input type="text" size="5" maxlength="5" name="thumbwidth" value="<?php echo $ngg->options['thumbwidth']; ?>" /> x <input type="text" size="5" maxlength="5" name="thumbheight" value="<?php echo $ngg->options['thumbheight']; ?>" />
-				<br /><small><?php _e('These values are maximum values ','nggallery') ?></small></td>
+				<td>
+				<?php include(dirname(__FILE__) . '/thumbnails-template.php'); ?>
+				</td>
 			</tr>
 			<tr valign="top">
 				<th align="left"><?php _e('Set fix dimension','nggallery') ?></th>
