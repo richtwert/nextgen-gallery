@@ -161,19 +161,18 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
         $label = NULL;
         $text  = NULL;
         $value = isset($display_type->settings[$name]) ? $display_type->settings[$name] : NULL;
-        $type  = NULL;
+        $type  = 'text';
+        $color = FALSE;
 
         if (is_bool($value))
         {
             $type = 'checkbox';
         }
-        else {
-            $type = 'text';
-        }
 
         switch ($name)
         {
             case 'flash_enabled':
+                $type = 'checkbox';
                 $label = __('Enable flash slideshow', 'nggallery');
                 $text = __('Integrate the flash based slideshow for all flash supported devices', 'nggallery');
                 break;
@@ -208,15 +207,19 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 break;
             case 'flash_background_color':
                 $label = __('Background color', 'nggallery');
+                $color = TRUE;
                 break;
             case 'flash_text_color':
                 $label = __('Texts / buttons color', 'nggallery');
+                $color = TRUE;
                 break;
             case 'flash_rollover_color':
                 $label = __('Rollover / active color', 'nggallery');
+                $color = TRUE;
                 break;
             case 'flash_screen_color':
                 $label = __('Screen color','nggallery');
+                $color = TRUE;
                 break;
             case 'flash_background_music':
                 $label = __('Background music (URL)', 'nggallery');
@@ -227,14 +230,22 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 break;
         }
 
+        // necessary for javascript effect
+        if ($color)
+        {
+            $value = strpos($value, '#') === 0 ? $value : '#' . $value;
+            $type = 'hidden';
+        }
+
         return array(
             'display_type_name' => $display_type->name,
-            'hidden' => ($display_type->settings['flash_enabled'] == TRUE) ? FALSE : TRUE,
-            'label' => _($label),
-            'name'  => $name,
-            'text' => _($text),
-            'type' => $type,
-            'value' => $value
+            'hidden' => (TRUE == $display_type->settings['flash_enabled']) ? FALSE : TRUE,
+            'label'  => _($label),
+            'name'   => $name,
+            'text'   => _($text),
+            'type'   => $type,
+            'value'  => $value,
+            'color'  => $color
         );
     }
 	

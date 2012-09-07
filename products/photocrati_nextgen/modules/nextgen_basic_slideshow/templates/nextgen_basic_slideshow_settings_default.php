@@ -13,5 +13,17 @@
         <?php if (!is_null($text)) { ?>
             <?php print $text; ?>
         <?php } ?>
+
+        <?php if ($color) { ?>
+            <div id="<?php print $display_type_name . '_' . $name; ?>_colorpicker">
+                <?php echo_h($value); ?>
+            </div>
+
+            <script type='text/javascript'>
+                jQuery(document).ready(function($) {
+                    $('#<?php print $display_type_name . '_' . $name; ?>_colorpicker').farbtastic('#<?php print $display_type_name . '_' . $name; ?>');
+                });
+            </script>
+        <?php } ?>
     </td>
 </tr>

@@ -7,7 +7,7 @@
                id="<?php print $display_type_name . '_' . $name; ?>"
                name="<?php print $display_type_name . '[' . $name . ']'; ?>"
                class="<?php print $display_type_name . '_' . $name; ?>"
-               <?php if ($type == 'checkbox') { print checked($value, true, false); } ?>
+               <?php if ($type == 'checkbox') { print checked($value, 'on', false); } ?>
         />
         <script type="text/javascript">
             jQuery(document).ready(function($) {
