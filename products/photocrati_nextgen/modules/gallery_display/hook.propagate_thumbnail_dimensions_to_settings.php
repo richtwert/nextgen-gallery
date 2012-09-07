@@ -17,6 +17,7 @@ class Hook_Propagate_Thumbnail_Dimensions_To_Settings extends Hook
 
 			if (!in_array($new_dimension, $dimensions)) {
 				$dimensions[]	= $new_dimension;
+				sort($dimensions);
 				$settings->thumbnail_dimensions = $dimensions;
 				$settings->save();
 			}
