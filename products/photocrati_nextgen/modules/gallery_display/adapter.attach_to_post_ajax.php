@@ -66,12 +66,19 @@ class A_Attach_To_Post_Ajax extends Mixin
 		$offset = $this->object->param('offset');
 		$response['limit'] = $limit = $limit ? $limit : 0;
 		$response['offset'] = $offset = $offset ? $offset : 0;
-
-		$response['image_tags'] = get_terms('ngg_tag', array(
+		$response['image_tags'] = array();
+		$params = array(
 			'number'	=>	$limit,
 			'offset'	=>	$offset,
-		));
-		$response['total'] = count(get_terms('ngg_tag', array('ids')));
+			'fields'	=>	'names'
+		);
+		foreach (get_terms('ngg_tag', $params) as $term) {
+			$response['image_tags'][] = array(
+				'id'	=>	$term,
+				'title'	=>	$term
+			);
+		}
+		$response['total'] = count(get_terms('ngg_tag', array('fields' => 'ids')));
 
 		return $response;
 	}

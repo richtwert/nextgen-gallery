@@ -90,7 +90,7 @@ var NggDisplayTab = Em.Application.create({
 
 				// Default filter is to set the id property
 				if (item.get('id_field')) {
-				item.set('id', item.get(item.get('id_field')));
+					item.set('id', item.get(item.get('id_field')));
 				}
 
 				// We'll let a custom filter be applied
@@ -184,7 +184,7 @@ var NggDisplayTab = Em.Application.create({
 
 	fetch_image_tag_images:			function(){
 		this.fetch_entities(
-			this.get('image_tags'),
+			this.displayed_gallery.get('entities'),
 			'term_id',
 			{source: 'image_tags', container_ids:	this.displayed_gallery.get('container_ids')},
 			25,
@@ -270,7 +270,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * Returns an array of container ids
 	 */
 	container_ids:				function(key, value){
-		return this.get('containers').getEach(this.get('source_id') == 'image_tags' ? 'term_id' : 'id');
+		return this.get('containers').getEach('id');
 	}.property('containers.@each.length'),
 
 
@@ -543,6 +543,7 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 	tagName:			'tbody',
 	templateName:		'galleries_source_view',
 	fetch_galleries: function(collection, chosen_ddl) {
+		collection.clear();
 		NggDisplayTab.fetch_in_chunks(
 			{action: 'get_existing_galleries'},
 			'galleries',
@@ -574,18 +575,14 @@ NggDisplayTab.displayed_gallery.image_tags_source_view	=	Ember.View.create({
 	tagName:			'tbody',
 	templateName:		'image_tags_source_view',
 	fetch_image_tags:	function(collection, chosen_ddl){
+		collection.clear();
 		NggDisplayTab.fetch_in_chunks(
 			{action:	'get_image_tags'},
 			'image_tags',
 			collection,
 			25,
 			0,
-			function(item){
-				var existing_tag = collection.findProperty('id', item.get('id'));
-				if (!existing_tag) collection.pushObject(item);
-				else for (var key in item) existing_tag.set(key, item[key]);
-				return item;
-			},
+			null,
 			function(){
 				return this.get('source_id') == 'image_tags';
 			},

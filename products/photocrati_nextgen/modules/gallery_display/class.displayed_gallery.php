@@ -152,11 +152,18 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
                     $container = "'{$container}'";
                 }
                 $container_ids = implode(',', $container_ids);
-				$term_ids = $wpdb->get_col( $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$container_ids}) ORDER BY term_id ASC "));
+				$query = $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$container_ids}) ORDER BY term_id ASC ");
+				$term_ids = array();
+				foreach ($wpdb->get_results($query) as $row) {
+					$term_ids[] = $row->term_id;
+				}
 				$image_ids = get_objects_in_term($term_ids, 'ngg_tag');
-				$mapper->where(
-					array("{$image_key} IN (%s)", $image_ids)
-				);
+				if (empty($image_ids)) $run_query = FALSE;
+				else {
+					$mapper->where(
+						array("{$image_key} IN (%s)", $image_ids)
+					);
+				}
 				break;
 			default:
 				$run_query = FALSE;
