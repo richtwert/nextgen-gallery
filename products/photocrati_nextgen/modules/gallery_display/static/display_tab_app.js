@@ -202,6 +202,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	source:						'',
 	containers:					Ember.A(),
 	galleriesBinding:			'NggDisplayTab.galleries',
+	image_tagsBinding:			'NggDisplayTab.image_tags',
 	sourcesBinding:				'NggDisplayTab.sources',
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
@@ -228,12 +229,13 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			var self = this;
 			existing.container_ids.forEach(function(item){
 				var item = Ember.Object.create({
-					id: item,
+					id: item.toString(),
 					title: ''
 				});
-				containers.pushObject(item);
 				self[method].call(self, item);
+				containers.pushObject(item);
 			});
+			console.log("Adding preselected values");
 
 			this.fetch_images();
 		}
@@ -495,6 +497,10 @@ Ember.Chosen = Ember.Select.extend({
 		return this.get('content');
 	}.property('content.@each.length'),
 
+
+	/**
+	 * Updates the chosen widget to include all options
+	 */
 	update:								function(){
 		this.chosen_items_Changed();
 	},
@@ -551,9 +557,11 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 			25,
 			0,
 			function(item){
-				var existing_gallery = collection.findProperty('id', item.get('id'));
-				if (existing_gallery)
-					for (var key in item) existing_gallery.set(key, item[key]);
+				var arr = this.get('displayed_gallery').get('containers').map(function(obj, index, arr){
+					return (item.get('id') == obj.get('id')) ? item : obj
+				});
+				this.get('displayed_gallery').set('containers', arr);
+
 				return item;
 			},
 			function(){
@@ -582,7 +590,14 @@ NggDisplayTab.displayed_gallery.image_tags_source_view	=	Ember.View.create({
 			collection,
 			25,
 			0,
-			null,
+			function(item){
+				var arr = this.get('displayed_gallery').get('containers').map(function(obj, index, arr){
+					return (item.get('id') == obj.get('id')) ? item : obj
+				});
+				this.get('displayed_gallery').set('containers', arr);
+
+				return item;
+			},
 			function(){
 				return this.get('source_id') == 'image_tags';
 			},
