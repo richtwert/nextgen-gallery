@@ -183,7 +183,7 @@ class M_Gallery_Display extends C_Base_Module
 		}
 
 		// Enqueue resources needed at post/page level
-		elseif ($_SERVER['SCRIPT_NAME'] == '/wp-admin/post.php') {
+		elseif (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
 			$this->_enqueue_tinymce_resources();
 		}
 
