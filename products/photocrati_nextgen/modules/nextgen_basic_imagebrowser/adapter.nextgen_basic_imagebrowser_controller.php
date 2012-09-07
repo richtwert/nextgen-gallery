@@ -5,23 +5,38 @@
  */
 class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 {
+
+    function initialize()
+    {
+        $this->add_mixin('Mixin_NextGen_Basic_Templates');
+    }
+
 	function index($displayed_gallery, $return=FALSE)
 	{
-		$picturelist	= array();
+		$picturelist = array();
+
 		foreach ($displayed_gallery->get_images() as $image) {
-			$key = $image->id_field;
-			$picturelist[$image->$key] = $image;
+			$picturelist[$image->{$image->id_field}] = $image;
 		}
-		if ($picturelist) {
+
+		if ($picturelist)
+        {
             $retval = $this->Render_Image_Browser(
                 $picturelist,
                 $displayed_gallery->display_settings['template']
 			);
-			if ($return) return $retval;
-			else echo $retval;
+
+			if ($return)
+            {
+                return $retval;
+            }
+			else {
+                echo $retval;
+            }
 		}
-		else
-			return $this->object->render_partial("no_images_found", array(), $return);
+		else {
+			return $this->object->render_partial('no_images_found', array(), $return);
+        }
 
 	}
 
@@ -124,7 +139,17 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         $filename = (empty($template)) ? 'imagebrowser' : 'imagebrowser-' . $template;
 
         // create the output
-        $out = nggGallery::capture($filename , array('image' => $picture , 'meta' => $meta, 'exif' => $exif, 'iptc' => $iptc, 'xmp' => $xmp, 'db' => $db));
+        $out = $this->object->legacy_render(
+            $filename,
+            array(
+                'image' => $picture,
+                'meta' => $meta,
+                'exif' => $exif,
+                'iptc' => $iptc,
+                'xmp' => $xmp,
+                'db' => $db
+            )
+        );
 
         return $out;
     }
