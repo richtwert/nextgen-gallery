@@ -164,8 +164,8 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		add_submenu_page(
 			NGGFOLDER,
-			_('NextGEN Display Settings'),
-			_('Display Settings'),
+			_('NextGEN Gallery & Album Settings'),
+			_('Gallery Settings'),
 			'NextGEN Manage gallery',
 			$this->display_settings_page_name,
 			array(&$this->controller, 'index')
