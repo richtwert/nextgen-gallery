@@ -131,7 +131,8 @@ class M_Gallery_Display extends C_Base_Module
 		if (is_admin()) {
 			add_action(
 				'admin_enqueue_scripts',
-				array(&$this, 'enqueue_resources')
+				array(&$this, 'enqueue_resources'),
+				1
 			);
 		}
 

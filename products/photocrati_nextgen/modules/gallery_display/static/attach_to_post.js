@@ -70,10 +70,10 @@ jQuery(function($){
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 
 	// Resize iframes to be height of the content
-	$('iframe').load(function(){
-		var iframe = this;
-		resize_attach_to_post_tab(iframe);
-	});
+//	$('iframe').load(function(){
+//		var iframe = this;
+//		resize_attach_to_post_tab(iframe);
+//	});
 
 	// Close the window when the escape key is pressed
 	$(this).keydown(function(e){

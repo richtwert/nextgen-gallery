@@ -16,7 +16,6 @@
 		},
 
 		init: function( s ) {
-
 			s = this.settings = $.extend( {}, this.settings, {}, s || {} );
 			width = Math.round( ( 100 / s.maxStep ) * 100 ) /100;
 			// add the initial progressbar
@@ -39,6 +38,8 @@
 
 		addMessage: function( message ) {
 			s = this.settings;
+			if (!s.init) this.init();
+			var div = this.div;
 			if ( div.find("#" + s.id + "_message").length == 0)
 				div.append('<div class="' + s.id + '_message"><span style="display:block" id="' + s.id + '_message">' + message + '</span></div>');
 			else
@@ -47,8 +48,9 @@
 
 		addNote: function( note, detail ) {
 			s = this.settings;
-			s.wait = true;
+			if (!s.init) this.init();
 			var div = this.div;
+			s.wait = true;
 			if ( div.find("#" + s.id + "_note").length == 0)
 				div.append('<ul id="' + s.id + '_note">&nbsp;</ul>');
 
