@@ -2,23 +2,23 @@
  * Progress bar Plugin for NextGEN gallery
  * Version:  2.0.3
  * Author : Alex Rabe
- * 
- */ 
+ *
+ */
 (function($) {
 	nggProgressBar = {
-	
+
 		settings: {
 				id:	'progressbar',
 				maxStep: 100,
 				wait: false,
 				header: '',
-                init:false 
+                init:false
 		},
-		
+
 		init: function( s ) {
-			
+
 			s = this.settings = $.extend( {}, this.settings, {}, s || {} );
-			width = Math.round( ( 100 / s.maxStep ) * 100 ) /100;			
+			width = Math.round( ( 100 / s.maxStep ) * 100 ) /100;
 			// add the initial progressbar
 			if ( $( "#" + s.id + "_dialog" ).length == 0) {
 				s.header = (s.header.length > 0) ? s.header : '' ;
@@ -29,25 +29,26 @@
             		width: 640,
                     resizable : true,
             		modal: true,
-                    title: s.header       
+                    title: s.header
             	});
 			}
             // get the pointer to the dialog
-            div = $('#' + s.id + '_dialog');
+            this.div = $('#' + s.id + '_dialog');
             s.init = true;
 		},
-		
+
 		addMessage: function( message ) {
 			s = this.settings;
 			if ( div.find("#" + s.id + "_message").length == 0)
 				div.append('<div class="' + s.id + '_message"><span style="display:block" id="' + s.id + '_message">' + message + '</span></div>');
-			else	
+			else
 				$("#" + s.id + "_message").html( message );
 		},
 
 		addNote: function( note, detail ) {
 			s = this.settings;
 			s.wait = true;
+			var div = this.div;
 			if ( div.find("#" + s.id + "_note").length == 0)
 				div.append('<ul id="' + s.id + '_note">&nbsp;</ul>');
 
@@ -55,10 +56,10 @@
 				$("#" + s.id + "_note").append("<li>" + note + "<div class='show_details'><span>[more]</span><br />" + detail + "</div></li>");
 			else
 				$("#" + s.id + "_note").append("<li>" + note + "</li>");
-            // increase the height to show the note    
+            // increase the height to show the note
             div.dialog("option", "height", 220);
 		},
-		
+
 		increase: function( step ) {
 			s = this.settings;
 			var value = step * width + "%";

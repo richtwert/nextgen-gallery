@@ -8,4 +8,7 @@ jQuery(function($){
 	$('form').each(function(){
 		$(this).append("<input type='hidden' name='attach_to_post' value='1'/>");
 	});
+
+	debugger;
+	parent.resize_attach_to_post_tab(window.frameElement, true);
 });

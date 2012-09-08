@@ -187,7 +187,8 @@ class M_Gallery_Display extends C_Base_Module
 			$this->_enqueue_tinymce_resources();
 		}
 
-		elseif (isset($_REQUEST['attach_to_post'])) {
+		elseif (isset($_REQUEST['attach_to_post']) OR
+		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
 			wp_enqueue_script('iframely', $this->static_url('iframely.js'));
 			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
 		}
