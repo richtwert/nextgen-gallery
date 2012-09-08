@@ -524,7 +524,7 @@ Ember.Chosen = Ember.Select.extend({
 			jQuery(this.$()).bind('liszt:updated', function(){
 				var chosen_ddl_selector = '#'+jQuery(this).attr('id')+'_chzn';
 				var width = jQuery(chosen_ddl_selector).width(400).width();
-				jQuery(chosen_ddl_selector+' .search-field input').width(width);
+				jQuery(chosen_ddl_selector+' .search-field input').width('auto');
 				jQuery(chosen_ddl_selector+' .chzn-drop').width(width-2);
 			}).trigger('liszt:updated');
 			console.log('Updating chosen drop-down');
@@ -535,6 +535,8 @@ Ember.Chosen = Ember.Select.extend({
 	didInsertElement:		function(){
 		var parentView = this.get('parentView');
 		parentView[this.get('fillCallback')].call(this, this.get('content'), this);
+		var select = jQuery(this.$());
+		select.attr('data-placeholder', '--Select--');
 		jQuery(this.$()).chosen();
 		console.log('Creating chosen drop-down');
 	}
