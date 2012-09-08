@@ -598,7 +598,7 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
      * @param mixed $offset
      * @return mixed Can return all value types.
      */
-    public function &offsetGet($offset)
+    public function offsetGet($offset)
     {
         return $this->get($offset);
     }

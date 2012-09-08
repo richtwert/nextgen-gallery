@@ -222,6 +222,9 @@ class M_Gallery_Display extends C_Base_Module
 			'nextgen_display_settings_page',
 			$this->static_url('nextgen_display_settings_page.css')
 		);
+
+        wp_enqueue_script('farbtastic');
+        wp_enqueue_style('farbtastic');
 	}
 
 

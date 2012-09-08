@@ -27,6 +27,7 @@ class A_Ajax_Pagination_Actions extends Mixin
         ob_end_clean();
 
         print $output;
-        exit;
+
+        throw new E_Clean_Exit();
     }
 }

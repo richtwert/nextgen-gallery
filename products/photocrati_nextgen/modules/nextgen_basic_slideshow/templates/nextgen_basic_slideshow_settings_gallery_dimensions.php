@@ -5,11 +5,14 @@
         </label>
     </td>
     <td>
+        Width
         <input type='text'
                id='<?php echo esc_attr($display_type_name); ?>_gallery_width'
                name='<?php echo esc_attr($display_type_name); ?>[gallery_width]'
                class='ngg_slideshow_gallery_width'
                value='<?php echo esc_attr($gallery_width); ?>'/>
+        <br/>
+        Height
         <input type='text'
                id='<?php echo esc_attr($display_type_name); ?>_gallery_height'
                name='<?php echo esc_attr($display_type_name); ?>[gallery_height]'
