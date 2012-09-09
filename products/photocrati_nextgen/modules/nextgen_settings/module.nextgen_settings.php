@@ -132,8 +132,8 @@ class M_NextGen_Settings extends C_Base_Module
 		// Add the "Options" page
 		add_submenu_page(
 			NGGFOLDER,
-			_('NextGEN Gallery - Global Options'),
-			_('Global Options'),
+			_('NextGEN Gallery - Other Options'),
+			_('Other Options'),
 			'NextGEN Change options',
 			$this->page_name,
 			array(&$this->controller, 'index')

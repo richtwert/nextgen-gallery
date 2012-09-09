@@ -385,7 +385,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			 this[source_id+'_selected_as_source'].call(this);
 
 		 }
-	}).observes('source'),
+	}, 'source'),
 
 
 	/**
@@ -488,7 +488,24 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		if (this.get('containers').length > 0) {
 			this.attach_preview_area();
 		}
-	}).observes('containers'),
+	}, 'container'),
+
+
+	/**
+	 * Fetches and displays the settings for the selected "Display Type"
+	**/
+	display_type_Changed:	Ember.observer(function(){
+		var self = this;
+		var request = {
+			display_type:	self.get('display_type'),
+			action:			'get_display_type_settings'
+		};
+		jQuery.post(photocrati_ajax_url, request, function(response){
+			if (typeof response != 'object') response  = JSON.parse(response);
+			if (response.html) jQuery('#display_settings_tab_content').html(response.html);
+			else alert(response.error);
+		});
+	}, 'display_type'),
 
 
 	/**
@@ -610,7 +627,7 @@ Ember.Chosen = Ember.Select.extend({
 			jQuery(this.$()).bind('liszt:updated', function(){
 				var chosen_ddl_selector = '#'+jQuery(this).attr('id')+'_chzn';
 				var width = jQuery(chosen_ddl_selector).width(400).width();
-				jQuery(chosen_ddl_selector+' .search-field input').width(width);
+				jQuery(chosen_ddl_selector+' .search-field input').width('auto');
 				jQuery(chosen_ddl_selector+' .chzn-drop').width(width-2);
 			}).trigger('liszt:updated');
 			console.log('Updating chosen drop-down');
@@ -621,6 +638,8 @@ Ember.Chosen = Ember.Select.extend({
 	didInsertElement:		function(){
 		var parentView = this.get('parentView');
 		parentView[this.get('fillCallback')].call(this, this.get('content'), this);
+		var select = jQuery(this.$());
+		select.attr('data-placeholder', '--Select--');
 		jQuery(this.$()).chosen();
 		console.log('Creating chosen drop-down');
 	}

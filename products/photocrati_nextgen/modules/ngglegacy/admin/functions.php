@@ -1498,4 +1498,32 @@ function ngg_checkExtract($p_event, &$p_header)	{
 	
     return 1;
 }
+
+// XXX temporary...used as a quick fix to refresh I_NextGen_Settings when the nextgen option is updated manually in order to run Hooks etc.
+function ngg_refreshSavedSettings()
+{
+	if (class_exists('C_Component_Registry'))
+	{
+		$registry = C_Component_Registry::get_instance();
+		$settings = $registry->get_utility('I_NextGen_Settings');
+
+		if ($settings != null)
+		{
+			$width			= $settings->thumbwidth;
+			$height			= $settings->thumbheight;
+			$new_dimension	= "{$width}x{$height}";
+			$dimensions		= $settings->thumbnail_dimensions;
+
+			if (!in_array($new_dimension, $dimensions)) {
+				$dimensions[]	= $new_dimension;
+				$settings->thumbnail_dimensions = $dimensions;
+				$settings->save();
+			
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
 ?>

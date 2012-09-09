@@ -131,7 +131,8 @@ class M_Gallery_Display extends C_Base_Module
 		if (is_admin()) {
 			add_action(
 				'admin_enqueue_scripts',
-				array(&$this, 'enqueue_resources')
+				array(&$this, 'enqueue_resources'),
+				1
 			);
 		}
 
@@ -163,8 +164,8 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		add_submenu_page(
 			NGGFOLDER,
-			_('NextGEN Display Settings'),
-			_('Display Settings'),
+			_('NextGEN Gallery & Album Settings'),
+			_('Gallery Settings'),
 			'NextGEN Manage gallery',
 			$this->display_settings_page_name,
 			array(&$this->controller, 'index')
@@ -183,11 +184,12 @@ class M_Gallery_Display extends C_Base_Module
 		}
 
 		// Enqueue resources needed at post/page level
-		elseif ($_SERVER['SCRIPT_NAME'] == '/wp-admin/post.php') {
+		elseif (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
 			$this->_enqueue_tinymce_resources();
 		}
 
-		elseif (isset($_REQUEST['attach_to_post'])) {
+		elseif (isset($_REQUEST['attach_to_post']) OR
+		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
 			wp_enqueue_script('iframely', $this->static_url('iframely.js'));
 			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
 		}
@@ -221,6 +223,9 @@ class M_Gallery_Display extends C_Base_Module
 			'nextgen_display_settings_page',
 			$this->static_url('nextgen_display_settings_page.css')
 		);
+
+        wp_enqueue_script('farbtastic');
+        wp_enqueue_style('farbtastic');
 	}
 
 

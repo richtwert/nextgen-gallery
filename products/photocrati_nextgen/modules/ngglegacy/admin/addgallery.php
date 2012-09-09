@@ -165,7 +165,7 @@ class nggAddGallery {
 
     jQuery(document).ready(function($) {
 		if ($(this).data('ready')) return;
-    	window.uploader = new plupload.Uploader({
+			window.uploader = new plupload.Uploader({
     		runtimes: '<?php echo apply_filters('plupload_runtimes', 'html5,flash,silverlight,html4,'); ?>',
     		browse_button: 'plupload-browse-button',
     		container: 'plupload-upload-ui',

@@ -3,6 +3,7 @@ html,body {
 	height: 100%;
 	padding: 0px;
 	margin: 0px;
+	font-size: 13px;
 }
 
 .entity_errors {
@@ -44,9 +45,22 @@ iframe {
 	overflow: visible;
 }
 
+#displayed_gallery_source {
+	width: 400px;
+}
+
 /** Would would you like to display tab? **/
 #source_configuration td{
 	vertical-align: top;
+}
+
+#source_configuration select {
+	position: relative;
+	bottom: 3px;
+}
+
+#source_configuration .chzn-choices input[type=text] {
+	height: auto !important;
 }
 
 /** Select a display type tab **/
@@ -125,4 +139,8 @@ iframe {
 .clear {
 	clear: both;
 	float: none;
+}
+
+table {
+	font-size: 13px;
 }
