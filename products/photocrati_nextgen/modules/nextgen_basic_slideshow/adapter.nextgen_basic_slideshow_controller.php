@@ -20,38 +20,16 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	function index($displayed_gallery)
 	{
 		// Get the images to be displayed
-		$current_page = get_query_var('nggpage');
-		if (!$current_page) $current_page = 1;
+        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
 		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
-		$offset = $images_per_page * ($current_page-1);
+		$offset = $images_per_page * ($current_page - 1);
 		$images = $displayed_gallery->get_images($images_per_page, $offset);
-		$total	= $displayed_gallery->get_image_count();
-		$pagination = FALSE;
 
 		// Are there images to display?
 		if ($images) {
 
-			/***
-			// We try to replicate what a call to nggShowGallery() would
-			// render as much as possible. The reason why we don't make a call
-			// to nggShowGallery() is that it assumes that only one gallery
-			// is being displayed, and I don't feel confident modifying it
-			// to behave otherwise. I'd sooner replicate the look n' feel
-			// and deprecate the nggShowGallery() method
-			***/
-
-			// Create pagination
-			if ($images_per_page) {
-				$pagination = new nggNavigation;
-				$pagination = $pagination->create_navigation(
-					$current_page, $total, $images_per_page
-				);
-			}
-
 			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility(
-				'I_Gallery_Storage'
-			);
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
 			$params = $displayed_gallery->display_settings;
 			$params['storage']				= &$storage;
@@ -59,24 +37,27 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			$params['displayed_gallery_id'] = $displayed_gallery->id();
 			$params['current_page']			= $current_page;
 			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
-			$params['pagination']			= $pagination;
-			
+
 			if ($displayed_gallery->display_settings['flash_enabled'])
 			{
-        $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-        $entity = $displayed_gallery->get_entity();
-        $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-        $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+                $entity = $displayed_gallery->get_entity();
+                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+                $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
         
-				$params['mediarss_link'] = $mediarss_link;
+                $params['mediarss_link'] = $mediarss_link;
         
 				$this->object->render_partial('nextgen_basic_slideshow_flash', $params);
 			}
-			else
-			{
+			else {
+                // show a way back if we've been linked to from a 'view slideshow' link
+                if (get_query_var('show') || isset($_SERVER['NGGALLERY']['slideshow']))
+                {
+                    $params['thumbnails_link'] = add_query_arg('show', 'gallery');
+                    $params['thumbnails_link_text'] = _('[Show picture list]');
+                }
 				$this->object->render_partial('nextgen_basic_slideshow', $params);
 			}
-
 		}
 		else {
 			$this->object->render_partial("no_images_found");

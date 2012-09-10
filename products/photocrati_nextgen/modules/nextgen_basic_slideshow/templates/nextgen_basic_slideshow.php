@@ -1,3 +1,12 @@
+<?php if (isset($thumbnails_link)): ?>
+<!-- Thumbnails Link -->
+<div class="slideshowlink">
+    <a class="slideshowlink" href="<?php echo esc_attr($thumbnails_link) ?>">
+        <?php echo_h($thumbnails_link_text)?>
+    </a>
+</div>
+<?php endif ?>
+
 <?php
 
 $anchor = 'ngg-slideshow-' . $displayed_gallery_id . '-' . $current_page;
@@ -67,13 +76,6 @@ $aspect_ratio = $gallery_width / $gallery_height;
 		style="width:<?php echo_h($gallery_width) ?>px; height:<?php echo_h($gallery_height) ?>px;">
 		<img src="<?php echo_h(NGGALLERY_URLPATH) ?>images/loader.gif" alt="" />
 	</div>
-
-	<?php if ($pagination): ?>
-	<!-- Pagination -->
-	<?php echo $pagination ?>
-	<?php else: ?>
-	<div class="ngg-clear"></div>
-	<?php endif ?>
 </div>
 <script type="text/javascript">
 jQuery('#<?php echo_h($anchor)?>-image-list').hide().removeClass('ngg-slideshow-nojs');

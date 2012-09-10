@@ -51,11 +51,18 @@ class M_Gallery_Display extends C_Base_Module
 	function _add_routes()
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
+
 		$router->add_route(
-			__CLASS__,
+			__CLASS__ . '_Attach_to_Post',
 			'C_Attach_to_Post_Controller',
 			array('uri'=>$router->routing_pattern($this->attach_to_post_route))
 		);
+
+//        $router->add_route(
+//            __CLASS__ . '_Slideshow',
+//            'C_Display_Type_Controller',
+//            array('uri' => '/^(.+)\/slideshow$/')
+//        );
 	}
 
 
@@ -153,8 +160,36 @@ class M_Gallery_Display extends C_Base_Module
 		// Add hook to subsitute displayed gallery placeholders
 		add_filter('the_content', array(&$this, 'substitute_placeholder_imgs'), 100, 1);
 		remove_filter('the_content',    'wpautop');
+
+        add_action('init', array(&$this, 'wrap_legacy_url'));
 	}
 
+    /**
+     * NextGen-Legacy somehow used a few permalinks as function parameters; we hook WP->init() to catch those
+     * pages by removing those permalink options from the REQUEST_URI before the request is processed.
+     *
+     * Processed results are stored in $_SERVER['NGGALLERY'][$key] at the moment
+     * @param null $wp_query (optional)
+     */
+    function wrap_legacy_url($wp_query = NULL)
+    {
+        if (!isset($_SERVER['REQUEST_URI']))
+        {
+            return;
+        }
+
+        if (preg_match('/^(.+)\/nggallery\/slideshow$/i', $_SERVER['REQUEST_URI']))
+        {
+            $_SERVER['REQUEST_URI'] = str_replace('nggallery/slideshow', '', $_SERVER['REQUEST_URI']);
+            $_SERVER['NGGALLERY']['slideshow'] = TRUE;
+        }
+
+        if (preg_match('/^(.+)\/nggallery\/gallery/i', $_SERVER['REQUEST_URI']))
+        {
+            $_SERVER['REQUEST_URI'] = str_replace('nggallery/gallery', '', $_SERVER['REQUEST_URI']);
+            $_SERVER['NGGALLERY']['gallery'] = TRUE;
+        }
+    }
 
 	/**
 	 * Adds the display settings page to wp-admin

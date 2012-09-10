@@ -126,6 +126,30 @@ class Mixin_Render_Display_Type extends Mixin
 			foreach (array_keys($defaults) as $key) unset($params[$key]);
 			$args['display_settings']	= $params;
 
+            // let users toggle between thumbnail & slideshow displays
+            if ($args['display_type'] == 'photocrati-nextgen_basic_thumbnails' && get_query_var('show') == 'slide')
+            {
+                $args['display_type'] = 'photocrati-nextgen_basic_slideshow';
+            }
+            if ($args['display_type'] == 'photocrati-nextgen_basic_slideshow' && get_query_var('show') == 'gallery')
+            {
+                $args['display_type'] = 'photocrati-nextgen_basic_thumbnails';
+            }
+
+            // nextgen-legacy has a handful of permalink url that we must wrap our access to
+            // these settings are created by a hook in the gallery display module
+            if (isset($_SERVER['NGGALLERY']))
+            {
+                if (isset($_SERVER['NGGALLERY']['slideshow']))
+                {
+                    $args['display_type'] = 'photocrati-nextgen_basic_slideshow';
+                }
+                if (isset($_SERVER['NGGALLERY']['gallery']))
+                {
+                    $args['display_type'] = 'photocrati-nextgen_basic_thumbnails';
+                }
+            }
+
 			// Validate the displayed gallery
 			$factory = $this->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create('displayed_gallery', $mapper, $args);
