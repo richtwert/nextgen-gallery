@@ -68,14 +68,18 @@ class C_Lazy_Resource_Loader extends C_Component
 	 */
 	function enqueue($return=FALSE)
 	{
-		$out = implode("\n", array(
-			"\n<script type='text/javascript'>",
-			"lazy_script_urls = ".json_encode($this->script_urls).";",
-			"lazy_style_urls  = ".json_encode($this->style_urls).";",
-			"</script>"
-		));
+		$out = array();
 
-		if (!$return) echo $out;
+		if ($this->script_urls OR $this->style_urls) {
+			$out[] = "\n<script type='text/javascript'>";
+			foreach ($this->script_urls as $url) $out[] = "Lazy_Resources.script_urls.push(\"{$url}\");";
+			foreach ($this->style_urls as $url) $out[] = "Lazy_Resources.style_urls.push(\"{$url}\");";
+			$out[] = "Lazy_Resources.enqueue();";
+			$out[] = "</script>";
+			$out = implode("\n", $out);
+
+			if (!$return) echo $out;
+		}
 
 		return $out;
 	}

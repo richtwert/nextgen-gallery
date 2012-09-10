@@ -71,10 +71,21 @@ class Mixin_Display_Type_Controller extends Mixin
         {
 			$i=0;
 			foreach (explode("\n", $library->scripts) as $script) {
+				echo "<pre>{$library->name}-{$i}</pre>";
 				wp_enqueue_script(
 					$library->name.'-'.$i,
 					$script
 				);
+				if ($i == 0 AND isset($library->values)) {
+					foreach ($library->values as $name => $value) {
+						$this->object->_add_script_data(
+							$library->name . '-0',
+							$name,
+							$value,
+							FALSE
+						);
+					}
+				}
 				$i+=1;
 			}
 			$i=0;
@@ -85,17 +96,6 @@ class Mixin_Display_Type_Controller extends Mixin
 				);
 				$i+=1;
 			}
-
-            if (isset($library->values))
-            {
-                foreach ($library->values as $name => $value) {
-                    wp_localize_script(
-                        $library->name . '-0',
-                        $name,
-                        $value
-                    );
-                }
-            }
         }
 	}
 
@@ -139,7 +139,15 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function enqueue_backend_resources($display_type)
 	{
-		return;
+		wp_enqueue_style(
+			'nextgen_display_settings',
+			$this->object->static_url('nextgen_display_settings.css')
+		);
+
+		wp_enqueue_script(
+			'nextgen_display_settings',
+			$this->object->static_url('nextgen_display_settings.js')
+		);
 	}
 
 
