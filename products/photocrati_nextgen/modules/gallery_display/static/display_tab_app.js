@@ -387,7 +387,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			 NggDisplayTab.set('attached_source_view', view);
 			 view.appendTo('#source_configuration');
 		 }
-	}).observes('source'),
+	}, 'source'),
 
 
 	/**
@@ -418,7 +418,24 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			this[method]();
 			NggDisplayTab.preview_view.appendTo('#preview_tab_content');
 		}
-	}).observes('containers'),
+	}, 'container'),
+
+
+	/**
+	 * Fetches and displays the settings for the selected "Display Type"
+	**/
+	display_type_Changed:	Ember.observer(function(){
+		var self = this;
+		var request = {
+			display_type:	self.get('display_type'),
+			action:			'get_display_type_settings'
+		};
+		jQuery.post(photocrati_ajax_url, request, function(response){
+			if (typeof response != 'object') response  = JSON.parse(response);
+			if (response.html) jQuery('#display_settings_tab_content').html(response.html);
+			else alert(response.error);
+		});
+	}, 'display_type'),
 
 
 	/**

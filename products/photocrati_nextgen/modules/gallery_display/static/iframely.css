@@ -1,10 +1,9 @@
-html,
-html.wp-toolbar{
+html#iframely{
 	padding: 0px;
 	overflow: visible;
 }
 
-#wpbody-content {
+#iframely #wpbody-content {
 	float: none;
 	padding: 0px;
 }

@@ -16,6 +16,28 @@ class A_Attach_To_Post_Ajax extends Mixin
 		$this->attach_to_post = $this->object->get_registry()->get_utility('I_Attach_To_Post_Controller');
 	}
 
+
+	function get_display_type_settings_action()
+	{
+		$valid = FALSE;
+		$response = array();
+		if (($display_type_name = $this->object->param('display_type'))) {
+			$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
+			if (($display_type = $mapper->find_by_name($display_type_name))) {
+				$valid = TRUE;
+				$controller = $this->object->get_registry()->get_utility(
+					'I_Display_Type_Controller',
+					$display_type_name
+				);
+				$response['html'] = $controller->settings($display_type, TRUE);
+			}
+		}
+		if (!$valid) $response['error'] = _('Invalid display type');
+
+		return $response;
+	}
+
+
 	/**
 	 * Returns a list of image sources for the Attach to Post interface
 	 * @return type
