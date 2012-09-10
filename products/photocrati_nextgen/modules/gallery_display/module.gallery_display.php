@@ -57,12 +57,6 @@ class M_Gallery_Display extends C_Base_Module
 			'C_Attach_to_Post_Controller',
 			array('uri'=>$router->routing_pattern($this->attach_to_post_route))
 		);
-
-//        $router->add_route(
-//            __CLASS__ . '_Slideshow',
-//            'C_Display_Type_Controller',
-//            array('uri' => '/^(.+)\/slideshow$/')
-//        );
 	}
 
 
