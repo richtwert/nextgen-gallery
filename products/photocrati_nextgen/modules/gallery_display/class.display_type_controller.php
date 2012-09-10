@@ -298,7 +298,10 @@ class Mixin_Display_Type_Controller extends Mixin
 
         $new_displayed_gallery = $factory->create('displayed_gallery', $mapper, $displayed_gallery->get_entity());
 
-        $controller = $this->object->get_registry()->get_utility('I_Display_Type_Controller', $new_displayed_gallery->display_type);
+        $controller = $this->object
+                           ->get_registry()
+                           ->get_utility('I_Display_Type_Controller', $new_displayed_gallery->display_type);
+        $controller->enqueue_frontend_resources($displayed_gallery);
         $controller->index($new_displayed_gallery);
 
         return TRUE;
