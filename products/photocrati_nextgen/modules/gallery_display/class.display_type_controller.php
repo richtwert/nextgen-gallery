@@ -262,4 +262,46 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		return $retval;
 	}
+
+    /**
+     * This allows certain conditions to trigger by URL parameter a change of the current display type
+     *
+     * This is necessary for legacy URL support as well as the "view as slideshow" / "view as gallery" toggle links
+     * @param C_Displayed_Gallery $displayed_gallery
+     * @return bool FALSE if no change was made, TRUE on success
+     */
+    public function serve_alternative_view_request($displayed_gallery)
+    {
+        $original_display_type = $displayed_gallery->display_type;
+
+        // let users toggle between thumbnail & slideshow displays.
+        //
+        // Also nextgen-legacy has a handful of permalink url that we must wrap our access to
+        // these settings are created by a hook in the gallery display module
+        if (get_query_var('show') == 'slide' || isset($_SERVER['NGGALLERY']['slideshow']))
+        {
+            $displayed_gallery->display_type = 'photocrati-nextgen_basic_slideshow';
+        }
+        if (get_query_var('show') == 'gallery' || isset($_SERVER['NGGALLERY']['gallery']))
+        {
+            $displayed_gallery->display_type = 'photocrati-nextgen_basic_thumbnails';
+        }
+
+        if ($displayed_gallery->display_type == $original_display_type)
+        {
+            return FALSE;
+        }
+
+        // generate a new displayed gallery in the correct context
+        $mapper  = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+        $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+
+        $new_displayed_gallery = $factory->create('displayed_gallery', $mapper, $displayed_gallery->get_entity());
+
+        $controller = $this->object->get_registry()->get_utility('I_Display_Type_Controller', $new_displayed_gallery->display_type);
+        $controller->index($new_displayed_gallery);
+
+        return TRUE;
+    }
+
 }

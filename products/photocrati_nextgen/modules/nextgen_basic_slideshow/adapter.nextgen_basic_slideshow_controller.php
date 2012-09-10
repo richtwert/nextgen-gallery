@@ -19,6 +19,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function index($displayed_gallery)
 	{
+        if ($this->object->serve_alternative_view_request($displayed_gallery)) return;
+
 		// Get the images to be displayed
         $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
 		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
