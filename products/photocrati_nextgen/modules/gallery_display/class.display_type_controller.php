@@ -167,7 +167,6 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		// Render the display type settings template
 		return $this->object->render_partial('display_type_settings', array(
-			'title'			=> $display_type->title,
 			'fields'		=> $fields,
 		), $return);
 	}

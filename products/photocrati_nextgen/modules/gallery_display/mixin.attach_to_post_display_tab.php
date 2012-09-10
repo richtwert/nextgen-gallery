@@ -94,7 +94,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	{
 		return $this->object->render_partial('accordion_tab', array(
 			'id'			=> 'preview_tab',
-			'title'		=>	_('Select individual images to display'),
+			'title'		=>	_('Sort or Exclude Images'),
 			'content'	=>	$this->object->_render_preview_tab_contents()
 		), TRUE);
 	}
@@ -162,7 +162,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			'tags_label'				=>	_('Tags'),
 		));
 	}
-	
+
 
 	/**
 	 * Gets a list of display types available

@@ -502,7 +502,13 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		};
 		jQuery.post(photocrati_ajax_url, request, function(response){
 			if (typeof response != 'object') response  = JSON.parse(response);
-			if (response.html) jQuery('#display_settings_tab_content').html(response.html);
+			if (response.html) {
+				jQuery('#display_settings_tab_content').html(
+					response.lazy_resources ?
+						response.lazy_resources + response.html :
+						response.html
+				);
+			}
 			else alert(response.error);
 		});
 	}, 'display_type'),

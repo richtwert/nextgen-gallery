@@ -21,14 +21,26 @@ class A_Attach_To_Post_Ajax extends Mixin
 	{
 		$valid = FALSE;
 		$response = array();
+
+		// Ensure that we have a display type name
 		if (($display_type_name = $this->object->param('display_type'))) {
+
+			// Does the display type exist?
 			$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
 			if (($display_type = $mapper->find_by_name($display_type_name))) {
 				$valid = TRUE;
+
+				// Get the display type controller, used to render the setting
+				// fields
 				$controller = $this->object->get_registry()->get_utility(
 					'I_Display_Type_Controller',
 					$display_type_name
 				);
+
+				// Get the scripts and styles required
+				$controller->enqueue_backend_resources($display_type);
+				$loader = $this->get_registry()->get_utility('I_Lazy_Resource_Loader');
+				$response['lazy_resources'] = $loader->enqueue(TRUE);
 				$response['html'] = $controller->settings($display_type, TRUE);
 			}
 		}
