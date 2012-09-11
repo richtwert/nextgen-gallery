@@ -89,10 +89,11 @@ class Mixin_Display_Type_Controller extends Mixin
             if (isset($library->values))
             {
                 foreach ($library->values as $name => $value) {
-                    wp_localize_script(
+                    $this->object->_add_script_data(
                         $library->name . '-0',
                         $name,
-                        $value
+                        $value,
+                        FALSE
                     );
                 }
             }
