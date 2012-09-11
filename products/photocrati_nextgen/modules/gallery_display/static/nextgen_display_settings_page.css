@@ -33,8 +33,15 @@
     width: 157px;
 }
 
+#nextgen-settings-slideshow-colors-wrapper td table {
+}
+
+#nextgen-settings-slideshow-colors-wrapper td {
+    text-align: left;
+}
+
 .nextgen_settings_colorpicker {
-    width: 75px !important;
+    width: 85px !important;
     text-align: center;
 }
 
