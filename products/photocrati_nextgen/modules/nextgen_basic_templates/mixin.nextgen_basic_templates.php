@@ -24,10 +24,26 @@ class Mixin_NextGen_Basic_Templates extends Mixin
     {
         wp_enqueue_script(
             'ngg_template_settings',
-            PHOTOCRATI_GALLERY_MODULE_URL . DIRECTORY_SEPARATOR
-                . basename(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'js'
-                . DIRECTORY_SEPARATOR . 'ngg_template_settings.js',
-            array('jquery-ui-autocomplete') // deps
+            $this->static_url('/js/ngg_template_settings.js'),
+            array('jquery-ui-autocomplete')
+        );
+
+        // feed our autocomplete widget a list of available files
+        $files_list = array();
+        $files_available = $this->object->get_available_templates();
+        foreach ($files_available as $label => $files)
+        {
+            foreach ($files as $file) {
+                $tmp = explode(DIRECTORY_SEPARATOR, $file);
+                $files_list[] = "[{$label}]: " . end($tmp);
+            }
+        }
+
+        $this->object->_add_script_data(
+            'ngg_template_settings',
+            'nextgen_settings_templates_available_files',
+            $files_list,
+            TRUE
         );
     }
 
@@ -39,22 +55,9 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      */
     function _render_nextgen_basic_templates_template_field($display_type)
     {
-        // add a label to our files listing so the user can make an informed choice
-        $files_available = $this->object->get_available_templates();
-        $files_list = array();
-        foreach ($files_available as $label => $files)
-        {
-            foreach ($files as $file) {
-                $tmp = explode(DIRECTORY_SEPARATOR, $file);
-                $files_list[] = "[{$label}]: " . end($tmp);
-            }
-        }
-        $files_list = json_encode($files_list);
-
         return $this->object->render_partial(
             'nextgen_basic_templates_settings_template',
             array(
-                'files' => $files_list,
                 'display_type_name' => $display_type->name,
                 'template_label' => _('Template:'),
                 'template' => $display_type->settings['template'],
