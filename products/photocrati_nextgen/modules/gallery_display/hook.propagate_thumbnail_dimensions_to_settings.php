@@ -11,18 +11,19 @@ class Hook_Propagate_Thumbnail_Dimensions_To_Settings extends Hook
 		  ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE)) {
 			$settings			= $this->object->get_registry()->get_utility('I_NextGen_Settings');
 			$display_settings	= isset($entity->settings) ? $entity->settings : $entity->display_settings;
-			$width				= $display_settings['thumbnail_width'];
-			$height				= $display_settings['thumbnail_height'];
-			$new_dimension		= "{$width}x{$height}";
-			$dimensions			= $settings->thumbnail_dimensions;
+			if (isset($display_settings['thumbnail_width']) && isset($display_settings['thumbnail_height'])) {
+				$width				= $display_settings['thumbnail_width'];
+				$height				= $display_settings['thumbnail_height'];
+				$new_dimension		= "{$width}x{$height}";
+				$dimensions			= $settings->thumbnail_dimensions;
 
-			if (!in_array($new_dimension, $dimensions)) {
-				$dimensions[]	= $new_dimension;
-				sort($dimensions);
-				$settings->thumbnail_dimensions = $dimensions;
-				$settings->save();
+				if (!in_array($new_dimension, $dimensions)) {
+					$dimensions[]	= $new_dimension;
+					sort($dimensions);
+					$settings->thumbnail_dimensions = $dimensions;
+					$settings->save();
+				}
 			}
-
 		}
 	}
 }

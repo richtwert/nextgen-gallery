@@ -203,6 +203,8 @@ class nggAddGallery {
     		});
 
     		up.refresh();
+			var accordion_content = $('#uploadimage').next('div');
+			accordion_content[0].scrollTop = accordion_content.height();
     	});
 
     	uploader.bind('BeforeUpload', function(up, file) {
@@ -322,8 +324,7 @@ class nggAddGallery {
 	/* <![CDATA[ */
 		jQuery(document).ready(function(){
             jQuery('html,body').scrollTop(0);
-			jQuery('#slider').tabs({ fxFade: true, fxSpeed: 'fast' });
-            jQuery('#slider').css('display', 'block');
+			jQuery('#accordion').accordion({ clearStyle: true, autoHeight: false });
 		});
 
 		// File Tree implementation
@@ -340,25 +341,21 @@ class nggAddGallery {
 		});
 	/* ]]> */
 	</script>
-	<div id="slider" class="wrap" style="display: none;">
-        <ul id="tabs">
-            <?php
-        	foreach($tabs as $tab_key => $tab_name) {
-        	   echo "\n\t\t<li><a href='#$tab_key'>$tab_name</a></li>";
-            }
-            ?>
-		</ul>
-        <?php
-        foreach($tabs as $tab_key => $tab_name) {
-            echo "\n\t<div id='$tab_key'>\n";
-            // Looks for the internal class function, otherwise enable a hook for plugins
-            if ( method_exists( $this, "tab_$tab_key" ))
-                call_user_func( array( &$this , "tab_$tab_key") );
-            else
-                do_action( 'ngg_tab_content_' . $tab_key );
-             echo "\n\t</div>";
-        }
-        ?>
+	<div id="accordion">
+		<?php foreach ($tabs as $tab_key => $tab_name): ?>
+		<h3 id="<?php echo esc_attr($tab_key) ?>">
+			<a href='#'><?php echo_h($tab_name)?></a>
+		</h3>
+		<div>
+			<?php
+				$method = 'tab_'.$tab_key;
+				if (method_exists($this, $method)) {
+					call_user_func(array(&$this, $method));
+				}
+				else do_action('ngg_tab_content_'.$tab_key);
+			?>
+		</div>
+		<?php endforeach; ?>
     </div>
     <?php
 
@@ -394,7 +391,6 @@ class nggAddGallery {
     function tab_addgallery() {
     ?>
 		<!-- create gallery -->
-		<h2><?php _e('Add new gallery', 'nggallery') ;?></h2>
 		<form name="addgallery" id="addgallery_form" method="POST" action="<?php echo $this->filepath; ?>" accept-charset="utf-8" >
 		<?php wp_nonce_field('ngg_addgallery') ?>
 			<table class="form-table">
@@ -416,7 +412,6 @@ class nggAddGallery {
     function tab_zipupload() {
     ?>
 		<!-- zip-file operation -->
-		<h2><?php _e('Upload a Zip-File', 'nggallery') ;?></h2>
 		<form name="zipupload" id="zipupload_form" method="POST" enctype="multipart/form-data" action="<?php echo $this->filepath.'#zipupload'; ?>" accept-charset="utf-8" >
 		<?php wp_nonce_field('ngg_addgallery') ?>
 			<table class="form-table">
@@ -458,7 +453,6 @@ class nggAddGallery {
     function tab_importfolder() {
     ?>
 	<!-- import folder -->
-	<h2><?php _e('Import image folder', 'nggallery') ;?></h2>
 		<form name="importfolder" id="importfolder_form" method="POST" action="<?php echo $this->filepath.'#importfolder'; ?>" accept-charset="utf-8" >
 		<?php wp_nonce_field('ngg_addgallery') ?>
 			<table class="form-table">
@@ -482,7 +476,6 @@ class nggAddGallery {
         $checked = get_user_setting('ngg_upload_resize') ? ' checked="true"' : '';
     ?>
     	<!-- upload images -->
-    	<h2><?php _e('Upload Images', 'nggallery') ;?></h2>
 		<form name="uploadimage" id="uploadimage_form" method="POST" enctype="multipart/form-data" action="<?php echo $this->filepath.'#uploadimage'; ?>" accept-charset="utf-8" >
 		<?php wp_nonce_field('ngg_addgallery') ?>
 			<table class="form-table">
