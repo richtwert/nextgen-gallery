@@ -102,7 +102,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_images_per_page', array(
 					'display_type_name' => $display_type->name,
-					'images_per_page_label' => _('Images per page:'),
+					'images_per_page_label' => _('Images per page'),
 					'images_per_page' => $display_type->settings['images_per_page'],
 			), True);
 	}
@@ -111,7 +111,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_cycle_interval', array(
 					'display_type_name' => $display_type->name,
-					'cycle_interval_label' => _('Interval:'),
+					'cycle_interval_label' => _('Interval'),
 					'cycle_interval' => $display_type->settings['cycle_interval'],
 			), True);
 	}
@@ -120,7 +120,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_cycle_effect', array(
 					'display_type_name' => $display_type->name,
-					'cycle_effect_label' => _('Effect:'),
+					'cycle_effect_label' => _('Effect'),
 					'cycle_effect' => $display_type->settings['cycle_effect'],
 			), True);
 	}
@@ -129,7 +129,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_gallery_dimensions', array(
 					'display_type_name' => $display_type->name,
-					'gallery_dimensions_label' => _('Gallery Dimensions:'),
+					'gallery_dimensions_label' => _('Gallery dimensions'),
 					'gallery_width' => $display_type->settings['gallery_width'],
 					'gallery_height' => $display_type->settings['gallery_height'],
 			), True);
@@ -197,7 +197,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $color = TRUE;
                 break;
             case 'flash_screen_color':
-                $label = __('Screen color','nggallery');
+                $label = __('Screen color', 'nggallery');
                 $color = TRUE;
                 break;
             case 'flash_background_music':
@@ -205,7 +205,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 break;
             case 'flash_xhtml_validation':
                 $label = __('Try XHTML validation (with CDATA)', 'nggallery');
-                $text = __('Important : Could causes problem at some browser. Please recheck your page.', 'nggallery');
+                $text = __('Important: Could cause problems with some browsers.', 'nggallery');
                 break;
         }
 
