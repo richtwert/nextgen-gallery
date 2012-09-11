@@ -2,12 +2,10 @@
 	class="ngg-galleryoverview"
 	id="ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>">
 
-	<?php if ($show_slideshow_link): ?>
+	<?php if ($show_alternative_view_link): ?>
 	<!-- Slideshow Link -->
 	<div class="slideshowlink">
-		<a class="slideshowlink" href="<?php echo esc_attr($slideshow_link) ?>">
-			<?php echo_h($slideshow_link_text)?>
-		</a>
+		<?php echo $alternative_view_link ?>
 	</div>
 	<?php endif ?>
 

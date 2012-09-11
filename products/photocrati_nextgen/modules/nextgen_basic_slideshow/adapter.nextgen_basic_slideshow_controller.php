@@ -38,6 +38,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			$params['current_page']			= $current_page;
 			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
 
+			// If flash slideshow gallery is enabled, generate a playlist using
+			// MediaRSS
 			if ($displayed_gallery->display_settings['flash_enabled'])
 			{
                 $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
@@ -49,13 +51,9 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
 				$this->object->render_partial('nextgen_basic_slideshow_flash', $params);
 			}
+
+			// Show JS slideshow
 			else {
-                // show a way back if we've been linked to from a 'view slideshow' link
-                if (get_query_var('show') || isset($_SERVER['NGGALLERY']['slideshow']))
-                {
-                    $params['thumbnails_link'] = add_query_arg('show', 'gallery');
-                    $params['thumbnails_link_text'] = _('[Show picture list]');
-                }
 				$this->object->render_partial('nextgen_basic_slideshow', $params);
 			}
 		}

@@ -91,9 +91,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $pagination = NULL;
             }
 
-            // the gallery display controller handles display type overrides
-            $slideshow_link = add_query_arg('show', 'slide');
-
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
@@ -108,7 +105,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $images,
                     $displayed_gallery,
                     $pagination,
-                    $slideshow_link,
+                    $display_settings['alternative_view_link_url'],
                     $piclens_link
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return);
@@ -119,7 +116,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['images']				= &$images;
                 $params['displayed_gallery_id'] = $displayed_gallery->id();
                 $params['current_page']			= $current_page;
-                $params['slideshow_link']		= $slideshow_link;
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
@@ -221,7 +217,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             array(
                 'display_type_name' => $display_type->name,
                 'slideshow_link_text_label' => _('Slideshow text link:'),
-                'slideshow_link_text' => $display_type->settings['slideshow_link_text'],
+                'alternative_view_link_text' => $display_type->settings['alternative_view_link_text'],
             ),
             True
         );
@@ -259,7 +255,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             array(
                 'display_type_name' => $display_type->name,
                 'show_slideshow_link_label' => _('Show slideshow link:'),
-                'show_slideshow_link' => $display_type->settings['show_slideshow_link']
+                'show_alternative_view_link' => $display_type->settings['show_alternative_view_link']
             ),
             True
         );

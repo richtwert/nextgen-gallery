@@ -151,4 +151,25 @@ abstract class C_MVC_Controller extends C_Component
 
         return $retval;
     }
+
+	/**
+	 * Gets the relative URL of the current request
+	 * @return string
+	 */
+	function get_relative_url($segment='')
+	{
+		return isset($_SERVER['REQUEST_URI']) ?
+			path_join($_SERVER['REQUEST_URI'], $segment) : '';
+	}
+
+
+	/**
+	 * Gets the absolute url of the current request
+	 * @return string
+	 */
+	function get_absolute_url($segment='')
+	{
+		$url = $this->object->get_relative_url($segment);
+		return $url ? real_site_url($url) : '';
+	}
 }

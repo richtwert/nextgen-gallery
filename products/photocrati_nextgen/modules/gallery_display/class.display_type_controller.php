@@ -178,6 +178,16 @@ class Mixin_Display_Type_Controller extends Mixin
 		), $return);
 	}
 
+
+	/**
+	 * Displays the field used for alternative views
+	 */
+	function _render_alternative_view_field()
+	{
+		// TODO: Need to wrap up once Benjamin is finished interface adjustments
+	}
+
+
 	/**
 	 * Returns the name of the fields to
 	 */
@@ -298,6 +308,47 @@ class Mixin_Display_Type_Controller extends Mixin
 
 
 	/**
+	 * Gets the hyperlink for the alternative view link
+	 * @param string $params
+	 * @return string
+	 */
+	function set_alternative_view_links($displayed_gallery)
+	{
+		// Set some defaults
+		$params = &$displayed_gallery->display_settings;
+		$params['alternative_view_link_url']	= '';
+		$params['alternative_view_link']		= '';
+		$params['return_link_url']				= '';
+		$params['return_link']					= '';
+
+		// Add show alternative view link
+		if ($params['show_alternative_view_link']) {
+			if (($url = $this->object->get_absolute_url('nggallery/'.$params['show_alternative_view_link']))) {
+				$params['alternative_view_link_url'] = $url;
+				$params['alternative_view_link'] = "<a href='".esc_attr($url)."'>".
+						htmlentities($params['alternative_view_link_text']).
+					'</a>';
+			}
+		}
+
+
+
+		// If we're serving an alternative view, then we'll need to add
+		// a return link
+		if ($this->object->is_serving_alternative_view($displayed_gallery->display_type) && $params['show_return_link']) {
+			if (($url = $this->object->get_absolute_url())) {
+				$params['return_link_url'] = $url;
+				$params['return_link'] =
+					"<a href='".esc_attr($url)."'>".
+						htmlentities($params['return_link_text']).
+					"</a>";
+			}
+		}
+		return $displayed_gallery;
+	}
+
+
+	/**
 	 * Gets alternative views available, by returning a URI segment to match
 	 * and and asociated display type
 	 */
@@ -328,10 +379,10 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		// Let the request determine what display type or alternative view to render
 		if (($show = get_query_var('show'))) {
-			if ($this->_get_alternative_view($show)) $retval = TRUE;
+			$retval = $this->_get_alternative_view($show);
 		}
 		elseif (isset($_SERVER['NGGALLERY']) && (($show = $_SERVER['NGGALLERY']))) {
-			if ($this->_get_alternative_view($show)) $retval = TRUE;
+			$retval = $this->_get_alternative_view($show);
 		}
 
 		return $retval;
@@ -343,10 +394,10 @@ class Mixin_Display_Type_Controller extends Mixin
 	 * alternate view
 	 * @param string $display_type_name
 	 */
-	function is_serving_alternate_view($display_type_name)
+	function is_serving_alternative_view($display_type_name)
 	{
 		$retval = FALSE;
-		if (($view = is_alternative_view_request())) {
+		if (($view = $this->object->is_alternative_view_request())) {
 			$retval = ($view['type'] == 'display_type' && $display_type_name == $view['name']);
 		}
 		return $retval;
@@ -403,25 +454,31 @@ class Mixin_Display_Type_Controller extends Mixin
 		$retval = '';
 
 		if ($displayed_gallery->display_type != $view_info['name']) {
+			$current_display_type_name	= $displayed_gallery->display_type;
+			$current_display_settings	= $displayed_gallery->display_settings;
 
 			// Hijack the display type configuration. A request might also
 			// include custom display settings
 			$displayed_gallery->display_type = $view_info['name'];
-			$display_settings = $this->object->param('alternative_settings');
-			if (!$display_settings) {
-				$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-				$display_type = $mapper->find_by_name($displayed_gallery->display_type);
-				$display_settings = $display_type->settings;
-			}
+			$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
+			$display_type = $mapper->find_by_name($displayed_gallery->display_type, TRUE);
+			$custom_settings = $this->object->param('alternative_settings', array());
 			$displayed_gallery->display_settings = $this->array_merge_assoc(
-				$displayed_gallery->display_settings,
-				$display_settings
+				$display_type->settings,
+				$custom_settings
 			);
+
+			// Override the alternative display type's return link;
+			$displayed_gallery->display_settings['previous_display_type'] = $current_display_type_name;
+			$displayed_gallery->display_settings['return_link_text'] = $current_display_settings['return_link_text'];
+			$displayed_gallery->display_settings['return_link_url'] = $current_display_settings['return_link_url'];
+			$displayed_gallery->display_settings['return_link'] = $current_display_settings['return_link'];
 
 			// Get the display type controller for the alternative view
 			$controller = $this->object->get_registry()->get_utility(
 				'I_Display_Type_Controller', $displayed_gallery->display_type
 			);
+			$controller->set_alternative_view_links($displayed_gallery);
 
 			// Render!
 			$controller->enqueue_frontend_resources($displayed_gallery);

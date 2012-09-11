@@ -69,6 +69,14 @@ class Mixin_Display_Type_Validation extends Mixin
 	function set_defaults()
 	{
 		if (!isset($this->object->settings)) $this->object->settings = array();
+		if (!isset($this->object->settings['show_alternative_view_link']))
+			$this->object->settings['show_alternative_view_link'] = FALSE;
+		if (!isset($this->object->settings['show_return_link']))
+			$this->object->settings['show_return_link'] = TRUE;
+		if (!isset($this->object->settings['alternative_view_link_text']))
+			$this->object->settings['alternative_view_link_text'] = '';
+		if (!isset($this->object->settings['return_link_text']))
+			$this->object->settings['return_link_text'] = '';
 		if (!isset($this->object->preview_image_relpath))
 			$this->object->preview_image_relpath = '';
 	}
