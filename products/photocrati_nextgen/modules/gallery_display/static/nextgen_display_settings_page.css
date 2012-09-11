@@ -1,13 +1,16 @@
 .gallery_page_ngg_display_settings table {
-	width: 100%;
 	height: 100%;
 }
-.gallery_page_ngg_display_settings table td {
-	/*
-     * The below should be used, but it doesn't display correctly on Chrome.
-	 * vertical-align: top;
-	*/
+
+.gallery_page_ngg_display_settings table tr td:first-child {
+    vertical-align: top;
+    text-align: right;
+    padding-right: 7px;
 }
+
+.gallery_page_ngg_display_settings table tr td {
+}
+
 .gallery_page_ngg_display_settings table td#column1 {
 	width: 140px;
 }
@@ -16,9 +19,23 @@
 	height: 60px;
 }
 
+.gallery_page_ngg_display_settings .ngg_slideshow_gallery_width,
+.gallery_page_ngg_display_settings .ngg_slideshow_gallery_height,
+.gallery_page_ngg_display_settings .ngg_thumbnail_dimension_width,
+.gallery_page_ngg_display_settings .ngg_thumbnail_dimension_height {
+    width: 72px !important;
+}
+
 .gallery_page_ngg_display_settings textarea,
-.gallery_page_ngg_display_settings input[type=text] {
-	width: 80%;
+.gallery_page_ngg_display_settings input[type=text],
+.gallery_page_ngg_display_settings input[type=number],
+.gallery_page_ngg_display_settings select {
+    width: 157px;
+}
+
+.nextgen_settings_colorpicker {
+    width: 75px !important;
+    text-align: center;
 }
 
 .ngg_customize_thumbnails {

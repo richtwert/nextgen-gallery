@@ -5,10 +5,13 @@
         </label>
     </td>
     <td>
-        <input type='text'
+        <input type='number'
                id='<?php echo esc_attr($display_type_name); ?>_number_of_columns'
                name='<?php echo esc_attr($display_type_name); ?>[number_of_columns]'
                class='ngg_thumbnail_number_of_columns'
+               placeholder='<?php _e('# of columns'); ?>'
+               min='1'
+               required='required'
                value='<?php echo esc_attr($number_of_columns); ?>'>
         </select>
     </td>
