@@ -156,9 +156,10 @@ class Mixin_Render_Display_Type extends Mixin
 			'I_Display_Type_Controller', $displayed_gallery->display_type
 		);
 		$controller->enqueue_frontend_resources($displayed_gallery);
-		return $controller->index($displayed_gallery, $return);
+		return $controller->is_alternative_view_request() ?
+			$controller->alternative_index($displayed_gallery, TRUE) :
+			$controller->index($displayed_gallery, TRUE);
 	}
-
 
     /**
      * Substitutes the gallery placeholder content with the gallery type frontend

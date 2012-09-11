@@ -33,14 +33,12 @@ class C_NextGEN_Bootstrap
         $tmp = ini_get('xdebug.max_nesting_level');
         if ($tmp && (int)$tmp <= 200)
         {
-            ini_set('xdebug.max_nesting_level', 200);
+            @ini_set('xdebug.max_nesting_level', 200);
         }
 
 		// Boostrap
 		$this->_define_constants();
 		$this->_register_hooks();
-
-		@ini_set('xdebug.max_nesting_level', 200);
 
 		// Include pope framework
 		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(

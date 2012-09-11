@@ -71,7 +71,6 @@ class Mixin_Display_Type_Controller extends Mixin
         {
 			$i=0;
 			foreach (explode("\n", $library->scripts) as $script) {
-				echo "<pre>{$library->name}-{$i}</pre>";
 				wp_enqueue_script(
 					$library->name.'-'.$i,
 					$script
@@ -96,7 +95,7 @@ class Mixin_Display_Type_Controller extends Mixin
 				);
 				$i+=1;
 			}
-        }
+		}
 	}
 
 
@@ -269,4 +268,168 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		return $retval;
 	}
+
+
+    /**
+     * This allows certain conditions to trigger by URL parameter a change of the current display type
+     *
+     * This is necessary for legacy URL support as well as the "view as slideshow" / "view as gallery" toggle links
+     * @param C_Displayed_Gallery $displayed_gallery
+     * @return bool|string FALSE if no change was made, TRUE on success
+     */
+    function alternative_index($displayed_gallery, $return=FALSE)
+    {
+		// TODO - Move this function to the M_Gallery_Display class, so that it
+		// gets executed higher up in the stack, avoiding unnecessary execution
+		// of other things
+		$retval					= FALSE;
+        $original_display_type	= $displayed_gallery->display_type;
+
+        // Let the request determine what display type or alternative view to render
+		if (($show = get_query_var('show'))) {
+			$retval = $this->_render_alternative_view($displayed_gallery, $show, $return);
+		}
+		elseif (isset($_SERVER['NGGALLERY']) && (($show = $_SERVER['NGGALLERY']))) {
+			$retval = $this->_render_alternative_view($displayed_gallery, $show, $return);
+		}
+
+        return $retval;
+    }
+
+
+	/**
+	 * Gets alternative views available, by returning a URI segment to match
+	 * and and asociated display type
+	 */
+	function _get_alternative_views()
+	{
+		$retval = array();
+
+		// Add each existing display type
+		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
+		foreach ($mapper->find_all() as $display_type) {
+			$retval[$display_type->name] = array(
+				'type'	=>	'display_type',
+				'name'	=>	$display_type->name
+			);
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Determines if the request is asking for an alternative view to be
+	 * displayed
+	 * @return boolean
+	 */
+	function is_alternative_view_request()
+	{
+		$retval = FALSE;
+
+		// Let the request determine what display type or alternative view to render
+		if (($show = get_query_var('show'))) {
+			if ($this->_get_alternative_view($show)) $retval = TRUE;
+		}
+		elseif (isset($_SERVER['NGGALLERY']) && (($show = $_SERVER['NGGALLERY']))) {
+			if ($this->_get_alternative_view($show)) $retval = TRUE;
+		}
+
+		return $retval;
+	}
+
+
+	/**
+	 * Determines if the controller is actually being used to serve an
+	 * alternate view
+	 * @param string $display_type_name
+	 */
+	function is_serving_alternate_view($display_type_name)
+	{
+		$retval = FALSE;
+		if (($view = is_alternative_view_request())) {
+			$retval = ($view['type'] == 'display_type' && $display_type_name == $view['name']);
+		}
+		return $retval;
+	}
+
+	/**
+	 * Gets the view associated with a uri segment
+	 * @param string $uri_segment
+	 * @return array
+	 */
+	function _get_alternative_view($uri_segment)
+	{
+		$views = $this->object->_get_alternative_views();
+		return isset($views[$uri_segment]) ? $views[$uri_segment] : NULL;
+	}
+
+
+	/**
+	 * Gets the alternative view information for a particular URI segment
+	 * @param string $key
+	 * @return array
+	 */
+	function _render_alternative_view($displayed_gallery, $uri_segment, $return)
+	{
+		$retval = '';
+		if (($view = $this->_get_alternative_view($uri_segment))) {
+
+			// We leave room for other alternative view 'types'
+			// by letting a method become responsible for displaying
+			// the alternative view. Third-party methods just need to
+			// add a mixin to the C_Display_Type_Controller class
+			// to support their own custom alternative view types.
+			$method = "_render_{$view['type']}_alternative_view";
+			if ($this->object->has_method($method)) {
+				$retval = $this->object->call_method($method, array(
+					$displayed_gallery,
+					$view,
+					$return
+				));
+			}
+		}
+		return $retval;
+	}
+
+
+	/**
+	 * Renders display types as alternative views
+	 * @param C_Displayed_Gallery|stdClass $displayed_gallery
+	 * @param array $view_info
+	 * @return bool TRUE if an alternative view was rendered
+	 */
+	function _render_display_type_alternative_view($displayed_gallery, $view_info, $return)
+	{
+		$retval = '';
+
+		if ($displayed_gallery->display_type != $view_info['name']) {
+
+			// Hijack the display type configuration. A request might also
+			// include custom display settings
+			$displayed_gallery->display_type = $view_info['name'];
+			$display_settings = $this->object->param('alternative_settings');
+			if (!$display_settings) {
+				$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
+				$display_type = $mapper->find_by_name($displayed_gallery->display_type);
+				$display_settings = $display_type->settings;
+			}
+			$displayed_gallery->display_settings = $this->array_merge_assoc(
+				$displayed_gallery->display_settings,
+				$display_settings
+			);
+
+			// Get the display type controller for the alternative view
+			$controller = $this->object->get_registry()->get_utility(
+				'I_Display_Type_Controller', $displayed_gallery->display_type
+			);
+
+			// Render!
+			$controller->enqueue_frontend_resources($displayed_gallery);
+			$retval = $controller->index($displayed_gallery, $return);
+		}
+
+		return $retval;
+	}
+
+
 }

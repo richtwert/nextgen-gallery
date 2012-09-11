@@ -10,6 +10,7 @@ var galleryOptions = {
     wrapperClassName: 'dark borderless floating-caption'
 };
 
+hs.graphicsDir = nextgen_highslide_graphics_dir + '/';
 hs.addSlideshow({
     fixedControls: true,
     interval: 5000,

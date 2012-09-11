@@ -53,6 +53,12 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 			'I_Display_Type',
 			'A_NextGen_Basic_Slideshow'
 		);
+
+		// Provides alternative views for this display type
+		$this->get_registry()->add_adapter(
+			'I_Display_Type_Controller',
+			'A_NextGen_Basic_Slideshow_Alternative_Views'
+		);
 	}
 
 

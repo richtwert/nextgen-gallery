@@ -20,38 +20,16 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	function index($displayed_gallery)
 	{
 		// Get the images to be displayed
-		$current_page = get_query_var('nggpage');
-		if (!$current_page) $current_page = 1;
+        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
 		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
-		$offset = $images_per_page * ($current_page-1);
+		$offset = $images_per_page * ($current_page - 1);
 		$images = $displayed_gallery->get_images($images_per_page, $offset);
-		$total	= $displayed_gallery->get_image_count();
-		$pagination = FALSE;
 
 		// Are there images to display?
 		if ($images) {
 
-			/***
-			// We try to replicate what a call to nggShowGallery() would
-			// render as much as possible. The reason why we don't make a call
-			// to nggShowGallery() is that it assumes that only one gallery
-			// is being displayed, and I don't feel confident modifying it
-			// to behave otherwise. I'd sooner replicate the look n' feel
-			// and deprecate the nggShowGallery() method
-			***/
-
-			// Create pagination
-			if ($images_per_page) {
-				$pagination = new nggNavigation;
-				$pagination = $pagination->create_navigation(
-					$current_page, $total, $images_per_page
-				);
-			}
-
 			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility(
-				'I_Gallery_Storage'
-			);
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
 			$params = $displayed_gallery->display_settings;
 			$params['storage']				= &$storage;
@@ -59,24 +37,27 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			$params['displayed_gallery_id'] = $displayed_gallery->id();
 			$params['current_page']			= $current_page;
 			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
-			$params['pagination']			= $pagination;
-			
+
 			if ($displayed_gallery->display_settings['flash_enabled'])
 			{
-        $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-        $entity = $displayed_gallery->get_entity();
-        $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-        $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
-        
-				$params['mediarss_link'] = $mediarss_link;
-        
+                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+                $entity = $displayed_gallery->get_entity();
+                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+                $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+
+                $params['mediarss_link'] = $mediarss_link;
+
 				$this->object->render_partial('nextgen_basic_slideshow_flash', $params);
 			}
-			else
-			{
+			else {
+                // show a way back if we've been linked to from a 'view slideshow' link
+                if (get_query_var('show') || isset($_SERVER['NGGALLERY']['slideshow']))
+                {
+                    $params['thumbnails_link'] = add_query_arg('show', 'gallery');
+                    $params['thumbnails_link_text'] = _('[Show picture list]');
+                }
 				$this->object->render_partial('nextgen_basic_slideshow', $params);
 			}
-
 		}
 		else {
 			$this->object->render_partial("no_images_found");
@@ -127,7 +108,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 					'images_per_page' => $display_type->settings['images_per_page'],
 			), True);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_cycle_interval_field($display_type)
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_cycle_interval', array(
@@ -136,7 +117,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 					'cycle_interval' => $display_type->settings['cycle_interval'],
 			), True);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_cycle_effect_field($display_type)
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_cycle_effect', array(
@@ -145,7 +126,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 					'cycle_effect' => $display_type->settings['cycle_effect'],
 			), True);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_gallery_dimensions_field($display_type)
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_gallery_dimensions', array(
@@ -248,7 +229,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             'color'  => $color
         );
     }
-	
+
 	function _render_nextgen_basic_slideshow_field_quick_render($display_type, $function_name)
 	{
         $match = NULL;
@@ -281,82 +262,82 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             True
         );
     }
-	
+
 	function _render_nextgen_basic_slideshow_flash_enabled_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_path_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_shuffle_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_next_on_click_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_navigation_bar_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_loading_icon_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_watermark_logo_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_stretch_image_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_transition_effect_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_slow_zoom_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_background_color_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_text_color_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_rollover_color_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_screen_color_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_background_music_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	function _render_nextgen_basic_slideshow_flash_xhtml_validation_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
@@ -373,7 +354,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_images_per_page',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',
-			
+
 			'nextgen_basic_slideshow_flash_enabled',
 			'nextgen_basic_slideshow_flash_path',
 			'nextgen_basic_slideshow_flash_shuffle',

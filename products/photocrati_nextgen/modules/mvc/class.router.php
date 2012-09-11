@@ -123,7 +123,7 @@ class Mixin_Router extends Mixin
             // The pattern is specified about HTTPS being on or off
             if (isset($pattern['https'])) {
                 if ($pattern['https'] == FALSE && $https == TRUE) $continue = FALSE;
-                elseif ($patterns['https'] == TRUE && $https == FALSE) $continue = FALSE;
+                elseif ($pattern['https'] == TRUE && $https == FALSE) $continue = FALSE;
             }
 
             // The pattern is specified about a domain requirement

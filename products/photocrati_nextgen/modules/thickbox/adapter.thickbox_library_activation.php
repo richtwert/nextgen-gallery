@@ -21,8 +21,8 @@ class A_Thickbox_Library_Activation extends Mixin
 		$thickbox->code = "class='thickbox' rel='%GALLERY_NAME%'";
 		$thickbox->css_stylesheets = $this->_get_url_for_registered_resource('thickbox', 'style');
 		$thickbox->scripts = implode("\n", array(
-			$this->_get_url_for_registered_resource('thickbox', 'script'),
-			$this->static_url('/nextgen_thickbox_init.js')
+			$this->static_url('/nextgen_thickbox_init.js'),
+            $this->_get_url_for_registered_resource('thickbox', 'script'),
 		));
 		$mapper->save($thickbox);
 	}
