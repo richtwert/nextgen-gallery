@@ -160,7 +160,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 		return $this->object->render_partial('image_tags_source', array(
 			'template_name'				=>	'image_tags_source_view',
 			'tags_label'				=>	_('Tags'),
-		));
+		), TRUE);
 	}
 
 

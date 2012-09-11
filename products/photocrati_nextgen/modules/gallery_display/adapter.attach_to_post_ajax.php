@@ -37,6 +37,13 @@ class A_Attach_To_Post_Ajax extends Mixin
 					$display_type_name
 				);
 
+				// Override display type settings
+				if (($display_settings = $this->object->param('display_settings'))) {
+					$display_type->settings = $this->array_merge_assoc(
+						$display_type->settings, $display_settings
+					);
+				}
+
 				// Get the scripts and styles required
 				$controller->enqueue_backend_resources($display_type);
 				$loader = $this->get_registry()->get_utility('I_Lazy_Resource_Loader');

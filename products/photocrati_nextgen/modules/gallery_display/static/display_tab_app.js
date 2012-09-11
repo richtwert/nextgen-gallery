@@ -25,14 +25,38 @@ var NggDisplayTab = Em.Application.create({
 	 * Saves the displayed gallery
 	 */
 	save:							function(e){
+
+		// Convert the display settings form into an object
+		var form				= jQuery('#display_settings_tab_content form');
+		var display_settings	= (function($, item){
+			var obj = {};
+			item.serializeArray().forEach(function(item){
+				var parts = item.name.split('[');
+				var current_obj = obj;
+				for (var i=0; i<parts.length; i++) {
+					var part = parts[i].replace(/\]$/, '');
+					if (!current_obj[part]) {
+						if (i == parts.length-1)
+							current_obj[part] = item.value;
+						else
+							current_obj[part] = {};
+					}
+					current_obj = current_obj[part];
+				}
+			});
+			return obj;
+		})(jQuery, form);
+		var display_type		= NggDisplayTab.displayed_gallery.get('display_type');
+
 		// Initiate the request to save...
 		var request = {
 			id:					NggDisplayTab.displayed_gallery.get('id'),
 			displayed_gallery:	{
-				source:			NggDisplayTab.displayed_gallery.get('source_id'),
-				container_ids:	NggDisplayTab.displayed_gallery.get('container_ids'),
-				entity_ids:		NggDisplayTab.displayed_gallery.get('included_entity_ids'),
-				display_type:	NggDisplayTab.displayed_gallery.get('display_type')
+				source:				NggDisplayTab.displayed_gallery.get('source_id'),
+				container_ids:		NggDisplayTab.displayed_gallery.get('container_ids'),
+				entity_ids:			NggDisplayTab.displayed_gallery.get('included_entity_ids'),
+				display_type:		display_type,
+				display_settings:	display_settings[display_type]
 			},
 			action:				'save_displayed_gallery'
 		};
@@ -207,19 +231,18 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
 	display_type:				false,
+	display_settings:			false,
 
 	/**
 	 * Initializes the object
 	 */
-	init:						function(){
-		this._super();
-
+	preload:						function(){
 		// If we're editing an existing displayed gallery, then
 		// update the model
 		if (existing != null) {
 			this.set('id', existing.id);
+			this.set('display_settings', existing.display_settings);
 			this.set('display_type',  existing.display_type);
-			this.set('display_settings', Ember.Object.create(existing.display_settings));
 
 			// Update containers. We update both the selected containers
 			// for the displayed gallery, as well as the source of containers.
@@ -253,6 +276,10 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		this.get('galleries').pushObject(item);
 	},
 
+
+	/**
+	 * Used by init() to repload an existing displayed gallery with tags
+	**/
 	push_to_image_tags:			function(item){
 		this.get('image_tags').pushObject(item);
 	},
@@ -377,7 +404,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * When the source is changed, we add the associated template
 	 * to the DOM
 	 */
-	_source_Changed:			Ember.observer(function(){
+	_source_Changed:			function(){
 		 var view = NggDisplayTab.get('attached_source_view');
 		 if (view) view.remove();
 		 var source_id = this.get('source_id');
@@ -385,7 +412,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			 this[source_id+'_selected_as_source'].call(this);
 
 		 }
-	}, 'source'),
+	}.observes('source'),
 
 
 	/**
@@ -461,7 +488,8 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * Determines whether the preview area is supported for the selected source
 	 */
 	is_preview_area_supported:				function(){
-		return !this.get('source_id').match(/recent_images|random_images/);
+		var source_id = this.get('source_id');
+		return source_id && !source_id.match(/recent_images|random_images/);
 	},
 
 
@@ -483,35 +511,37 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * When the container id is changed, we update the list
 	 * of images or albums we're displaying
 	 */
-	_containersChanged:		Ember.observer(function(){
+	_containersChanged:		function(){
 		if (NggDisplayTab.preview_area) NggDisplayTab.preview_area.remove();
-		if (this.get('containers').length > 0) {
+		if (this.get('containers').length > 0 && this.get('source_id')) {
 			this.attach_preview_area();
 		}
-	}, 'container'),
+	}.observes('containers.@each.length'),
 
 
 	/**
 	 * Fetches and displays the settings for the selected "Display Type"
 	**/
-	display_type_Changed:	Ember.observer(function(){
+	display_type_Changed:	function(){
 		var self = this;
 		var request = {
-			display_type:	self.get('display_type'),
-			action:			'get_display_type_settings'
+			display_type:		self.get('display_type'),
+			display_settings:	self.get('display_settings'),
+			action:				'get_display_type_settings'
 		};
 		jQuery.post(photocrati_ajax_url, request, function(response){
 			if (typeof response != 'object') response  = JSON.parse(response);
 			if (response.html) {
 				jQuery('#display_settings_tab_content').html(
-					response.lazy_resources ?
+					"<form id='display_settings_form'>" +
+					(response.lazy_resources ?
 						response.lazy_resources + response.html :
-						response.html
+						response.html) + "</form>"
 				);
 			}
 			else alert(response.error);
 		});
-	}, 'display_type'),
+	}.observes('display_type'),
 
 
 	/**
@@ -600,12 +630,11 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 });
 
 Ember.Chosen = Ember.Select.extend({
-	tagName:			'select',
 	classNameBindings:	['pretty-dropdown'],
+
 	chosen_items:		function(){
 		return this.get('content');
 	}.property('content.@each.length'),
-
 
 	/**
 	 * Updates the chosen widget to include all options
@@ -834,3 +863,5 @@ Ember.RadioButton = Ember.View.extend({
 	  this.set('selection', this.get('value'));
   }
 });
+
+NggDisplayTab.displayed_gallery.preload();

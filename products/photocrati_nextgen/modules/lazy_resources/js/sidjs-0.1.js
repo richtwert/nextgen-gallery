@@ -73,6 +73,21 @@ jQuery(function(){
 			return node;
 		};
 
+		var append	= function(scope, node, url, attribute){
+			if (this == win) {
+				return new append(scope, node, url, attribute);
+			}
+			var container = node.tagName == 'SCRIPT' ? document.scripts : document.styleSheets;
+			var perform = false;
+			for (var i=0; i<container.length; i++) {
+				if (url == container[i][attribute]) {
+					perform = true;
+					break;
+				}
+			}
+			if (perform) scope.appendChild(node);
+		};
+
 		var load = function(type, urls, callback, scope) {
 			if (this == win) {
 				return new load(type, urls, callback, scope);
@@ -88,13 +103,15 @@ jQuery(function(){
 
 			for (i = 0, len = urls.length; i < len; i++) {
 				this.queue[i] = 1;
+				var url = urls[i];
 				if (type == 'css') {
-					node = createNode('link', { type: 'text/css', rel: 'stylesheet', href: urls[i] });
+					node = createNode('link', { type: 'text/css', rel: 'stylesheet', href: url });
+					append(scope, node, url, 'href');
 				}
 				else {
-					node = createNode('script', { type: 'text/javascript', src: urls[i] });
+					node = createNode('script', { type: 'text/javascript', src: url });
+					append(scope, node, url, 'src');
 				}
-				scope.appendChild(node);
 
 				if (sniff) {
 					if (type == 'css' && sniff == 2) {
