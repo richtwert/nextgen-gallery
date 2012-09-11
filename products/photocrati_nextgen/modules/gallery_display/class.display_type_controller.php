@@ -331,12 +331,11 @@ class Mixin_Display_Type_Controller extends Mixin
 			}
 		}
 
-
-
 		// If we're serving an alternative view, then we'll need to add
 		// a return link
 		if ($this->object->is_serving_alternative_view($displayed_gallery->display_type) && $params['show_return_link']) {
 			if (($url = $this->object->get_absolute_url())) {
+				$url = remove_query_arg('show', $url);
 				$params['return_link_url'] = $url;
 				$params['return_link'] =
 					"<a href='".esc_attr($url)."'>".

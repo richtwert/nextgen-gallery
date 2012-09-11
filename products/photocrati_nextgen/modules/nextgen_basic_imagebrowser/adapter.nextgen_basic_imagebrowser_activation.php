@@ -27,6 +27,7 @@ class A_NextGen_Basic_ImageBrowser_Activation extends Mixin
 		}$display_type->name = PHOTOCRATI_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER;
 		$display_type->title = "NextGEN Basic ImageBrowser";
 		$display_type->entity_type = 'gallery';
+		$display_type->preview_image_relpath = $this->find_static_file('preview.gif', TRUE);
 		$mapper->save($display_type);
 		unset($mapper);
 	}
