@@ -144,3 +144,18 @@ iframe {
 table {
 	font-size: 13px;
 }
+
+/**
+ * Hacks used to ensure that Firefox can calculate the height of hidden content
+ * in iframes
+**/
+.ui-tabs {
+	visibility: visible;
+	position: relative;
+}
+.ui-tabs
+.ui-tabs-hide {
+	display: block !important;
+	visibility: hidden;
+	position: absolute;
+}

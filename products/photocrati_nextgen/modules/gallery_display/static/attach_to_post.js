@@ -7,8 +7,7 @@ function close_attach_to_post_window()
 // Provides a function for child windows to call
 function resize_attach_to_post_tab(iframe, run_once)
 {
-	var initial_height = iframe.contentWindow.outerHeight;
-	initial_height = iframe.contentDocument.height;
+	var initial_height = jQuery(iframe.contentDocument).height();
 	jQuery(iframe).data('parent_resizing', {
 		last_height:	arguments.length == 2 ? 0 : initial_height,
 		iteration:		0
@@ -18,7 +17,7 @@ function resize_attach_to_post_tab(iframe, run_once)
 	// till the final height has been determined
 	var callback = function(iframe){
 		var data			= jQuery(iframe).data('parent_resizing');
-		var current_height	= iframe.contentDocument.height;
+		var current_height	= jQuery(iframe.contentDocument).height();
 		var exec_callback	= true;
 
 		// If the last determined height differs from the current
@@ -68,12 +67,6 @@ jQuery(function($){
 
 	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
-
-	// Resize iframes to be height of the content
-//	$('iframe').load(function(){
-//		var iframe = this;
-//		resize_attach_to_post_tab(iframe);
-//	});
 
 	// Close the window when the escape key is pressed
 	$(this).keydown(function(e){
