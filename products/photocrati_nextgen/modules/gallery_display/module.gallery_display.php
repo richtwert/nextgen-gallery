@@ -132,7 +132,8 @@ class M_Gallery_Display extends C_Base_Module
 		if (is_admin()) {
 			add_action(
 				'admin_enqueue_scripts',
-				array(&$this, 'enqueue_resources')
+				array(&$this, 'enqueue_resources'),
+				1
 			);
 		}
 
@@ -155,34 +156,31 @@ class M_Gallery_Display extends C_Base_Module
 		add_filter('the_content', array(&$this, 'substitute_placeholder_imgs'), 100, 1);
 		remove_filter('the_content',    'wpautop');
 
-        add_action('init', array(&$this, 'wrap_legacy_url'));
+        add_action('init', array(&$this, 'serve_alternative_view_request'));
 	}
 
-    /**
-     * NextGen-Legacy somehow used a few permalinks as function parameters; we hook WP->init() to catch those
-     * pages by removing those permalink options from the REQUEST_URI before the request is processed.
-     *
-     * Processed results are stored in $_SERVER['NGGALLERY'][$key] at the moment
-     * @param null $wp_query (optional)
-     */
-    function wrap_legacy_url($wp_query = NULL)
+
+	/**
+	 * A display type can be forced for all galleries by specifying the
+	 * display type to use in the url segment. We call these 'alternative views'.
+	 *
+	 * To force a particular display type to be used for the current request,
+	 * the following url segment must be appended: /nggallery/[display_type_name]
+	 *
+	 * This functionality is required to maintain the integration between the
+	 * NextGen Basic Slideshow and NextGen Basic Thumbnails display types, that
+	 * NextGen Legacy introduced.
+	 * @return null
+	 */
+    function serve_alternative_view_request()
     {
-        if (!isset($_SERVER['REQUEST_URI']))
-        {
-            return;
-        }
-
-        if (preg_match('/^(.+)\/nggallery\/slideshow$/i', $_SERVER['REQUEST_URI']))
-        {
-            $_SERVER['REQUEST_URI'] = str_replace('nggallery/slideshow', '', $_SERVER['REQUEST_URI']);
-            $_SERVER['NGGALLERY']['slideshow'] = TRUE;
-        }
-
-        if (preg_match('/^(.+)\/nggallery\/gallery/i', $_SERVER['REQUEST_URI']))
-        {
-            $_SERVER['REQUEST_URI'] = str_replace('nggallery/gallery', '', $_SERVER['REQUEST_URI']);
-            $_SERVER['NGGALLERY']['gallery'] = TRUE;
-        }
+		if (isset($_SERVER['REQUEST_URI'])) {
+			$uri = $_SERVER['REQUEST_URI'];
+			if (preg_match("/nggallery\/([\w_-]+)$/", $uri, $match)) {
+				$_SERVER['REQUEST_URI'] = str_replace($match[0], '', $uri);
+				$_SERVER['NGGALLERY'] = $match[1];
+			}
+		}
     }
 
 	/**
@@ -192,8 +190,8 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		add_submenu_page(
 			NGGFOLDER,
-			_('NextGEN Display Settings'),
-			_('Display Settings'),
+			_('NextGEN Gallery & Album Settings'),
+			_('Gallery Settings'),
 			'NextGEN Manage gallery',
 			$this->display_settings_page_name,
 			array(&$this->controller, 'index')
@@ -212,11 +210,12 @@ class M_Gallery_Display extends C_Base_Module
 		}
 
 		// Enqueue resources needed at post/page level
-		elseif ($_SERVER['SCRIPT_NAME'] == '/wp-admin/post.php') {
+		elseif (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
 			$this->_enqueue_tinymce_resources();
 		}
 
-		elseif (isset($_REQUEST['attach_to_post'])) {
+		elseif (isset($_REQUEST['attach_to_post']) OR
+		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
 			wp_enqueue_script('iframely', $this->static_url('iframely.js'));
 			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
 		}

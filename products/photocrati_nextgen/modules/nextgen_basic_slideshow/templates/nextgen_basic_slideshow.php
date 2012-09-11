@@ -1,9 +1,7 @@
-<?php if (isset($thumbnails_link)): ?>
+<?php if (isset($return_link)): ?>
 <!-- Thumbnails Link -->
 <div class="slideshowlink">
-    <a class="slideshowlink" href="<?php echo esc_attr($thumbnails_link) ?>">
-        <?php echo_h($thumbnails_link_text)?>
-    </a>
+	<?php echo $return_link ?>
 </div>
 <?php endif ?>
 
@@ -12,17 +10,17 @@
 $anchor = 'ngg-slideshow-' . $displayed_gallery_id . '-' . $current_page;
 $aspect_ratio = $gallery_width / $gallery_height;
 ?>
-	
+
 	<!-- Images -->
 	<div
 		class="ngg-slideshow-image-list ngg-slideshow-nojs"
 		id="<?php echo_h($anchor)?>-image-list">
 	<?php for ($i=0; $i<count($images); $i++): ?>
-        <?php 
-        
+        <?php
+
         $image = $images[$i];
         $image_size = $storage->get_original_dimensions($image);
-        
+
         if ($image_size == null) {
         	$image_size['width'] = $image->meta_data['width'];
         	$image_size['height'] = $image->meta_data['height'];
@@ -34,9 +32,9 @@ $aspect_ratio = $gallery_width / $gallery_height;
         else {
         	$image->style = '';
         }
-        
+
         $image_ratio = $image_size['width'] / $image_size['height'];
-        
+
         if ($image_ratio > $aspect_ratio) {
         	if ($image_size['width'] > $gallery_width) {
         		$image_size['width'] = $gallery_width;
@@ -49,7 +47,7 @@ $aspect_ratio = $gallery_width / $gallery_height;
         		$image_size['height'] = $gallery_height;
         	}
         }
-        
+
         ?>
 
         <div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-slideshow-image" <?php print $image->style; ?>>
@@ -64,7 +62,7 @@ $aspect_ratio = $gallery_width / $gallery_height;
 
 	<?php endfor ?>
 	</div>
-	
+
 <div
 	class="ngg-galleryoverview ngg-slideshow"
 	id="<?php echo_h($anchor)?>"
@@ -79,7 +77,7 @@ $aspect_ratio = $gallery_width / $gallery_height;
 </div>
 <script type="text/javascript">
 jQuery('#<?php echo_h($anchor)?>-image-list').hide().removeClass('ngg-slideshow-nojs');
-jQuery(document).ready(function(){ 
+jQuery(document).ready(function(){
 	jQuery('#<?php echo_h($anchor)?>').nggShowSlideshow({
 		id: '<?php echo_h($displayed_gallery_id)?>',
 		fx: '<?php echo_h($cycle_effect)?>',

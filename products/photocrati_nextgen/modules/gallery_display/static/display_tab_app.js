@@ -25,14 +25,38 @@ var NggDisplayTab = Em.Application.create({
 	 * Saves the displayed gallery
 	 */
 	save:							function(e){
+
+		// Convert the display settings form into an object
+		var form				= jQuery('#display_settings_tab_content form');
+		var display_settings	= (function($, item){
+			var obj = {};
+			item.serializeArray().forEach(function(item){
+				var parts = item.name.split('[');
+				var current_obj = obj;
+				for (var i=0; i<parts.length; i++) {
+					var part = parts[i].replace(/\]$/, '');
+					if (!current_obj[part]) {
+						if (i == parts.length-1)
+							current_obj[part] = item.value;
+						else
+							current_obj[part] = {};
+					}
+					current_obj = current_obj[part];
+				}
+			});
+			return obj;
+		})(jQuery, form);
+		var display_type		= NggDisplayTab.displayed_gallery.get('display_type');
+
 		// Initiate the request to save...
 		var request = {
 			id:					NggDisplayTab.displayed_gallery.get('id'),
 			displayed_gallery:	{
-				source:			NggDisplayTab.displayed_gallery.get('source_id'),
-				container_ids:	NggDisplayTab.displayed_gallery.get('container_ids'),
-				entity_ids:		NggDisplayTab.displayed_gallery.get('included_entity_ids'),
-				display_type:	NggDisplayTab.displayed_gallery.get('display_type')
+				source:				NggDisplayTab.displayed_gallery.get('source_id'),
+				container_ids:		NggDisplayTab.displayed_gallery.get('container_ids'),
+				entity_ids:			NggDisplayTab.displayed_gallery.get('included_entity_ids'),
+				display_type:		display_type,
+				display_settings:	display_settings[display_type]
 			},
 			action:				'save_displayed_gallery'
 		};
@@ -207,19 +231,18 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
 	display_type:				false,
+	display_settings:			false,
 
 	/**
 	 * Initializes the object
 	 */
-	init:						function(){
-		this._super();
-
+	preload:						function(){
 		// If we're editing an existing displayed gallery, then
 		// update the model
 		if (existing != null) {
 			this.set('id', existing.id);
+			this.set('display_settings', existing.display_settings);
 			this.set('display_type',  existing.display_type);
-			this.set('display_settings', Ember.Object.create(existing.display_settings));
 
 			// Update containers. We update both the selected containers
 			// for the displayed gallery, as well as the source of containers.
@@ -227,17 +250,18 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			var containers			= this.get('containers');
 			var method				= 'push_to_'+existing.source;
 			var self = this;
-			existing.container_ids.forEach(function(item){
-				var item = Ember.Object.create({
-					id: item.toString(),
-					title: ''
+			if (existing.container_ids) {
+				existing.container_ids.forEach(function(item){
+					var item = Ember.Object.create({
+						id: item.toString(),
+						title: ''
+					});
+					self[method].call(self, item);
+					containers.pushObject(item);
 				});
-				self[method].call(self, item);
-				containers.pushObject(item);
-			});
+				this.fetch_images();
+			}
 			console.log("Adding preselected values");
-
-			this.fetch_images();
 		}
 
 		// Adds an observer for 'containers' to get it's value and assign to
@@ -252,6 +276,10 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		this.get('galleries').pushObject(item);
 	},
 
+
+	/**
+	 * Used by init() to repload an existing displayed gallery with tags
+	**/
 	push_to_image_tags:			function(item){
 		this.get('image_tags').pushObject(item);
 	},
@@ -376,18 +404,93 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * When the source is changed, we add the associated template
 	 * to the DOM
 	 */
-	_source_Changed:			Ember.observer(function(){
+	_source_Changed:			function(){
 		 var view = NggDisplayTab.get('attached_source_view');
 		 if (view) view.remove();
 		 var source_id = this.get('source_id');
 		 if (source_id) {
-			 var view_name = source_id+'_source_view';
-			 var view = this.get(view_name);
-			 view.set('templateName', view_name);
-			 NggDisplayTab.set('attached_source_view', view);
-			 view.appendTo('#source_configuration');
+			 this[source_id+'_selected_as_source'].call(this);
+
 		 }
-	}).observes('source'),
+	}.observes('source'),
+
+
+	/**
+	 * Attaches a view for a particular source
+	 */
+	attach_source_view:		function(){
+		var view_name = this.get('source_id')+'_source_view';
+		var view = this.get(view_name);
+		if (view) {
+		   view.set('templateName', view_name);
+		   NggDisplayTab.set('attached_source_view', view);
+		   view.appendTo('#source_configuration');
+		}
+	},
+
+
+	/**
+	 * The source has been changed to galleries
+	 */
+	galleries_selected_as_source:		function(){
+		this.attach_source_view();
+	},
+
+
+	/**
+	 * The source has been changed to Image Tags
+	 */
+	image_tags_selected_as_source:		function(){
+		this.attach_source_view();
+	},
+
+
+	/**
+	 * The source has been changed to Recent Images
+	**/
+	recent_images_selected_as_source:	function(){
+		this.attach_preview_area();
+	},
+
+
+	/**
+	 * The source has been changed to Random Images
+	 */
+	random_images_selected_as_source:	function(){
+		this.attach_preview_area();
+	},
+
+	/**
+	 * Attach the preview area view
+	 */
+	attach_preview_area:			function(){
+		if (NggDisplayTab.preview_area) NggDisplayTab.preview_area.remove();
+
+		// We then call a method to handle the logic of updating the
+		// entities. We do this for extensibility - a module can simply
+		// monkey patch this object
+		var method = '_update_entities_for_'+this.get('source_id');
+		if (typeof(this[method]) !== 'undefined') this[method]();
+
+		// If the preview area is supported
+		if (this.is_preview_area_supported()) {
+			NggDisplayTab.preview_area = NggDisplayTab.Preview_View.create();
+		}
+		else {
+			NggDisplayTab.preview_area = NggDisplayTab.Preview_Not_Supported_View.create();
+		}
+
+		NggDisplayTab.preview_area.appendTo('#preview_tab_content');
+
+	},
+
+	/**
+	 * Determines whether the preview area is supported for the selected source
+	 */
+	is_preview_area_supported:				function(){
+		var source_id = this.get('source_id');
+		return source_id && !source_id.match(/recent_images|random_images/);
+	},
 
 
 	/**
@@ -408,17 +511,37 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * When the container id is changed, we update the list
 	 * of images or albums we're displaying
 	 */
-	_containersChanged:		Ember.observer(function(){
-		if (NggDisplayTab.preview_view) NggDisplayTab.preview_view.remove();
-		if (this.get('containers').length > 0) {
-			// We then call a method to handle the logic of updating the
-			// entities. We do this for extensibility - a module can simply
-			// monkey patch this object
-			var method = '_update_entities_for_'+this.get('source_id');
-			this[method]();
-			NggDisplayTab.preview_view.appendTo('#preview_tab_content');
+	_containersChanged:		function(){
+		if (NggDisplayTab.preview_area) NggDisplayTab.preview_area.remove();
+		if (this.get('containers').length > 0 && this.get('source_id')) {
+			this.attach_preview_area();
 		}
-	}).observes('containers'),
+	}.observes('containers.@each.length'),
+
+
+	/**
+	 * Fetches and displays the settings for the selected "Display Type"
+	**/
+	display_type_Changed:	function(){
+		var self = this;
+		var request = {
+			display_type:		self.get('display_type'),
+			display_settings:	self.get('display_settings'),
+			action:				'get_display_type_settings'
+		};
+		jQuery.post(photocrati_ajax_url, request, function(response){
+			if (typeof response != 'object') response  = JSON.parse(response);
+			if (response.html) {
+				jQuery('#display_settings_tab_content').html(
+					"<form id='display_settings_form'>" +
+					(response.lazy_resources ?
+						response.lazy_resources + response.html :
+						response.html) + "</form>"
+				);
+			}
+			else alert(response.error);
+		});
+	}.observes('display_type'),
 
 
 	/**
@@ -487,16 +610,31 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	_update_entities_for_image_tags: function(){
 		this.set('entities', Ember.A());
 		NggDisplayTab.fetch_image_tag_images();
+	},
+
+	/**
+	 * The list of containers changed. We don't display
+	 * recent images
+	 */
+	_update_entities_for_recent_images:	function(){
+		this.set('entities', Ember.A());
+	},
+
+	/**
+	 * The list of containers changed. We don't display
+	 * random images
+	 */
+	_update_entities_for_random_images:	function(){
+		this.set('entities', Ember.A());
 	}
 });
 
 Ember.Chosen = Ember.Select.extend({
-	tagName:			'select',
 	classNameBindings:	['pretty-dropdown'],
+
 	chosen_items:		function(){
 		return this.get('content');
 	}.property('content.@each.length'),
-
 
 	/**
 	 * Updates the chosen widget to include all options
@@ -524,7 +662,7 @@ Ember.Chosen = Ember.Select.extend({
 			jQuery(this.$()).bind('liszt:updated', function(){
 				var chosen_ddl_selector = '#'+jQuery(this).attr('id')+'_chzn';
 				var width = jQuery(chosen_ddl_selector).width(400).width();
-				jQuery(chosen_ddl_selector+' .search-field input').width(width);
+				jQuery(chosen_ddl_selector+' .search-field input').width('auto');
 				jQuery(chosen_ddl_selector+' .chzn-drop').width(width-2);
 			}).trigger('liszt:updated');
 			console.log('Updating chosen drop-down');
@@ -535,6 +673,8 @@ Ember.Chosen = Ember.Select.extend({
 	didInsertElement:		function(){
 		var parentView = this.get('parentView');
 		parentView[this.get('fillCallback')].call(this, this.get('content'), this);
+		var select = jQuery(this.$());
+		select.attr('data-placeholder', '--Select--');
 		jQuery(this.$()).chosen();
 		console.log('Creating chosen drop-down');
 	}
@@ -611,12 +751,16 @@ NggDisplayTab.displayed_gallery.image_tags_source_view	=	Ember.View.create({
 /**
  * Represents the view for displaying the image/gallery preview area
  */
-NggDisplayTab.preview_view = Ember.View.create({
+NggDisplayTab.Preview_View	= Ember.View.extend({
 	templateName:				'preview_area',
 	entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
 	displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
-	didInsertElement:			function(){
+	source_idBinding:			'NggDisplayTab.displayed_gallery.source_id',
 
+	/**
+	 * Once the element has been added to the DOM, execute some JQuery
+	 */
+	didInsertElement:			function(){
 		// Enable sorting!
 		var last_offset = 0;
 		jQuery('#preview_entity_list').sortable({
@@ -698,6 +842,10 @@ NggDisplayTab.preview_view = Ember.View.create({
 	})
 });
 
+NggDisplayTab.Preview_Not_Supported_View		= Ember.View.extend({
+	templateName:	'preview_not_supported'
+});
+
 
 /**
  * Provides a radio button widget for Ember
@@ -715,3 +863,5 @@ Ember.RadioButton = Ember.View.extend({
 	  this.set('selection', this.get('value'));
   }
 });
+
+NggDisplayTab.displayed_gallery.preload();

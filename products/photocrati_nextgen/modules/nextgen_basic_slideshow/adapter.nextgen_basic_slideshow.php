@@ -10,7 +10,7 @@ class A_NextGen_Basic_Slideshow extends Mixin
 				get_class(),
 				'Hook_NextGen_Basic_Slideshow_Validation'
 			);
-			
+
 			$this->object->add_pre_hook(
 				'set_defaults',
 				get_class(),
@@ -45,7 +45,7 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 			$this->object->settings['cycle_interval'] = $settings->irRotatetime;
 		if (!isset($this->object->settings['cycle_effect']))
 			$this->object->settings['cycle_effect'] = $settings->slideFx;
-			
+
 		if (!isset($this->object->settings['flash_enabled']))
 			$this->object->settings['flash_enabled'] = $settings->enableIR;
 		if (!isset($this->object->settings['flash_path']))
@@ -78,9 +78,16 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 			$this->object->settings['flash_background_music'] = $settings->irAudio;
 		if (!isset($this->object->settings['xhtml_validation']))
 			$this->object->settings['flash_xhtml_validation'] = $settings->irXHTMLvalid;
-			
 		if (!isset($this->object->settings['effects_code'])) {
 			$this->object->settings['effect_code'] = $settings->thumbCode;
+		}
+		
+		// Override defaults for alternative view settings
+		if (!isset($this->object->settings['alternative_view_link_text'])) {
+			$this->object->settings['alternative_view_link_text'] = _('[Show Picture List]');
+		}
+		if (!isset($this->object->settings['return_link_text'])) {
+			$this->object->settings['return_link_text'] = _('[Show Slideshow]');
 		}
 	}
 
@@ -90,11 +97,5 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 		$this->object->validates_presence_of('gallery_height');
 		$this->object->validates_numericality_of('gallery_width');
 		$this->object->validates_numericality_of('gallery_height');
-		
-#		$this->object->validates_presence_of('thumbnail_width');
-#		$this->object->validates_presence_of('thumbnail_height');
-#		$this->object->validates_numericality_of('thumbnail_width');
-#		$this->object->validates_numericality_of('thumbnail_height');
-		$this->object->validates_numericality_of('images_per_page');
 	}
 }

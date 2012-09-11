@@ -39,12 +39,6 @@ class Mixin_NextGen_Activator extends Mixin
 		$mapper->save((object)array(
 			'name'	=>	'Custom',
 		));
-		$mapper->save((object)array(
-			'name'				=>	'Test',
-			'code'				=>	'class="foobar"',
-			'css_stylesheets'	=>	'http://www.google.ca/style.css',
-			'scripts'			=>	'http://www.google.ca/script.js'
-		));
 
 		// Install multisite options
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings', 'multisite');

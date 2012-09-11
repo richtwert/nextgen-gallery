@@ -7,9 +7,9 @@
     <td>
         <input type='text'
                id='<?php echo esc_attr($display_type_name); ?>_slideshow_link_text'
-               name='<?php echo esc_attr($display_type_name); ?>[slideshow_link_text]'
+               name='<?php echo esc_attr($display_type_name); ?>[alternative_view_link_text]'
                class='ngg_thumbnail_slideshow_link_text'
-               value='<?php echo esc_attr($slideshow_link_text); ?>'>
+               value='<?php echo esc_attr($alternative_view_link_text); ?>'>
         </select>
     </td>
 </tr>

@@ -7,10 +7,10 @@
     <td>
         <input type='checkbox'
                id='<?php echo esc_attr($display_type_name); ?>_show_slideshow_link'
-               name='<?php echo esc_attr($display_type_name); ?>[show_slideshow_link]'
+               name='<?php echo esc_attr($display_type_name); ?>[show_alternative_view_link]'
                class='ngg_thumbnail_show_slideshow_link'
-               value='true'
-                <?php echo checked($show_slideshow_link); ?>'>
+               value='photocrati-nextgen_basic_slideshow'
+                <?php echo checked($show_alternative_view_link); ?>'>
         </select>
     </td>
 </tr>

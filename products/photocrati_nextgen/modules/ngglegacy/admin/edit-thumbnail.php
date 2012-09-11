@@ -46,19 +46,32 @@ if ( ($ngg_options['thumbfix'] == 1) ) {
 	$WidthHtmlPrev  = $ngg_options['thumbwidth'];
 	$HeightHtmlPrev = $ngg_options['thumbheight'];
 	
-} else {
+} 
+else {
 	// H > W
 	if ($imageInfo[1] > $imageInfo[0]) {
-
 		$HeightHtmlPrev =  $ngg_options['thumbheight'];
 		$WidthHtmlPrev  = round($imageInfo[0] / ($imageInfo[1] / $ngg_options['thumbheight']),0);
-		
-	} else {
-		
+	} 
+	else {
 		$WidthHtmlPrev  =  $ngg_options['thumbwidth'];
 		$HeightHtmlPrev = round($imageInfo[1] / ($imageInfo[0] / $ngg_options['thumbwidth']),0);
-		
 	}
+}
+
+$thumbnail_crop_frame = isset($picture->meta_data['thumbnail_crop_frame']) ? $picture->meta_data['thumbnail_crop_frame'] : null;
+$default_crop_js_parameter = null;
+
+if ($thumbnail_crop_frame != null)
+{
+	$crop_x = round(((float) $thumbnail_crop_frame['x']) / $rr);
+	$crop_y = round(((float) $thumbnail_crop_frame['y']) / $rr);
+	$crop_width = round(((float) $thumbnail_crop_frame['width']) / $rr);
+	$crop_height = round(((float) $thumbnail_crop_frame['height']) / $rr);
+	$crop_x2 = $crop_x + $crop_width;
+	$crop_y2 = $crop_y + $crop_height;
+	
+	$default_crop_js_parameter = 'setSelect: [' . $crop_x . ',' . $crop_y . ',' . $crop_x2 . ',' . $crop_y2 . '],';
 }
 
 ?>
@@ -73,7 +86,6 @@ if ( ($ngg_options['thumbfix'] == 1) ) {
 
 	function showPreview(coords)
 	{
-		
 		if (status != 'edit') {
 			jQuery('#actualThumb').hide();
 			jQuery('#previewNewThumb').show();
@@ -96,7 +108,6 @@ if ( ($ngg_options['thumbfix'] == 1) ) {
 		hT = coords.h;
 		
 		jQuery("#sizeThumb").html(xT+" "+yT+" "+wT+" "+hT);
-		
 	};
 	
 	function updateThumb() {
@@ -164,6 +175,7 @@ if ( ($ngg_options['thumbfix'] == 1) ) {
 		jQuery('#imageToEdit').Jcrop({
 			onChange: showPreview,
 			onSelect: showPreview,
+			<?php echo $default_crop_js_parameter; ?>
 			aspectRatio: <?php echo str_replace(',', '.', round($WidthHtmlPrev/$HeightHtmlPrev, 3)); ?>
 		});
 	});

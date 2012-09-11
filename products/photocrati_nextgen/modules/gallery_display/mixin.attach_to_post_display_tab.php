@@ -94,7 +94,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	{
 		return $this->object->render_partial('accordion_tab', array(
 			'id'			=> 'preview_tab',
-			'title'		=>	_('Select individual images to display'),
+			'title'		=>	_('Sort or Exclude Images'),
 			'content'	=>	$this->object->_render_preview_tab_contents()
 		), TRUE);
 	}
@@ -151,13 +151,18 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the Handlebars template for the image tags source
+	 * @return string
+	 */
 	function _render_image_tags_source_template()
 	{
 		return $this->object->render_partial('image_tags_source', array(
 			'template_name'				=>	'image_tags_source_view',
 			'tags_label'				=>	_('Tags'),
-		));
+		), TRUE);
 	}
+
 
 	/**
 	 * Gets a list of display types available
