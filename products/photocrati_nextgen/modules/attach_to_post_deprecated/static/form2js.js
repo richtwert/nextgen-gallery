@@ -87,7 +87,7 @@ var form2js = (function()
 			namePart,
 			name,
 			_nameParts;
-
+			debugger;
 		for (i = 0; i < nameValues.length; i++)
 		{
 			value = nameValues[i].value;
@@ -152,7 +152,8 @@ var form2js = (function()
 				else if (namePart.indexOf('[') > -1)
 				{
 					arrName = namePart.substr(0, namePart.indexOf('['));
-					arrIdx = namePart.replace(/(^([a-z_]+)?\[)|(\]$)/gi, '');
+					arrIdx  = namePart.replace(/(^[^\[]*\[|]$)/gi, '');
+//					arrIdx = namePart.replace(/(^([a-z_]+)?\[)|(\]$)/gi, '');
 
 					/* Unique array name */
 					arrNameFull += '_' + arrName + '_' + arrIdx;
@@ -223,7 +224,7 @@ var form2js = (function()
 	{
 		var result = [],
 			currentNode = rootNode.firstChild;
-		
+
 		while (currentNode)
 		{
 			result = result.concat(extractNodeValues(currentNode, nodeCallback, useIdIfEmptyName));
@@ -267,7 +268,7 @@ var form2js = (function()
 	function getFieldValue(fieldNode)
 	{
 		if (fieldNode.disabled) return null;
-		
+
 		switch (fieldNode.nodeName) {
 			case 'INPUT':
 			case 'TEXTAREA':

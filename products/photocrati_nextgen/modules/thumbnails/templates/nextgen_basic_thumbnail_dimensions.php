@@ -7,7 +7,7 @@
 	<td>
 		<select id="<?php echo esc_attr($display_type_name)?>_dimensions"
 				class="ngg_thumbnail_dimensions"
-				name="<?php echo esc_attr($display_type_name) ?>[thumbnail_dimensions">
+				name="<?php echo esc_attr($display_type_name) ?>[thumbnail_dimensions]">
 			<?php foreach ($thumbnail_dimensions as $dimension): ?>
 			<option <?php selected($dimension, $selected_dimensions)?>>
 				<?php echo_h($dimension) ?>

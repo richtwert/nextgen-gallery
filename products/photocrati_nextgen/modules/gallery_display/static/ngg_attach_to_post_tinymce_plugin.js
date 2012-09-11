@@ -46,10 +46,10 @@
 			editor.settings.custom_elements = "shortcode";
 			var self = this;
 			editor.onMouseDown.addToTop(function(editor, e){
-				if (e.srcElement.tagName == 'IMG' && e.srcElement.className == 'ngg_displayed_gallery') {
+				if (e.target.tagName == 'IMG' && e.target.className == 'ngg_displayed_gallery') {
 					editor.dom.events.cancel(e);
 					editor.dom.events.stop(e);
-					var id = e.srcElement.src.match(/\d+$/);
+					var id = e.target.src.match(/\d+$/);
 					if (id) id = id.pop();
 					var obj = tinymce.extend(self, {
 						editor: editor,
