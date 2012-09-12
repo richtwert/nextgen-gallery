@@ -88,11 +88,13 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			'ngg_displayed_gallery_preview_url',
 			PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
 		);
-		wp_localize_script(
-			'ngg_attach_to_post_display_tab_app',
-			'existing',
-			isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
-		);
+		if ($this->object->_validate_request()) {
+			wp_localize_script(
+				'ngg_attach_to_post_display_tab_app',
+				'existing',
+				isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
+			);
+		}
 
 		do_action('admin_enqueue_scripts');
 		do_action('admin_print_styles');
