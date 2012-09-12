@@ -105,7 +105,6 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_settings_contents()
 	{
-		return '';
 		$retval = array();
 
 		// Retrieve all display types. I'm currently retrieving all as models,
