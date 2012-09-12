@@ -22,7 +22,7 @@ class A_Ajax_Pagination_Actions extends Mixin
         ob_start();
         $controller = $this->get_registry()->get_utility('I_Display_Type_Controller', $displayed_gallery->display_type);
         $controller->enqueue_frontend_resources($displayed_gallery);
-        $controller->index($displayed_gallery);
+        $controller->index_action($displayed_gallery);
         $output = ob_get_contents();
         ob_end_clean();
 

@@ -197,7 +197,7 @@
 		<td colspan="3">
 			<a
 				href="#"
-				class="advanced_toggle_link"
+				class="nextgen_advanced_toggle_link"
 				id="related_images_advanced_toggle"
 				rel="related_images_advanced_form"
 				hidden_label="<?php echo esc_attr($related_images_hidden_label)?>"

@@ -118,6 +118,19 @@ class M_Gallery_Display extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Ajax_Controller',   'A_Attach_To_Post_Ajax'
 		);
+
+		// Enqueues resources required for the Display Settings page
+		$this->get_registry()->add_adapter(
+			'I_NextGen_Backend_Controller',
+			'A_Display_Settings_Page_Resources'
+		);
+
+		// Enqueues resources required for the Attach to Post interface
+		$this->get_registry()->add_adapter(
+			'I_NextGen_Backend_Controller',
+			'A_Attach_To_Post_Resources'
+		);
+
 	}
 
 	/**
@@ -194,7 +207,7 @@ class M_Gallery_Display extends C_Base_Module
 			_('Gallery Settings'),
 			'NextGEN Manage gallery',
 			$this->display_settings_page_name,
-			array(&$this->controller, 'index')
+			array(&$this->controller, 'index_action')
 		);
 	}
 
@@ -204,13 +217,8 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function enqueue_resources()
 	{
-		// Enqueue resources needed for the Display Settings Page
-		if (isset($_REQUEST['page']) && $_REQUEST['page'] == $this->display_settings_page_name) {
-			$this->_enqueue_display_settings_resources();
-		}
-
 		// Enqueue resources needed at post/page level
-		elseif (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
+		if (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
 			$this->_enqueue_tinymce_resources();
 		}
 
@@ -220,47 +228,6 @@ class M_Gallery_Display extends C_Base_Module
 			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
 		}
 	}
-
-
-	/**
-	 * Enqueues static resources needed for the Display Settings page
-	 */
-	function _enqueue_display_settings_resources()
-	{
-		wp_enqueue_script(
-			'nextgen_display_settings_page',
-			$this->static_url('nextgen_display_settings_page.js'),
-			array('jquery-ui-accordion'),
-			$this->module_version
-		);
-        wp_enqueue_script(
-            'nextgen_display_settings_page_placeholder_stub',
-            $this->static_url('jquery.placeholder.min.js'),
-            array('jquery'),
-            '2.0.7',
-            TRUE
-        );
-
-		// There are many jQuery UI themes available via Google's CDN:
-		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
-		wp_enqueue_style(
-			PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
-			is_ssl() ?
-				 str_replace('http:', 'https:', PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL) :
-				 PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
-			array(),
-			PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
-		);
-
-		wp_enqueue_style(
-			'nextgen_display_settings_page',
-			$this->static_url('nextgen_display_settings_page.css')
-		);
-
-        wp_enqueue_script('farbtastic');
-        wp_enqueue_style('farbtastic');
-	}
-
 
 	/**
 	 * Enqueues resources needed by the TinyMCE editor

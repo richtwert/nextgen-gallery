@@ -11,7 +11,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
     }
 
-	function index($displayed_gallery, $return=FALSE)
+	function index_action($displayed_gallery, $return=FALSE)
 	{
 		$picturelist = array();
 

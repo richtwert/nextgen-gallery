@@ -3,7 +3,7 @@
 /**
  * Provides a wp-admin page to manage NextGEN Settings
  */
-class C_NextGen_Settings_Controller extends C_MVC_Controller
+class C_NextGen_Settings_Controller extends C_NextGen_Backend_Controller
 {
 	static $_instances = array();
 
@@ -19,10 +19,11 @@ class C_NextGen_Settings_Controller extends C_MVC_Controller
 	 * @param string $context
 	 * @return C_NextGen_Settings_Controller
 	 */
-	static function get_instance($context=FALSE)
+	static function &get_instance($context=FALSE)
 	{
-		$klass = get_class();
 		if (!isset(self::$_instances[$context])) {
+			$klass = function_exists('get_called_class') ?
+				get_called_class() : get_class();
 			self::$_instances[$context] = new $klass($context);
 		}
 		return self::$_instances[$context];
@@ -37,7 +38,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	/**
 	 * Returns the contents of the "Options" page
 	 */
-	function index()
+	function index_action()
 	{
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 

@@ -1,0 +1,10 @@
+.hidden {
+	display: none;
+}
+
+.nextgen_advanced_toggle_link {
+	font-size: 11px;
+	position: relative;
+	bottom: 5px;
+	color: #444444;
+}
