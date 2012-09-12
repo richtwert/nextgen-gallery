@@ -59,6 +59,10 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the Lazy Resource Loader
 		$this->get_registry()->load_module('photocrati-lazy_resources');
 
+		// Load the NextGEN Admin module, used to help render things
+		// in wp-admin
+		$this->get_registry()->load_module('photocrati-nextgen_admin');
+
 		// Load the Gallery Display module, used to display galleries and albums
 		$this->get_registry()->load_module('photocrati-gallery_display');
 

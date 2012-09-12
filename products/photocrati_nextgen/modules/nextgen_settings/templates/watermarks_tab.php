@@ -23,7 +23,7 @@
 			<a
 				id="watermark_customization"
 				href="#"
-				class="advanced_toggle_link"
+				class="nextgen_advanced_toggle_link"
 				hidden_label="<?php echo esc_attr($hidden_label)?>"
 				active_label="<?php echo esc_attr($active_label)?>"
 			>
