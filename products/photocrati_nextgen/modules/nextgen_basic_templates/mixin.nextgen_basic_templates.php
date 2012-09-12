@@ -1,6 +1,6 @@
 <?php
 
-class Mixin_NextGen_Basic_Templates extends Mixin
+class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 {
     /**
      * Renders 'template' settings field

@@ -56,6 +56,7 @@ class Mixin_NextGen_Backend_Controller extends Mixin
             TRUE
         );
 
+        wp_register_script('farbtastic', real_site_url('/wp-admin/js/farbtastic.js'), array('jquery'), '1.2');
 		wp_enqueue_script('farbtastic');
 		wp_enqueue_style('farbtastic');
 
