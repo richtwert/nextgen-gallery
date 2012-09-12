@@ -7,20 +7,6 @@
 class Mixin_Thumbnail_Display_Type_Controller extends Mixin
 {
 	/**
-	 * Adds a hook to enqueue the static resources required for thumbnail
-	 */
-	function initialize()
-	{
-		$this->object->add_post_hook(
-			'enqueue_backend_resources',
-			'Enqueue Thumbnail Resources for the Backend',
-			get_class($this),
-			'_enqueue_resources_for_thumbnails'
-		);
-	}
-
-
-	/**
 	 * Renders the field to select thumbnail dimensions
 	 * @param C_Display_Type $display_type
 	 * @return string
@@ -59,18 +45,5 @@ class Mixin_Thumbnail_Display_Type_Controller extends Mixin
 	function _get_selected_dimensions($display_type)
 	{
 		return "{$display_type->settings['thumbnail_width']}x{$display_type->settings['thumbnail_height']}";
-	}
-
-	/**
-	 * Enqueues resources needed for thumbnails
-	 * @param type $displayed_gallery
-	 */
-	function _enqueue_resources_for_thumbnails($displayed_gallery)
-	{
-		wp_enqueue_script(
-			'ngg_thumbnail_dimensions',
-			PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js/ngg_thumbnail_dimensions.js',
-			array('jquery')
-		);
 	}
 }

@@ -1,6 +1,6 @@
 jQuery(function($){
 	// Activate customize link
-	$('.ngg_customize_thumbnails').live('click', function(e){
+	$('.ngg_customize_thumbnails').click(function(e){
 		e.preventDefault();
 		var btn = $(this);
 		var id = btn.attr('id');

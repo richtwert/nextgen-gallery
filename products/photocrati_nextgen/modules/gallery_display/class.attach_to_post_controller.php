@@ -42,10 +42,20 @@ class C_Attach_To_Post_Controller extends C_NextGen_Backend_Controller
  */
 class Mixin_Attach_To_Post_Controller extends Mixin
 {
-	function enqueue_backend_resources()
+	function initialize()
 	{
-		$this->call_parent('enqueue_backend_resources');
+		$this->object->add_post_hook(
+			'enqueue_backend_resources',
+			'Enqueues resources needed for the Attach to Post interface',
+			__CLASS__,
+			'enqueue_attach_to_post_resources'
+		);
 
+	}
+
+
+	function enqueue_attach_to_post_resources()
+	{
 		// Enqueue JQuery UI libraries
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
