@@ -24,7 +24,7 @@
 			<a
 				href="#"
 				id="advanced_stylesheet_options"
-				class="advanced_toggle_link"
+				class="nextgen_advanced_toggle_link"
 				rel="advanced_stylesheet_form"
 				hidden_label="<?php echo esc_attr($hidden_label)?>"
 				active_label="<?php echo esc_attr($active_label)?>">

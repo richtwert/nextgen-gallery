@@ -28,6 +28,7 @@ var NggDisplayTab = Em.Application.create({
 
 		// Convert the display settings form into an object
 		var form				= jQuery('#display_settings_tab_content form');
+		var display_type		= NggDisplayTab.displayed_gallery.get('display_type');
 		var display_settings	= (function($, item){
 			var obj = {};
 			item.serializeArray().forEach(function(item){
@@ -45,8 +46,7 @@ var NggDisplayTab = Em.Application.create({
 				}
 			});
 			return obj;
-		})(jQuery, form);
-		var display_type		= NggDisplayTab.displayed_gallery.get('display_type');
+		})(jQuery, jQuery('form.display_settings_tab').filter(':not(.hidden'));
 
 		// Initiate the request to save...
 		var request = {
@@ -524,22 +524,12 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	**/
 	display_type_Changed:	function(){
 		var self = this;
-		var request = {
-			display_type:		self.get('display_type'),
-			display_settings:	self.get('display_settings'),
-			action:				'get_display_type_settings'
-		};
-		jQuery.post(photocrati_ajax_url, request, function(response){
-			if (typeof response != 'object') response  = JSON.parse(response);
-			if (response.html) {
-				jQuery('#display_settings_tab_content').html(
-					"<form id='display_settings_form'>" +
-					(response.lazy_resources ?
-						response.lazy_resources + response.html :
-						response.html) + "</form>"
-				);
-			}
-			else alert(response.error);
+		jQuery('.display_settings_form').each(function(){
+			var $this = jQuery(this);
+			if ($this.attr('rel') == self.get('display_type'))
+				$this.removeClass('hidden');
+			else
+				$this.addClass('hidden');
 		});
 	}.observes('display_type'),
 

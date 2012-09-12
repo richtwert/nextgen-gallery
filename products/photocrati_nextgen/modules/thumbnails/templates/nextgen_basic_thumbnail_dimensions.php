@@ -22,7 +22,7 @@
 		<a
 			href="#"
 			id="<?php echo esc_attr($display_type_name)?>_customize_dimensions"
-			class="ngg_customize_thumbnails"
+			class="ngg_customize_thumbnails nextgen_advanced_toggle_link"
 			active_label="<?php echo esc_attr($active_customization_label)?>"
 			hidden_label="<?php echo esc_attr($hidden_customization_label)?>"
 			>

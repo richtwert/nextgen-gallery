@@ -1,6 +1,6 @@
 jQuery(function($){
 	// Activate customize link
-	$('.ngg_customize_thumbnails').click(function(e){
+	$('.ngg_customize_thumbnails').live('click', function(e){
 		e.preventDefault();
 		var btn = $(this);
 		var id = btn.attr('id');
@@ -18,7 +18,7 @@ jQuery(function($){
 	});
 
 	// Register change event
-	$('.ngg_thumbnail_dimensions').change(function(){
+	$('.ngg_thumbnail_dimensions').live('change', function(){
 		var id = $(this).attr('id');
 		var dimensions = $(this).find('option:selected').val().split(/x/);
 		var width = dimensions[0];

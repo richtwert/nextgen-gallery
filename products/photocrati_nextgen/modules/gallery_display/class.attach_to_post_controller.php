@@ -100,6 +100,14 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 				PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
 			);
 
+			// Enqueue NextGen Admin scripts
+			wp_enqueue_script(
+				'nextgen_admin_settings', $this->static_url('nextgen_admin_settings.js')
+			);
+			wp_enqueue_style(
+				'nextgen_admin_settings', $this->static_url('nextgen_admin_settings.css')
+			);
+
 			// Enqueue chosen, a library to make our drop-downs look pretty
 			wp_enqueue_style('chosen', $this->static_url('chosen.css'));
 			wp_enqueue_script(
