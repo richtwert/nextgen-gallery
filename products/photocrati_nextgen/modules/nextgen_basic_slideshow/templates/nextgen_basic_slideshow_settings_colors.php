@@ -1,13 +1,9 @@
 <?php if ($color) { ?>
-    <div id="<?php print $display_type_name . '_' . $name; ?>_colorpicker">
+    <div id="<?php print $display_type_name . '_' . $name; ?>_colorpicker"
+         class="nextgen_settings_farbtastic"
+         data-nextgen-settings-farbtastic-target="<?php print $display_type_name . '_' . $name; ?>">
         <?php echo_h($value); ?>
     </div>
-    <script type='text/javascript'>
-        jQuery(document).ready(function($) {
-			var container = $('#<?php print $display_type_name . '_' . $name; ?>_colorpicker');
-            if (typeof(container.farbtastic) != "undefined") container.farbtastic('#<?php print $display_type_name . '_' . $name; ?>');
-        });
-    </script>
 <?php } ?>
 
 <label for="<?php print $display_type_name . '_' . $name; ?>"><?php print $label; ?></label>
