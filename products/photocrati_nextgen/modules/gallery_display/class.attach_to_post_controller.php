@@ -60,6 +60,11 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
 		);
 		$this->call_parent('enqueue_backend_resources');
+
+		do_action('admin_enqueue_scripts');
+		do_action('admin_print_styles');
+		do_action('admin_print_scripts');
+		do_action('wp_print_scripts');
 	}
 
 	/**
