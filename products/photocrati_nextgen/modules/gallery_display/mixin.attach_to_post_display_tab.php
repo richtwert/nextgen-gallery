@@ -124,7 +124,6 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			$css_class = $this->object->_get_selected_display_type_name() == $display_type->name ?
 				'display_settings_form' : 'display_settings_form hidden';
 
-			$retval[] = "<pre>Calling {$display_type->name}</pre>";
 			$retval[] = $this->object->render_partial('display_settings_form', array(
 				'settings'				=>	$display_type_controller->settings(
 												$display_type, TRUE
