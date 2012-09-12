@@ -3,51 +3,6 @@
 class Mixin_NextGen_Basic_Templates extends Mixin
 {
     /**
-     * Adds required JS libraries for the admin side
-     */
-    function initialize()
-    {
-        $this->object->add_post_hook(
-            'enqueue_backend_resources',
-            'Enqueue Template Settings Resources for the Backend',
-            get_class($this),
-            '_enqueue_resources_for_settings'
-        );
-    }
-
-    /**
-     * Enqueues resources needed for template settings display
-     *
-     * @param type $displayed_gallery
-     */
-    function _enqueue_resources_for_settings($displayed_gallery)
-    {
-        wp_enqueue_script(
-            'ngg_template_settings',
-            $this->static_url('/js/ngg_template_settings.js'),
-            array('jquery-ui-autocomplete')
-        );
-
-        // feed our autocomplete widget a list of available files
-        $files_list = array();
-        $files_available = $this->object->get_available_templates();
-        foreach ($files_available as $label => $files)
-        {
-            foreach ($files as $file) {
-                $tmp = explode(DIRECTORY_SEPARATOR, $file);
-                $files_list[] = "[{$label}]: " . end($tmp);
-            }
-        }
-
-        $this->object->_add_script_data(
-            'ngg_template_settings',
-            'nextgen_settings_templates_available_files',
-            $files_list,
-            TRUE
-        );
-    }
-
-    /**
      * Renders 'template' settings field
      *
      * @param $display_type
