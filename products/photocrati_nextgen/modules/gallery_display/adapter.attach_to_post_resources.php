@@ -59,6 +59,5 @@ class A_Attach_To_Post_Resources extends Mixin
 		do_action('admin_print_styles');
 		do_action('admin_print_scripts');
 		do_action('wp_print_scripts');
-
 	}
 }

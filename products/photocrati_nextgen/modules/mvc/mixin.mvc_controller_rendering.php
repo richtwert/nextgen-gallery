@@ -142,7 +142,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
 
 		// This isn't probably the best way of getting
 		// the module path of where the method was called... but it works
-		$stack = (strpos(phpversion(), '5.4') !== FALSE) ?
+		$stack = (strpos(phpversion(), '5.4') === FALSE) ?
 			debug_backtrace(FALSE) : debug_backtrace(FALSE, 10);
 		for($i=2; $i>0; $i++) {
 			if (isset($stack[$i]['file']) && (($file = $stack[$i]['file']))) {
