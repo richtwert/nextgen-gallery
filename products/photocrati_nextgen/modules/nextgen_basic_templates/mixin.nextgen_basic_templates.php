@@ -59,7 +59,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             'nextgen_basic_templates_settings_template',
             array(
                 'display_type_name' => $display_type->name,
-                'template_label' => _('Template:'),
+                'template_label' => _('Template'),
                 'template' => $display_type->settings['template'],
             ),
             True

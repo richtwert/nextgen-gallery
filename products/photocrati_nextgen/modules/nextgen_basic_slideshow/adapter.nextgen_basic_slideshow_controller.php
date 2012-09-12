@@ -102,7 +102,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_images_per_page', array(
 					'display_type_name' => $display_type->name,
-					'images_per_page_label' => _('Images per page:'),
+					'images_per_page_label' => _('Images per page'),
 					'images_per_page' => $display_type->settings['images_per_page'],
 			), True);
 	}
@@ -111,7 +111,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_cycle_interval', array(
 					'display_type_name' => $display_type->name,
-					'cycle_interval_label' => _('Interval:'),
+					'cycle_interval_label' => _('Interval'),
 					'cycle_interval' => $display_type->settings['cycle_interval'],
 			), True);
 	}
@@ -120,7 +120,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_cycle_effect', array(
 					'display_type_name' => $display_type->name,
-					'cycle_effect_label' => _('Effect:'),
+					'cycle_effect_label' => _('Effect'),
 					'cycle_effect' => $display_type->settings['cycle_effect'],
 			), True);
 	}
@@ -129,7 +129,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 			return $this->render_partial('nextgen_basic_slideshow_settings_gallery_dimensions', array(
 					'display_type_name' => $display_type->name,
-					'gallery_dimensions_label' => _('Gallery Dimensions:'),
+					'gallery_dimensions_label' => _('Gallery dimensions'),
 					'gallery_width' => $display_type->settings['gallery_width'],
 					'gallery_height' => $display_type->settings['gallery_height'],
 			), True);
@@ -142,6 +142,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
         $value = isset($display_type->settings[$name]) ? $display_type->settings[$name] : NULL;
         $type  = 'text';
         $color = FALSE;
+        $attr  = NULL;
 
         if (is_bool($value))
         {
@@ -158,6 +159,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             case 'flash_path':
                 // XXX button search
                 $label = __('Path to the imagerotator (URL)', 'nggallery');
+                $attr = array('placeholder' => 'http://...');
                 break;
             case 'flash_shuffle':
                 $label = __('Shuffle mode', 'nggallery');
@@ -185,27 +187,28 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $label = __('Use slow zooming effect', 'nggallery');
                 break;
             case 'flash_background_color':
-                $label = __('Background color', 'nggallery');
+                $label = __('Background', 'nggallery');
                 $color = TRUE;
                 break;
             case 'flash_text_color':
-                $label = __('Texts / buttons color', 'nggallery');
+                $label = __('Texts / buttons', 'nggallery');
                 $color = TRUE;
                 break;
             case 'flash_rollover_color':
-                $label = __('Rollover / active color', 'nggallery');
+                $label = __('Rollover / active', 'nggallery');
                 $color = TRUE;
                 break;
             case 'flash_screen_color':
-                $label = __('Screen color','nggallery');
+                $label = __('Screen', 'nggallery');
                 $color = TRUE;
                 break;
             case 'flash_background_music':
                 $label = __('Background music (URL)', 'nggallery');
+                $attr = array('placeholder' => 'http://...');
                 break;
             case 'flash_xhtml_validation':
                 $label = __('Try XHTML validation (with CDATA)', 'nggallery');
-                $text = __('Important : Could causes problem at some browser. Please recheck your page.', 'nggallery');
+                $text = __('Important: Could cause problems with some browsers.', 'nggallery');
                 break;
         }
 
@@ -213,7 +216,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
         if ($color)
         {
             $value = strpos($value, '#') === 0 ? $value : '#' . $value;
-            $type = 'hidden';
         }
 
         return array(
@@ -224,7 +226,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             'text'   => _($text),
             'type'   => $type,
             'value'  => $value,
-            'color'  => $color
+            'color'  => $color,
+            'attr'   => $attr
         );
     }
 
@@ -243,12 +246,22 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
         $special_fields = array(
             'flash_enabled',
             'flash_stretch_image',
-            'flash_transition_effect'
+            'flash_transition_effect',
+        );
+        $color_fields = array(
+            'flash_background_color',
+            'flash_text_color',
+            'flash_rollover_color',
+            'flash_screen_color'
         );
 
         if (in_array($name, $special_fields))
         {
             $template = $name;
+        }
+        elseif (in_array($name, $color_fields))
+        {
+            $template = 'colors';
         }
         else {
             $template = 'default';
@@ -311,26 +324,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
 
-	function _render_nextgen_basic_slideshow_flash_background_color_field($display_type)
-	{
-		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
-	}
-
-	function _render_nextgen_basic_slideshow_flash_text_color_field($display_type)
-	{
-		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
-	}
-
-	function _render_nextgen_basic_slideshow_flash_rollover_color_field($display_type)
-	{
-		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
-	}
-
-	function _render_nextgen_basic_slideshow_flash_screen_color_field($display_type)
-	{
-		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
-	}
-
 	function _render_nextgen_basic_slideshow_flash_background_music_field($display_type)
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
@@ -340,6 +333,30 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
+
+    function _render_nextgen_basic_slideshow_flash_colors_wrapper_field($display_type)
+    {
+        $output = array();
+        $fields = array(
+            '_render_nextgen_basic_slideshow_flash_background_color_field',
+            '_render_nextgen_basic_slideshow_flash_text_color_field',
+            '_render_nextgen_basic_slideshow_flash_rollover_color_field',
+            '_render_nextgen_basic_slideshow_flash_screen_color_field'
+        );
+
+        foreach ($fields as $field) {
+            $output[] = $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, $field);
+        }
+
+        return $this->render_partial(
+            'nextgen_basic_slideshow_settings_colors_wrapper',
+            array(
+                'output' => $output,
+                'hidden' => (TRUE == $display_type->settings['flash_enabled']) ? FALSE : TRUE,
+            ),
+            True
+        );
+    }
 
 	/**
 	 * Returns a list of fields to render on the settings page
@@ -363,12 +380,10 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_flash_stretch_image',
 			'nextgen_basic_slideshow_flash_transition_effect',
 			'nextgen_basic_slideshow_flash_slow_zoom',
-			'nextgen_basic_slideshow_flash_background_color',
-			'nextgen_basic_slideshow_flash_text_color',
-			'nextgen_basic_slideshow_flash_rollover_color',
-			'nextgen_basic_slideshow_flash_screen_color',
-			'nextgen_basic_slideshow_flash_background_music',
-			'nextgen_basic_slideshow_flash_xhtml_validation',
+            'nextgen_basic_slideshow_flash_background_music',
+            'nextgen_basic_slideshow_flash_xhtml_validation',
+
+            'nextgen_basic_slideshow_flash_colors_wrapper'
 		);
 	}
 }

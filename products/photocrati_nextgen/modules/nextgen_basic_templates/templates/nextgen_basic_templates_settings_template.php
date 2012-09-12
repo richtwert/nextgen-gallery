@@ -9,6 +9,7 @@
                id='<?php echo esc_attr($display_type_name); ?>_template'
                name='<?php echo esc_attr($display_type_name); ?>[template]'
                class='ngg_thumbnail_template ngg_settings_template'
+               placeholder='<?php _e('filename'); ?>'
                value='<?php echo esc_attr($template); ?>'>
     </td>
 </tr>

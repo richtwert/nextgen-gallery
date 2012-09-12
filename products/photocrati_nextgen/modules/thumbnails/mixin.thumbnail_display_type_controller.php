@@ -32,11 +32,11 @@ class Mixin_Thumbnail_Display_Type_Controller extends Mixin
 		return $this->render_partial('nextgen_basic_thumbnail_dimensions', array(
 			'hidden_customization_label'=> _('Show Customization Options'),
 			'active_customization_label'=> _('Hide Customization Options'),
-			'thumbnail_dimensions_label'=>	_('Thumbnail Dimensions:'),
+			'thumbnail_dimensions_label'=>	_('Thumbnail Dimensions'),
 			'thumbnail_dimensions'		=>	$settings->thumbnail_dimensions,
 			'selected_dimensions'		=>	$this->object->_get_selected_dimensions($display_type),
-			'thumbnail_width_label'		=>	_('Thumbnail Width:'),
-			'thumbnail_height_label'	=>	_('Thumbnail Height:'),
+			'thumbnail_width_label'		=>	_('Thumbnail Width'),
+			'thumbnail_height_label'	=>	_('Thumbnail Height'),
 			'display_type_name'			=>	$display_type->name,
 			'thumbnail_width'			=>	$display_type->settings['thumbnail_width'],
 			'thumbnail_height'			=>	$display_type->settings['thumbnail_height']
@@ -45,8 +45,6 @@ class Mixin_Thumbnail_Display_Type_Controller extends Mixin
 
     function _render_thumbnail_misc_field($display_type)
     {
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-
         return $this->render_partial('nextgen_basic_thumbnail_misc', array(
             'display_type_name'        => $display_type->name,
             'thumbnail_template_label' => _('Template:')

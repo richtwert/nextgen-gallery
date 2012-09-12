@@ -233,6 +233,13 @@ class M_Gallery_Display extends C_Base_Module
 			array('jquery-ui-accordion'),
 			$this->module_version
 		);
+        wp_enqueue_script(
+            'nextgen_display_settings_page_placeholder_stub',
+            $this->static_url('jquery.placeholder.min.js'),
+            array('jquery'),
+            '2.0.7',
+            TRUE
+        );
 
 		// There are many jQuery UI themes available via Google's CDN:
 		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
