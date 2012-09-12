@@ -39,6 +39,7 @@
             <p class="description">
                 You can add a new thumbnail size by specifying a custom width/height.
             </p>
+            w
 			<input
 				type="number"
 				name="<?php echo esc_attr($display_type_name) ?>[thumbnail_width]"
@@ -59,7 +60,7 @@
                 placeholder='<?php echo_h($thumbnail_height_label) ?>'
                 min='1'
 				value="<?php echo esc_attr($thumbnail_height) ?>"
-			/>
+			/> h
 		</td>
 	</tr>
 </tbody>

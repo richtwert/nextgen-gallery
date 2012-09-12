@@ -5,7 +5,7 @@
         </label>
     </td>
     <td>
-        <input type='number'
+        w <input type='number'
                id='<?php echo esc_attr($display_type_name); ?>_gallery_width'
                name='<?php echo esc_attr($display_type_name); ?>[gallery_width]'
                class='ngg_slideshow_gallery_width'
@@ -21,5 +21,6 @@
                min='1'
                required='required'
                value='<?php echo esc_attr($gallery_height); ?>'/>
+        h
     </td>
 </tr>

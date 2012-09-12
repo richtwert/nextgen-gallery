@@ -310,7 +310,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
     {
         return $this->render_partial('nextgen_basic_thumbnails_settings_ajax_pagination', array(
             'display_type_name' => $display_type->name,
-            'ajax_pagination_label' => _('Enable AJAX pagination'),
+            'ajax_pagination_label' => _('Enable Ajax pagination'),
             'ajax_pagination_desc' => _('Browse images without reloading the page.'),
             'ajax_pagination' => $display_type->settings['ajax_pagination']
         ), True);

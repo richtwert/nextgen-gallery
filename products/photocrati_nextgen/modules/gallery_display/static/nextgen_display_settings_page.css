@@ -6,6 +6,7 @@
     vertical-align: top;
     text-align: right;
     padding-right: 7px;
+    width: 180px;
 }
 
 .gallery_page_ngg_display_settings table tr td {
@@ -23,7 +24,7 @@
 .gallery_page_ngg_display_settings .ngg_slideshow_gallery_height,
 .gallery_page_ngg_display_settings .ngg_thumbnail_dimension_width,
 .gallery_page_ngg_display_settings .ngg_thumbnail_dimension_height {
-    width: 72px !important;
+    width: 65px !important;
 }
 
 .gallery_page_ngg_display_settings textarea,
@@ -61,4 +62,9 @@
 }
 .entity_errors ul li{
 	list-style-type: disc;
+}
+
+.ui-accordion-header {
+    color: #5e9d2b !important;
+    background-color: #5e9d2b !important;
 }
