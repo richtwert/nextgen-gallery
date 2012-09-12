@@ -196,7 +196,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return bool
 	 */
-	function generate_thumbnail($image, $width=NULL, $height=NULL, $crop=NULL, $quality=NULL)
+	function generate_thumbnail($image, $width=NULL, $height=NULL, $crop=NULL, $quality=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
 	{
 		$retval = FALSE;
 
@@ -206,47 +206,151 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		// Ensure we have a valid image
 		if ($image) {
 
-			// Get the image filename
-			$filename = $this->object->get_full_abspath($image);
-
 			// Get the thumbnail settings
 			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			
+			if (is_null($width)) {
+				$width = $settings->thumbwidth;
+			}
+			
+			if (is_null($height)) {
+				$height = $settings->thumbheight;
+			}
+			
+			if (is_null($crop)) {
+				$crop = $settings->thumbfix;
+			}
+			
+			if (is_null($quality)) {
+				$quality = $settings->thumbquality;
+			}
+			
+			if (is_null($reflection)) {
+				//$reflection = true;
+			}
+			
+			if (is_null($quality)) {
+				$quality = $settings->thumbquality;
+			}
+
+			// Get the image filename
+			$filename = $this->object->get_full_abspath($image);
+			$thumbnail = null;
+			$crop_frame = null;
+			
+			if (isset($image->meta_data) && isset($image->meta_data['thumbnail_crop_frame'])) {
+				$crop_frame = $image->meta_data['thumbnail_crop_frame'];
+			}
 
 			// Generate the thumbnail using WordPress
 			$existing_thumbnail_abpath = $this->object->get_thumbnail_abspath($image);
-			$thumbnail_dir = dirname($existing_thumbnail_abpath);
-			if (file_exists($existing_thumbnail_abpath)) unlink($existing_thumbnail_abpath);
+			// XXX use $filename instead of $existing_thumbnail_abpath here? it would make it compatible with image_resize()
+			$thumbnail_info = pathinfo($existing_thumbnail_abpath);
+			$thumbnail_dir = $thumbnail_info['dirname'];
+			$thumbnail_ext = $thumbnail_info['extension'];
+			$thumbnail_name = wp_basename($existing_thumbnail_abpath, ".$thumbnail_ext");
+			$thumbnail_suffix = "{$width}x{$height}";
+			
+			// XXX removing the old thumbnail might not be what we want when thumb size is dynamic or passed through shortcode etc.
+#			if (file_exists($existing_thumbnail_abpath)) unlink($existing_thumbnail_abpath);
 			wp_mkdir_p($thumbnail_dir);
-			$retval = image_resize(
-				$filename,
-				is_null($width)		? $settings->thumbwidth		: $width,
-				is_null($height)	? $settings->thumbheight	: $height,
-				is_null($crop)		? $settings->thumbfix		: $crop,
-				NULL, // filename suffix
-				$thumbnail_dir,
-				is_null($quality)	? $settings->thumbquality	: $quality
-			);
+			
+			if ($crop_frame == null) {
+				$destpath = image_resize(
+					$filename, 
+					$width, $height, $crop,
+					NULL, // filename suffix
+					$thumbnail_dir,
+					$quality
+				);
+			}
+			else {
+				$destpath = "{$thumbnail_dir}/{$thumbnail_name}-{$thumbnail_suffix}.{$thumbnail_ext}";
+				$thumbnail = new C_NggLegacy_Thumbnail($filename, true);
+				$algo = 'shrink'; // either 'adapt' or 'shrink'
+				
+				$crop_x = (int) round($crop_frame['x']);
+				$crop_y = (int) round($crop_frame['y']);
+				$crop_width = (int) round($crop_frame['width']);
+				$crop_height = (int) round($crop_frame['height']);
+				$crop_thumbnail_width = (int) round($crop_frame['thumbnail_width']);
+				$crop_thumbnail_height = (int) round($crop_frame['thumbnail_height']);
+				
+				$crop_factor_x = $crop_width / $crop_thumbnail_width;
+				$crop_factor_y = $crop_height / $crop_thumbnail_height;
+				
+				if ($algo == 'adapt') {
+					$crop_width = (int) round($width * $crop_factor_x);
+					$crop_height = (int) round($height * $crop_factor_y);
+				}
+				else {
+					
+				}
+				
+				$crop_diff_x = (int) round(($crop_width - $width) / 2);
+				$crop_diff_y = (int) round(($crop_height - $height) / 2);
+				
+				$crop_x += $crop_diff_x;
+				$crop_y += $crop_diff_y;
+				
+				if ($algo == 'shrink') {
+					$crop_width = $width;
+					$crop_height = $height;
+				}
+				
+				$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
+				$thumbnail->resize($width, $height);
+			}
 
 			// We successfully generated the thumbnail
-			if (is_string($retval) && file_exists($retval)) {
+			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) {
+				
+				if ($thumbnail == null) {
+					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
+				}
+				
+				if ($watermark == 'image') {
+					$thumbnail->watermarkImgPath = $settings['wmPath'];
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']); 
+				} else if ($watermark == 'text') {
+					$thumbnail->watermarkText = $settings['wmText'];
+					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);  
+				}
+				
+				if ($reflection) {
+					$thumbnail->createReflection(40,40,50,false,'#a4a4a4');
+				}
+				
+				$thumbnail->save($destpath, $quality);
+				
 				if (function_exists('getimagesize')) {
-					$dimensions = getimagesize($retval);
-					if (!isset($image->meta_data)) $image->meta_data = array();
-					$image->meta_data['thumbnail'] = array(
-						'width'		=>	$dimensions[0],
-						'height'	=>	$dimensions[1],
-						'filename'	=>	$retval,
-						'generated'	=> microtime()
-					);
+					$dimensions = getimagesize($destpath);
+					// XXX As above...I don't think we want to overwrite these settings in the meta_data as this function could be called for dynamic thumbs and so on
+#					if (!isset($image->meta_data)) $image->meta_data = array();
+#					$image->meta_data['thumbnail'] = array(
+#						'width'		=>	$dimensions[0],
+#						'height'	=>	$dimensions[1],
+#						'filename'	=>	$destpath,
+#						'generated'	=> microtime()
+#					);
 				}
 
 				$retval = $this->object->_image_mapper->save($image);
-				$retval = is_numeric($retval) && $retval > 0 ? TRUE : FALSE;
+				
+				if ($retval == 0) {
+					$retval = false;
+				}
+				
+				// XXX adjust this? save() returns false...
+				if (/*$retval &&*/ $return_thumb) {
+					return $thumbnail;
+				}
 			}
-
-			// Something went wrong. Thumbnail generation failed!
-			else $retval = FALSE;
-
+			else {
+				// Something went wrong. Thumbnail generation failed!
+				
+			}
 		}
 
 		return $retval;
