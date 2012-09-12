@@ -4,7 +4,8 @@
     </div>
     <script type='text/javascript'>
         jQuery(document).ready(function($) {
-            $('#<?php print $display_type_name . '_' . $name; ?>_colorpicker').farbtastic('#<?php print $display_type_name . '_' . $name; ?>');
+			var container = $('#<?php print $display_type_name . '_' . $name; ?>_colorpicker');
+            if (typeof(container.farbtastic) != "undefined") container.farbtastic('#<?php print $display_type_name . '_' . $name; ?>');
         });
     </script>
 <?php } ?>
