@@ -27,6 +27,17 @@ class M_Lazy_Resources extends C_Base_Module
 	}
 
 	/**
+	 * Registers the lazy resource loader utility
+	 */
+	function _register_utilities()
+	{
+		$this->get_registry()->add_utility(
+			'I_Lazy_Resource_Loader', 'C_Lazy_Resource_Loader'
+		);
+	}
+
+
+	/**
 	 * Registers hooks for the WordPress platform
 	 */
 	function _register_hooks()
@@ -72,40 +83,11 @@ class M_Lazy_Resources extends C_Base_Module
 	function print_footer_scripts()
 	{
 		wp_print_scripts();
-
-		// Get the remaining script and style resources that haven't yet
-		// been loaded
-		ob_start();
-		wp_print_scripts();
-		$script_urls = $this->_parse_resource_urls(ob_get_contents());
-		ob_end_clean();
-		ob_start();
-		wp_print_styles();
-		$style_urls = $this->_parse_resource_urls(ob_get_contents());
-		ob_end_clean();
-
-		// Lazy-load all resources
-		echo "\n<script type='text/javascript'>";
-		echo "lazy_script_urls = ".json_encode($script_urls).";\n";
-		echo "lazy_style_urls = ".json_encode($style_urls).";\n";
-		echo "</script>\n";
+		$loader = $this->get_registry()->get_utility('I_Lazy_Resource_Loader');
+		$loader->enqueue();
 	}
 
-	/**
-	 * Parses HTML for urls of static resources
-	 */
-	function _parse_resource_urls($html)
-	{
-		$urls = array();
-		if (preg_match_all("/(src|href)=['\"]([^'\"]+)/", $html, $matches, PREG_SET_ORDER)) {
-			foreach($matches as $match) {
-				if (isset($match[2])) {
-					$urls[] = $match[2];
-				}
-			}
-		}
-		return $urls;
-	}
+
 }
 
 new M_Lazy_Resources();

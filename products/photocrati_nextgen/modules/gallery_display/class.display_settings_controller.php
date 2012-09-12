@@ -70,9 +70,11 @@ class Mixin_Display_Settings_Controller extends Mixin
 				'I_Display_Type_Controller', $display_type->name
 			);
 			$display_type_controller->enqueue_backend_resources($display_type);
-			$display_type_tabs[] = $display_type_controller->settings(
-				$display_type, TRUE
-			);
+			$display_type_tabs[] = $this->render_partial('accordion_tab', array(
+				'id'		=>	$display_type->name,
+				'title'		=>	$display_type->title,
+				'content'	=>	$display_type_controller->settings($display_type, TRUE)
+			), TRUE);
 		}
 
 		// Render the view

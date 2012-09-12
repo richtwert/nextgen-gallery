@@ -151,14 +151,21 @@ class Mixin_Render_Display_Type extends Mixin
 	 */
 	function render_displayed_gallery($displayed_gallery, $return=FALSE)
 	{
-		// Display!
+		// Get the display type controller
 		$controller = $this->get_registry()->get_utility(
 			'I_Display_Type_Controller', $displayed_gallery->display_type
 		);
-		$controller->enqueue_frontend_resources($displayed_gallery);
-		return $controller->index($displayed_gallery, $return);
-	}
 
+		// Set the alternative view link display settings parameter for the
+		// displayed gallery
+		$controller->set_alternative_view_links($displayed_gallery);
+
+		// Render the displayed gallery!
+		$controller->enqueue_frontend_resources($displayed_gallery);
+		return $controller->is_alternative_view_request() ?
+			$controller->alternative_index($displayed_gallery, TRUE) :
+			$controller->index($displayed_gallery, TRUE);
+	}
 
     /**
      * Substitutes the gallery placeholder content with the gallery type frontend

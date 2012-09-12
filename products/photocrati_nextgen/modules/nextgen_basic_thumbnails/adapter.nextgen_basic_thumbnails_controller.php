@@ -18,8 +18,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function index($displayed_gallery, $return=FALSE)
 	{
-        if ($this->object->serve_alternative_view_request($displayed_gallery)) return;
-
         $display_settings = $displayed_gallery->display_settings;
 		$current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
@@ -93,9 +91,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $pagination = NULL;
             }
 
-            // the gallery display controller handles display type overrides
-            $slideshow_link = add_query_arg('show', 'slide');
-
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
@@ -110,7 +105,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $images,
                     $displayed_gallery,
                     $pagination,
-                    $slideshow_link,
+                    $display_settings['alternative_view_link_url'],
                     $piclens_link
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return);
@@ -121,7 +116,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['images']				= &$images;
                 $params['displayed_gallery_id'] = $displayed_gallery->id();
                 $params['current_page']			= $current_page;
-                $params['slideshow_link']		= $slideshow_link;
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
@@ -184,7 +178,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_images_per_page',
             array(
                 'display_type_name' => $display_type->name,
-                'images_per_page_label' => _('Images per page:'),
+                'images_per_page_label' => _('Images per page'),
                 'images_per_page' => $display_type->settings['images_per_page'],
             ),
             True
@@ -203,7 +197,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_number_of_columns',
             array(
                 'display_type_name' => $display_type->name,
-                'number_of_columns_label' => _('Number of columns to display:'),
+                'number_of_columns_label' => _('Number of columns to display'),
                 'number_of_columns' => $display_type->settings['number_of_columns']
             ),
             True
@@ -222,8 +216,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_slideshow_link_text',
             array(
                 'display_type_name' => $display_type->name,
-                'slideshow_link_text_label' => _('Slideshow text link:'),
-                'slideshow_link_text' => $display_type->settings['slideshow_link_text'],
+                'slideshow_link_text_label' => _('Slideshow text link'),
+                'alternative_view_link_text' => $display_type->settings['alternative_view_link_text'],
             ),
             True
         );
@@ -241,7 +235,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_piclens_link_text',
             array(
                 'display_type_name' => $display_type->name,
-                'piclens_link_text_label' => _('Piclens text link:'),
+                'piclens_link_text_label' => _('Piclens text link'),
                 'piclens_link_text' => $display_type->settings['piclens_link_text']
             ),
             True
@@ -260,8 +254,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_show_slideshow_link',
             array(
                 'display_type_name' => $display_type->name,
-                'show_slideshow_link_label' => _('Show slideshow link:'),
-                'show_slideshow_link' => $display_type->settings['show_slideshow_link']
+                'show_slideshow_link_label' => _('Show slideshow link'),
+                'show_alternative_view_link' => $display_type->settings['show_alternative_view_link']
             ),
             True
         );
@@ -279,7 +273,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_show_piclens_link',
             array(
                 'display_type_name' => $display_type->name,
-                'show_piclens_link_label' => _('Show piclens link:'),
+                'show_piclens_link_label' => _('Show piclens link'),
                 'show_piclens_link' => $display_type->settings['show_piclens_link']
             ),
             True
@@ -298,8 +292,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_hidden',
             array(
                 'display_type_name' => $display_type->name,
-                'show_all_in_lightbox_label' => _('Add Hidden Images:'),
-                'show_all_in_lightbox_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.). Note : This increases page load.'),
+                'show_all_in_lightbox_label' => _('Add Hidden Images'),
+                'show_all_in_lightbox_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.) This increases page load.'),
                 'show_all_in_lightbox' => $display_type->settings['show_all_in_lightbox']
             ),
             True
@@ -316,7 +310,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
     {
         return $this->render_partial('nextgen_basic_thumbnails_settings_ajax_pagination', array(
             'display_type_name' => $display_type->name,
-            'ajax_pagination_label' => _('Enable AJAX pagination:'),
+            'ajax_pagination_label' => _('Enable Ajax pagination'),
             'ajax_pagination_desc' => _('Browse images without reloading the page.'),
             'ajax_pagination' => $display_type->settings['ajax_pagination']
         ), True);

@@ -140,18 +140,34 @@ class Mixin_MVC_Controller_Rendering extends Mixin
 
         if (is_array($name)) $name = path_join($name);
 
+		// This isn't probably the best way of getting
+		// the module path of where the method was called... but it works
+		$stack = debug_backtrace(FALSE, 10);
+		for($i=2; $i>0; $i++) {
+			if (isset($stack[$i]['file']) && (($file = $stack[$i]['file']))) {
+				if (strpos($file, 'class.extensibleobject.php') === FALSE)  {
+					$module_dir = dirname($file);
+					$i = -1;
+				}
+			}
+
+		}
+
+		// This is our primary list of locations to search for the file
         $patterns = array(
+			$module_dir,
             $this->object->get_class_definition_dir(),
             MVC_MODULE_DIR
         );
 
-				$products = $this->get_registry()->get_product_list();
+		// Next, we look in all other module folders
+		$products = $this->get_registry()->get_product_list();
+		foreach ($products as $product) {
+			$module_path = $this->get_registry()->get_product_module_path($product);
+			$patterns[] = path_join($module_path, '*');
+		}
 
-				foreach ($products as $product) {
-					$module_path = $this->get_registry()->get_product_module_path($product);
-					$patterns[] = path_join($module_path, '*');
-				}
-
+		// Now... find it!
         foreach($patterns as $glob) {
             $found = glob(path_join($glob, "static/{$name}"));
             if ($found) break;

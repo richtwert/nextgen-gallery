@@ -70,6 +70,10 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the display settings tab for the Attach to Post interface
+	 * @return type
+	 */
 	function _render_display_settings_tab()
 	{
 		return $this->object->render_partial('accordion_tab', array(
@@ -79,10 +83,67 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 		), TRUE);
 	}
 
+	/**
+	 * If editing an existing displayed gallery, retrieves the name
+	 * of the display type
+	 * @return string
+	 */
+	function _get_selected_display_type_name()
+	{
+		$retval = '';
 
+		if ($this->object->_displayed_gallery)
+			$retval = $this->object->_displayed_gallery->display_type;
+
+		return $retval;
+	}
+
+
+	/**
+	 * Renders the contents of the display settings tab
+	 * @return string
+	 */
 	function _render_display_settings_contents()
 	{
-		return 'here';
+		$retval = array();
+
+		// Retrieve all display types. I'm currently retrieving all as models,
+		// as set_defaults() is NOT called otherwise. If there are validation
+		// errors too, we need to display them.
+		// TODO: Figure out a better way to get validation errors. Models are
+		// too expensive to use with collections.
+		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
+		foreach ($mapper->find_all(array(), TRUE) as $display_type) {
+
+			// Get the display type controller
+			$display_type_controller = $this->object->get_registry()->get_utility(
+				'I_Display_Type_Controller', $display_type->name
+			);
+
+			// Determine which classes to use for the form's "class" attribute
+			$css_class = $this->object->_get_selected_display_type_name() == $display_type->name ?
+				'display_settings_form' : 'display_settings_form hidden';
+
+			$retval[] = $this->object->render_partial('display_settings_form', array(
+				'settings'				=>	$display_type_controller->settings(
+												$display_type, TRUE
+											),
+				'display_type_name'		=>	$display_type->name,
+				'css_class'				=>	$css_class
+			), TRUE);
+
+		}
+
+		// Render the default "no display type selected" view
+		$css_class = $this->object->_get_selected_display_type_name() ?
+			'display_settings_form hidden' : 'display_settings_form';
+		$retval[] = $this->object->render_partial('no_display_type_selected', array(
+			'no_display_type_selected'	=>	_('No display type selected'),
+			'css_class'					=>	$css_class
+
+		), TRUE);
+
+		return implode("\n", $retval);
 	}
 
 
@@ -94,7 +155,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	{
 		return $this->object->render_partial('accordion_tab', array(
 			'id'			=> 'preview_tab',
-			'title'		=>	_('Select individual images to display'),
+			'title'		=>	_('Sort or Exclude Images'),
 			'content'	=>	$this->object->_render_preview_tab_contents()
 		), TRUE);
 	}
@@ -151,13 +212,18 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+	/**
+	 * Renders the Handlebars template for the image tags source
+	 * @return string
+	 */
 	function _render_image_tags_source_template()
 	{
 		return $this->object->render_partial('image_tags_source', array(
 			'template_name'				=>	'image_tags_source_view',
 			'tags_label'				=>	_('Tags'),
-		));
+		), TRUE);
 	}
+
 
 	/**
 	 * Gets a list of display types available

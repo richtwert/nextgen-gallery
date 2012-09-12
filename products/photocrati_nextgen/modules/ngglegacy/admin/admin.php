@@ -264,7 +264,7 @@ class nggAdminPanel{
 				//wp_enqueue_script( 'ngg-colorpicker', NGGALLERY_URLPATH .'admin/js/colorpicker/js/colorpicker.js', array('jquery'), '1.0');
 			break;
 			case "nggallery-add-gallery" :
-				wp_enqueue_script( 'jquery-ui-tabs' );
+				wp_enqueue_script( 'jquery-ui-accordion' );
 				wp_enqueue_script( 'multifile', NGGALLERY_URLPATH .'admin/js/jquery.MultiFile.js', array('jquery'), '1.4.4' );
                 if ( defined('IS_WP_3_3') )
                     wp_enqueue_script( 'ngg-plupload-handler' );
@@ -302,8 +302,14 @@ class nggAdminPanel{
                 if ( !defined('IS_WP_3_3') )
                     wp_admin_css( 'css/dashboard' );
 			break;
-			case "nggallery-add-gallery" :
-				wp_enqueue_style( 'ngg-jqueryui' );
+			case "nggallery-add-gallery":
+				wp_enqueue_style(
+					PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
+					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
+					array(),
+					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
+				);
+//				wp_enqueue_style( 'ngg-jqueryui' );
 				wp_enqueue_style( 'jqueryFileTree', NGGALLERY_URLPATH .'admin/js/jqueryFileTree/jqueryFileTree.css', false, '1.0.1', 'screen' );
 			case "nggallery-options" :
 				wp_enqueue_style( 'nggtabs', NGGALLERY_URLPATH .'admin/css/jquery.ui.tabs.css', false, '2.5.0', 'screen' );

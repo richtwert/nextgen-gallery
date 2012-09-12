@@ -24,7 +24,7 @@
 		<td colspan="2">
 			<a
 				href="#"
-				class="advanced_toggle_link"
+				class="nextgen_advanced_toggle_link"
 				rel="lightbox_library_advanced_settings"
 				id="lightbox_library_advanced_toggle"
 				hidden_label="<?php echo esc_attr(_('(Show Advanced Settings)'))?>"

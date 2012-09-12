@@ -2,6 +2,9 @@
 	width: 80%;
 	height: 100%;
 }
+.gallery_page_ngg_other_options table tr td:first-child {
+    vertical-align: top;
+}
 .gallery_page_ngg_other_options table.image_options {
 	width: 100%;
 }
@@ -42,13 +45,6 @@
 #image_width,
 #image_height{
 	width: 40px;
-}
-
-.advanced_toggle_link {
-	font-size: 11px;
-	position: relative;
-	bottom: 5px;
-	color: #444444;
 }
 
 .description_row{
@@ -100,4 +96,9 @@ td.align-to-top {
 }
 .entity_errors ul li{
 	list-style-type: disc;
+}
+
+.ui-accordion-header {
+    color: #5e9d2b !important;
+    background-color: #5e9d2b !important;
 }
