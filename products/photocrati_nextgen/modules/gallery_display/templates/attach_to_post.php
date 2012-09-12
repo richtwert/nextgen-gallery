@@ -2,7 +2,6 @@
 <html>
     <head>
         <title><?php echo_h($page_title)?></title>
-        <?php $this->enqueue_resources(); ?>
     </head>
 	<body>
 		<div id="attach_to_post_tabs">

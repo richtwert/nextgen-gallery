@@ -16,7 +16,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 * This method deprecated use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
-	function index($displayed_gallery, $return=FALSE)
+	function index_action($displayed_gallery, $return=FALSE)
 	{
         $display_settings = $displayed_gallery->display_settings;
 		$current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);

@@ -94,6 +94,11 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_Ajax_Controller',
 			'A_Stylesheet_Ajax_Actions'
 		);
+
+		$this->get_registry()->add_adapter(
+			'I_NextGen_Backend_Controller',
+			'A_NextGen_Settings_Page_Resources'
+		);
 	}
 
 	/**
@@ -113,14 +118,6 @@ class M_NextGen_Settings extends C_Base_Module
 			array(&$this, 'add_menu_pages'),
 			999
 		);
-
-		// Enqueues static resources required
-		if (is_admin()) {
-			add_action(
-				'admin_init',
-				array(&$this, 'enqueue_resources')
-			);
-		}
 	}
 
 	/**
@@ -136,44 +133,8 @@ class M_NextGen_Settings extends C_Base_Module
 			_('Other Options'),
 			'NextGEN Change options',
 			$this->page_name,
-			array(&$this->controller, 'index')
+			array(&$this->controller, 'index_action')
 		);
-	}
-
-	/**
-	 * Enqueues static resources required for the Settings page
-	 */
-	function enqueue_resources()
-	{
-		if (isset($_REQUEST['page']) && $_REQUEST['page'] == $this->page_name) {
-			wp_enqueue_script('farbtastic');
-			wp_enqueue_style('farbtastic');
-
-			wp_enqueue_script(
-				'nextgen_settings_page',
-				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js/nextgen_settings_page.js',
-				array('jquery-ui-accordion'),
-				$this->module_version
-			);
-
-			// There are many jQuery UI themes available via Google's CDN:
-			// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
-			wp_enqueue_style(
-				PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
-				is_ssl() ?
-					 str_replace('http:', 'https:', PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL) :
-					 PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
-				array(),
-				PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
-			);
-
-			wp_enqueue_style(
-				'nextgen_settings_page',
-				PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/css/nextgen_settings_page.css',
-				array(),
-				$this->module_version
-			);
-		}
 	}
 }
 

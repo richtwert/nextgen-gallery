@@ -105,6 +105,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_settings_contents()
 	{
+		return '';
 		$retval = array();
 
 		// Retrieve all display types. I'm currently retrieving all as models,
@@ -125,7 +126,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'display_settings_form' : 'display_settings_form hidden';
 
 			$retval[] = $this->object->render_partial('display_settings_form', array(
-				'settings'				=>	$display_type_controller->settings(
+				'settings'				=>	$display_type_controller->settings_action(
 												$display_type, TRUE
 											),
 				'display_type_name'		=>	$display_type->name,

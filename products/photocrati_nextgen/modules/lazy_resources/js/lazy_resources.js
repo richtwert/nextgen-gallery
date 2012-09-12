@@ -14,7 +14,7 @@ var Lazy_Resources = {
 	// and ready() event has fired
 	enqueue_scripts:	function(){
 		Sid.js(this.script_urls);
-		this.style_urls = [];
+		this.script_urls = [];
 	},
 
 	// Lazy loads all styles. Must be called after JQuery has initialized

@@ -1,26 +1,12 @@
 <?php
 
-class C_Display_Settings_Controller extends C_MVC_Controller
+class C_Display_Settings_Controller extends C_NextGen_Backend_Controller
 {
-	static $_instances = array();
-
 	function define($context=FALSE)
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Display_Settings_Controller');
 		$this->implement('I_Display_Settings_Controller');
-	}
-
-	/**
-	 * Gets an instance of the display settings controller
-	 * @param string $context
-	 */
-	static function get_instance($context=FALSE)
-	{
-		if (!(isset(self::$_instances[$context]))) {
-			self::$_instances[$context] = new C_Display_Settings_Controller($context);
-		}
-		return self::$_instances[$context];
 	}
 }
 
@@ -29,7 +15,7 @@ class C_Display_Settings_Controller extends C_MVC_Controller
  */
 class Mixin_Display_Settings_Controller extends Mixin
 {
-	function index()
+	function index_action()
 	{
 		$display_type_tabs = array();
 
@@ -73,7 +59,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 			$display_type_tabs[] = $this->render_partial('accordion_tab', array(
 				'id'		=>	$display_type->name,
 				'title'		=>	$display_type->title,
-				'content'	=>	$display_type_controller->settings($display_type, TRUE)
+				'content'	=>	$display_type_controller->settings_action($display_type, TRUE)
 			), TRUE);
 		}
 
