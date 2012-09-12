@@ -195,7 +195,7 @@ class nggAdminPanel{
 			));
 
 			wp_enqueue_style('ngg_social_media');
-//			wp_enqueue_script('ngg_social_media');
+			wp_enqueue_script('ngg_social_media');
 		}
 
 		wp_register_script('ngg-ajax', NGGALLERY_URLPATH . 'admin/js/ngg.ajax.js', array('jquery'), '1.4.1');

@@ -27,8 +27,8 @@ var NggDisplayTab = Em.Application.create({
 	save:							function(e){
 
 		// Convert the display settings form into an object
-		var form				= jQuery('#display_settings_tab_content form');
 		var display_type		= NggDisplayTab.displayed_gallery.get('display_type');
+		var form				= jQuery('#display_settings_tab_content form[rel="'+display_type+'"]');
 		var display_settings	= (function($, item){
 			var obj = {};
 			item.serializeArray().forEach(function(item){
@@ -46,7 +46,7 @@ var NggDisplayTab = Em.Application.create({
 				}
 			});
 			return obj;
-		})(jQuery, jQuery('form.display_settings_tab').filter(':not(.hidden'));
+		})(jQuery, form);
 
 		// Initiate the request to save...
 		var request = {

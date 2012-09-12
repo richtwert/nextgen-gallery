@@ -100,6 +100,24 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 
 
 	/**
+	 * Is the displayed gallery that's being edited using the specified display
+	 * type?
+	 * @param string $name	name of the display type
+	 * @return bool
+	 */
+	function is_displayed_gallery_using_display_type($name)
+	{
+		$retval = FALSE;
+
+		if ($this->object->_displayed_gallery) {
+			$retval = $this->object->_displayed_gallery->display_type == $name;
+		}
+
+		return $retval;
+	}
+
+
+	/**
 	 * Renders the contents of the display settings tab
 	 * @return string
 	 */
@@ -121,8 +139,18 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			);
 
 			// Determine which classes to use for the form's "class" attribute
-			$css_class = $this->object->_get_selected_display_type_name() == $display_type->name ?
-				'display_settings_form' : 'display_settings_form hidden';
+			$current = $this->object->is_displayed_gallery_using_display_type($display_type->name);
+			$css_class =  $current ? 'display_settings_form' : 'display_settings_form hidden';
+
+			// Override the display type settings with that of the displayed
+			// gallery
+			if ($current) {
+				$display_type->settings = $this->array_merge_assoc(
+					$display_type->settings,
+					$this->object->_displayed_gallery->display_settings,
+					TRUE
+				);
+			}
 
 			$retval[] = $this->object->render_partial('display_settings_form', array(
 				'settings'				=>	$display_type_controller->settings_action(

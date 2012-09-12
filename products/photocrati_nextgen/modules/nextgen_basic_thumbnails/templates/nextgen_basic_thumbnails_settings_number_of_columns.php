@@ -10,7 +10,7 @@
                name='<?php echo esc_attr($display_type_name); ?>[number_of_columns]'
                class='ngg_thumbnail_number_of_columns'
                placeholder='<?php _e('# of columns'); ?>'
-               min='1'
+               min='0'
                required='required'
                value='<?php echo esc_attr($number_of_columns); ?>'>
         </select>
