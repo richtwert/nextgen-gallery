@@ -20,6 +20,11 @@ jQuery(function($){
 	// Configure the watermark customization link
 	$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source');
 
+	// Configure the button to switch from watermark text to image
+	$('#watermark_source').change(function(){
+		$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source');
+	});
+
 	/**** STYLES TAB ****/
 
 	// When the selected stylesheet changes, fetch it's contents
