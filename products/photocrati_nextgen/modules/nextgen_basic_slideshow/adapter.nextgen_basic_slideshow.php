@@ -81,7 +81,7 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 		if (!isset($this->object->settings['effects_code'])) {
 			$this->object->settings['effect_code'] = $settings->thumbCode;
 		}
-		
+
 		// Override defaults for alternative view settings
 		if (!isset($this->object->settings['alternative_view_link_text'])) {
 			$this->object->settings['alternative_view_link_text'] = _('[Show Picture List]');
@@ -97,5 +97,9 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 		$this->object->validates_presence_of('gallery_height');
 		$this->object->validates_numericality_of('gallery_width');
 		$this->object->validates_numericality_of('gallery_height');
+
+		if ($this->object->settings['flash_enabled']) {
+			$this->object->validates_presence_of('flash_path');
+		}
 	}
 }

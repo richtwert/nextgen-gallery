@@ -159,7 +159,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             case 'flash_path':
                 // XXX button search
                 $label = __('Path to the imagerotator (URL)', 'nggallery');
-                $attr = array('placeholder' => 'http://...');
+                $attr = array('placeholder' => 'http://...', 'class' => 'url_field');
                 break;
             case 'flash_shuffle':
                 $label = __('Shuffle mode', 'nggallery');

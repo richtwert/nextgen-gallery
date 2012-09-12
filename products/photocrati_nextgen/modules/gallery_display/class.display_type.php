@@ -56,8 +56,7 @@ class Mixin_Display_Type_Validation extends Mixin
 {
 	function validation()
 	{
-		$this->object->set_defaults();
-
+		if (!isset($this->object->defaults_set)) $this->object->set_defaults();
 		$this->object->validates_presence_of('entity_type');
 		$this->object->validates_presence_of('name');
 		$this->object->validates_presence_of('title');
@@ -79,5 +78,7 @@ class Mixin_Display_Type_Validation extends Mixin
 			$this->object->settings['return_link_text'] = '';
 		if (!isset($this->object->preview_image_relpath))
 			$this->object->preview_image_relpath = '';
+
+		$this->object->defaults_set = TRUE;
 	}
 }
