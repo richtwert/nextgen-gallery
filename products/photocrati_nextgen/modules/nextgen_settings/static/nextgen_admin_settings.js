@@ -17,13 +17,8 @@ jQuery(function($){
 	});
 
     $("div.nextgen_settings_farbtastic").each(function(i, el) {
-        console.log(
-            $(el).data('nextgen-settings-farbtastic-target')
-        );
-
         if (typeof($(el).farbtastic) != "undefined") {
             $(el).farbtastic('#' + $(el).data('nextgen-settings-farbtastic-target'));
         }
-
     });
 });
