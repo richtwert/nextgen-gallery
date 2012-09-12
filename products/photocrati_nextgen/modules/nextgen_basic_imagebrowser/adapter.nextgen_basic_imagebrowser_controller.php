@@ -154,4 +154,12 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         return $out;
     }
 
+    /**
+     * Returns a list of fields to render on the settings page
+     */
+    function _get_field_names()
+    {
+        return array('nextgen_basic_templates_template');
+    }
+
 }
