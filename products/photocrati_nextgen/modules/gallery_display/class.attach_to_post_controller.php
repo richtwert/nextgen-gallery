@@ -5,7 +5,24 @@
  */
 class C_Attach_To_Post_Controller extends C_NextGen_Backend_Controller
 {
+	static $_instances = array();
 	var $_displayed_gallery;
+
+
+	/**
+	 * Gets an instance of the controller
+	 * @param string $context
+	 * @return C_NextGen_Settings_Controller
+	 */
+	static function &get_instance($context=FALSE)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = function_exists('get_called_class') ?
+				get_called_class() : get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
+	}
 
 	/**
 	 * Defines what instance methods the Attach To Post Controller has

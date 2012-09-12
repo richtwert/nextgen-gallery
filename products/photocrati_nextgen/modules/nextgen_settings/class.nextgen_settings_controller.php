@@ -5,11 +5,28 @@
  */
 class C_NextGen_Settings_Controller extends C_NextGen_Backend_Controller
 {
+	static $_instances = array();
+
 	function define($context=FALSE)
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Settings_Controller');
 		$this->implement('I_NextGen_Settings_Controller');
+	}
+
+	/**
+	 * Gets an instance of the controller
+	 * @param string $context
+	 * @return C_NextGen_Settings_Controller
+	 */
+	static function &get_instance($context=FALSE)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = function_exists('get_called_class') ?
+				get_called_class() : get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
 	}
 }
 
