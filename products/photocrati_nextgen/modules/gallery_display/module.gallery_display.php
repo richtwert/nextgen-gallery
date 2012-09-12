@@ -124,13 +124,6 @@ class M_Gallery_Display extends C_Base_Module
 			'I_NextGen_Backend_Controller',
 			'A_Display_Settings_Page_Resources'
 		);
-
-		// Enqueues resources required for the Attach to Post interface
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Backend_Controller',
-			'A_Attach_To_Post_Resources'
-		);
-
 	}
 
 	/**
