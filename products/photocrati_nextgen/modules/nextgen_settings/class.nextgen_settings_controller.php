@@ -35,6 +35,26 @@ class C_NextGen_Settings_Controller extends C_NextGen_Backend_Controller
  */
 class Mixin_NextGen_Settings_Controller extends Mixin
 {
+	function enqueue_backend_resources()
+	{
+		$this->call_parent('enqueue_backend_resources');
+
+		wp_enqueue_script(
+			'nextgen_settings_page',
+			$this->static_url('nextgen_settings_page.js'),
+			array('jquery-ui-accordion'),
+			$this->module_version
+		);
+
+		wp_enqueue_style(
+			'nextgen_settings_page',
+			$this->static_url('nextgen_settings_page.css'),
+			array(),
+			$this->module_version
+		);
+	}
+
+
 	/**
 	 * Returns the contents of the "Options" page
 	 */

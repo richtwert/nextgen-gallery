@@ -94,11 +94,6 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_Ajax_Controller',
 			'A_Stylesheet_Ajax_Actions'
 		);
-
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Backend_Controller',
-			'A_NextGen_Settings_Page_Resources'
-		);
 	}
 
 	/**

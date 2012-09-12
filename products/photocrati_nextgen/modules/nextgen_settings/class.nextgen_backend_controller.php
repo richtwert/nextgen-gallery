@@ -40,7 +40,7 @@ class Mixin_NextGen_Backend_Controller extends Mixin
 	function enqueue_backend_resources()
 	{
 		// Enqueue JQuery UI
-		wp_enqueue_Script('jquery-ui-accordion');
+		wp_enqueue_script('jquery-ui-accordion');
 
 		// There are many jQuery UI themes available via Google's CDN:
 		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
