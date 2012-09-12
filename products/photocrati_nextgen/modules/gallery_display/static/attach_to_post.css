@@ -145,6 +145,40 @@ table {
 	font-size: 13px;
 }
 
+#display_settings_form table tr td:first-child {
+    vertical-align: top;
+    text-align: right;
+    padding-right: 7px;
+    width: 180px;
+}
+
+#display_settings_form table td {
+    text-align: left;
+}
+
+#display_settings_form table textarea {
+    height: 60px;
+}
+
+#display_settings_form textarea,
+#display_settings_form input[type=text],
+#display_settings_form input[type=number],
+#display_settings_form select {
+    width: 157px;
+}
+
+#display_settings_form .ngg_slideshow_gallery_width,
+#display_settings_form .ngg_slideshow_gallery_height,
+#display_settings_form .ngg_thumbnail_dimension_width,
+#display_settings_form .ngg_thumbnail_dimension_height {
+    width: 65px !important;
+}
+
+#display_settings_form .nextgen_settings_colorpicker {
+    width: 85px !important;
+    text-align: center;
+}
+
 /**
  * Hacks used to ensure that Firefox can calculate the height of hidden content
  * in iframes
