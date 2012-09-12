@@ -105,6 +105,9 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function index_action()
 	{
+		// Enqueue resources
+		$this->enqueue_backend_resources();
+
 		// For a valid request, we'll display our tabbed interface
 		if ($this->object->_validate_request()) {
 			$this->object->render_view('attach_to_post', array(

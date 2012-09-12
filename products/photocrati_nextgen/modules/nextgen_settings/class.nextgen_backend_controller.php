@@ -8,11 +8,6 @@ class C_NextGen_Backend_Controller extends C_MVC_Controller
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Backend_Controller');
-		$this->add_global_pre_hook(
-			'Enqueue Backend Resources',
-			'Hook_Enqueue_Backend_Resources',
-			'enqueue_backend_resources'
-		);
 		$this->implement('I_NextGen_Backend_Controller');
 	}
 

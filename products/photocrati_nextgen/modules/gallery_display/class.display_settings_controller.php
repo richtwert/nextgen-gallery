@@ -34,6 +34,9 @@ class Mixin_Display_Settings_Controller extends Mixin
 {
 	function index_action()
 	{
+		// Enqueue resources
+		$this->enqueue_backend_resources();
+
 		$display_type_tabs = array();
 
 		// Retrieve all display types. I'm currently retrieving all as models,
