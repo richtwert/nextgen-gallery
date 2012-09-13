@@ -52,23 +52,23 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 			$this->object->settings['flash_path'] = $settings->irURL;
 		if (!isset($this->object->settings['flash_shuffle']))
 			$this->object->settings['flash_shuffle'] = $settings->irShuffle;
-		if (!isset($this->object->settings['next_on_click']))
+        if (!isset($this->object->settings['flash_next_on_click']))
 			$this->object->settings['flash_next_on_click'] = $settings->irLinkfromdisplay;
-		if (!isset($this->object->settings['navigation_bar']))
+		if (!isset($this->object->settings['flash_navigation_bar']))
 			$this->object->settings['flash_navigation_bar'] = $settings->irShownavigation;
-		if (!isset($this->object->settings['loading_icon']))
+		if (!isset($this->object->settings['flash_loading_icon']))
 			$this->object->settings['flash_loading_icon'] = $settings->irShowicons;
-		if (!isset($this->object->settings['watermark_logo']))
+		if (!isset($this->object->settings['flash_watermark_logo']))
 			$this->object->settings['flash_watermark_logo'] = $settings->irWatermark;
-		if (!isset($this->object->settings['stretch_image']))
+		if (!isset($this->object->settings['flash_stretch_image']))
 			$this->object->settings['flash_stretch_image'] = $settings->irOverstretch;
-		if (!isset($this->object->settings['transition_effect']))
+		if (!isset($this->object->settings['flash_transition_effect']))
 			$this->object->settings['flash_transition_effect'] = $settings->irTransition;
-		if (!isset($this->object->settings['slow_zoom']))
+		if (!isset($this->object->settings['flash_slow_zoom']))
 			$this->object->settings['flash_slow_zoom'] = $settings->irKenburns;
-		if (!isset($this->object->settings['background_color']))
+		if (!isset($this->object->settings['flash_background_color']))
 			$this->object->settings['flash_background_color'] = $settings->irBackcolor;
-		if (!isset($this->object->settings['text_color']))
+		if (!isset($this->object->settings['flash_text_color']))
 			$this->object->settings['flash_text_color'] = $settings->irFrontcolor;
 		if (!isset($this->object->settings['rollover_color']))
 			$this->object->settings['flash_rollover_color'] = $settings->irLightcolor;
@@ -76,7 +76,7 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 			$this->object->settings['flash_screen_color'] = $settings->irScreencolor;
 		if (!isset($this->object->settings['background_music']))
 			$this->object->settings['flash_background_music'] = $settings->irAudio;
-		if (!isset($this->object->settings['xhtml_validation']))
+		if (!isset($this->object->settings['flash_xhtml_validation']))
 			$this->object->settings['flash_xhtml_validation'] = $settings->irXHTMLvalid;
 		if (!isset($this->object->settings['effects_code'])) {
 			$this->object->settings['effect_code'] = $settings->thumbCode;

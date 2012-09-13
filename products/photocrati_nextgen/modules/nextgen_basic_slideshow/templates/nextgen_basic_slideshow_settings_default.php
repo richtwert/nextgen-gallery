@@ -7,11 +7,10 @@
                id="<?php print $display_type_name . '_' . $name; ?>"
                name="<?php print $display_type_name . '[' . $name . ']'; ?>"
                class="<?php print $display_type_name . '_' . $name; ?>"
-               value="<?php print (($type == 'checkbox') ? 'true' : $value); ?>"
+               value="<?php print $value; ?>"
                <?php if ($attr) { foreach ($attr as $name => $val) { ?>
                    <?php print $name . "='" . $val . "'\n"; ?>
                <?php }} ?>
-               <?php if ($type == 'checkbox') { print checked($value, true, false); } ?>
         />
         <?php if (!is_null($text)) { ?>
             <?php print $text; ?>
