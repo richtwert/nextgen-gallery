@@ -91,21 +91,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
 	}
-
-	/**
-	 * Renders the images_per_page settings field
-	 *
-	 * @param C_Display_Type $display_type
-	 * @return string
-	 */
-	function _render_nextgen_basic_slideshow_images_per_page_field($display_type)
-	{
-			return $this->render_partial('nextgen_basic_slideshow_settings_images_per_page', array(
-					'display_type_name' => $display_type->name,
-					'images_per_page_label' => _('Images per page'),
-					'images_per_page' => $display_type->settings['images_per_page'],
-			), True);
-	}
+	
 
 	function _render_nextgen_basic_slideshow_cycle_interval_field($display_type)
 	{
@@ -380,7 +366,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		return array(
 			//'thumbnail_dimensions',
 			'nextgen_basic_slideshow_gallery_dimensions',
-			'nextgen_basic_slideshow_images_per_page',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',
 
