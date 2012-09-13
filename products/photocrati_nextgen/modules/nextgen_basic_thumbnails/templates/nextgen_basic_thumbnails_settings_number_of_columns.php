@@ -13,6 +13,5 @@
                min='0'
                required='required'
                value='<?php echo esc_attr($number_of_columns); ?>'>
-        </select>
     </td>
 </tr>
