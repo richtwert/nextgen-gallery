@@ -580,17 +580,21 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * based on the selected galleries
 	 */
 	_update_entities_for_galleries:	function() {
-		var self = this;
-		var diff = this.get('container_difference');
-		diff.additions.forEach(function(id){
-			NggDisplayTab.fetch_gallery_images(
-				self.get('entities'),
-				id
-			);
-		});
-		diff.removals.forEach(function(id){
-			self.remove_entities(id);
-		});
+		if (!existing ||
+		 !(this.get('container_ids').join == existing.container_ids.join &&
+		  this.get('entities').length>0)) {
+			var self = this;
+			var diff = this.get('container_difference');
+			diff.additions.forEach(function(id){
+				NggDisplayTab.fetch_gallery_images(
+					self.get('entities'),
+					id
+				);
+			});
+			diff.removals.forEach(function(id){
+				self.remove_entities(id);
+			});
+		}
 	},
 
 	/**
@@ -795,17 +799,19 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 		classBindings:				['checked'],
 		attributeBindings:			['checked', 'value', 'type'],
 		displayed_galleryBinding:	'parentView.displayed_gallery',
+		excluded_entitiesBinding:	'parentView.displayed_gallery.excluded_entities',
 		entitiesBinding:			'parentView.displayed_gallery.entities',
 
 		/**
-		 * Determines if the entity is included or excluded
+		 * Determines whether the checkbox should be 'checked' or not
 		 */
 		checked:					function(key, value){
 			var retval = false;
-			var item = this.get('displayed_gallery').get_entity_by_id(this.get('value'));
-			return typeof(item) != 'undefined' && item.exclude == true ? true : false;
+			var item = this.get('entities').findProperty('id', this.get('value'));
+			if (typeof(item) != 'undefined') retval = item.exclude;
+			console.log(item.id, retval);
+			return retval;
 		}.property('displayed_gallery.excluded_entities.@each.length', 'value'),
-
 
 		/**
 		 * Includes/excludes an entity
