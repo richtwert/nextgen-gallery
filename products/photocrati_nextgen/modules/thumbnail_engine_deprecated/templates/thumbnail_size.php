@@ -6,13 +6,14 @@
         max-length="4"
         name="settings[thumbnail_width]" 
         value="<?php echo_h($config->thumbnail_width) ?>"
-    />w
+    /><label for='<?php echo $id; ?>'>w</label>
 
     <input
         type="text" 
-        size="4" 
+        size="4"
+        id='<?php echo $id; ?>_height'
         max-length="4"
         name="settings[thumbnail_height]" 
         value="<?php echo_h($config->thumbnail_height)?>"
-    />h
+    /><label for='<?php echo $id; ?>_height'>h</label>
 </div>

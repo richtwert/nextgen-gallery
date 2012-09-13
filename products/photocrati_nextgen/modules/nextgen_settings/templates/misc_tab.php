@@ -6,10 +6,11 @@
 			</label>
 		</td>
 		<td>
-			<label for="mediarss_activated_yes">
+			<label for="mediarss_activated">
 				<?php echo_h($mediarss_activated_yes) ?>
 			</label>
 			<input
+                id='mediarss_activated'
 				type="radio"
 				name="settings[useMediaRSS]"
 				value="1"
@@ -20,6 +21,7 @@
 				<?php echo_h($mediarss_activated_no) ?>
 			</label>
 			<input
+                id='mediarss_activated_no'
 				type="radio"
 				name="settings[useMediaRSS]"
 				value="0"
