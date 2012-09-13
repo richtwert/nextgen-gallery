@@ -56,6 +56,8 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 
         $pid = get_query_var('pid');
         $current_page = (get_the_ID() == false) ? 0 : get_the_ID();
+        $picarray = array();
+        $act_pid = NULL;
 
         // create a array with id's for better walk inside
         foreach ($picturelist as $picture) {

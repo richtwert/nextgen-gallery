@@ -18,7 +18,6 @@ class A_Attachment_DataMapper extends Mixin
 	 */
 	function _save_entity($entity)
 	{
-		$post_id = FALSE;
 		$post = $this->object->_convert_entity_to_post($entity);
 		$filename = property_exists($entity, 'filename') ? $entity->filename : FALSE;
 		$primary_key = $this->object->get_primary_key_column();

@@ -293,7 +293,6 @@ class Mixin_Display_Type_Controller extends Mixin
 		// gets executed higher up in the stack, avoiding unnecessary execution
 		// of other things
 		$retval					= FALSE;
-        $original_display_type	= $displayed_gallery->display_type;
 
         // Let the request determine what display type or alternative view to render
 		if (($show = get_query_var('show'))) {

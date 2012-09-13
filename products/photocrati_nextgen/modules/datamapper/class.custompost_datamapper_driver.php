@@ -202,7 +202,6 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		$retval = FALSE;
 
 		$key = $this->object->get_primary_key_column();
-		$id = FALSE;
 
 		// Find the id of the entity
 		if (is_object($entity) && isset($entity->$key)) {
@@ -332,7 +331,6 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function _save_entity($entity)
 	{
-		$post_id = FALSE;
 		$post = $this->object->_convert_entity_to_post($entity);
 		$primary_key = $this->object->get_primary_key_column();
 

@@ -14,8 +14,6 @@ class Mixin_DataMapper extends Mixin
 	 */
 	function _get_driver_factory_method($context=FALSE)
 	{
-		$factory_method = '';
-
 		// No constant has been defined to establish a global datamapper driver
 		if (!defined('DATAMAPPER_DRIVER')) {
 

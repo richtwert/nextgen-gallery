@@ -181,7 +181,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 			);
 
 			if ($valid && $this->object->is_multisite()) {
-				$valid = update_site_option(
+				update_site_option(
 					$this->object->_get_wordpress_option_name(TRUE),
 					$this->object->_global_options
 				);

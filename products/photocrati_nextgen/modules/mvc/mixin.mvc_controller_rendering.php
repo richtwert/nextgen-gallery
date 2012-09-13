@@ -86,7 +86,6 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         // then use that - otherwise find the template
         $__filename = (strpos($__name, '/') === 0) ?
             $__name: $this->object->find_template($__name);
-        $__content = '';
         ob_start();
         extract($__vars);
         include($__filename);
