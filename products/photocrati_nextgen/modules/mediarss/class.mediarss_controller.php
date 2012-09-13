@@ -68,7 +68,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$this->render_view($template, array(
 				'storage'			=>	$storage,
-				'images'			=>	$displayed_gallery->get_images(),
+				'images'			=>	$displayed_gallery->get_included_images(),
 				'feed_title'		=>	$this->object->_get_feed_title($displayed_gallery),
 				'feed_description'	=>	$this->object->_get_feed_description($displayed_gallery),
 				'feed_link'			=>	$this->object->_get_feed_link($displayed_gallery),

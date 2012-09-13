@@ -15,7 +15,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 	{
 		$picturelist = array();
 
-		foreach ($displayed_gallery->get_images() as $image) {
+		foreach ($displayed_gallery->get_included_images() as $image) {
 			$picturelist[$image->{$image->id_field}] = $image;
 		}
 
