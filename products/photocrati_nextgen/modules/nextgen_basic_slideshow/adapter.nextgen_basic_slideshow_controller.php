@@ -23,7 +23,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
         $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
 		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
 		$offset = $images_per_page * ($current_page - 1);
-		$images = $displayed_gallery->get_images($images_per_page, $offset);
+		$images = $displayed_gallery->get_included_images($images_per_page, $offset);
 
 		// Are there images to display?
 		if ($images) {
@@ -91,7 +91,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
 	}
-	
+
 
 	function _render_nextgen_basic_slideshow_cycle_interval_field($display_type)
 	{

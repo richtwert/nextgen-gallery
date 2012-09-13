@@ -29,7 +29,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         {
             // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
             // as hidden (style="display: none")
-            $images = $displayed_gallery->get_images($total);
+            $images = $displayed_gallery->get_included_images($total);
             $i = 0;
             foreach ($images as &$image) {
                 if ($i < $display_settings['images_per_page'] * ($current_page - 1))
@@ -45,7 +45,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         }
         else {
             // just display the images for this page, as normal
-            $images = $displayed_gallery->get_images($display_settings['images_per_page'], $offset);
+            $images = $displayed_gallery->get_included_images($display_settings['images_per_page'], $offset);
         }
 
 		// Are there images to display?
