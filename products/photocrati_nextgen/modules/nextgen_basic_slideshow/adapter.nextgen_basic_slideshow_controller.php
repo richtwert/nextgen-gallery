@@ -146,13 +146,13 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
         if (is_bool($value))
         {
-            $type = 'checkbox';
+            $type = 'radio';
         }
 
         switch ($name)
         {
             case 'flash_enabled':
-                $type = 'checkbox';
+                $type = 'radio';
                 $label = __('Enable flash slideshow', 'nggallery');
                 $text = __('Integrate the flash based slideshow for all flash supported devices', 'nggallery');
                 break;
@@ -162,18 +162,23 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $attr = array('placeholder' => 'http://...', 'class' => 'url_field');
                 break;
             case 'flash_shuffle':
-                $label = __('Shuffle mode', 'nggallery');
+                $type = 'radio';
+                $label = __('Shuffle?', 'nggallery');
                 break;
             case 'flash_next_on_click':
+                $type = 'radio';
                 $label = __('Show next image on click', 'nggallery');
                 break;
             case 'flash_navigation_bar':
+                $type = 'radio';
                 $label = __('Show navigation bar', 'nggallery');
                 break;
             case 'flash_loading_icon':
+                $type = 'radio';
                 $label = __('Show loading icon', 'nggallery');
                 break;
             case 'flash_watermark_logo':
+                $type = 'radio';
                 $label = __('Use watermark logo', 'nggallery');
                 $text = __('You can change the logo at the watermark settings', 'nggallery');
                 break;
@@ -184,6 +189,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $label = __('Transition / fade effect', 'nggallery');
                 break;
             case 'flash_slow_zoom':
+                $type = 'radio';
                 $label = __('Use slow zooming effect', 'nggallery');
                 break;
             case 'flash_background_color':
@@ -207,6 +213,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $attr = array('placeholder' => 'http://...');
                 break;
             case 'flash_xhtml_validation':
+                $type = 'radio';
                 $label = __('Try XHTML validation (with CDATA)', 'nggallery');
                 $text = __('Important: Could cause problems with some browsers.', 'nggallery');
                 break;
@@ -267,9 +274,16 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             $template = 'default';
         }
 
+        $settings = $this->object->_build_settings_array($display_type, $name);
+
+        if ('default' == $template && 'radio' == $settings['type'])
+        {
+            $template = 'radio';
+        }
+
         return $this->render_partial(
             'nextgen_basic_slideshow_settings_' . $template,
-            $this->object->_build_settings_array($display_type, $name),
+            $settings,
             True
         );
     }
