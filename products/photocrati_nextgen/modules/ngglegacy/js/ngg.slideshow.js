@@ -135,4 +135,4 @@ jQuery.fn.nggSlideshow = function ( args ) {
                 });
             }
     }; 
-}
+};
