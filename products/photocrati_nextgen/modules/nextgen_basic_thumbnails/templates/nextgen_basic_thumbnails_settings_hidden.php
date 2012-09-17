@@ -1,7 +1,10 @@
 <tr>
     <td>
-        <label for='<?php echo esc_attr($display_type_name); ?>_show_all_in_lightbox'>
+        <label for='<?php echo esc_attr($display_type_name); ?>_show_all_in_lightbox' class='tooltip'>
             <?php echo_h($show_all_in_lightbox_label); ?>
+            <span>
+                <?php echo_h($show_all_in_lightbox_desc); ?>
+            </span>
         </label>
     </td>
     <td>
@@ -20,7 +23,5 @@
                value=''
                <?php echo checked('', $show_all_in_lightbox); ?>'>
         <label for='<?php echo esc_attr($display_type_name); ?>_show_all_in_lightbox_no'><?php _e('No'); ?></label>
-
-        <br/><?php echo_h($show_all_in_lightbox_desc); ?>
     </td>
 </tr>

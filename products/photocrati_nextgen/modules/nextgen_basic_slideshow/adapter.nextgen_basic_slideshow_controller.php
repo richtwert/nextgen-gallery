@@ -139,7 +139,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 break;
             case 'flash_path':
                 // XXX button search
-                $label = __('Path to the imagerotator (URL)', 'nggallery');
+                $label = __('Path to the imagerotator (url)', 'nggallery');
                 $attr = array('placeholder' => 'http://...', 'class' => 'url_field');
                 break;
             case 'flash_shuffle':
@@ -190,7 +190,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $color = TRUE;
                 break;
             case 'flash_background_music':
-                $label = __('Background music (URL)', 'nggallery');
+                $label = __('Background music (url)', 'nggallery');
                 $attr = array('placeholder' => 'http://...');
                 break;
             case 'flash_xhtml_validation':
