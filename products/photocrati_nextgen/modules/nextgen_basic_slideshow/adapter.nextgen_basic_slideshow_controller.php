@@ -366,15 +366,15 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
 			'nextgen_basic_slideshow_flash_enabled',
 			'nextgen_basic_slideshow_flash_path',
+            'nextgen_basic_slideshow_flash_background_music',
+            'nextgen_basic_slideshow_flash_stretch_image',
+            'nextgen_basic_slideshow_flash_transition_effect',
 			'nextgen_basic_slideshow_flash_shuffle',
 			'nextgen_basic_slideshow_flash_next_on_click',
 			'nextgen_basic_slideshow_flash_navigation_bar',
 			'nextgen_basic_slideshow_flash_loading_icon',
 			'nextgen_basic_slideshow_flash_watermark_logo',
-			'nextgen_basic_slideshow_flash_stretch_image',
-			'nextgen_basic_slideshow_flash_transition_effect',
 			'nextgen_basic_slideshow_flash_slow_zoom',
-            'nextgen_basic_slideshow_flash_background_music',
             'nextgen_basic_slideshow_flash_xhtml_validation',
 
             'nextgen_basic_slideshow_flash_colors_wrapper'
