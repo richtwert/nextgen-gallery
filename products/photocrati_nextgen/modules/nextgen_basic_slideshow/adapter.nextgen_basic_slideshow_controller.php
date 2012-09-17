@@ -21,45 +21,40 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		// Get the images to be displayed
         $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
-		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
-		$offset = $images_per_page * ($current_page - 1);
-		$images = $displayed_gallery->get_included_images($images_per_page, $offset);
 
-		// Are there images to display?
-		if ($images) {
+		$images = $displayed_gallery->get_included_images($displayed_gallery->get_image_count(), 0);
 
-			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+		if (!$images)
+        {
+            $this->object->render_partial("no_images_found");
+            return;
+        }
 
-			$params = $displayed_gallery->display_settings;
-			$params['storage']				= &$storage;
-			$params['images']				= &$images;
-			$params['displayed_gallery_id'] = $displayed_gallery->id();
-			$params['current_page']			= $current_page;
-			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
+        // Get the gallery storage component
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
-			// If flash slideshow gallery is enabled, generate a playlist using
-			// MediaRSS
-			if ($displayed_gallery->display_settings['flash_enabled'])
-			{
-                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-                $entity = $displayed_gallery->get_entity();
-                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-                $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+        $params = $displayed_gallery->display_settings;
+        $params['storage']				= &$storage;
+        $params['images']				= &$images;
+        $params['displayed_gallery_id'] = $displayed_gallery->id();
+        $params['current_page']			= $current_page;
+        $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
 
-                $params['mediarss_link'] = $mediarss_link;
+        // If flash slideshow gallery is enabled, generate a playlist using MediaRSS
+        if ($displayed_gallery->display_settings['flash_enabled'])
+        {
+            $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+            $entity = $displayed_gallery->get_entity();
+            $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+            $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
 
-				$this->object->render_partial('nextgen_basic_slideshow_flash', $params);
-			}
+            $params['mediarss_link'] = $mediarss_link;
 
-			// Show JS slideshow
-			else {
-				$this->object->render_partial('nextgen_basic_slideshow', $params);
-			}
-		}
-		else {
-			$this->object->render_partial("no_images_found");
-		}
+            $this->object->render_partial('nextgen_basic_slideshow_flash', $params);
+            return;
+        }
+
+        $this->object->render_partial('nextgen_basic_slideshow', $params);
 	}
 
 	/**
