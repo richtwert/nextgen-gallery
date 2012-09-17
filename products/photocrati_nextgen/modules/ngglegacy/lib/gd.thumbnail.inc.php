@@ -941,4 +941,3 @@ class ngg_Thumbnail {
         return true;         
     }
 }
-?>

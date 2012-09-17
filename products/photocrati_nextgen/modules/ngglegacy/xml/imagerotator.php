@@ -50,5 +50,3 @@ if (is_array ($thepictures)){
  
 echo "	</trackList>\n";
 echo "</playlist>\n";
-
-?>

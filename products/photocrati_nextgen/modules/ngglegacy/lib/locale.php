@@ -149,4 +149,3 @@ class ngg_locale {
 
 }
 endif;
-?>

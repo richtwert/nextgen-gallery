@@ -188,7 +188,7 @@ var $imageMagickBefore;
      *
      * @param string $cmd an ImageMagick command (eg. "convert")
      * @param string $args the arguments which should be passed
-     * @param bool §passthru(optional) output the result to the webserver instead
+     * @param bool ï¿½passthru(optional) output the result to the webserver instead
      * @return void | if passthru return the image
      */
 	function execute( $cmd, $args, $passthru = false) {
@@ -595,4 +595,3 @@ var $imageMagickBefore;
 		}
 	}
 }
-?>

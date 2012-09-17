@@ -378,5 +378,3 @@ class NextGEN_shortcodes {
 
 // let's use it
 $nggShortcodes = new NextGEN_Shortcodes;    
-
-?>

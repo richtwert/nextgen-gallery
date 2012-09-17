@@ -1108,4 +1108,3 @@ if ( ! isset($GLOBALS['nggdb']) ) {
     unset($GLOBALS['nggdb']);
     $GLOBALS['nggdb'] = new nggdb() ;
 }
-?>

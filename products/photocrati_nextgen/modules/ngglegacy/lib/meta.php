@@ -579,5 +579,3 @@ class nggMeta{
     }
 
 }
-
-?>

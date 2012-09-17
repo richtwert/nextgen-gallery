@@ -1149,4 +1149,3 @@ function nggTagCloud($args ='', $template = '') {
 
     return $out;
 }
-?>

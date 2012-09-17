@@ -121,4 +121,3 @@ if ( $mode == 'last_pictures' ) {
 header("content-type:text/xml;charset=utf-8");
 echo "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>\n";
 echo $rss;
-?>
