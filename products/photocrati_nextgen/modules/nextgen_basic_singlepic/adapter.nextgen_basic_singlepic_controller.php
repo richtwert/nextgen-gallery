@@ -70,10 +70,9 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 
         if (!empty($display_settings['template']))
         {
-            print "add support";
-            exit;
-            // $params = $this->object->prepare_legacy_parameters($images, $displayed_gallery, NULL, NULL, NULL);
-            // return $this->object->legacy_render($display_settings['template'], $params, $return);
+            $image->classname = 'ngg-singlepic' . $display_settings['float'];
+            $params = $this->object->prepare_legacy_parameters(array($image), $displayed_gallery, array('single_image' => TRUE));
+            return $this->object->legacy_render($display_settings['template'], $params, $return);
         }
         else {
             $params = $display_settings;

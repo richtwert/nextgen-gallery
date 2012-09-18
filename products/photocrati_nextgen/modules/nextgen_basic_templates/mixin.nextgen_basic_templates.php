@@ -79,7 +79,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      * @param string $pagination Pagination HTML string
      * @return array
      */
-    function prepare_legacy_parameters($images, $displayed_gallery, $pagination, $slideshow_link = False, $piclens_link = False)
+    function prepare_legacy_parameters($images, $displayed_gallery, $params = array())
     {
         // setup
 		$image_map	  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
@@ -118,7 +118,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
         $current_pid = (is_null($current_pid)) ? current($picture_list->container) : $current_pid;
 
         foreach ($picture_list as &$image) {
-            if ($image->hidden)
+            if (isset($image->hidden) && $image->hidden)
             {
                 $tmp = $displayed_gallery->display_settings['number_of_columns'];
                 $image->style = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
@@ -139,34 +139,48 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
         $gallery->pageid = $orig_gallery->pageid;
         $gallery->anchor = 'ngg-gallery-' . $orig_gallery->$gallery_key . '-' . $current_page;
         $gallery->displayed_gallery = &$displayed_gallery;
-        $gallery->columns = intval($displayed_gallery->display_settings['number_of_columns']);
+        $gallery->columns = @intval($displayed_gallery->display_settings['number_of_columns']);
         $gallery->imagewidth = ($gallery->columns > 0) ? 'style="width:' . floor(100 / $gallery->columns) . '%;"' : '';
 
-        if (is_integer($gallery->ID)) {
-            if ($displayed_gallery->display_settings['show_slideshow_link']) {
+        if (is_integer($gallery->ID))
+        {
+            if (!empty($displayed_gallery->display_settings['show_slideshow_link'])) {
                 $gallery->show_slideshow = TRUE;
-                $gallery->slideshow_link = $slideshow_link;
+                $gallery->slideshow_link = $params['alternative_view_link_url'];
                 $gallery->slideshow_link_text = $displayed_gallery->display_settings['slideshow_text_link'];
             }
 
-            if ($displayed_gallery->display_settings['show_piclens_link']) {
+            if (!empty($displayed_gallery->display_settings['show_piclens_link'])) {
                 $gallery->show_piclens = true;
-                $gallery->piclens_link = $piclens_link;
+                $gallery->piclens_link = $params['piclens_link'];
                 $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
             }
         }
 
         $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
-        return array(
+        $return = array(
             'registry' => C_Component_Registry::get_instance(),
-            'pagination' => $pagination,
-            'gallery' => $gallery,
-            'images' => $picture_list->container,
-            'current' => $current_pid,
-            'next' => $pagination->next,
-            'prev' => $pagination->prev
+            'gallery'  => $gallery,
         );
+
+        if (!empty($params['single_image']))
+        {
+            $return['image'] = $picture_list[0];
+        }
+        else {
+            $return['current'] = $current_pid;
+            $return['images']  = $picture_list->container;
+        }
+
+        if (!empty($params['pagination']))
+        {
+            $return['pagination'] = $params['pagination'];
+            $return['next']       = $params['pagination']->next;
+            $return['prev']       = $params['pagination']->prev;
+        }
+
+        return $return;
     }
 
 }
