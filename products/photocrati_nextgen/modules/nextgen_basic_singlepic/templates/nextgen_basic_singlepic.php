@@ -3,7 +3,7 @@
        title="<?php echo esc_attr($image->description)?>"
        <?php echo $effect_code ?>>
         <img class="ngg-singlepic <?php echo $settings['float']; ?>"
-             src="<?php echo esc_attr($storage->get_image_url($image)); ?>"
+             src="<?php echo $thumbnail_url; ?>"
              alt="<?php echo esc_attr($image->alttext); ?>"
              title="<?php echo esc_attr($image->alttext); ?>"
              <?php if (!empty($settings['width']))  { ?>width="<?php echo esc_attr($settings['width']); ?>"<?php } ?>

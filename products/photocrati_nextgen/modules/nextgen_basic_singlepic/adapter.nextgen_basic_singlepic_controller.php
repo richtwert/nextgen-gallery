@@ -6,6 +6,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
     {
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->add_mixin('Mixin_NextGen_Basic_Singlepic_Settings');
+        $this->add_mixin('Mixin_NextGen_Basic_Singlepic_Cache');
     }
 
     /**
@@ -15,6 +16,8 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return = FALSE)
     {
+        global $post;
+
         $storage  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $imap     = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
 
@@ -42,20 +45,28 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
                 $display_settings['float'] = '';
                 break;
         }
-        $display_settings['link'] = (!empty($display_settings['link'])) ? $display_settings['link'] : $storage->get_image_url($image);
 
-        /* We don't support the "mode" argument just yet
-         *
-         * $display_settings['mode'] = (preg_match('/(web20|watermark)/i', $display_settings['mode'])) ? $display_settings['mode'] : '';
-         * $picture->thumbnailURL = false;
-         * if ( $post->post_status == 'publish' )
-         *    $picture->thumbnailURL = $picture->cached_singlepic_file($width, $height, $mode );
-         * if (!$image->thumbnailURL)
-         *     $image->thumbnailURL = trailingslashit(home_url()) . 'index.php?callback=image&amp;pid=' . $image->pid
-         *                                                          . '&amp;width=' . $width
-         *                                                          . '&amp;height=' . $height
-         *                                                          . '&amp;mode=' . $mode;
-         */
+        $display_settings['link'] = (!empty($display_settings['link'])) ? $display_settings['link'] : $storage->get_image_url($image);
+        $display_settings['mode'] = (preg_match('/(web20|watermark)/i', $display_settings['mode'])) ? $display_settings['mode'] : '';
+
+        $thumbnail_url = FALSE;
+        if ($post->post_status == 'publish')
+        {
+            $thumbnail_url = $this->object->cache_file(
+                $image->pid,
+                $storage->get_image_abspath($image),
+                $display_settings['width'],
+                $display_settings['height'],
+                $display_settings['mode']);
+        }
+        if (!$thumbnail_url)
+        {
+            $thumbnail_url = trailingslashit(home_url()) . 'index.php?callback=image'
+                                                         . '&amp;pid='    . $image->pid
+                                                         . '&amp;width='  . $display_settings['width']
+                                                         . '&amp;height=' . $display_settings['height']
+                                                         . '&amp;mode='   . $display_settings['mode'];
+        }
 
         if (!empty($display_settings['template']))
         {
@@ -71,6 +82,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $params['effect_code']   = $this->object->get_effect_code($displayed_gallery);
             $params['inner_content'] = $displayed_gallery->inner_content;
             $params['settings']      = $display_settings;
+            $params['thumbnail_url'] = $thumbnail_url;
             return $this->object->render_partial('nextgen_basic_singlepic', $params, $return);
         }
     }
