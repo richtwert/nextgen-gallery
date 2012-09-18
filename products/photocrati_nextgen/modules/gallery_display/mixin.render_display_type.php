@@ -62,7 +62,8 @@ class Mixin_Render_Display_Type extends Mixin
 			'order_by'			=>	$settings->galSort,
 			'order_direction'	=>	$settings->galSortOrder,
 			'image_ids'			=>	array(),
-			'entity_ids'		=>	array()
+			'entity_ids'		=>	array(),
+            'inner_content'     => $inner_content
 		);
 		$args = shortcode_atts($defaults, $params);
 
@@ -127,6 +128,7 @@ class Mixin_Render_Display_Type extends Mixin
 			// Validate the displayed gallery
 			$factory = $this->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create('displayed_gallery', $mapper, $args);
+
 			unset($factory);
 		}
 
