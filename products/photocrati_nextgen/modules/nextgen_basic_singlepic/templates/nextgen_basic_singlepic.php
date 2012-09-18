@@ -1,5 +1,5 @@
 <?php if (!empty($image)) { ?>
-    <a href="<?php echo $settings['link']; ?>"
+    <a href="<?php echo esc_attr($settings['link']); ?>"
        title="<?php echo esc_attr($image->description)?>"
        <?php echo $effect_code ?>>
         <img class="ngg-singlepic <?php echo $settings['float']; ?>"

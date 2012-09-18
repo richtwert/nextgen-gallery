@@ -68,7 +68,9 @@
 .ngg_slideshow_gallery_width,
 .ngg_slideshow_gallery_height,
 .ngg_thumbnail_dimension_width,
-.ngg_thumbnail_dimension_height {
+.ngg_thumbnail_dimension_height,
+.ngg_singlepic_dimension_width,
+.ngg_singlepic_dimension_height {
     width: 65px !important;
 }
 
