@@ -140,4 +140,3 @@ class M_DataMapper extends C_Base_Module
 	}
 }
 new M_DataMapper();
-?>

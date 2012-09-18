@@ -37,5 +37,3 @@ include_once (NGGALLERY_ABSPATH. 'admin/functions.php');
 $galleryID = (int) $_POST['galleryselect'];
 
 echo nggAdmin::swfupload_image($galleryID);
-
-?>

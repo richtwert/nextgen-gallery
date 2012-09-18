@@ -56,7 +56,7 @@ function nggallery_admin_overview()  {
         					});
         				}, i * 500 );
         			}
-        		}
+        		};
         		if ( el ) {
         			el = el.toString();
         			if ( $.inArray(el, ajaxWidgets) != -1 )

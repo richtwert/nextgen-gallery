@@ -572,5 +572,3 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		$this->assertPattern("/title=['\"]{$alttext}['\"]/", $html, "Image tag does not contain the correct 'title' attribute: %s");
 	}
 }
-
-?>

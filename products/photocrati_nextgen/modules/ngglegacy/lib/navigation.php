@@ -121,4 +121,3 @@ class nggNavigation {
 		return $this->output;
 	}
 }
-?>

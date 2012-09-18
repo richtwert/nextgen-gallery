@@ -592,4 +592,3 @@ class nggGallery {
         echo apply_filters('show_nextgen_version', '<!-- <meta name="NextGEN" version="'. $ngg->version . '" /> -->' . "\n");
     }
 }
-?>

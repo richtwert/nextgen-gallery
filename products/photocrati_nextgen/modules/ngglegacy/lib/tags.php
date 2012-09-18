@@ -380,4 +380,3 @@ if (!function_exists('nggtags_delete_empty_element')) {
 		}
 	}
 }
-?>

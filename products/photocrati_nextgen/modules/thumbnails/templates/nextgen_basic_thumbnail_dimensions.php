@@ -1,7 +1,10 @@
 <tr>
 	<td id="column1">
-		<label for="<?php echo esc_attr($display_type_name) ?>_dimensions">
+		<label for="<?php echo esc_attr($display_type_name) ?>_dimensions" class='tooltip'>
 			<?php echo_h($thumbnail_dimensions_label) ?>
+            <span>
+                You can add a new thumbnail size by specifying a custom width/height.
+            </span>
 		</label>
 	</td>
 	<td>
@@ -33,12 +36,8 @@
 <tbody class="hidden customize_thumbnail_dimensions" rel="<?php echo esc_attr($display_type_name)?>_customize_dimensions">
 	<tr>
         <td>
-            <?php echo_h($thumbnail_dimensions_label) ?>
         </td>
 		<td>
-            <p class="description">
-                You can add a new thumbnail size by specifying a custom width/height.
-            </p>
             <label for='<?php echo esc_attr($display_type_name) ?>_width'>w</label>
 			<input
 				type="number"

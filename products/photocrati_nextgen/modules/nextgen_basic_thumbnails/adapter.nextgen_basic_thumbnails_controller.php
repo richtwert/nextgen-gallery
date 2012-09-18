@@ -327,11 +327,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_number_of_columns',
             'nextgen_basic_thumbnails_slideshow_link_text',
             'nextgen_basic_thumbnails_piclens_link_text',
+            'nextgen_basic_templates_template',
             'nextgen_basic_thumbnails_show_slideshow_link',
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_hidden',
-            'nextgen_basic_thumbnails_ajax_pagination',
-            'nextgen_basic_templates_template'
+            'nextgen_basic_thumbnails_ajax_pagination'
 		);
 	}
 }

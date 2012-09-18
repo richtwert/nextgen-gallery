@@ -379,5 +379,3 @@ abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 		$this->assertEqual($mapper->get_object_name(), $this->post_type);
 	}
 }
-
-?>

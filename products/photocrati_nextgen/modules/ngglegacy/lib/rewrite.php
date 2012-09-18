@@ -421,5 +421,3 @@ class nggRewrite {
     }
 
 }  // of nggRewrite CLASS
-
-?>

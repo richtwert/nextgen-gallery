@@ -98,5 +98,3 @@ class add_nextgen_button {
 
 // Call it now
 $tinymce_button = new add_nextgen_button ();
-
-?>

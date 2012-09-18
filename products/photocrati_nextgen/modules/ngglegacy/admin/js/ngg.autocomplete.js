@@ -38,7 +38,7 @@ jQuery.fn.nggAutocomplete = function ( args ) {
     jQuery(obj + "_ac").val(c_text);
     jQuery(obj + "_ac").css('width', c_width);
     // Add the dropdown icon
-    jQuery(obj + "_ac").addClass('ui-autocomplete-start')
+    jQuery(obj + "_ac").addClass('ui-autocomplete-start');
     jQuery(obj + "_ac").autocomplete({
 		source: function( request, response ) {
 			var term = request.term;
@@ -74,4 +74,4 @@ jQuery.fn.nggAutocomplete = function ( args ) {
         // pass empty string as value to search for, displaying all results
         jQuery(obj + "_ac").autocomplete('search', search );
 	});
-}
+};

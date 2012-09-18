@@ -290,7 +290,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	source_id:					function(){
 		var source = this.get('source');
 		if (source)
-			return source.id
+			return source.id;
 		else
 			return null;
 	}.property('source'),

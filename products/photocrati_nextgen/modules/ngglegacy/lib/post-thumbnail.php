@@ -214,4 +214,3 @@ class nggPostThumbnail {
 }
 
 $nggPostThumbnail = new nggPostThumbnail();
-?>

@@ -235,4 +235,3 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		}
 	}
 }
-?>
