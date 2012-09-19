@@ -11,6 +11,7 @@ class C_NextGen_Gallery_Image_Wrapper
     public $_galleries;     // cache of I_Gallery_Mapper (plural)
     public $_orig_image;    // original provided image
     public $_orig_image_id; // original image ID
+    public $_cache_overrides; // allow for forcing variable values
 
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
@@ -106,6 +107,11 @@ class C_NextGen_Gallery_Image_Wrapper
      */
     public function __get($name)
     {
+        if (isset($this->_cache_overrides[$name]))
+        {
+            return $this->_cache_overrides[$name];
+        }
+
         // at the bottom we default to returning $this->_cache[$name].
         switch ($name)
         {

@@ -147,7 +147,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             if (!empty($displayed_gallery->display_settings['show_slideshow_link'])) {
                 $gallery->show_slideshow = TRUE;
                 $gallery->slideshow_link = $params['alternative_view_link_url'];
-                $gallery->slideshow_link_text = $displayed_gallery->display_settings['slideshow_text_link'];
+                $gallery->slideshow_link_text = $displayed_gallery->display_settings['alternative_view_link_text'];
             }
 
             if (!empty($displayed_gallery->display_settings['show_piclens_link'])) {
@@ -174,11 +174,11 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
         }
 
         if (!empty($params['pagination']))
-        {
             $return['pagination'] = $params['pagination'];
-            $return['next']       = $params['pagination']->next;
-            $return['prev']       = $params['pagination']->prev;
-        }
+        if (!empty($params['pagination']->next))
+            $return['next'] = $params['pagination']->next;
+        if (!empty($params['pagination']->prev))
+            $return['prev'] = $params['pagination']->prev;
 
         return $return;
     }
