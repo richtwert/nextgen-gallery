@@ -23,6 +23,8 @@ interface I_GalleryStorage_Driver
 	function copy_images($images, $gallery, $db_entries=TRUE);
 	function upload_image($gallery, $data=FALSE);
 	function get_driver_class_name();
+	function generate_image_clone($image_path, $clone_path, $params);
+	function generate_image_size($image, $size);
 	function generate_thumbnail($image);
 	function delete_image($image, $size=FALSE);
 }
