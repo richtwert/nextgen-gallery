@@ -104,9 +104,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params = $this->object->prepare_legacy_parameters(
                     $images,
                     $displayed_gallery,
-                    $pagination,
-                    $display_settings['alternative_view_link_url'],
-                    $piclens_link
+                    array(
+                        'pagination' => $pagination,
+                        'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
+                        'piclens_link' => $piclens_link
+                    )
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return);
             }

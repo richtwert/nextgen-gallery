@@ -41,6 +41,9 @@ class Mixin_Render_Display_Type extends Mixin
 	 *
 	 * 7. To retrieve random image
 	 * [ngg_images source="random" display_type="photocrati-nextgen_pro_thumbnails"]
+     *
+     * 8. To retrieve a single image
+     * [ngg_images image_id='8' display_type='photocrati-nextgen_pro_singlepic']
 	 */
 	function display_images($params, $inner_content=NULL)
 	{
@@ -62,7 +65,9 @@ class Mixin_Render_Display_Type extends Mixin
 			'order_by'			=>	$settings->galSort,
 			'order_direction'	=>	$settings->galSortOrder,
 			'image_ids'			=>	array(),
-			'entity_ids'		=>	array()
+            'image_id'          =>  NULL,
+			'entity_ids'		=>	array(),
+            'inner_content'     => $inner_content
 		);
 		$args = shortcode_atts($defaults, $params);
 
@@ -109,6 +114,10 @@ class Mixin_Render_Display_Type extends Mixin
 				unset($args['image_ids']);
 			}
 
+            elseif ($args['image_id']) {
+                $args['source'] = 'galleries';
+            }
+
 			// Convert strings to arrays
 			if (!is_array($args['container_ids'])) {
 				$args['container_ids']	= preg_split("/,|\|/", $args['container_ids']);
@@ -127,6 +136,7 @@ class Mixin_Render_Display_Type extends Mixin
 			// Validate the displayed gallery
 			$factory = $this->get_registry()->get_utility('I_Component_Factory');
 			$displayed_gallery = $factory->create('displayed_gallery', $mapper, $args);
+
 			unset($factory);
 		}
 
@@ -301,7 +311,10 @@ class Mixin_Render_Display_Type extends Mixin
 
     function wrap_shortcode_singlepic($params, $inner_content=NULL)
     {
-        // not yet implemented
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
+        $params['image_id'] = $this->_get_param('id', NULL, $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_slideshow($params, $inner_content=NULL)
