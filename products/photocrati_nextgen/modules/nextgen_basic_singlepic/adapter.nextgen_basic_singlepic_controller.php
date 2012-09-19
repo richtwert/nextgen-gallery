@@ -57,7 +57,8 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
                 $storage->get_image_abspath($image),
                 $display_settings['width'],
                 $display_settings['height'],
-                $display_settings['mode']);
+                $display_settings['mode']
+            );
         }
         if (!$thumbnail_url)
         {
@@ -72,9 +73,11 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         {
             $params = $this->object->prepare_legacy_parameters(array($image), $displayed_gallery, array('single_image' => TRUE));
 
-            $params['image']->container[0]->_cache_overrides['caption'] = $displayed_gallery->inner_content;
-            $params['image']->container[0]->_cache_overrides['classname'] = 'ngg-singlepic ' . $display_settings['float'];
-            $params['image']->container[0]->_cache_overrides['imageURL'] = $display_settings['link'];
+            // the wrapper is a lazy-loader that calculates variables when requested. We here override those to always
+            // return the same precalculated settings provided
+            $params['image']->container[0]->_cache_overrides['caption']      = $displayed_gallery->inner_content;
+            $params['image']->container[0]->_cache_overrides['classname']    = 'ngg-singlepic ' . $display_settings['float'];
+            $params['image']->container[0]->_cache_overrides['imageURL']     = $display_settings['link'];
             $params['image']->container[0]->_cache_overrides['thumbnailURL'] = $thumbnail_url;
 
             return $this->object->legacy_render($display_settings['template'], $params, $return);

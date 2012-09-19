@@ -153,17 +153,19 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             if (!empty($displayed_gallery->display_settings['show_piclens_link'])) {
                 $gallery->show_piclens = true;
                 $gallery->piclens_link = $params['piclens_link'];
-                $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
+                $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_link_text'];
             }
         }
 
         $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
+        // build our array of things to return
         $return = array(
             'registry' => C_Component_Registry::get_instance(),
             'gallery'  => $gallery,
         );
 
+        // single_image is an internally added flag
         if (!empty($params['single_image']))
         {
             $return['image'] = $picture_list[0];
@@ -173,8 +175,15 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             $return['images']  = $picture_list->container;
         }
 
+        // this is expected to always exist
         if (!empty($params['pagination']))
+        {
             $return['pagination'] = $params['pagination'];
+        }
+        else {
+            $return['pagination'] = NULL;
+        }
+
         if (!empty($params['pagination']->next))
             $return['next'] = $params['pagination']->next;
         if (!empty($params['pagination']->prev))
