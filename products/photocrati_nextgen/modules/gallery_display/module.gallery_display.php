@@ -152,6 +152,7 @@ class M_Gallery_Display extends C_Base_Module
         add_shortcode('nggtags',      array(&$this, 'wrap_shortcode_nggtags'));
         add_shortcode('random',       array(&$this, 'wrap_shortcode_random'));
         add_shortcode('recent',       array(&$this, 'wrap_shortcode_recent'));
+        add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
         add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
 
 		// Add hook to delete displayed galleries when removed from a post

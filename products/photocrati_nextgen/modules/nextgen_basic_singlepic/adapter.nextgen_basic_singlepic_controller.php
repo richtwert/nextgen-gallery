@@ -23,14 +23,13 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 
         $display_settings = $displayed_gallery->display_settings;
 
-        $image = $imap->find($display_settings['image_id']);
+        $image = $imap->find($displayed_gallery->image_id);
 
         if (!$image)
         {
             return $this->object->render_partial("no_images_found", array(), $return);
         }
 
-        // validate and/or clean our passed settings
         switch ($display_settings['float']) {
             case 'left':
                 $display_settings['float'] = 'ngg-left';
@@ -46,41 +45,52 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
                 break;
         }
 
+        // validate and/or clean our passed settings
         $display_settings['link'] = (!empty($display_settings['link'])) ? $display_settings['link'] : $storage->get_image_url($image);
-        $display_settings['mode'] = (preg_match('/(web20|watermark)/i', $display_settings['mode'])) ? $display_settings['mode'] : '';
+
+        // mode is a legacy parameter
+        if (!is_array($display_settings['mode'])) $display_settings['mode'] = explode(',', $display_settings['mode']);
+        if (in_array('web20', $display_settings['mode']))
+            $display_settings['display_reflection'] = TRUE;
+        if (in_array('watermark', $display_settings['mode']))
+            $display_settings['display_watermark'] = TRUE;
+
+        // legacy assumed no width/height meant full size unlike generate_thumbnail: force a full resolution
+        if (empty($display_settings['width']))  $display_settings['width']  = $image->meta_data['width'];
+        if (empty($display_settings['height'])) $display_settings['height'] = $image->meta_data['height'];
 
         $thumbnail_url = FALSE;
         if ($post->post_status == 'publish')
         {
-            /*
-            $tmp = $storage->generate_thumbnail(
+            $thumb = $storage->generate_thumbnail(
                 $image,
                 $display_settings['width'],
                 $display_settings['height'],
-                NULL, // crop
-                NULL, // quality
-                $watermark=NULL, // watermark
-                $reflection=NULL, // reflection
-                $return_thumb=false // return_thumb
+                (bool)$display_settings['crop'],
+                (int)$display_settings['quality'],
+                (!empty($display_settings['display_watermark']) ? 'text' : NULL),
+                (bool)$display_settings['display_reflection'],
+                TRUE, // return_thumb
+                TRUE  // combine_filename
             );
-            exit;
-            */
-
-            $thumbnail_url = $this->object->cache_file(
-                $image->pid,
-                $storage->get_image_abspath($image),
-                $display_settings['width'],
-                $display_settings['height'],
-                $display_settings['mode']
-            );
+            if (empty($thumb->error))
+            {
+                $thumbnail_url = str_replace(ABSPATH, site_url() . '/', $thumb->fileName);
+            }
         }
+
+        // we couldn't resize it this time, so give them a URL that will do it on the fly
         if (!$thumbnail_url)
         {
-            $thumbnail_url = trailingslashit(home_url()) . 'index.php?callback=image'
-                                                         . '&amp;pid='    . $image->pid
-                                                         . '&amp;width='  . $display_settings['width']
-                                                         . '&amp;height=' . $display_settings['height']
-                                                         . '&amp;mode='   . $display_settings['mode'];
+            $thumbnail_url = trailingslashit(home_url()) . 'nextgen_image'
+                                                         . '/' . $image->pid
+                                                         . '/' . $display_settings['width']
+                                                         . 'x' . $display_settings['height']
+                                                         . '/' . $display_settings['quality']
+                                                         . '/' . $display_settings['crop']
+                                                         . '/' . $display_settings['display_watermark']
+                                                         . '/' . $display_settings['display_reflection']
+                                                         . '/';
         }
 
         if (!empty($display_settings['template']))

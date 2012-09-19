@@ -25,10 +25,18 @@ class Hook_NextGen_Basic_Singlepic_Validation extends Hook
             $this->object->settings['height'] = '';
         if (!isset($this->object->settings['mode']))
             $this->object->settings['mode'] = '';
+        if (!isset($this->object->settings['display_watermark']))
+            $this->object->settings['display_watermark'] = '';
+        if (!isset($this->object->settings['display_reflection']))
+            $this->object->settings['display_reflection'] = '';
         if (!isset($this->object->settings['float']))
             $this->object->settings['float'] = '';
         if (!isset($this->object->settings['link']))
             $this->object->settings['link'] = '';
+        if (!isset($this->object->settings['quality']))
+            $this->object->settings['quality'] = '100';
+        if (!isset($this->object->settings['crop']))
+            $this->object->settings['crop'] = '';
         if (!isset($this->object->settings['template']))
             $this->object->settings['template'] = '';
     }
