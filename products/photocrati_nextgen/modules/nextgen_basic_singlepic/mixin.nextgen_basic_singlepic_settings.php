@@ -2,6 +2,21 @@
 
 class Mixin_NextGen_Basic_Singlepic_Settings extends Mixin
 {
+
+    /**
+     * Returns a list of fields to render on the settings page
+     */
+    function _get_field_names()
+    {
+        return array(
+            'nextgen_basic_singlepic_dimensions',
+            'nextgen_basic_singlepic_link',
+            'nextgen_basic_singlepic_mode',
+            'nextgen_basic_singlepic_float',
+            'nextgen_basic_templates_template'
+        );
+    }
+
     function _render_nextgen_basic_singlepic_dimensions_field($display_type)
     {
         return $this->object->render_partial(

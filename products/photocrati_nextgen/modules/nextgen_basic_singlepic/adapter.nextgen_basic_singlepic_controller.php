@@ -52,6 +52,20 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         $thumbnail_url = FALSE;
         if ($post->post_status == 'publish')
         {
+            /*
+            $tmp = $storage->generate_thumbnail(
+                $image,
+                $display_settings['width'],
+                $display_settings['height'],
+                NULL, // crop
+                NULL, // quality
+                $watermark=NULL, // watermark
+                $reflection=NULL, // reflection
+                $return_thumb=false // return_thumb
+            );
+            exit;
+            */
+
             $thumbnail_url = $this->object->cache_file(
                 $image->pid,
                 $storage->get_image_abspath($image),
@@ -94,17 +108,4 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         }
     }
 
-    /**
-     * Returns a list of fields to render on the settings page
-     */
-    function _get_field_names()
-    {
-        return array(
-            'nextgen_basic_singlepic_dimensions',
-            'nextgen_basic_singlepic_link',
-            'nextgen_basic_singlepic_mode',
-            'nextgen_basic_singlepic_float',
-            'nextgen_basic_templates_template'
-        );
-    }
 }
