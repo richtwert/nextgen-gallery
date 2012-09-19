@@ -1,6 +1,6 @@
 <?php
 
-class Mixin_Dynamic_Thumnbails_Manager extends Mixin
+class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 {
 	function get_route_name()
 	{
@@ -129,7 +129,7 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 				}
 			}
 			
-			return $params;
+			return $this->object->_get_params_sanitized($params);
 		}
 		
 		return null;
@@ -143,6 +143,7 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 			'flags' => '00f0',
 			'flag' => array('w0' => 'watermark', 'c0' => 'crop', 'r0' => 'reflection'),
 			'flag_len' => 2,
+			'max_value_length' => 15, // Note: this can't be increased beyond 15, as a single hexadecimal character is used to encode the value length in names. Increasing it over 15 requires changing the algorithm to use an arbitrary letter instead of a hexadecimal digit (this would bump max length to 35, 9 numbers + 26 letters)
 		);
 	}
 	
@@ -153,6 +154,7 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 		$size_prefix = $prefix_list['size'];
 		$flags_prefix = $prefix_list['flags'];
 		$flags = $prefix_list['flag'];
+		$max_value_length = $prefix_list['max_value_length'];
 		
 		$params = $this->object->_get_params_sanitized($params);
 		$image = isset($params['image']) ? $params['image'] : null;
@@ -166,6 +168,7 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 		$extension = null;
 		$name = null;
 		
+		// if $only_size_name is false then we include the file name and image id for the image
 		if (!$only_size_name)
 		{
 			if (is_int($image))
@@ -176,6 +179,7 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 			
 			if ($image != null)
 			{
+				// this is used to remove the extension and then add it back at the end of the name
 				$extension = pathinfo($image->filename, PATHINFO_EXTENSION);
 				
 				if ($extension != null)
@@ -189,11 +193,13 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 				if ($id_in_name)
 				{
 					$image_id = strval($image->pid);
-					$id_len = dechex(strlen($image_id));
+					$id_len = min($max_value_length, strlen($image_id));
+					$id_len_hex = dechex($id_len);
 					
-					if (strlen($id_len) == 1)
+					// sanity check, should never occurr if $max_value_length is not messed up, ensure only 1 character is used to encode length or else skip parameter
+					if (strlen($id_len_hex) == 1)
 					{
-						$name .= $id_prefix . $id_len . $image_id;
+						$name .= $id_prefix . $id_len . substr($image_id, 0, $id_len);
 						$name .= '-';
 					}
 				}
@@ -216,17 +222,20 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 				
 				if (!is_string($flag_value))
 				{
+					// only strings or ints allowed, sprintf is required because intval(0) returns '' and not '0'
 					$flag_value = intval($flag_value);
 					$flag_value = sprintf('%d', $flag_value);
 				}
 			}
 			
 			$flag_value = strval($flag_value);
-			$flag_len = dechex(strlen($flag_value));
+			$flag_len = min($max_value_length, strlen($flag_value));
+			$flag_len_hex = dechex($flag_len);
 			
-			if (strlen($flag_len) == 1)
+			// sanity check, should never occurr if $max_value_length is not messed up, ensure only 1 character is used to encode length or else skip parameter
+			if (strlen($flag_len_hex) == 1)
 			{
-				$name .= $flag_prefix . $flag_len . $flag_value;
+				$name .= $flag_prefix . $flag_len . substr($flag_value, 0, $flag_len);
 			}
 		}
 		
@@ -256,6 +265,7 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 		$id_prefix = $prefix_list['id'];
 		$size_prefix = $prefix_list['size'];
 		$flags_prefix = $prefix_list['flags'];
+		$max_value_length = $prefix_list['max_value_length'];
 		$size_name = null;
 		$id_name = null;
 		$params = array();
@@ -302,10 +312,12 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 		if (substr($size_name, 0, strlen($size_prefix)) == $size_prefix)
 		{
 			$flags = $prefix_list['flag'];
+			// get the length of the flag id (the key in the $flags array) in the string (how many characters to consume)
 			$flag_id_len = $prefix_list['flag_len'];
 			$params_str = substr($size_name, strlen($size_prefix));
 			$params_parts = explode('-', $params_str);
 			
+			// $param_part is a single param, separated by '-'
 			foreach ($params_parts as $param_part)
 			{
 				// Parse WxHxQ - Q=quality
@@ -314,30 +326,42 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 				
 				if (substr($param_part, 0, strlen($flags_prefix)) == $flags_prefix)
 				{
-					// Set flags, using $flags keys as prefixes
+					/* Set flags, using $flags keys as prefixes */
+					
+					// move string pointer up (after the main flags prefix)
 					$param_flags = substr($param_part, strlen($flags_prefix));
 					$param_flags_len = strlen($param_flags);
 					$flags_todo = $flags;
 					
 					while (true)
 					{
+						// ensure we don't run into an infinite loop ;)
 						if (count($flags_todo) == 0 || strlen($param_flags) == 0)
 						{
 							break;
 						}
 						
+						// get the flag prefix (a key in the $flags array) using flag id length
 						$flag_prefix = substr($param_flags, 0, $flag_id_len);
+						// move string pointer up (after the single flag prefix)
 						$param_flags = substr($param_flags, $flag_id_len);
+					
+						// get the length of the flag value in the string (how many characters to consume)
+						// flag value length is stored in a single hexadecimal character next to the flag prefix
+						$flag_value_len = min(hexdec(substr($param_flags, 0, 1)), min($max_value_length, strlen($param_flags) - 1));
+						// get the flag value
+						$flag_value = substr($param_flags, 1, $flag_value_len);
+						// move string pointer up (after the entire flag)
+						$param_flags = substr($param_flags, $flag_value_len + 1);
 						
+						// make sure the flag is supported
 						if (isset($flags[$flag_prefix]))
 						{
 							$flag_name = $flags[$flag_prefix];
-							$flag_value_len = min(hexdec(substr($param_flags, 0, 1)), strlen($param_flags) - 1);
-							$flag_value = substr($param_flags, 1, $flag_value_len);
-							$param_flags = substr($param_flags, $flag_value_len + 1);
 							
 							if (is_numeric($flag_value))
 							{
+								// convert numerical flags to integers
 								$flag_value = intval($flag_value);
 							}
 							
@@ -367,8 +391,11 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 		// Double check we got a correct id string
 		if (substr($id_name, 0, strlen($id_prefix)) == $id_prefix)
 		{
+			// move string pointer up (after the prefix)
 			$id_name = substr($id_name, strlen($id_prefix));
-			$id_len = min(hexdec(substr($id_name, 0, 1)), strlen($id_name) - 1);
+			// get the length of the image id in the string (how many characters to consume)
+			$id_len = min(hexdec(substr($id_name, 0, 1)), min($max_value_length, strlen($id_name) - 1));
+			// get the id based on old position and id length
 			$image_id = intval(substr($id_name, 1, $id_len));
 			
 			if ($image_id > 0)
@@ -377,6 +404,49 @@ class Mixin_Dynamic_Thumnbails_Manager extends Mixin
 			}
 		}
 		
-		return $params;
+		return $this->object->_get_params_sanitized($params);
 	}
+	
+	function is_size_dynamic($name, $is_only_size_name = false)
+	{
+		$params = $this->object->get_params_from_name($name, $is_only_size_name);
+		
+		if (isset($params['width']) && isset($params['height']))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+}
+
+class C_Dynamic_Thumbnails_Manager extends C_Component
+{
+  public static $_instances = array();
+    
+	function define($context=FALSE)
+	{
+		parent::define($context);
+		
+    $this->implement('I_Dynamic_Thumbnails_Manager');
+		$this->add_mixin('Mixin_Dynamic_Thumbnails_Manager');
+	}
+	
+	function initialize()
+	{
+		parent::initialize();
+		
+#		var_dump($this->object->get_params_from_name('portfolio-005-nggid014-ngg0dyn-120x90x100-00f0w011c011r010.jpg'));
+#		var_dump($this->object->get_image_name(4, array('width' => 120, 'height' => '90')));
+	}
+
+  static function get_instance($context = False)
+  {
+		if (!isset(self::$_instances[$context]))
+		{
+				self::$_instances[$context] = new C_Dynamic_Thumbnails_Manager($context);
+		}
+
+		return self::$_instances[$context];
+  }
 }
