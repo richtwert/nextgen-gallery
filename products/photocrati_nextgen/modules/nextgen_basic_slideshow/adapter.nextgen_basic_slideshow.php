@@ -99,7 +99,7 @@ class Hook_NextGen_Basic_Slideshow_Validation extends Hook
 		$this->object->validates_numericality_of('gallery_height');
 
 		if ($this->object->settings['flash_enabled']) {
-			$this->object->validates_presence_of('flash_path');
+			//$this->object->validates_presence_of('flash_path');
 		}
 	}
 }
