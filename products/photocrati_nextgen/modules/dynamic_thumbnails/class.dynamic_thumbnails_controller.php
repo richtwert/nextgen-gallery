@@ -7,7 +7,7 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 		parent::define($context);
 	}
 
-	function index()
+	function index_action()
 	{
 		$uri = $_SERVER['REQUEST_URI'];
 		$regex = '/^\\/nextgen_image\\/(\\d+)(?:\\/(.*))?/';
