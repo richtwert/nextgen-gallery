@@ -132,7 +132,7 @@ function createNewThumb() {
 		
 		// add them to the database
 		nggdb::update_image_meta($picture->pid, array( 'thumbnail' => $size) );
-		nggdb::update_image_meta($picture->pid, array( 'thumbnail_crop_frame' => array('x' => $x, 'y' => $y, 'width' => $w, 'height' => $h)) );
+		nggdb::update_image_meta($picture->pid, array( 'thumbnail_crop_frame' => array('x' => $x, 'y' => $y, 'width' => $w, 'height' => $h, 'thumbnail_width' => $size['width'], 'thumbnail_height' => $size['height'])) );
 		
 		echo "OK";
 	} else {
