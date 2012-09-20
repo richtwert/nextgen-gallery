@@ -44,6 +44,9 @@ class Mixin_Render_Display_Type extends Mixin
      *
      * 8. To retrieve a single image
      * [ngg_images image_id='8' display_type='photocrati-nextgen_pro_singlepic']
+     *
+     * 9. To retrieve a tag cloud
+     * [ngg_images tagcloud=yes display_type='photocrati-nextgen_pro_tagcloud']
 	 */
 	function display_images($params, $inner_content=NULL)
 	{
@@ -67,6 +70,7 @@ class Mixin_Render_Display_Type extends Mixin
 			'image_ids'			=>	array(),
             'image_id'          =>  NULL,
 			'entity_ids'		=>	array(),
+            'tagcloud'          => FALSE,
             'inner_content'     => $inner_content
 		);
 		$args = shortcode_atts($defaults, $params);
@@ -115,6 +119,10 @@ class Mixin_Render_Display_Type extends Mixin
 			}
 
             elseif ($args['image_id']) {
+                $args['source'] = 'galleries';
+            }
+
+            elseif ($args['tagcloud']) {
                 $args['source'] = 'galleries';
             }
 
@@ -320,6 +328,14 @@ class Mixin_Render_Display_Type extends Mixin
     function wrap_shortcode_slideshow($params, $inner_content=NULL)
     {
         // not yet implemented
+    }
+
+    function wrap_shortcode_tagcloud($params, $inner_content=NULL)
+    {
+        $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
+        $this->object->display_images($params, $inner_content);
     }
 
     function wrap_shortcode_thumb($params, $inner_content=NULL)
