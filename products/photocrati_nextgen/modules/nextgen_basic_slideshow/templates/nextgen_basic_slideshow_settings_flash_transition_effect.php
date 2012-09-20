@@ -16,6 +16,5 @@
             <option value="flash" <?php print selected('flash', $value, false) ; ?>><?php print __('flash', 'nggallery') ; ?></option>
             <option value="lines" <?php print selected('lines', $value, false) ; ?>><?php print __('lines', 'nggallery') ; ?></option>
             <option value="random" <?php print selected('random', $value, false) ; ?>><?php print __('random', 'nggallery') ; ?></option>
-        </select>
     </td>
 </tr>

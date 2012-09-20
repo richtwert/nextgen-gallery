@@ -11,6 +11,7 @@ class C_NextGen_Gallery_Image_Wrapper
     public $_galleries;     // cache of I_Gallery_Mapper (plural)
     public $_orig_image;    // original provided image
     public $_orig_image_id; // original image ID
+    public $_cache_overrides; // allow for forcing variable values
 
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
@@ -21,7 +22,13 @@ class C_NextGen_Gallery_Image_Wrapper
     public function __construct($image, $displayed_gallery)
     {
         // for clarity
-        $columns = $displayed_gallery->display_settings['number_of_columns'];
+        if (isset($displayed_gallery->display_settings['number_of_columns']))
+        {
+            $columns = $displayed_gallery->display_settings['number_of_columns'];
+        }
+        else {
+            $columns = 0;
+        }
 
         // Public variables
         $defaults = array(
@@ -100,6 +107,11 @@ class C_NextGen_Gallery_Image_Wrapper
      */
     public function __get($name)
     {
+        if (isset($this->_cache_overrides[$name]))
+        {
+            return $this->_cache_overrides[$name];
+        }
+
         // at the bottom we default to returning $this->_cache[$name].
         switch ($name)
         {
@@ -153,6 +165,10 @@ class C_NextGen_Gallery_Image_Wrapper
                 $storage = $this->get_storage();
                 $this->_cache['imageURL'] = $storage->get_image_url($this->_orig_image);
                 return $this->_cache['imageURL'];
+
+            case 'linktitle':
+                $this->_cache['linktitle'] = htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('id') . '_description')));
+                return $this->_cache['linktitle'];
 
             case 'name':
                 $gallery_map = $this->get_gallery($this->__get('galleryid'));

@@ -1,10 +1,10 @@
 <?php
 /**
  * nggNavigation - PHP class for the pagination
- * 
+ *
  * @package NextGEN Gallery
  * @author Alex Rabe
- * 
+ *
  * @version 1.0.1
  * @access public
  */
@@ -36,7 +36,7 @@ class nggNavigation {
 
 	/**
 	 * PHP4 compatibility layer for calling the PHP5 constructor.
-	 * 
+	 *
 	 */
 	function nggNavigation() {
 		return $this->__construct();
@@ -45,30 +45,30 @@ class nggNavigation {
 	/**
 	 * Main constructor - Does nothing.
 	 * Call create_navigation() method when you need a navigation.
-	 * 
-	 */	
+	 *
+	 */
 	function __construct() {
-		return;		
+		return;
 	}
 
 	/**
 	 * nggNavigation::create_navigation()
-	 * 
+	 *
 	 * @param mixed $page
-	 * @param integer $totalElement 
+	 * @param integer $totalElement
 	 * @param integer $maxElement
 	 * @return string pagination content
 	 */
 	function create_navigation($page, $totalElement, $maxElement = 0) {
 		global $nggRewrite;
-        
+
         $prev_symbol = apply_filters('ngg_prev_symbol', '&#9668;');
 		$next_symbol = apply_filters('ngg_prev_symbol', '&#9658;');
-        
+
 		if ($maxElement > 0) {
 			$total = $totalElement;
-			
-			// create navigation	
+
+			// create navigation
 			if ( $total > $maxElement ) {
 				$total_pages = ceil( $total / $maxElement );
 				$r = '';
@@ -76,14 +76,16 @@ class nggNavigation {
 					$args['nggpage'] = ( 1 == $page - 1 ) ? FALSE : $page - 1;
 					$previous = $args['nggpage'];
 					if (FALSE == $args['nggpage']) {
-						$previous = 1; 
+						$previous = 1;
 					}
-					$this->prev = $nggRewrite->get_permalink ( $args );
+//					$this->prev = real_site_url($_SERVER['REQUEST_URI']);
+					$this->prev = add_query_arg('nggpage', $args['nggpage'], $_SERVER['REQUEST_URI']);
+//					$this->prev = $nggRewrite->get_permalink ( $args );
 					$r .=  '<a class="prev" id="ngg-prev-' . $previous . '" href="' . $this->prev . '">' . $prev_symbol . '</a>';
 				}
-				
+
 				$total_pages = ceil( $total / $maxElement );
-				
+
 				if ( $total_pages > 1 ) {
 					for ( $page_num = 1; $page_num <= $total_pages; $page_num++ ) {
 						if ( $page == $page_num ) {
@@ -92,7 +94,8 @@ class nggNavigation {
 							$p = false;
 							if ( $page_num < 3 || ( $page_num >= $page - 3 && $page_num <= $page + 3 ) || $page_num > $total_pages - 3 ) {
 								$args['nggpage'] = ( 1 == $page_num ) ? FALSE : $page_num;
-								$r .= '<a class="page-numbers" href="' . $nggRewrite->get_permalink( $args ) . '">' . ( $page_num ) . '</a>';
+								$link = add_query_arg('nggpage', $args['nggpage'], $_SERVER['REQUEST_URI']);
+								$r .= '<a class="page-numbers" href="' . $link . '">' . ( $page_num ) . '</a>';
 								$in = true;
 							} elseif ( $in == true ) {
 								$r .= '<span class="more">...</span>';
@@ -101,20 +104,20 @@ class nggNavigation {
 						}
 					}
 				}
-				
+
 				if ( ( $page ) * $maxElement < $total || -1 == $total ) {
 					$args['nggpage'] = $page + 1;
-					$this->next = $nggRewrite->get_permalink ( $args );
+					$this->next = add_query_arg('nggpage', $args['nggpage'], $_SERVER['REQUEST_URI']);
+//					$this->next = $nggRewrite->get_permalink ( $args );
 					$r .=  '<a class="next" id="ngg-next-' . $args['nggpage'] . '" href="' . $this->next . '">' . $next_symbol . '</a>';
 				}
-				
+
 				$this->output = "<div class='ngg-navigation'>$r</div>";
 			} else {
 				$this->output = "<div class='ngg-clear'></div>"."\n";
 			}
 		}
-		
+
 		return $this->output;
 	}
 }
-?>

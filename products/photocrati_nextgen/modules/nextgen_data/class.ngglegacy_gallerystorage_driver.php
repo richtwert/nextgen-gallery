@@ -196,7 +196,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return bool
 	 */
-	function generate_thumbnail($image, $width=NULL, $height=NULL, $crop=NULL, $quality=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
+	function generate_thumbnail($image, $width=NULL, $height=NULL, $crop=NULL, $quality=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false, $combine_filename = FALSE)
 	{
 		$retval = FALSE;
 
@@ -216,19 +216,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			if (is_null($height)) {
 				$height = $settings->thumbheight;
 			}
-			
+
 			if (is_null($crop)) {
 				$crop = $settings->thumbfix;
-			}
-			
-			if (is_null($quality)) {
-				$quality = $settings->thumbquality;
-			}
-			
-			if (is_null($reflection)) {
-				//$reflection = true;
-			}
-			
+            }
+
 			if (is_null($quality)) {
 				$quality = $settings->thumbquality;
 			}
@@ -244,82 +236,108 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 			// Generate the thumbnail using WordPress
 			$existing_thumbnail_abpath = $this->object->get_thumbnail_abspath($image);
+
 			// XXX use $filename instead of $existing_thumbnail_abpath here? it would make it compatible with image_resize()
 			$thumbnail_info = pathinfo($existing_thumbnail_abpath);
 			$thumbnail_dir = $thumbnail_info['dirname'];
 			$thumbnail_ext = $thumbnail_info['extension'];
 			$thumbnail_name = wp_basename($existing_thumbnail_abpath, ".$thumbnail_ext");
-			$thumbnail_suffix = "{$width}x{$height}";
-			
+
+            // singlepic requires cached filenames include all options in the filename
+            if (!$combine_filename)
+            {
+                $thumbnail_suffix = "{$width}x{$height}";
+            }
+            else {
+                $thumbnail_suffix = "{$width}x{$height}_{$crop}_{$quality}_{$reflection}_{$watermark}_{$reflection}";
+            }
+
 			// XXX removing the old thumbnail might not be what we want when thumb size is dynamic or passed through shortcode etc.
-#			if (file_exists($existing_thumbnail_abpath)) unlink($existing_thumbnail_abpath);
+            // if (file_exists($existing_thumbnail_abpath)) unlink($existing_thumbnail_abpath);
 			wp_mkdir_p($thumbnail_dir);
-			
-			if ($crop_frame == null) {
-				$destpath = image_resize(
-					$filename, 
-					$width, $height, $crop,
-					NULL, // filename suffix
-					$thumbnail_dir,
-					$quality
-				);
-			}
-			else {
-				$destpath = "{$thumbnail_dir}/{$thumbnail_name}-{$thumbnail_suffix}.{$thumbnail_ext}";
-				$thumbnail = new C_NggLegacy_Thumbnail($filename, true);
-				$algo = 'shrink'; // either 'adapt' or 'shrink'
-				
-				$crop_x = (int) round($crop_frame['x']);
-				$crop_y = (int) round($crop_frame['y']);
-				$crop_width = (int) round($crop_frame['width']);
-				$crop_height = (int) round($crop_frame['height']);
-				$crop_thumbnail_width = (int) round($crop_frame['thumbnail_width']);
-				$crop_thumbnail_height = (int) round($crop_frame['thumbnail_height']);
-				
-				$crop_factor_x = $crop_width / $crop_thumbnail_width;
-				$crop_factor_y = $crop_height / $crop_thumbnail_height;
-				
-				if ($algo == 'adapt') {
-					$crop_width = (int) round($width * $crop_factor_x);
-					$crop_height = (int) round($height * $crop_factor_y);
-				}
-				else {
-					
-				}
-				
-				$crop_diff_x = (int) round(($crop_width - $width) / 2);
-				$crop_diff_y = (int) round(($crop_height - $height) / 2);
-				
-				$crop_x += $crop_diff_x;
-				$crop_y += $crop_diff_y;
-				
-				if ($algo == 'shrink') {
-					$crop_width = $width;
-					$crop_height = $height;
-				}
-				
-				$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
-				$thumbnail->resize($width, $height);
-			}
+
+			// only resize the image if we must-we may only be applying an effect like watermarks
+            if ($width < $image->meta_data['width'] || $height < $image->meta_data['height'])
+            {
+                if ($crop_frame == null )
+                {
+                    $destpath = image_resize(
+                        $filename,
+                        $width, $height, $crop,
+                        ($combine_filename ? $thumbnail_suffix : NULL), // filename suffix
+                        $thumbnail_dir,
+                        $quality
+                    );
+                }
+                else {
+                    $destpath = "{$thumbnail_dir}/{$thumbnail_name}-{$thumbnail_suffix}.{$thumbnail_ext}";
+                    $thumbnail = new C_NggLegacy_Thumbnail($filename, true);
+                    $algo = 'shrink'; // either 'adapt' or 'shrink'
+
+                    $crop_x = (int) round($crop_frame['x']);
+                    $crop_y = (int) round($crop_frame['y']);
+                    $crop_width = (int) round($crop_frame['width']);
+                    $crop_height = (int) round($crop_frame['height']);
+                    $crop_thumbnail_width = (int) round($crop_frame['thumbnail_width']);
+                    $crop_thumbnail_height = (int) round($crop_frame['thumbnail_height']);
+
+                    $crop_factor_x = $crop_width / $crop_thumbnail_width;
+                    $crop_factor_y = $crop_height / $crop_thumbnail_height;
+
+                    if ($algo == 'adapt')
+                    {
+                        $crop_width = (int) round($width * $crop_factor_x);
+                        $crop_height = (int) round($height * $crop_factor_y);
+                    }
+
+                    $crop_diff_x = (int) round(($crop_width - $width) / 2);
+                    $crop_diff_y = (int) round(($crop_height - $height) / 2);
+
+                    $crop_x += $crop_diff_x;
+                    $crop_y += $crop_diff_y;
+
+                    if ($algo == 'shrink')
+                    {
+                        $crop_width = $width;
+                        $crop_height = $height;
+                    }
+
+                    $thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
+                    $thumbnail->resize($width, $height);
+                }
+            }
+            else {
+                // the file needs to exist for effects to be applied to it
+                $destpath = "{$thumbnail_dir}/{$thumbnail_name}-{$thumbnail_suffix}.{$thumbnail_ext}";
+                if (is_string($destpath) && !file_exists($destpath))
+                {
+                    copy($filename, $destpath);
+                }
+            }
 
 			// We successfully generated the thumbnail
 			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) {
 				
-				if ($thumbnail == null) {
+				if (is_null($thumbnail))
+                {
 					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
 				}
-				
-				if ($watermark == 'image') {
+
+				if ($watermark == 'image')
+                {
 					$thumbnail->watermarkImgPath = $settings['wmPath'];
 					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']); 
-				} else if ($watermark == 'text') {
+				}
+                else if ($watermark == 'text')
+                {
 					$thumbnail->watermarkText = $settings['wmText'];
 					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
 					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);  
 				}
 				
-				if ($reflection) {
-					$thumbnail->createReflection(40,40,50,false,'#a4a4a4');
+				if ($reflection)
+                {
+					$thumbnail->createReflection(40, 40, 50, FALSE, '#a4a4a4');
 				}
 				
 				$thumbnail->save($destpath, $quality);
@@ -337,7 +355,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 
 				$retval = $this->object->_image_mapper->save($image);
-				
+
 				if ($retval == 0) {
 					$retval = false;
 				}
@@ -349,7 +367,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 			else {
 				// Something went wrong. Thumbnail generation failed!
-				
 			}
 		}
 

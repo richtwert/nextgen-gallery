@@ -11,6 +11,5 @@
                class='ngg_thumbnail_piclens_link_text'
                placeholder='<?php _e('link text'); ?>'
                value='<?php echo esc_attr($piclens_link_text); ?>'>
-        </select>
     </td>
 </tr>

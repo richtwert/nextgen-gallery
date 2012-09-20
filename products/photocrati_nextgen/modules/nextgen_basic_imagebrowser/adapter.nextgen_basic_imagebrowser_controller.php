@@ -11,11 +11,11 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
     }
 
-	function index($displayed_gallery, $return=FALSE)
+	function index_action($displayed_gallery, $return=FALSE)
 	{
 		$picturelist = array();
 
-		foreach ($displayed_gallery->get_images() as $image) {
+		foreach ($displayed_gallery->get_included_images() as $image) {
 			$picturelist[$image->{$image->id_field}] = $image;
 		}
 
@@ -56,6 +56,8 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 
         $pid = get_query_var('pid');
         $current_page = (get_the_ID() == false) ? 0 : get_the_ID();
+        $picarray = array();
+        $act_pid = NULL;
 
         // create a array with id's for better walk inside
         foreach ($picturelist as $picture) {

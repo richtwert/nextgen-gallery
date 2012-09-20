@@ -359,7 +359,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		}
 
 		// We always return the same type of entity that we given
-		if (get_class($entity) == 'stdClass') $entity = $model->get_entity();
+		if (get_class($entity) == 'stdClass') $model->get_entity();
 
 		return $retval;
 	}

@@ -11,55 +11,50 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
 	}
-
+	
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
 	 * This method deprecated use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
-	function index($displayed_gallery)
+	function index_action($displayed_gallery)
 	{
 		// Get the images to be displayed
         $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
-		$images_per_page = $displayed_gallery->display_settings['images_per_page'];
-		$offset = $images_per_page * ($current_page - 1);
-		$images = $displayed_gallery->get_images($images_per_page, $offset);
 
-		// Are there images to display?
-		if ($images) {
+		$images = $displayed_gallery->get_included_images($displayed_gallery->get_image_count(), 0);
 
-			// Get the gallery storage component
-			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+		if (!$images)
+        {
+            $this->object->render_partial("no_images_found");
+            return;
+        }
 
-			$params = $displayed_gallery->display_settings;
-			$params['storage']				= &$storage;
-			$params['images']				= &$images;
-			$params['displayed_gallery_id'] = $displayed_gallery->id();
-			$params['current_page']			= $current_page;
-			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
+        // Get the gallery storage component
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
-			// If flash slideshow gallery is enabled, generate a playlist using
-			// MediaRSS
-			if ($displayed_gallery->display_settings['flash_enabled'])
-			{
-                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-                $entity = $displayed_gallery->get_entity();
-                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-                $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+        $params = $displayed_gallery->display_settings;
+        $params['storage']				= &$storage;
+        $params['images']				= &$images;
+        $params['displayed_gallery_id'] = $displayed_gallery->id();
+        $params['current_page']			= $current_page;
+        $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
 
-                $params['mediarss_link'] = $mediarss_link;
+        // If flash slideshow gallery is enabled, generate a playlist using MediaRSS
+        if ($displayed_gallery->display_settings['flash_enabled'])
+        {
+            $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+            $entity = $displayed_gallery->get_entity();
+            $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+            $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
 
-				$this->object->render_partial('nextgen_basic_slideshow_flash', $params);
-			}
+            $params['mediarss_link'] = $mediarss_link;
 
-			// Show JS slideshow
-			else {
-				$this->object->render_partial('nextgen_basic_slideshow', $params);
-			}
-		}
-		else {
-			$this->object->render_partial("no_images_found");
-		}
+            $this->object->render_partial('nextgen_basic_slideshow_flash', $params);
+            return;
+        }
+
+        $this->object->render_partial('nextgen_basic_slideshow', $params);
 	}
 
 	/**
@@ -92,20 +87,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
 	}
 
-	/**
-	 * Renders the images_per_page settings field
-	 *
-	 * @param C_Display_Type $display_type
-	 * @return string
-	 */
-	function _render_nextgen_basic_slideshow_images_per_page_field($display_type)
-	{
-			return $this->render_partial('nextgen_basic_slideshow_settings_images_per_page', array(
-					'display_type_name' => $display_type->name,
-					'images_per_page_label' => _('Images per page'),
-					'images_per_page' => $display_type->settings['images_per_page'],
-			), True);
-	}
 
 	function _render_nextgen_basic_slideshow_cycle_interval_field($display_type)
 	{
@@ -146,34 +127,39 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
         if (is_bool($value))
         {
-            $type = 'checkbox';
+            $type = 'radio';
         }
 
         switch ($name)
         {
             case 'flash_enabled':
-                $type = 'checkbox';
+                $type = 'radio';
                 $label = __('Enable flash slideshow', 'nggallery');
                 $text = __('Integrate the flash based slideshow for all flash supported devices', 'nggallery');
                 break;
             case 'flash_path':
                 // XXX button search
-                $label = __('Path to the imagerotator (URL)', 'nggallery');
-                $attr = array('placeholder' => 'http://...');
+                $label = __('Path to the imagerotator (url)', 'nggallery');
+                $attr = array('placeholder' => 'http://...', 'class' => 'url_field');
                 break;
             case 'flash_shuffle':
-                $label = __('Shuffle mode', 'nggallery');
+                $type = 'radio';
+                $label = __('Shuffle?', 'nggallery');
                 break;
             case 'flash_next_on_click':
+                $type = 'radio';
                 $label = __('Show next image on click', 'nggallery');
                 break;
             case 'flash_navigation_bar':
+                $type = 'radio';
                 $label = __('Show navigation bar', 'nggallery');
                 break;
             case 'flash_loading_icon':
+                $type = 'radio';
                 $label = __('Show loading icon', 'nggallery');
                 break;
             case 'flash_watermark_logo':
+                $type = 'radio';
                 $label = __('Use watermark logo', 'nggallery');
                 $text = __('You can change the logo at the watermark settings', 'nggallery');
                 break;
@@ -184,6 +170,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $label = __('Transition / fade effect', 'nggallery');
                 break;
             case 'flash_slow_zoom':
+                $type = 'radio';
                 $label = __('Use slow zooming effect', 'nggallery');
                 break;
             case 'flash_background_color':
@@ -203,10 +190,11 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $color = TRUE;
                 break;
             case 'flash_background_music':
-                $label = __('Background music (URL)', 'nggallery');
+                $label = __('Background music (url)', 'nggallery');
                 $attr = array('placeholder' => 'http://...');
                 break;
             case 'flash_xhtml_validation':
+                $type = 'radio';
                 $label = __('Try XHTML validation (with CDATA)', 'nggallery');
                 $text = __('Important: Could cause problems with some browsers.', 'nggallery');
                 break;
@@ -245,6 +233,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
         $special_fields = array(
             'flash_enabled',
+            'flash_path',
             'flash_stretch_image',
             'flash_transition_effect',
         );
@@ -267,9 +256,16 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             $template = 'default';
         }
 
+        $settings = $this->object->_build_settings_array($display_type, $name);
+
+        if ('default' == $template && 'radio' == $settings['type'])
+        {
+            $template = 'radio';
+        }
+
         return $this->render_partial(
             'nextgen_basic_slideshow_settings_' . $template,
-            $this->object->_build_settings_array($display_type, $name),
+            $settings,
             True
         );
     }
@@ -278,9 +274,49 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
+	
+	// XXX I've put this here to remove dependency on ngglegacy (also the settings.php file is not included at this point)
+	function _search_image_rotator()
+	{
+		global $wpdb;
+
+		$upload = wp_upload_dir();
+
+		// look first at the old place and move it to wp-content/uploads
+		if ( file_exists( NGGALLERY_ABSPATH . 'imagerotator.swf' ) )
+			@rename(NGGALLERY_ABSPATH . 'imagerotator.swf', $upload['basedir'] . '/imagerotator.swf');
+		
+		// This should be the new place	
+		if ( file_exists( $upload['basedir'] . '/imagerotator.swf' ) )
+			return $upload['baseurl'] . '/imagerotator.swf';
+
+		// Find the path to the imagerotator via the media library
+		if ( $path = $wpdb->get_var( "SELECT guid FROM {$wpdb->posts} WHERE guid LIKE '%imagerotator.swf%'" ) )
+			return $path;
+
+		// maybe it's located at wp-content
+		if ( file_exists( WP_CONTENT_DIR . '/imagerotator.swf' ) )
+			return WP_CONTENT_URL . '/imagerotator.swf';
+
+		// or in the plugin folder
+		if ( file_exists( WP_PLUGIN_DIR . '/imagerotator.swf' ) )
+			return WP_PLUGIN_URL . '/imagerotator.swf';
+		
+		// this is deprecated and will be ereased during a automatic upgrade
+		if ( file_exists( NGGALLERY_ABSPATH . 'imagerotator.swf' ) )
+			return NGGALLERY_URLPATH . 'imagerotator.swf';
+		
+		return '';
+	}
 
 	function _render_nextgen_basic_slideshow_flash_path_field($display_type)
 	{
+		// XXX move this?
+		if ($this->object->param('irDetect') != null)
+		{
+			$display_type->settings['flash_path'] = $this->object->_search_image_rotator();
+		}
+		
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
 
@@ -366,21 +402,20 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		return array(
 			//'thumbnail_dimensions',
 			'nextgen_basic_slideshow_gallery_dimensions',
-			'nextgen_basic_slideshow_images_per_page',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',
 
 			'nextgen_basic_slideshow_flash_enabled',
 			'nextgen_basic_slideshow_flash_path',
+            'nextgen_basic_slideshow_flash_background_music',
+            'nextgen_basic_slideshow_flash_stretch_image',
+            'nextgen_basic_slideshow_flash_transition_effect',
 			'nextgen_basic_slideshow_flash_shuffle',
 			'nextgen_basic_slideshow_flash_next_on_click',
 			'nextgen_basic_slideshow_flash_navigation_bar',
 			'nextgen_basic_slideshow_flash_loading_icon',
 			'nextgen_basic_slideshow_flash_watermark_logo',
-			'nextgen_basic_slideshow_flash_stretch_image',
-			'nextgen_basic_slideshow_flash_transition_effect',
 			'nextgen_basic_slideshow_flash_slow_zoom',
-            'nextgen_basic_slideshow_flash_background_music',
             'nextgen_basic_slideshow_flash_xhtml_validation',
 
             'nextgen_basic_slideshow_flash_colors_wrapper'

@@ -13,6 +13,5 @@
                min='1'
                required='required'
                value='<?php echo esc_attr($images_per_page); ?>'>
-        </select>
     </td>
 </tr>

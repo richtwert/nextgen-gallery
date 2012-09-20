@@ -59,10 +59,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the Lazy Resource Loader
 		$this->get_registry()->load_module('photocrati-lazy_resources');
 
-		// Load the NextGEN Admin module, used to help render things
-		// in wp-admin
-		$this->get_registry()->load_module('photocrati-nextgen_admin');
-
 		// Load the Gallery Display module, used to display galleries and albums
 		$this->get_registry()->load_module('photocrati-gallery_display');
 
@@ -80,10 +76,14 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-thumbnails');
 		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
 
+		// Provides support for thumbnail basic templates
+		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
+
 		// Load the NextGEN Basic display types
 		$this->get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
 		$this->get_registry()->load_module('photocrati-nextgen_basic_slideshow');
 		$this->get_registry()->load_module('photocrati-nextgen_basic_imagebrowser');
+        $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');
 	}
 }
 

@@ -263,7 +263,7 @@ var toggleContent = function(e)
 		jQuery(this).html('[+]');
 	}
 	return false;
-}
+};
 
 function ngg_serialize(s)
 {

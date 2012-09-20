@@ -11,6 +11,5 @@
                class='ngg_thumbnail_slideshow_link_text'
                placeholder='<?php _e('link text'); ?>'
                value='<?php echo esc_attr($alternative_view_link_text); ?>'>
-        </select>
     </td>
 </tr>

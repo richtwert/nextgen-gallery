@@ -448,4 +448,3 @@ function ngg_ajax_test_head_footer() {
 	}
     die('success');	
 }
-?>

@@ -24,4 +24,4 @@ jQuery.fn.nggShowSlideshow = function ( args ) {
         	});
         	
   gallery.show();
-}
+};

@@ -198,7 +198,6 @@ class C_NextGEN_Bootstrap
 	 */
 	function file_path($file_name=NULL)
 	{
-		$location = $this->get_plugin_location();
 		$path = dirname(__FILE__);
 
 		if ($file_name != null)

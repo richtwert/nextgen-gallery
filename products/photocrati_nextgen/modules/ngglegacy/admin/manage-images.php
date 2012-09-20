@@ -75,7 +75,7 @@ function showDialog( windowId, title ) {
 			if(form.elements[i].name == "doaction[]")
 				if(form.elements[i].checked == true)
 					if (elementlist == "")
-						elementlist = form.elements[i].value
+						elementlist = form.elements[i].value;
 					else
 						elementlist += "," + form.elements[i].value ;
 		}

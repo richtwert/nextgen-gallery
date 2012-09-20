@@ -14,7 +14,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 	/**
 	 * Renders a MediaRSS feed
 	 */
-	function index()
+	function index_action()
 	{
 		$this->object->set_content_type('xml');
 
@@ -35,7 +35,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 		$displayed_gallery = NULL;
 		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 		$template = $this->object->param('template');
-		
+
 		if (!in_array($template, array('mediarss_feed', 'playlist_feed'))) {
 			$template = 'mediarss_feed';
 		}
@@ -68,7 +68,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$this->render_view($template, array(
 				'storage'			=>	$storage,
-				'images'			=>	$displayed_gallery->get_images(),
+				'images'			=>	$displayed_gallery->get_included_images(),
 				'feed_title'		=>	$this->object->_get_feed_title($displayed_gallery),
 				'feed_description'	=>	$this->object->_get_feed_description($displayed_gallery),
 				'feed_link'			=>	$this->object->_get_feed_link($displayed_gallery),

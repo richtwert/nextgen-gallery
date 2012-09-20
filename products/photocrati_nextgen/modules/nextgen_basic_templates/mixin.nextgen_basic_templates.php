@@ -1,52 +1,7 @@
 <?php
 
-class Mixin_NextGen_Basic_Templates extends Mixin
+class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 {
-    /**
-     * Adds required JS libraries for the admin side
-     */
-    function initialize()
-    {
-        $this->object->add_post_hook(
-            'enqueue_backend_resources',
-            'Enqueue Template Settings Resources for the Backend',
-            get_class($this),
-            '_enqueue_resources_for_settings'
-        );
-    }
-
-    /**
-     * Enqueues resources needed for template settings display
-     *
-     * @param type $displayed_gallery
-     */
-    function _enqueue_resources_for_settings($displayed_gallery)
-    {
-        wp_enqueue_script(
-            'ngg_template_settings',
-            $this->static_url('/js/ngg_template_settings.js'),
-            array('jquery-ui-autocomplete')
-        );
-
-        // feed our autocomplete widget a list of available files
-        $files_list = array();
-        $files_available = $this->object->get_available_templates();
-        foreach ($files_available as $label => $files)
-        {
-            foreach ($files as $file) {
-                $tmp = explode(DIRECTORY_SEPARATOR, $file);
-                $files_list[] = "[{$label}]: " . end($tmp);
-            }
-        }
-
-        $this->object->_add_script_data(
-            'ngg_template_settings',
-            'nextgen_settings_templates_available_files',
-            $files_list,
-            TRUE
-        );
-    }
-
     /**
      * Renders 'template' settings field
      *
@@ -64,79 +19,6 @@ class Mixin_NextGen_Basic_Templates extends Mixin
             ),
             True
         );
-    }
-
-    /**
-     * Returns an array of template storing directories
-     *
-     * @return array Template storing directories
-     */
-    function get_template_directories()
-    {
-        return array(
-            'Overrides' => STYLESHEETPATH . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR,
-            'NextGen' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR
-        );
-    }
-
-    /**
-     * Returns an array of all available template files
-     *
-     * @return array All available template files
-     */
-    function get_available_templates($prefix = FALSE)
-    {
-        $files = array();
-        foreach ($this->object->get_template_directories() as $label => $dir) {
-            $tmp = $this->object->get_templates_from_dir($dir, $prefix);
-            if (!$tmp) { continue; }
-            $files[$label] = $tmp;
-        }
-        return $files;
-    }
-
-    /**
-     * Recursively scans $dir for files ending in .php
-     *
-     * @param string $dir Directory
-     * @return array All php files in $dir
-     */
-    function get_templates_from_dir($dir, $prefix = FALSE)
-    {
-        if (!is_dir($dir))
-        {
-            return;
-        }
-
-        $dir = new RecursiveDirectoryIterator($dir);
-        $iterator = new RecursiveIteratorIterator($dir);
-
-        // convert single-item arrays to string
-        if (is_array($prefix) && count($prefix) <= 1)
-        {
-            $prefix = end($prefix);
-        }
-
-        // we can filter results by allowing a set of prefixes, one prefix, or by showing all available files
-        if (is_array($prefix))
-        {
-            $str = implode('|', $prefix);
-            $regex_iterator = new RegexIterator($iterator, "/({$str})-.+\.php$/i", RecursiveRegexIterator::GET_MATCH);
-        }
-        elseif (is_string($prefix))
-        {
-            $regex_iterator = new RegexIterator($iterator, "/{$prefix}-.+\.php$/i", RecursiveRegexIterator::GET_MATCH);
-        }
-        else {
-            $regex_iterator = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
-        }
-
-        $files = array();
-        foreach ($regex_iterator as $filename) {
-            $files[] = reset($filename);
-        }
-
-        return $files;
     }
 
     /**
@@ -197,7 +79,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
      * @param string $pagination Pagination HTML string
      * @return array
      */
-    function prepare_legacy_parameters($images, $displayed_gallery, $pagination, $slideshow_link = False, $piclens_link = False)
+    function prepare_legacy_parameters($images, $displayed_gallery, $params = array())
     {
         // setup
 		$image_map	  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
@@ -236,7 +118,7 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         $current_pid = (is_null($current_pid)) ? current($picture_list->container) : $current_pid;
 
         foreach ($picture_list as &$image) {
-            if ($image->hidden)
+            if (isset($image->hidden) && $image->hidden)
             {
                 $tmp = $displayed_gallery->display_settings['number_of_columns'];
                 $image->style = ($tmp > 0) ? 'style="width:' . floor(100 / $tmp) . '%;display: none;"' : 'style="display: none;"';
@@ -257,34 +139,57 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         $gallery->pageid = $orig_gallery->pageid;
         $gallery->anchor = 'ngg-gallery-' . $orig_gallery->$gallery_key . '-' . $current_page;
         $gallery->displayed_gallery = &$displayed_gallery;
-        $gallery->columns = intval($displayed_gallery->display_settings['number_of_columns']);
+        $gallery->columns = @intval($displayed_gallery->display_settings['number_of_columns']);
         $gallery->imagewidth = ($gallery->columns > 0) ? 'style="width:' . floor(100 / $gallery->columns) . '%;"' : '';
 
-        if (is_integer($gallery->ID)) {
-            if ($displayed_gallery->display_settings['show_slideshow_link']) {
+        if (is_integer($gallery->ID))
+        {
+            if (!empty($displayed_gallery->display_settings['show_slideshow_link'])) {
                 $gallery->show_slideshow = TRUE;
-                $gallery->slideshow_link = $slideshow_link;
-                $gallery->slideshow_link_text = $displayed_gallery->display_settings['slideshow_text_link'];
+                $gallery->slideshow_link = $params['alternative_view_link_url'];
+                $gallery->slideshow_link_text = $displayed_gallery->display_settings['alternative_view_link_text'];
             }
 
-            if ($displayed_gallery->display_settings['show_piclens_link']) {
+            if (!empty($displayed_gallery->display_settings['show_piclens_link'])) {
                 $gallery->show_piclens = true;
-                $gallery->piclens_link = $piclens_link;
-                $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_text_link'];
+                $gallery->piclens_link = $params['piclens_link'];
+                $gallery->piclens_link_text = $displayed_gallery->display_settings['piclens_link_text'];
             }
         }
 
         $gallery = apply_filters('ngg_gallery_object', $gallery, 4);
 
-        return array(
+        // build our array of things to return
+        $return = array(
             'registry' => C_Component_Registry::get_instance(),
-            'pagination' => $pagination,
-            'gallery' => $gallery,
-            'images' => $picture_list->container,
-            'current' => $current_pid,
-            'next' => $pagination->next,
-            'prev' => $pagination->prev
+            'gallery'  => $gallery,
         );
+
+        // single_image is an internally added flag
+        if (!empty($params['single_image']))
+        {
+            $return['image'] = $picture_list[0];
+        }
+        else {
+            $return['current'] = $current_pid;
+            $return['images']  = $picture_list->container;
+        }
+
+        // this is expected to always exist
+        if (!empty($params['pagination']))
+        {
+            $return['pagination'] = $params['pagination'];
+        }
+        else {
+            $return['pagination'] = NULL;
+        }
+
+        if (!empty($params['pagination']->next))
+            $return['next'] = $params['pagination']->next;
+        if (!empty($params['pagination']->prev))
+            $return['prev'] = $params['pagination']->prev;
+
+        return $return;
     }
 
 }

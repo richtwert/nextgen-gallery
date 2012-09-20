@@ -107,7 +107,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param int $limit
 	 * @param int $offset
 	 */
-	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
 	{
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$mapper = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
@@ -120,7 +120,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 			case 'gallery':
 			case 'galleries':
 				$mapper = $this->object->_create_image_query_for_galleries(
-					$mapper, $image_key, $settings, $limit, $offset, $id_only
+					$mapper, $image_key, $settings, $limit, $offset, $id_only, $skip_exclusions
 				);
 				break;
 			case 'recent':
@@ -193,6 +193,17 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	}
 
 	/**
+	 * Gets only included images
+	 * @param int $limit
+	 * @param int $offset
+	 * @param bool $id_only
+	 */
+	function get_included_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	{
+		return $this->object->get_images($limit, $offset, $id_only, TRUE);
+	}
+
+	/**
 	 * Creates a datamapper query for finding random images
 	 * @param C_Gallery_Image_Mapper $mapper
 	 * @param string $image_key
@@ -248,7 +259,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param bool $id_only
 	 * @return C_Gallery_Image_Mapper
 	 */
-	function _create_image_query_for_galleries($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	function _create_image_query_for_galleries($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
 	{
 		// We can do that by specifying what gallery ids we
 		// want images from:
@@ -274,7 +285,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 
 		// Or, instead of specifying what galleries we want images from,
 		// we can specify the images in particular that we want to fetch
-		elseif ($this->object->entity_ids && !$this->object->container_ids) {
+		elseif ($this->object->entity_ids && (!$this->object->container_ids OR $skip_exclusions)) {
 			$mapper->where(
 				array("pid in %s", $this->object->entity_ids)
 			);

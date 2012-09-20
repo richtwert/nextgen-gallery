@@ -288,5 +288,3 @@ function nggallery_uninstall() {
 	ngg_remove_capability("NextGEN Change style");
 	ngg_remove_capability("NextGEN Change options");
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class C_Display_Settings_Controller extends C_MVC_Controller
+class C_Display_Settings_Controller extends C_NextGen_Backend_Controller
 {
 	static $_instances = array();
 
@@ -12,13 +12,16 @@ class C_Display_Settings_Controller extends C_MVC_Controller
 	}
 
 	/**
-	 * Gets an instance of the display settings controller
+	 * Gets an instance of the controller
 	 * @param string $context
+	 * @return C_NextGen_Settings_Controller
 	 */
-	static function get_instance($context=FALSE)
+	static function &get_instance($context=FALSE)
 	{
-		if (!(isset(self::$_instances[$context]))) {
-			self::$_instances[$context] = new C_Display_Settings_Controller($context);
+		if (!isset(self::$_instances[$context])) {
+			$klass = function_exists('get_called_class') ?
+				get_called_class() : get_class();
+			self::$_instances[$context] = new $klass($context);
 		}
 		return self::$_instances[$context];
 	}
@@ -29,8 +32,11 @@ class C_Display_Settings_Controller extends C_MVC_Controller
  */
 class Mixin_Display_Settings_Controller extends Mixin
 {
-	function index()
+	function index_action()
 	{
+		// Enqueue resources
+		$this->enqueue_backend_resources();
+
 		$display_type_tabs = array();
 
 		// Retrieve all display types. I'm currently retrieving all as models,
@@ -73,7 +79,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 			$display_type_tabs[] = $this->render_partial('accordion_tab', array(
 				'id'		=>	$display_type->name,
 				'title'		=>	$display_type->title,
-				'content'	=>	$display_type_controller->settings($display_type, TRUE)
+				'content'	=>	$display_type_controller->settings_action($display_type, TRUE)
 			), TRUE);
 		}
 

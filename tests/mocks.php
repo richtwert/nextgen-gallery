@@ -20,4 +20,3 @@ if (!class_exists('Mock_Mixin_DataMapper_Model_Validations')) {
 		}
 	}
 }
-?>

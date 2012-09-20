@@ -3,10 +3,26 @@
 /**
  * Provides the ability to create and edit C_Displayed_Galleries
  */
-class C_Attach_To_Post_Controller extends C_MVC_Controller
+class C_Attach_To_Post_Controller extends C_NextGen_Backend_Controller
 {
 	static $_instances = array();
 	var $_displayed_gallery;
+
+
+	/**
+	 * Gets an instance of the controller
+	 * @param string $context
+	 * @return C_NextGen_Settings_Controller
+	 */
+	static function &get_instance($context=FALSE)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = function_exists('get_called_class') ?
+				get_called_class() : get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
+	}
 
 	/**
 	 * Defines what instance methods the Attach To Post Controller has
@@ -19,20 +35,6 @@ class C_Attach_To_Post_Controller extends C_MVC_Controller
 		$this->add_mixin('Mixin_Attach_To_Post_Display_Tab');
 		$this->implement('I_Attach_To_Post_Controller');
 	}
-
-	/**
-	 * Returns an instance of the controller
-	 * @param mixed $context
-	 * @return C_Attach_To_Post_Controller
-	 */
-	static function get_instance($context=FALSE)
-	{
-		$klass = get_class();
-		if (!isset(self::$_instances[$context])) {
-			self::$_instances[$context] = new $klass($context);
-		}
-		return self::$_instances[$context];
-	}
 }
 
 /**
@@ -40,11 +42,82 @@ class C_Attach_To_Post_Controller extends C_MVC_Controller
  */
 class Mixin_Attach_To_Post_Controller extends Mixin
 {
+	function initialize()
+	{
+		$this->object->add_post_hook(
+			'enqueue_backend_resources',
+			'Enqueues resources needed for the Attach to Post interface',
+			__CLASS__,
+			'enqueue_attach_to_post_resources'
+		);
+
+	}
+
+
+	function enqueue_attach_to_post_resources()
+	{
+		// Enqueue JQuery UI libraries
+		wp_enqueue_script('jquery-ui-tabs');
+		wp_enqueue_script('jquery-ui-sortable');
+
+		// Enqueue chosen, a library to make our drop-downs look pretty
+		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
+		wp_enqueue_script(
+			'chosen', $this->static_url('chosen.js'), array('jquery')
+		);
+
+		// Ensure we have the AJAX module ready
+		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
+
+		// Enqueue logic for the Attach to Post interface as a whole
+		wp_enqueue_script(
+			'ngg_attach_to_post', $this->static_url('attach_to_post.js')
+		);
+		wp_enqueue_style(
+			'ngg_attach_to_post', $this->static_url('attach_to_post.css')
+		);
+
+		// Enqueue our Ember.js application for the "Display Tab"
+		wp_enqueue_script(
+			'handlebars',
+			$this->static_url('handlebars-1.0.0.beta.6.js')
+		);
+		wp_enqueue_script(
+			'ember',
+			$this->static_url('ember-1.0.pre.js'),
+			array('jquery', 'handlebars')
+		);
+
+		wp_enqueue_script(
+			'ngg_attach_to_post_display_tab_app',
+			$this->static_url('display_tab_app.js'),
+			array('ember')
+		);
+		wp_localize_script(
+			'ngg_attach_to_post_display_tab_app',
+			'ngg_displayed_gallery_preview_url',
+			PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
+		);
+		if ($this->object->_validate_request()) {
+			wp_localize_script(
+				'ngg_attach_to_post_display_tab_app',
+				'existing',
+				isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
+			);
+		}
+		wp_print_styles();
+		wp_print_scripts();
+
+	}
+
 	/**
 	 * Renders the interface
 	 */
-	function index()
+	function index_action()
 	{
+		// Enqueue resources
+		$this->enqueue_backend_resources();
+
 		// For a valid request, we'll display our tabbed interface
 		if ($this->object->_validate_request()) {
 			$this->object->render_view('attach_to_post', array(
@@ -64,7 +137,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	/**
 	 * Displays a preview image for the displayed gallery
 	 */
-	function preview()
+	function preview_action()
 	{
 		$filename = $this->static_file('invalid_image.png');
 		$this->set_content_type('jpeg');
@@ -77,87 +150,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$this->render();
 	}
 
-
-	/**
-	 * Enqueues resources needed for the Attach To Post Interface
-	 */
-	function enqueue_resources()
-	{
-		define('WP_ADMIN', TRUE);
-
-		if ($this->object->_validate_request()) {
-
-			// Enqueue JQuery UI
-			wp_enqueue_script('jquery-ui-tabs');
-			wp_enqueue_Script('jquery-ui-accordion');
-			wp_enqueue_script('jquery-ui-sortable');
-			wp_enqueue_style(
-				PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
-				is_ssl() ?
-					 str_replace('http:', 'https:', PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL) :
-					 PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
-				array(),
-				PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
-			);
-
-			// Enqueue NextGen Admin scripts
-			wp_enqueue_script(
-				'nextgen_admin_settings', $this->static_url('nextgen_admin_settings.js')
-			);
-			wp_enqueue_style(
-				'nextgen_admin_settings', $this->static_url('nextgen_admin_settings.css')
-			);
-
-			// Enqueue chosen, a library to make our drop-downs look pretty
-			wp_enqueue_style('chosen', $this->static_url('chosen.css'));
-			wp_enqueue_script(
-				'chosen', $this->static_url('chosen.js'), array('jquery')
-			);
-
-			// Ensure we have the AJAX module ready
-			wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
-
-			// Enqueue logic for the Attach to Post interface as a whole
-			wp_enqueue_script(
-				'ngg_attach_to_post', $this->static_url('attach_to_post.js')
-			);
-			wp_enqueue_style(
-				'ngg_attach_to_post', $this->static_url('attach_to_post.css')
-			);
-
-			// Enqueue our Ember.js application for the "Display Tab"
-			wp_enqueue_script(
-				'handlebars',
-				$this->static_url('handlebars-1.0.0.beta.6.js')
-			);
-			wp_enqueue_script(
-				'ember',
-				$this->static_url('ember-1.0.pre.js'),
-				array('jquery', 'handlebars')
-			);
-			wp_enqueue_script(
-				'ngg_attach_to_post_display_tab_app',
-				$this->static_url('display_tab_app.js'),
-				array('ember')
-			);
-			wp_localize_script(
-				'ngg_attach_to_post_display_tab_app',
-				'ngg_displayed_gallery_preview_url',
-				PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
-			);
-			wp_localize_script(
-				'ngg_attach_to_post_display_tab_app',
-				'existing',
-				isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
-			);
-
-			// Tell WordPress to continue print all enqueued resources
-			do_action('admin_enqueue_scripts');
-			do_action('admin_print_styles');
-			do_action('admin_print_scripts');
-			do_action('wp_print_scripts');
-		}
-	}
 
 	/**
 	 * Validates the request and fetches the associated displayed gallery

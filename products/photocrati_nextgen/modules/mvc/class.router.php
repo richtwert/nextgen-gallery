@@ -167,7 +167,7 @@ class Mixin_Router extends Mixin
         if (!isset($this->object->_route_cache[$domain])) $this->object->_route_cache[$domain] = array();
         if (!isset($this->object->_route_cache[$domain][$protocol])) $this->object->_route_cache[$domain][$protocol] = array();
 
-        $this->object->_route_cache[$domain][$protocol][$uri] = array($controller, 'action_'.$action, $singleton);
+        $this->object->_route_cache[$domain][$protocol][$uri] = array($controller, $action, $singleton);
     }
 
     /**
@@ -206,7 +206,7 @@ class Mixin_Router extends Mixin
             new $klass($context);
 
         // Call the controller method
-        $this->object->call_action($controller, $action, $exit);
+        $this->object->call_action($controller, $action.'_action', $exit);
 
         // If debug, show some debugging information
         if ($controller->debug) {

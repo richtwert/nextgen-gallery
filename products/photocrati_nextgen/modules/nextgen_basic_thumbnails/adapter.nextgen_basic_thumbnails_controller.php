@@ -16,7 +16,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 * This method deprecated use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
-	function index($displayed_gallery, $return=FALSE)
+	function index_action($displayed_gallery, $return=FALSE)
 	{
         $display_settings = $displayed_gallery->display_settings;
 		$current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
@@ -29,7 +29,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         {
             // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
             // as hidden (style="display: none")
-            $images = $displayed_gallery->get_images($total);
+            $images = $displayed_gallery->get_included_images($total);
             $i = 0;
             foreach ($images as &$image) {
                 if ($i < $display_settings['images_per_page'] * ($current_page - 1))
@@ -45,7 +45,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         }
         else {
             // just display the images for this page, as normal
-            $images = $displayed_gallery->get_images($display_settings['images_per_page'], $offset);
+            $images = $displayed_gallery->get_included_images($display_settings['images_per_page'], $offset);
         }
 
 		// Are there images to display?
@@ -104,9 +104,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params = $this->object->prepare_legacy_parameters(
                     $images,
                     $displayed_gallery,
-                    $pagination,
-                    $display_settings['alternative_view_link_url'],
-                    $piclens_link
+                    array(
+                        'pagination' => $pagination,
+                        'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
+                        'piclens_link' => $piclens_link
+                    )
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return);
             }
@@ -327,11 +329,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_number_of_columns',
             'nextgen_basic_thumbnails_slideshow_link_text',
             'nextgen_basic_thumbnails_piclens_link_text',
+            'nextgen_basic_templates_template',
             'nextgen_basic_thumbnails_show_slideshow_link',
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_hidden',
-            'nextgen_basic_thumbnails_ajax_pagination',
-            'nextgen_basic_templates_template'
+            'nextgen_basic_thumbnails_ajax_pagination'
 		);
 	}
 }

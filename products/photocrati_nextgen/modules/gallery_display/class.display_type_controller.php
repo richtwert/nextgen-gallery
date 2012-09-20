@@ -153,7 +153,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	/**
 	 * Renders the frontend display of the display type
 	 */
-	function index($display_type, $return=FALSE)
+	function index_action($display_type, $return=FALSE)
 	{
 		return $this->object->render_partial('index', array(), $return);
 	}
@@ -162,7 +162,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	/**
 	 * Renders the settings form for the display type
 	 */
-	function settings($display_type, $return)
+	function settings_action($display_type, $return)
 	{
 		// Get the fields for this gallery type
 		$fields = array();
@@ -293,7 +293,6 @@ class Mixin_Display_Type_Controller extends Mixin
 		// gets executed higher up in the stack, avoiding unnecessary execution
 		// of other things
 		$retval					= FALSE;
-        $original_display_type	= $displayed_gallery->display_type;
 
         // Let the request determine what display type or alternative view to render
 		if (($show = get_query_var('show'))) {
@@ -481,7 +480,7 @@ class Mixin_Display_Type_Controller extends Mixin
 
 			// Render!
 			$controller->enqueue_frontend_resources($displayed_gallery);
-			$retval = $controller->index($displayed_gallery, $return);
+			$retval = $controller->index_action($displayed_gallery, $return);
 		}
 
 		return $retval;

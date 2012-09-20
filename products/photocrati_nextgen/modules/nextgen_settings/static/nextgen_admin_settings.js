@@ -15,4 +15,10 @@ jQuery(function($){
 			}
 		});
 	});
+
+    $("div.nextgen_settings_farbtastic").each(function(i, el) {
+        if (typeof($(el).farbtastic) != "undefined") {
+            $(el).farbtastic('#' + $(el).data('nextgen-settings-farbtastic-target'));
+        }
+    });
 });

@@ -20,6 +20,15 @@ class M_Thumbnails extends C_Base_Module
 			'http://www.photocrati.com'
 		);
 	}
+
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter(
+			'I_NextGen_Backend_Controller',
+			'A_Thumbnail_Dimension_Resources'
+		);
+	}
 }
 
 new M_Thumbnails();

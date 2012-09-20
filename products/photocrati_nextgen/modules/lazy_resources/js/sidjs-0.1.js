@@ -78,10 +78,10 @@ jQuery(function(){
 				return new append(scope, node, url, attribute);
 			}
 			var container = node.tagName == 'SCRIPT' ? document.scripts : document.styleSheets;
-			var perform = false;
+			var perform = true;
 			for (var i=0; i<container.length; i++) {
 				if (url == container[i][attribute]) {
-					perform = true;
+					perform = false;
 					break;
 				}
 			}

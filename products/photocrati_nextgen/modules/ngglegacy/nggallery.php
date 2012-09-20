@@ -666,4 +666,3 @@ if (!class_exists('nggLoader')) {
 	global $ngg;
 	$ngg = new nggLoader();
 }
-?>

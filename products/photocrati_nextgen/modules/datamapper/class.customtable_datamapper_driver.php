@@ -62,7 +62,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	 */
 	function limit($max, $offset=0)
 	{
-		$limit = FALSE;
 		if ($offset)
 			$limit = $this->_wpdb()->prepare("LIMIT %d, %d",$offset,$max);
 		else
@@ -216,7 +215,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	{
 		$retval = FALSE;
 		$key = $this->object->get_primary_key_column();
-		$id = FALSE;
 
 		// Find the id of the entity
 		if (is_object($entity) && isset($entity->$key)) {

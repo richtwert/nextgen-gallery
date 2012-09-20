@@ -8,7 +8,7 @@ class C_Ajax_Controller extends C_MVC_Controller
 		$this->implement('I_Ajax_Controller');
 	}
 
-	function index()
+	function index_action()
 	{
 		$retval = FALSE;
 
@@ -34,7 +34,7 @@ class C_Ajax_Controller extends C_MVC_Controller
 	}
 
 
-	function js()
+	function js_action()
 	{
 		$this->set_content_type('javascript');
 		$this->render_view('ajax_js', array(

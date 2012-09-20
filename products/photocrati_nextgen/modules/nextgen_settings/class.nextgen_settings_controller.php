@@ -3,7 +3,7 @@
 /**
  * Provides a wp-admin page to manage NextGEN Settings
  */
-class C_NextGen_Settings_Controller extends C_MVC_Controller
+class C_NextGen_Settings_Controller extends C_NextGen_Backend_Controller
 {
 	static $_instances = array();
 
@@ -19,10 +19,11 @@ class C_NextGen_Settings_Controller extends C_MVC_Controller
 	 * @param string $context
 	 * @return C_NextGen_Settings_Controller
 	 */
-	static function get_instance($context=FALSE)
+	static function &get_instance($context=FALSE)
 	{
-		$klass = get_class();
 		if (!isset(self::$_instances[$context])) {
+			$klass = function_exists('get_called_class') ?
+				get_called_class() : get_class();
 			self::$_instances[$context] = new $klass($context);
 		}
 		return self::$_instances[$context];
@@ -34,11 +35,34 @@ class C_NextGen_Settings_Controller extends C_MVC_Controller
  */
 class Mixin_NextGen_Settings_Controller extends Mixin
 {
+	function enqueue_backend_resources()
+	{
+		$this->call_parent('enqueue_backend_resources');
+
+		wp_enqueue_script(
+			'nextgen_settings_page',
+			$this->static_url('nextgen_settings_page.js'),
+			array('jquery-ui-accordion'),
+			$this->module_version
+		);
+
+		wp_enqueue_style(
+			'nextgen_settings_page',
+			$this->static_url('nextgen_settings_page.css'),
+			array(),
+			$this->module_version
+		);
+	}
+
+
 	/**
 	 * Returns the contents of the "Options" page
 	 */
-	function index()
+	function index_action()
 	{
+		// Enqueue resources
+		$this->enqueue_backend_resources();
+
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Is this post a request? If so, process the request

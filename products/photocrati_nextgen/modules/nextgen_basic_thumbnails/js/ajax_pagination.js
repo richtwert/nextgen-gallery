@@ -45,18 +45,19 @@ function ngg_ajax_navigation(e, obj) {
 	if (jQuery(currentNode.parentNode).attr("id")) {
 
         var gallery = jQuery(currentNode.parentNode);
+		var gallery_id = gallery.attr('id');
 
 		ngg_show_loading(e);
-		
+
 		// load gallery content
 		jQuery.get(new_url, new_parameters, function (data) {
-			
+
 			// delete old content
 			gallery.children().remove();
-			
+
 			// add new content
 			gallery.replaceWith(data);
-			
+
 			// add ajax-navigation, again
 			jQuery("document").ready(function(){
 				// reset old listeners to avoid double-clicks
@@ -68,18 +69,17 @@ function ngg_ajax_navigation(e, obj) {
 
                 jQuery("a.next").unbind("click")
                                 .click(function(e) { return ngg_ajax_navigation(e, this); });
-				
-				// add shutter-listeners again
-				// shutterReloaded.init('sh');
-				
+
+				jQuery(document).trigger('refreshed');
+
 				ngg_remove_loading();
 			});
 		});
-		
+
 		// deactivate HTML link
         e.preventDefault();
 	}
-	
+
 	// an error occurred, use normal link
 	return true;
 }
@@ -90,13 +90,13 @@ function ngg_show_loading(obj) {
 	loadingImage = jQuery(document.createElement("img")).attr("src", ngg_ajax.path + "images/ajax-loader.gif").attr("alt", ngg_ajax.loading);
 
 	jQuery("body").append(loadingImage);
-	
+
 	jQuery(loadingImage).css({
 		position: "absolute",
 		top: (obj.pageY + 15) + "px",
 		left: (obj.pageX + 15) + "px"
 	});
-	
+
 	jQuery(document).mousemove(function(e) {
 		loadingImage.css({
 			top: (e.pageY + 15) + "px",

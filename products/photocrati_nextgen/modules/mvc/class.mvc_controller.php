@@ -6,7 +6,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 class Mixin_MVC_Controller_Defaults extends Mixin
 {
     // Provide a default view
-    function index($return=FALSE)
+    function index_action($return=FALSE)
     {
         $this->debug = TRUE;
         return $this->render_partial('index', array(), $return);
@@ -134,16 +134,14 @@ abstract class C_MVC_Controller extends C_Component
     // been defined, then return 404
     function __call($method, $args) {
         $retval = '';
-        if (strpos($method, 'action_') !== FALSE) {
-            $action = preg_replace("/^action_/", '', $method);
-            if ($this->is_valid_request($action)) {
+		if (preg_match("/_action$/", $method)) {
+            if ($this->is_valid_request($method)) {
                 $throw = $this->_throw_error;
                 $this->_throw_error = FALSE;
-                if (method_exists($this, $action)) $this->$action();
-                elseif (!parent::has_method($action)) {
+				if ($this->has_method($method) || method_exists($this, $method))
+					$retval = parent::__call ($method, $args);
+				else
                     $retval = $this->show_error("Page Not Found", 404);
-                }
-                else $retval = parent::__call ($action, $args);
                 $this->_throw_error = $throw;
             }
         }

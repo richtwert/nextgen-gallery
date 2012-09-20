@@ -13,7 +13,7 @@ $height = $gallery_height;
 
 		if ($cycle_interval == 0)
 			$cycle_interval = 1;
-			
+
     // init the flash output
     $swfobject = new swfobject( $flash_path, 'so' . $displayed_gallery_id, $width, $height, '7.0.0', 'false');
 
@@ -40,9 +40,12 @@ $height = $gallery_height;
     $swfobject->add_flashvars( 'frontcolor', $flash_text_color, '000000', 'string', '0x');
     $swfobject->add_flashvars( 'lightcolor', $flash_rollover_color, '000000', 'string', '0x');
     $swfobject->add_flashvars( 'screencolor', $flash_screen_color, '000000', 'string', '0x');
-    if ($flash_watermark_logo)
-    	// XXX how to access wmPath?
-        $swfobject->add_flashvars( 'logo', $ngg_options['wmPath'], '', 'string');
+    if ($flash_watermark_logo) {
+		$ngg_options = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$swfobject->add_flashvars( 'logo', $ngg_options['wmPath'], '', 'string');
+	}
+
+
     $swfobject->add_flashvars( 'audio', $flash_background_music, '', 'string');
     $swfobject->add_flashvars( 'width', $width, '260');
     $swfobject->add_flashvars( 'height', $height, '320');
@@ -60,6 +63,6 @@ $height = $gallery_height;
     $out .= "\n".'</script>';
 
     $out = apply_filters('ngg_show_slideshow_content', $out, $displayed_gallery_id, $width, $height);
-    
+
     echo $out;
-    
+

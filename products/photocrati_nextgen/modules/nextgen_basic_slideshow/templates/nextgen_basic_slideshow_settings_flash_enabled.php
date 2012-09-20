@@ -1,17 +1,35 @@
 <tr>
     <td>
-        <label for="<?php print $display_type_name . '_' . $name; ?>"><?php print $label; ?></label>
+        <label for="<?php print $display_type_name . '_' . $name; ?>"
+               class="<?php if (!empty($text)) { echo 'tooltip'; } ?>">
+            <?php print $label; ?>
+            <?php if (!empty($text)) { ?>
+            <span>
+                    <?php print $text; ?>
+                </span>
+            <?php } ?>
+        </label>
     </td>
     <td>
-        <input type="<?php print $type; ?>"
+        <input type="radio"
                id="<?php print $display_type_name . '_' . $name; ?>"
                name="<?php print $display_type_name . '[' . $name . ']'; ?>"
                class="<?php print $display_type_name . '_' . $name; ?>"
-               <?php if ($type == 'checkbox') { print checked($value, 'on', false); } ?>
-        />
+               value="1"
+               <?php checked(TRUE, $value); ?>/>
+        <label for="<?php print $display_type_name . '_' . $name; ?>"><?php _e('Yes'); ?></label>
+        &nbsp;
+        <input type="radio"
+               id="<?php print $display_type_name . '_' . $name; ?>_no"
+               name="<?php print $display_type_name . '[' . $name . ']'; ?>"
+               class="<?php print $display_type_name . '_' . $name; ?>"
+               value=""
+               <?php checked(FALSE, $value); ?>/>
+        <label for="<?php print $display_type_name . '_' . $name; ?>_no"><?php _e('No'); ?></label>
+
         <script type="text/javascript">
             jQuery(document).ready(function($) {
-                $("#<?php print $display_type_name . '_' . $name; ?>").click(function() {
+                $("input[name='<?php print $display_type_name . '[' . $name . ']'; ?>']").click(function() {
                     $("tr.nextgen-settings-slideshow-flash").toggle('slow');
                 });
             });

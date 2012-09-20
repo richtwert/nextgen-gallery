@@ -86,7 +86,6 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         // then use that - otherwise find the template
         $__filename = (strpos($__name, '/') === 0) ?
             $__name: $this->object->find_template($__name);
-        $__content = '';
         ob_start();
         extract($__vars);
         include($__filename);
@@ -110,12 +109,12 @@ class Mixin_MVC_Controller_Rendering extends Mixin
             MVC_MODULE_DIR
         );
 
-				$products = $this->get_registry()->get_product_list();
+		$products = $this->get_registry()->get_product_list();
 
-				foreach ($products as $product) {
-					$module_path = $this->get_registry()->get_product_module_path($product);
-					$patterns[] = path_join($module_path, '*');
-				}
+		foreach ($products as $product) {
+			$module_path = $this->get_registry()->get_product_module_path($product);
+			$patterns[] = path_join($module_path, '*');
+		}
 
         foreach($patterns as $glob) {
             $found = glob(path_join($glob, "templates/{$name}.php"));
@@ -142,7 +141,8 @@ class Mixin_MVC_Controller_Rendering extends Mixin
 
 		// This isn't probably the best way of getting
 		// the module path of where the method was called... but it works
-		$stack = debug_backtrace(FALSE, 10);
+		$stack = (strpos(phpversion(), '5.4') === FALSE) ?
+			debug_backtrace(FALSE) : debug_backtrace(FALSE, 10);
 		for($i=2; $i>0; $i++) {
 			if (isset($stack[$i]['file']) && (($file = $stack[$i]['file']))) {
 				if (strpos($file, 'class.extensibleobject.php') === FALSE)  {
