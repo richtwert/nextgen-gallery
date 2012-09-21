@@ -6,7 +6,6 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
     {
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->add_mixin('Mixin_NextGen_Basic_Singlepic_Settings');
-        $this->add_mixin('Mixin_NextGen_Basic_Singlepic_Cache');
     }
 
     /**
