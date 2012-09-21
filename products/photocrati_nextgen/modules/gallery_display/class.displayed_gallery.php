@@ -215,23 +215,10 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 */
 	function _create_random_image_query($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
-		// We'll get the first and last ID
-		$max = 0;
-		$min = 0;
-		$results = $mapper->select("MAX({$image_key}) AS max_id")->run_query();
-		if ($results) $max = intval($results[0]->max_id);
-		if (!$max) $max = $mapper->count();
-		$results = $mapper->select("MIN({$image_key}) AS min_id")->run_query();
-		if ($results) $min = intval($results[0]->min_id);
-
-		// Calculate a random start and end point
-		$min = rand($min, $max);
-		$max = $min+$settings->gallery_display_limit;
-
 		// Create the query
 		$mapper->select($id_only ? $image_key : '*');
-		$mapper->where(array("{$image_key} BETWEEN %d AND %d", $min, $max));
 		$mapper->order_by('rand()');
+        $mapper->limit($limit);
 
 		// Exclude specific images
 		if ($this->object->exclusions)
