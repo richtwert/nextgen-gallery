@@ -24,7 +24,7 @@
     width: 157px;
 }
 
-.gallery_page_ngg_display_settings label.tooltip {
+label.tooltip {
     position: relative;
     cursor: help;
     display: inline-block;
@@ -33,7 +33,7 @@
     color: #21759B;
 }
 
-.gallery_page_ngg_display_settings label.tooltip span {
+label.tooltip span {
     color: black;
     text-align: left;
     visibility: hidden;
@@ -60,7 +60,12 @@
     text-shadow: 0 1px 0 rgba(255,255,255,.4);
 }
 
-.gallery_page_ngg_display_settings label.tooltip:hover span
+label.tooltip-left span {
+    right: 0;
+    left: -160px;
+}
+
+label.tooltip:hover span
 {
   visibility: visible;
 }

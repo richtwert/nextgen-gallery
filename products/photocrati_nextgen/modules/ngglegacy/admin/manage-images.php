@@ -307,9 +307,13 @@ jQuery(document).ready( function() {
 				<tr>
 					<th align="left">&nbsp;</th>
 					<th align="left">&nbsp;</th>
-					<th align="right"><?php _e('Create new page', 'nggallery') ?>:</th>
+					<th align="right">
+                        <label for='ngg_settings_parent_id' class='tooltip tooltip-left'><?php _e('Create new page', 'nggallery') ?>:
+                            <span>Clicking <?php _e('Add Page'); ?> will create a new page with the same name as this gallery and will display the gallery on that new page. You can create a sub-page by selecting the parent page from the drop down.</span>
+                        </label>
+                    </th>
 					<th align="left">
-					<select name="parent_id" style="width:95%">
+					<select name="parent_id" style="width:95%" id='ngg_settings_parent_id'>
 						<option value="0"><?php _e ('Main page (No parent)', 'nggallery'); ?></option>
 						<?php parent_dropdown (); ?>
 					</select>

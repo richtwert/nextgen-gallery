@@ -222,6 +222,12 @@ class M_Gallery_Display extends C_Base_Module
 			wp_enqueue_script('iframely', $this->static_url('iframely.js'));
 			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
 		}
+
+        // for tooltip styling
+        if (isset($_GET['page']) && $_GET['page'] == 'nggallery-manage-gallery')
+        {
+            wp_enqueue_style('nggadmin', $this->static_url('nextgen_display_settings_page.css'));
+        }
 	}
 
 	/**
