@@ -28,9 +28,6 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 	{
 		parent::initialize();
 		$this->_add_routes();
-		
-#		var_dump($this->object->get_params_from_name('portfolio-005-nggid014-ngg0dyn-120x90x100-00f0w011c011r010.jpg'));
-#		var_dump($this->object->get_image_name(4, array('width' => 120, 'height' => '90')));
 	}
 	
 	function _register_adapters()

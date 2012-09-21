@@ -328,21 +328,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return bool
 	 */
-	function generate_image_size($image, $size, $crop=NULL, $quality=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
-	{
-	}
-	
-	/**
-	 * Generates a thumbnail for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
-	 * @return bool
-	 */
-	function generate_thumbnail($image, $width=NULL, $height=NULL, $crop=NULL, $quality=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
+	function generate_image_size($image, $size, $width=NULL, $height=NULL, $quality=NULL, $crop=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
 	{
 		$retval = FALSE;
 
 		// Get the image entity
-		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
+		if (is_numeric($image)) {
+			$image = $this->object->_image_mapper->find($image);
+		}
 
 		// Ensure we have a valid image
 		if ($image) 
@@ -371,7 +364,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 
 			// Get the image filename
-			$filename = $this->object->get_full_abspath($image);
+			$filename = $this->object->get_original_abspath($image);
 			$thumbnail = null;
 			$crop_frame = null;
 			
@@ -380,18 +373,15 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 
 			// Generate the thumbnail using WordPress
-			$existing_thumbnail_abpath = $this->object->get_thumbnail_abspath($image);
+			$existing_image_abpath = $this->object->get_image_abspath($image, $size);
+			$existing_image_dir = dirname($existing_image_abpath);
 
-			// XXX use $filename instead of $existing_thumbnail_abpath here? it would make it compatible with image_resize()
-			$thumbnail_info = pathinfo($existing_thumbnail_abpath);
-			$thumbnail_dir = $thumbnail_info['dirname'];
-			$thumbnail_ext = $thumbnail_info['extension'];
-			$thumbnail_name = wp_basename($existing_thumbnail_abpath, ".$thumbnail_ext");
-      $thumbnail_suffix = "{$width}x{$height}";
-
-			// XXX removing the old thumbnail might not be what we want when thumb size is dynamic or passed through shortcode etc.
-      // if (file_exists($existing_thumbnail_abpath)) unlink($existing_thumbnail_abpath);
-			wp_mkdir_p($thumbnail_dir);
+			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it
+      if (file_exists($existing_image_abpath)) {
+      	unlink($existing_image_abpath);
+      }
+      
+			wp_mkdir_p($existing_image_dir);
 			
 			$params = array(
 				'width' => $width,
@@ -403,7 +393,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				'crop_frame' => $crop_frame,
 			);
 			
-			$clone_path = "{$thumbnail_dir}/{$thumbnail_name}-{$thumbnail_suffix}.{$thumbnail_ext}";
+			$clone_path = $existing_image_abpath;
 			$thumbnail = $this->object->generate_image_clone($filename, $clone_path, $params);
 			
 			// We successfully generated the thumbnail
@@ -423,7 +413,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					$image->meta_data = array();
 				}
 				
-				$image->meta_data['thumbnail'] = array(
+				$image->meta_data[$size] = array(
 					'width'		=>	$dimensions[0],
 					'height'	=>	$dimensions[1],
 					'filename'	=>	$clone_path,
@@ -446,6 +436,16 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		}
 
 		return $retval;
+	}
+	
+	/**
+	 * Generates a thumbnail for an image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @return bool
+	 */
+	function generate_thumbnail($image, $width=NULL, $height=NULL, $quality=NULL, $crop=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
+	{
+		return $this->object->generate_image_size($image, 'thumbnail', $width, $height, $quality, $crop, $watermark, $reflection, $return_thumb);
 	}
 
 

@@ -20,6 +20,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 
         $storage  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $imap     = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+				$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
         $display_settings = $displayed_gallery->display_settings;
 
@@ -59,39 +60,15 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         if (empty($display_settings['width']))  $display_settings['width']  = $image->meta_data['width'];
         if (empty($display_settings['height'])) $display_settings['height'] = $image->meta_data['height'];
 
-        $thumbnail_url = FALSE;
-        if ($post->post_status == 'publish')
-        {
-            $thumb = $storage->generate_thumbnail(
-                $image,
-                $display_settings['width'],
-                $display_settings['height'],
-                (bool)$display_settings['crop'],
-                (int)$display_settings['quality'],
-                (!empty($display_settings['display_watermark']) ? 'text' : NULL),
-                (bool)$display_settings['display_reflection'],
-                TRUE, // return_thumb
-                TRUE  // combine_filename
-            );
-            if (empty($thumb->error))
-            {
-                $thumbnail_url = str_replace(ABSPATH, site_url() . '/', $thumb->fileName);
-            }
-        }
-
-        // we couldn't resize it this time, so give them a URL that will do it on the fly
-        if (!$thumbnail_url)
-        {
-            $thumbnail_url = trailingslashit(home_url()) . 'nextgen_image'
-                                                         . '/' . $image->pid
-                                                         . '/' . $display_settings['width']
-                                                         . 'x' . $display_settings['height']
-                                                         . '/' . $display_settings['quality']
-                                                         . '/' . $display_settings['crop']
-                                                         . '/' . $display_settings['display_watermark']
-                                                         . '/' . $display_settings['display_reflection']
-                                                         . '/';
-        }
+				$params['width'] = $display_settings['width'];
+				$params['height'] = $display_settings['height'];;
+				$params['quality'] = $display_settings['crop'];;
+				$params['crop'] = $display_settings['quality'];;
+				$params['watermark'] = $display_settings['display_watermark'];;
+				$params['reflection'] = $display_settings['display_reflection'];;
+				
+        $size = $dynthumbs->get_size_name($params);
+        $thumbnail_url = $storage->get_image_url($image, $size);
 
         if (!empty($display_settings['template']))
         {
@@ -114,6 +91,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $params['inner_content'] = $displayed_gallery->inner_content;
             $params['settings']      = $display_settings;
             $params['thumbnail_url'] = $thumbnail_url;
+            
             return $this->object->render_partial('nextgen_basic_singlepic', $params, $return);
         }
     }

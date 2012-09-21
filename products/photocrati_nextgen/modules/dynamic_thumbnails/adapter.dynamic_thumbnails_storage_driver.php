@@ -4,7 +4,7 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 {
 	function get_image_abspath($image, $size=FALSE, $check_existance=FALSE)
 	{
-		$dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 		
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 		{
@@ -48,7 +48,7 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 	
 	function get_image_url($image, $size=FALSE)
 	{
-		$dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 		
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 		{
@@ -65,5 +65,24 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 		}
 		
 		return $this->object->call_parent('get_image_url', $image, $size);
+	}
+	
+	function generate_image_size($image, $size, $width=NULL, $height=NULL, $quality=NULL, $crop=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
+	{
+		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+		
+		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
+		{
+			$params = $dynthumbs->get_params_from_name($size, true);
+			
+			$width = $params['width'];
+			$height = $params['height'];
+			$quality = $params['quality'];
+			$crop = $params['crop'];
+			$watermark = $params['watermark'];
+			$reflection = $params['reflection'];
+		}
+		
+		return $this->object->call_parent('generate_image_size', $image, $size, $width, $height, $quality, $crop, $watermark, $reflection, $return_thumb);
 	}
 }

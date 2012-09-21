@@ -5,27 +5,23 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 	function define($context=FALSE)
 	{
 		parent::define($context);
-		
-		$this->add_mixin('Mixin_Dynamic_Thumnbails_Manager');
 	}
 
 	function index_action()
 	{
+		$dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+		
 		$uri = $_SERVER['REQUEST_URI'];
-		$params = $this->object->get_params_from_uri();
+		$params = $dynthumbs->get_params_from_uri($uri);
 		
 		if ($params != null)
 		{
-			$image_id = $params['image'];
 			$storage = $this->get_registry()->get_utility('I_Gallery_Storage');
 			
-			$thumbnail = $storage->generate_thumbnail(
-				$image_id, 
-				$params['width'], $params['height'], 
-				$params['crop'], $params['quality'], 
-				$params['watermark'], $params['reflection'],
-				true
-			);
+			$image_id = $params['image'];
+			$size = $dynthumbs->get_size_name($params);
+			
+			$thumbnail = $storage->generate_image_size($image_id, $size);
 			
 			if ($thumbnail) {
 				// output image and headers
