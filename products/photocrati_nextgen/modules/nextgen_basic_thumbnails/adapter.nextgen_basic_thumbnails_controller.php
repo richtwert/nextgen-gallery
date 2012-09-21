@@ -48,6 +48,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             $images = $displayed_gallery->get_included_images($display_settings['images_per_page'], $offset);
         }
 
+        if (in_array($displayed_gallery->source, array('random', 'recent')))
+        {
+            $display_settings['disable_pagination'] = TRUE;
+        };
+
 		// Are there images to display?
 		if ($images) {
 
