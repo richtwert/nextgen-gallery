@@ -104,7 +104,7 @@ a.highslide-credits:hover i {
 	position: fixed;
 	width: 100%;
 	height: 100%;
-	z-index: 1;
+	z-index: 10001;
 	background: none;
 	left: 0;
 	top: 0;
@@ -367,7 +367,7 @@ html>/**/body .highslide-gallery ul img {
 	right: 24px;
 	top: 0;
 	width: 100%;
-	z-index: 1;
+	z-index: 10001;
 }
 .draggable-header .highslide-header .highslide-move * {
 	display: none;
@@ -376,7 +376,7 @@ html>/**/body .highslide-gallery ul img {
 	position: absolute;
 	right: 2px;
 	top: 2px;
-	z-index: 5;
+	z-index: 10005;
 	padding: 0;
 }
 .draggable-header .highslide-header .highslide-close a {
@@ -415,7 +415,7 @@ html>/**/body .highslide-gallery ul img {
 	right: 24px;
 	top: 0;
 	width: 100%;
-	z-index: 1;
+	z-index: 10001;
 }
 .titlebar .highslide-header .highslide-move * {
 	display: none;
@@ -423,7 +423,7 @@ html>/**/body .highslide-gallery ul img {
 .titlebar .highslide-header li {
 	position: relative;
 	top: 3px;
-	z-index: 2;
+	z-index: 10002;
 	padding: 0 0 0 1em;
 }
 .titlebar .highslide-maincontent {
