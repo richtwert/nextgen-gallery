@@ -43,7 +43,7 @@ marginLeft : 15,
 marginRight : 15,
 marginTop : 15,
 marginBottom : 15,
-zIndexCounter : 1001, // adjust to other absolutely positioned elements
+zIndexCounter : 10001, // adjust to other absolutely positioned elements
 loadingOpacity : 0.75,
 allowMultipleInstances: true,
 numberOfImagesToPreload : 5,
