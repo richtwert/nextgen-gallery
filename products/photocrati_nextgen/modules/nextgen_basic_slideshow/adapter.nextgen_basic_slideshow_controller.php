@@ -11,50 +11,53 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
 	}
-	
+
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
 	 * This method deprecated use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
-	function index_action($displayed_gallery)
+	function index_action($displayed_gallery, $return=FALSE)
 	{
 		// Get the images to be displayed
+		$retval = '';
         $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+		if (($images = $displayed_gallery->get_included_images($displayed_gallery->get_image_count(), 0))) {
 
-		$images = $displayed_gallery->get_included_images($displayed_gallery->get_image_count(), 0);
+			// Get the gallery storage component
+			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
-		if (!$images)
-        {
-            $this->object->render_partial("no_images_found");
-            return;
-        }
+			// Create parameter list for the view
+			$params = $displayed_gallery->display_settings;
+			$params['storage']				= &$storage;
+			$params['images']				= &$images;
+			$params['displayed_gallery_id'] = $displayed_gallery->id();
+			$params['current_page']			= $current_page;
+			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
+			$params['anchor']				= 'ngg-slideshow-'.$displayed_gallery->id().'-'.$current_page;
+			$gallery_width					= $displayed_gallery->display_settings['gallery_width'];
+			$gallery_height					= $displayed_gallery->display_settings['gallery_height'];
+			$params['aspect_ratio']			= $gallery_width/$gallery_height;
 
-        // Get the gallery storage component
-        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			// Are we displayed a flash slideshow?
+			if ($displayed_gallery->display_settings['flash_enabled']) {
+				include_once(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array('lib', 'swfobject.php'))));
+				$transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+				$entity = $displayed_gallery->get_entity();
+				$transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
+				$mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+				$params['mediarss_link'] = $mediarss_link;
+			}
 
-        $params = $displayed_gallery->display_settings;
-        $params['storage']				= &$storage;
-        $params['images']				= &$images;
-        $params['displayed_gallery_id'] = $displayed_gallery->id();
-        $params['current_page']			= $current_page;
-        $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
+			$retval = $this->object->render_partial('nextgen_basic_slideshow', $params, TRUE);
+		}
 
-        // If flash slideshow gallery is enabled, generate a playlist using MediaRSS
-        if ($displayed_gallery->display_settings['flash_enabled'])
-        {
-            $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-            $entity = $displayed_gallery->get_entity();
-            $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-            $mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+		// No images found
+		else {
+			$retval = $this->object->render_partial('no_images_found', array(), $return);
+		}
 
-            $params['mediarss_link'] = $mediarss_link;
-
-            $this->object->render_partial('nextgen_basic_slideshow_flash', $params);
-            return;
-        }
-
-        $this->object->render_partial('nextgen_basic_slideshow', $params);
+		return $retval;
 	}
 
 	/**
@@ -274,7 +277,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
-	
+
 	// XXX I've put this here to remove dependency on ngglegacy (also the settings.php file is not included at this point)
 	function _search_image_rotator()
 	{
@@ -285,8 +288,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		// look first at the old place and move it to wp-content/uploads
 		if ( file_exists( NGGALLERY_ABSPATH . 'imagerotator.swf' ) )
 			@rename(NGGALLERY_ABSPATH . 'imagerotator.swf', $upload['basedir'] . '/imagerotator.swf');
-		
-		// This should be the new place	
+
+		// This should be the new place
 		if ( file_exists( $upload['basedir'] . '/imagerotator.swf' ) )
 			return $upload['baseurl'] . '/imagerotator.swf';
 
@@ -301,11 +304,11 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		// or in the plugin folder
 		if ( file_exists( WP_PLUGIN_DIR . '/imagerotator.swf' ) )
 			return WP_PLUGIN_URL . '/imagerotator.swf';
-		
+
 		// this is deprecated and will be ereased during a automatic upgrade
 		if ( file_exists( NGGALLERY_ABSPATH . 'imagerotator.swf' ) )
 			return NGGALLERY_URLPATH . 'imagerotator.swf';
-		
+
 		return '';
 	}
 
@@ -316,7 +319,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		{
 			$display_type->settings['flash_path'] = $this->object->_search_image_rotator();
 		}
-		
+
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
 
