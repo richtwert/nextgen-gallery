@@ -115,13 +115,12 @@ class Mixin_Render_Display_Type extends Mixin
 
 			// Specific images selected
 			elseif ($args['image_ids']) {
+				$args['source'] = 'galleries';
+				$args['entity_ids'] = $args['image_ids'];
 				unset($args['image_ids']);
 			}
 
-            elseif ($args['image_id']) {
-                $args['source'] = 'galleries';
-            }
-
+			// Tagcloud support
             elseif ($args['tagcloud']) {
                 $args['source'] = 'galleries';
             }
