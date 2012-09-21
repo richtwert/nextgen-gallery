@@ -208,11 +208,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 			// Get the thumbnail settings
 			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-			
+
 			if (is_null($width)) {
 				$width = $settings->thumbwidth;
 			}
-			
+
 			if (is_null($height)) {
 				$height = $settings->thumbheight;
 			}
@@ -229,7 +229,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$filename = $this->object->get_full_abspath($image);
 			$thumbnail = null;
 			$crop_frame = null;
-			
+
 			if (isset($image->meta_data) && isset($image->meta_data['thumbnail_crop_frame'])) {
 				$crop_frame = $image->meta_data['thumbnail_crop_frame'];
 			}
@@ -317,7 +317,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 			// We successfully generated the thumbnail
 			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) {
-				
+
 				if (is_null($thumbnail))
                 {
 					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
@@ -326,22 +326,22 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($watermark == 'image')
                 {
 					$thumbnail->watermarkImgPath = $settings['wmPath'];
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']); 
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
 				}
                 else if ($watermark == 'text')
                 {
 					$thumbnail->watermarkText = $settings['wmText'];
 					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);  
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
 				}
-				
+
 				if ($reflection)
                 {
 					$thumbnail->createReflection(40, 40, 50, FALSE, '#a4a4a4');
 				}
-				
+
 				$thumbnail->save($destpath, $quality);
-				
+
 				if (function_exists('getimagesize')) {
 					$dimensions = getimagesize($destpath);
 					// XXX As above...I don't think we want to overwrite these settings in the meta_data as this function could be called for dynamic thumbs and so on
@@ -359,7 +359,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($retval == 0) {
 					$retval = false;
 				}
-				
+
 				// XXX adjust this? save() returns false...
 				if (/*$retval &&*/ $return_thumb) {
 					return $thumbnail;

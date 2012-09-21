@@ -148,7 +148,7 @@ class Mixin_Render_Display_Type extends Mixin
 		}
 
 		// Validate the displayed gallery
-		if ($displayed_gallery && $displayed_gallery->validate()) {
+		if ($displayed_gallery && $displayed_galler32y->validate()) {
 
 			// Set a temporary id
 			$displayed_gallery->id(uniqid('temp'));
