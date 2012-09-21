@@ -140,11 +140,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
-		if ($displayed_gallery->display_settings['show_piclens_link']) {
-			wp_enqueue_script(
-				'piclens',
-				(is_ssl()?'https':'http').'://lite.piclens.com/current/piclens_optimized.js'
-			);
+		if ($displayed_gallery->display_settings['show_piclens_link'])
+        {
+			wp_enqueue_script('piclens', $this->static_url('piclens/lite/piclens.js'));
 		}
 
         wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL . DIRECTORY_SEPARATOR . 'ajax_pagination.js');
