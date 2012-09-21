@@ -7,6 +7,8 @@
  * There are two versions of this JS: 
  * http://lite.piclens.com/current/piclens.js				full commented file 		(~39KB)
  * http://lite.piclens.com/current/piclens_optimized.js		lighter deployment file		(~21KB)
+ *
+ * Updated 2012-09-21 by Photocrati with higher z-index scores
  */
 var PicLensLite = {
 	// PUBLIC API
