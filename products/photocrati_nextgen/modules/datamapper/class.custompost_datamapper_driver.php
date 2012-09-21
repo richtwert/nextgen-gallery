@@ -235,8 +235,8 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			if ($key == 'post_content') {
 				$post_content = $this->object->unserialize($value);
 				if ($post_content) {
-					foreach ($post_content as $key => $value) {
-						$entity->$key = $value;
+					foreach ($post_content as $key2 => $value2) {
+						$entity->$key2 = $value2;
 					}
 				}
 			}
