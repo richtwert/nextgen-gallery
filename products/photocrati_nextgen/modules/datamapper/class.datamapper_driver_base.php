@@ -314,12 +314,13 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		$retval = NULL;
 
 		try {
-			$this->object->convert_to_entity($stdObject);
+			$this->object->_convert_to_entity($stdObject);
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$stdObject->has_defaults = TRUE;
 			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {
+			var_dump($ex);
 			throw new E_InvalidEntityException;
 		}
 
@@ -386,22 +387,50 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	}
 
 	/**
-	 * If a field has no value, then use the default value
-	 * @param stdClass|C_DataMapper_Model|array $object
-	 * @param string $field
-	 * @param mixed $default_value
+	 * If a field has no value, then use the default value.
+	 * @param stdClass|C_DataMapper_Model $object
 	 */
-	function _set_default_value(&$object, $field, $default_value)
+	function _set_default_value($object)
 	{
-		if (is_array($object)) {
-			if (!isset($object[$field])) $object[$field] = NULL;
-			$value = &$object[$field];
+		$array			= NULL;
+		$field			= NULL;
+		$default_value	= NULL;
+
+		// The first argument MUST be an object
+		if (!is_object($object)) throw new E_InvalidEntityException();
+
+		// This method has two signatures:
+		// 1) _set_default_value($object, $field, $default_value)
+		// 2) _set_default_value($object, $array_field, $field, $default_value)
+
+		// Handle #1
+		$args = func_get_args();
+		if (count($args) == 4) {
+			list($object, $array, $field, $default_value) = $args;
+			if (!isset($object->$array)) {
+				$object->$array = array();
+				$object->$array[$field] = NULL;
+			}
+			else {
+				$arr = &$object->$array;
+				if (!isset($arr[$field])) $arr[$field] = NULL;
+			}
+			$array = &$object->$array;
+			$value = &$array[$field];
 		}
-		elseif (is_object($object)) {
-			if (!property_exists($object, $field)) $object->$field = NULL;
+
+		// Handle #2
+		else {
+			list($object, $field, $default_value) = $args;
+			if (!isset($object->$field)) {
+				$object->$field = NULL;
+			}
 			$value = &$object->$field;
 		}
+
+		// Set default value
 		if ($value === '' OR is_null($value)) $value = $default_value;
+
 	}
 }
 
