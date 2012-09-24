@@ -40,9 +40,7 @@ $preview_image		= trailingslashit( home_url() ) . 'index.php?callback=image&amp;
 
 ?>
 
-<script language="JavaScript">
-<!--
-	
+<script type='text/javascript'>
 	function rotateImage() {
 		
 		var rotate_angle = jQuery('input[name=ra]:checked').val();
@@ -68,8 +66,6 @@ $preview_image		= trailingslashit( home_url() ) . 'index.php?callback=image&amp;
 		jQuery("#imageToEdit").attr("src" , newUrl);
 							
 	}
-	
--->
 </script>
 
 <table width="98%" align="center" style="border:1px solid #DADADA">
