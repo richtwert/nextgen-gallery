@@ -173,13 +173,13 @@ class C_NggLegacy_Thumbnail {
 
             switch($this->format) {            	
                 case 'GIF':
-                    $this->oldImage = ImageCreateFromGif($this->fileName);
+                    $this->oldImage = @ImageCreateFromGif($this->fileName);
                     break;
                 case 'JPG':
-                       $this->oldImage = ImageCreateFromJpeg($this->fileName);
+                       $this->oldImage = @ImageCreateFromJpeg($this->fileName);
                     break;
                 case 'PNG':
-                    $this->oldImage = ImageCreateFromPng($this->fileName);
+                    $this->oldImage = @ImageCreateFromPng($this->fileName);
 					break;
             }
 			if (!$this->oldImage) { 
