@@ -46,8 +46,8 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 	/**
 	 * Serializes the data
-	 * @param type $value
-	 * @return type
+	 * @param mixed $value
+	 * @return string
 	 */
 	function serialize($value)
 	{
@@ -56,6 +56,11 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	}
 
 
+	/**
+	 * Unserializes data using our propriotory format
+	 * @param string $value
+	 * @return mixed
+	 */
 	function unserialize($value)
 	{
 		$retval = stripcslashes($value);
@@ -293,6 +298,9 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$stdObject->$key = (int) $stdObject->$key;
 		}
 
+		// Set defaults for this entity
+		$this->object->set_defaults($stdObject);
+
 		return $stdObject;
 	}
 
@@ -306,7 +314,9 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		$retval = NULL;
 
 		try {
+			$this->object->convert_to_entity($stdObject);
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+			$stdObject->has_defaults = TRUE;
 			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {
@@ -362,6 +372,36 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		if (get_class($entity) == 'stdClass') $model->get_entity();
 
 		return $retval;
+	}
+
+	/**
+	 * Called to set defaults for the record/model/entity.
+	 * Subclasses and adapters should extend this method to provide their
+	 * implementation. The implementation should make use of the
+	 * _set_default_value() method
+	 */
+	function set_defaults()
+	{
+
+	}
+
+	/**
+	 * If a field has no value, then use the default value
+	 * @param stdClass|C_DataMapper_Model|array $object
+	 * @param string $field
+	 * @param mixed $default_value
+	 */
+	function _set_default_value(&$object, $field, $default_value)
+	{
+		if (is_array($object)) {
+			if (!isset($object[$field])) $object[$field] = NULL;
+			$value = &$object[$field];
+		}
+		elseif (is_object($object)) {
+			if (!property_exists($object, $field)) $object->$field = NULL;
+			$value = &$object->$field;
+		}
+		if ($value === '' OR is_null($value)) $value = $default_value;
 	}
 }
 

@@ -12,6 +12,6 @@
                placeholder='<?php _e('# of columns'); ?>'
                min='0'
                required='required'
-               value='<?php echo esc_attr($number_of_columns); ?>'>
+               value='<?php echo esc_attr($number_of_columns); ?>'/>
     </td>
 </tr>

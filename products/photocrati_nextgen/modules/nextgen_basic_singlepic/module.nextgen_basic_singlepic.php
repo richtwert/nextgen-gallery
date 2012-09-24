@@ -7,12 +7,14 @@
 }
  ***/
 
+define('NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME', 'photocrati-nextgen_basic_singlepic');
+
 class M_NextGen_Basic_Singlepic extends C_Base_Module
 {
     function define()
     {
         parent::define(
-            'photocrati-nextgen_basic_singlepic',
+            NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME,
             'NextGen Basic Singlepic',
             'Provides a singlepic gallery for NextGEN Gallery',
             '1.9.6',
@@ -43,6 +45,12 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
             'I_Display_Type',
             'A_NextGen_Basic_Singlepic'
         );
+
+		// Provides default values for the display type
+		$this->get_registry()->add_adapter(
+			'I_Display_Type_Mapper',
+			'A_NextGen_Basic_Singlepic_Mapper'
+		);
     }
 }
 

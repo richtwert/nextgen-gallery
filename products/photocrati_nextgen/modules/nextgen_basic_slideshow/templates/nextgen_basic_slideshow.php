@@ -1,7 +1,11 @@
-<?php if (isset($return_link)): ?>
+<?php if ($return_link): ?>
 <!-- Thumbnails Link -->
 <div class="slideshowlink">
 	<?php echo $return_link ?>
+</div>
+<?php elseif ($alternative_view_link): ?>
+<div class="slideshowlink">
+	<?php echo $alternative_view_link ?>
 </div>
 <?php endif ?>
 

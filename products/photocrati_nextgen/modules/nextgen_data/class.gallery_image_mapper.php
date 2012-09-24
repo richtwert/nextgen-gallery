@@ -44,6 +44,32 @@ class Mixin_Gallery_Image_Mapper extends Mixin
 	{
 		return $entity->alttext;
 	}
+
+	function set_defaults($entity)
+	{
+		// If not set already, we'll add an exclude property. This is used
+		// by NextGEN Gallery itself, as well as the Attach to Post module
+		$this->object->_set_default_value($entity, 'exclude', FALSE);
+
+		// Ensure that the object has a description attribute
+		$this->object->_set_default_value($entity, 'description', '');
+
+		// If not set already, set a default sortorder
+		$this->object->_set_default_value($entity, 'sortorder', 0);
+
+		// The imagedate must be set
+		$this->object->_set_default_value($entity, 'imagedate', date("Y-d-m h-i-s"));
+
+		// If a filename is set, and no alttext is set, then set the alttext
+		// to the basename of the filename (legacy behavior)
+		if ($this->object->filename) {
+			$path_parts = pathinfo( $this->object->filename);
+			$alttext = ( !isset($path_parts['filename']) ) ?
+				substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) :
+				$path_parts['filename'];
+			$this->object->_set_default_value($alttext);
+		}
+	}
 }
 
 /**

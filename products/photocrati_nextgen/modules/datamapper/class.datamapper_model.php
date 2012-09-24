@@ -27,7 +27,7 @@ class C_DataMapper_Model extends C_Component
 		$this->_mapper = $mapper;
 		$this->_stdObject = $properties ? (object)$properties  : new stdClass();
 		parent::initialize();
-		$this->set_defaults();
+		if (!isset($this->has_defaults)) $this->set_defaults();
 	}
 
 	/**
@@ -98,6 +98,15 @@ class C_DataMapper_Model extends C_Component
 		foreach ($array as $key => $value) $this->_stdObject->$key = $value;
 	}
 
+
+	/**
+	 * Sets the default values for this model
+	 */
+	function set_defaults()
+	{
+		$this->get_mapper()->set_defaults($this);
+	}
+
 	/**
 	 * Destroys or deletes the entity
 	 */
@@ -140,10 +149,5 @@ class Mixin_DataMapper_Model_Validation extends Mixin
 	function validation()
 	{
 		return $this->object->is_valid();
-	}
-
-	function set_defaults()
-	{
-
 	}
 }

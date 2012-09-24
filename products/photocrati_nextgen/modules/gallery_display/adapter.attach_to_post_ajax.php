@@ -141,7 +141,6 @@ class A_Attach_To_Post_Ajax extends Mixin
 			if ($displayed_gallery) {
 				if ($displayed_gallery->save()) $response['displayed_gallery'] = $displayed_gallery->get_entity();
 				else $response['validation_errors'] = $this->attach_to_post->show_errors_for($displayed_gallery, TRUE);
-
 			}
 			else
 			{

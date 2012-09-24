@@ -22,7 +22,7 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			'photocrati-nextgen_basic_slideshow',
+			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW,
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
 			'1.9.5',
@@ -52,6 +52,12 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Display_Type',
 			'A_NextGen_Basic_Slideshow'
+		);
+
+		// Provides default values for the display type
+		$this->get_registry()->add_adapter(
+			'I_Display_Type_Mapper',
+			'A_NextGen_Basic_Slideshow_Mapper'
 		);
 
 		// Provides alternative views for this display type

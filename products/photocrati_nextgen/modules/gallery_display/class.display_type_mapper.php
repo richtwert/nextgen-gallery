@@ -70,4 +70,19 @@ class Mixin_Display_Type_Mapper extends Mixin
 	{
 		return $entity->title;
 	}
+
+
+	/**
+	 * Sets default values needed for display types
+	 */
+	function set_defaults($entity)
+	{
+		if (!isset($entity->settings)) $entity->settings = array();
+		$settings = &$entity->settings;
+		$this->_set_default_value($settings, 'show_alternative_view_link', FALSE);
+		$this->_set_default_value($settings, 'show_return_link', TRUE);
+		$this->_set_default_value($settings, 'alternative_view_link_text', '');
+		$this->_set_default_value($settings, 'return_link_text', '');
+		$this->_set_default_value($entity, 'preview_image_relpath', '');
+	}
 }

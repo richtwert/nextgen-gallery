@@ -17,8 +17,8 @@
 			id='<?php echo esc_attr($display_type_name); ?>_show_slideshow_link_no'
 			name='<?php echo esc_attr($display_type_name); ?>[show_alternative_view_link]'
 			class='ngg_thumbnail_show_slideshow_link'
-			value=''
-			<?php echo checked('', $show_alternative_view_link); ?>'>
+			value='0'
+			<?php echo checked(0, $show_alternative_view_link); ?>/>
 		<label for='<?php echo esc_attr($display_type_name); ?>_show_slideshow_link_no'>No</label>
     </td>
 </tr>

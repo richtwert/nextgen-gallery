@@ -22,7 +22,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			'photocrati-nextgen_basic_thumbnails',
+			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS,
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
 			'1.9.6',
@@ -54,6 +54,13 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			'A_NextGen_Basic_Thumbnails'
 		);
 
+		// Provides default values for the display type
+		$this->get_registry()->add_adapter(
+			'I_Display_Type_Mapper',
+			'A_NextGen_Basic_Thumbnails_Mapper'
+		);
+
+		// Provides AJAX pagination actions required by the display type
         $this->get_registry()->add_adapter(
             'I_Ajax_Controller',
             'A_Ajax_Pagination_Actions'

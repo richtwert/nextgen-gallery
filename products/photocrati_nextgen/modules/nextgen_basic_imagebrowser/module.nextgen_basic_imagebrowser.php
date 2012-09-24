@@ -31,6 +31,10 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
+		$this->get_registry()->add_adapter(
+		  'I_Display_Type_Mapper',		'A_NextGen_Basic_ImageBrowser_Mapper'
+		);
+
 		// Add validation for the display type
 		$this->get_registry()->add_adapter(
 		  'I_Display_Type',			    'A_NextGen_Basic_ImageBrowser'

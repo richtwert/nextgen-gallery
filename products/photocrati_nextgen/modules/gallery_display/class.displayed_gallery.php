@@ -42,45 +42,10 @@ class C_Displayed_Gallery extends C_DataMapper_Model
  */
 class Mixin_Displayed_Gallery_Validation extends Mixin
 {
-	function set_defaults()
-	{
-		// If the display type is set, then get it's settings and apply them as
-		// defaults to the "display_settings" of the displayed gallery
-		if (isset($this->object->display_type)) {
-
-			// Get display type mapper
-			$display_type = $this->object->get_display_type();
-			if (!$display_type) {
-				$this->object->add_error('Invalid display type', 'display_type');
-			}
-			else {
-				if (!isset($this->object->display_settings)) $this->object->display_settings = array();
-				$this->object->display_settings = $this->object->array_merge_assoc(
-					$display_type->settings, $this->object->display_settings, TRUE
-				);
-			}
-		}
-
-		// Default ordering
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-		if (!isset($this->object->order_by))
-			$this->object->order_by = $settings->galSort;
-		if (!isset($this->object->order_direction))
-			$this->object->order_direction = $settings->galSortDir;
-	}
-
-
 	function validation()
 	{
-		$this->object->set_defaults();
-
-		$this->object->validates_presence_of('source');
+		// Valid display type?
 		$this->object->validates_presence_of('display_type');
-		if (in_array($this->object->source, array('galleries', 'albums', 'tags'))) {
-			$this->object->validates_presence_of('container_ids');
-		}
-
-		// Validate the display settings
 		if (($display_type = $this->object->get_display_type())) {
 			$display_type->settings = $this->object->display_settings;
 			if (!$display_type->validate()) {
@@ -90,6 +55,15 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 					}
 				}
 			}
+		}
+		else {
+			$this->object->add_error('Invalid display type', 'display_type');
+		}
+
+		// Valid sources
+		$this->object->validates_presence_of('source');
+		if (in_array($this->object->source, array('galleries', 'albums', 'tags'))) {
+			$this->object->validates_presence_of('container_ids');
 		}
 
 		return $this->object->is_valid();
