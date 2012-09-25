@@ -48,6 +48,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             $images = $displayed_gallery->get_included_images($display_settings['images_per_page'], $offset);
         }
 
+        if (in_array($displayed_gallery->source, array('random', 'recent')))
+        {
+            $display_settings['disable_pagination'] = TRUE;
+        };
+
 		// Are there images to display?
 		if ($images) {
 
@@ -135,11 +140,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
-		if ($displayed_gallery->display_settings['show_piclens_link']) {
-			wp_enqueue_script(
-				'piclens',
-				(is_ssl()?'https':'http').'://lite.piclens.com/current/piclens_optimized.js'
-			);
+		if ($displayed_gallery->display_settings['show_piclens_link'])
+        {
+			wp_enqueue_script('piclens', $this->static_url('piclens/lite/piclens.js'));
 		}
 
         wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL . DIRECTORY_SEPARATOR . 'ajax_pagination.js');
@@ -183,7 +186,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'images_per_page_label' => _('Images per page'),
                 'images_per_page' => $display_type->settings['images_per_page'],
             ),
-            True
+            TRUE
         );
     }
 
@@ -202,7 +205,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'number_of_columns_label' => _('Number of columns to display'),
                 'number_of_columns' => $display_type->settings['number_of_columns']
             ),
-            True
+            TRUE
         );
     }
 
@@ -218,10 +221,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_slideshow_link_text',
             array(
                 'display_type_name' => $display_type->name,
-                'slideshow_link_text_label' => _('Slideshow text link'),
+                'slideshow_link_text_label' => _('Slideshow link text'),
                 'alternative_view_link_text' => $display_type->settings['alternative_view_link_text'],
             ),
-            True
+            TRUE
         );
     }
 
@@ -237,10 +240,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_settings_piclens_link_text',
             array(
                 'display_type_name' => $display_type->name,
-                'piclens_link_text_label' => _('Piclens text link'),
+                'piclens_link_text_label' => _('Piclens link text'),
                 'piclens_link_text' => $display_type->settings['piclens_link_text']
             ),
-            True
+            TRUE
         );
     }
 
@@ -259,7 +262,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'show_slideshow_link_label' => _('Show slideshow link'),
                 'show_alternative_view_link' => $display_type->settings['show_alternative_view_link']
             ),
-            True
+            TRUE
         );
     }
 
@@ -278,9 +281,52 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'show_piclens_link_label' => _('Show piclens link'),
                 'show_piclens_link' => $display_type->settings['show_piclens_link']
             ),
-            True
+            TRUE
         );
     }
+
+	/**
+	 * Renders the "Show return Link" settings field
+	 * @param C_Display_Type $display_type
+	 * @return string
+	 */
+	function _render_nextgen_basic_thumbnails_return_link_text_field($display_type)
+	{
+		return $this->render_partial(
+			'nextgen_basic_thumbnails_settings_return_link_text',
+			array(
+				'display_type_name'			=>	$display_type->name,
+				'return_link_text_label'	=>	_('Return link text'),
+				'tooltip'					=>	_('The text used for the return
+												link when viewing as Slideshow'),
+				'return_link_text'			=>	$display_type->settings['return_link_text']
+			),
+			TRUE
+		);
+	}
+
+
+	/**
+	 * Renders the "Return link text" settings field
+	 * @param type $display_type
+	 * @return string
+	 */
+	function _render_nextgen_basic_thumbnail_show_return_link_field($display_type)
+	{
+		return $this->render_partial(
+			'nextgen_basic_thumbnails_settings_show_return_link',
+			array(
+				'display_type_name'			=>	$display_type->name,
+				'show_return_link_label'	=>	_('Show return link'),
+				'tooltip'					=>	_('When viewing as a Slideshow,
+												   do you want a return link to
+												   display Thumbnails?'),
+				'show_return_link'			=>	$display_type->settings['show_return_link']
+			),
+			TRUE
+		);
+	}
+
 
     /**
      * Renders the show_piclens_link settings field
@@ -298,7 +344,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'show_all_in_lightbox_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.) This increases page load.'),
                 'show_all_in_lightbox' => $display_type->settings['show_all_in_lightbox']
             ),
-            True
+            TRUE
         );
     }
 
@@ -315,7 +361,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'ajax_pagination_label' => _('Enable Ajax pagination'),
             'ajax_pagination_desc' => _('Browse images without reloading the page.'),
             'ajax_pagination' => $display_type->settings['ajax_pagination']
-        ), True);
+        ), TRUE);
     }
 
     /**
@@ -328,12 +374,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_images_per_page',
             'nextgen_basic_thumbnails_number_of_columns',
             'nextgen_basic_thumbnails_slideshow_link_text',
+			'nextgen_basic_thumbnails_return_link_text',
             'nextgen_basic_thumbnails_piclens_link_text',
-            'nextgen_basic_templates_template',
             'nextgen_basic_thumbnails_show_slideshow_link',
+			'nextgen_basic_thumbnail_show_return_link',
             'nextgen_basic_thumbnails_show_piclens_link',
+			'nextgen_basic_templates_template',
+			'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_thumbnails_hidden',
-            'nextgen_basic_thumbnails_ajax_pagination'
 		);
 	}
 }

@@ -23,7 +23,7 @@ width: 100%;
 padding: 4px 0 5px;
 text-align: center;
 cursor: pointer;
-z-index: 1011;
+z-index: 10011;
 }
 body {
 height: 100%;
@@ -40,7 +40,7 @@ position: absolute;
 }
 div#shShutter {
 height: 100%;
-z-index: 1000;
+z-index: 10000;
 background-color: #000000;
 opacity: 0.8;
 filter:alpha(opacity=80);
@@ -48,7 +48,7 @@ filter:alpha(opacity=80);
 div#shDisplay {
 display: block;
 background-color: transparent;
-z-index: 1002;
+z-index: 10002;
 }
 div#shDisplay img#shTopImg {
 margin: 0 auto;

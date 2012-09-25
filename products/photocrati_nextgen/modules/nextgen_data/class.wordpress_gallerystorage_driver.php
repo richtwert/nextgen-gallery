@@ -71,6 +71,7 @@ class Mixin_WordPress_GalleryStorage_Driver extends Mixin
 	function get_image_url($image=FALSE, $size='full')
 	{
 		$retval = NULL;
+        $image_key = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper')->get_primary_key_column();
 
 		if ($image && (($image_id = $this->object->_get_image_id($image)))) {
 			$parts = wp_get_attachment_image_src($image->$image_key);
