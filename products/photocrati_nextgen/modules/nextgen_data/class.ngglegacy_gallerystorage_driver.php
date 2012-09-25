@@ -314,6 +314,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				{
 					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
 				}
+				else
+				{
+					$thumbnail->filename = $destpath;
+				}
 				
 				if ($watermark == 1 || $watermark === true)
 				{
@@ -427,6 +431,8 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			// We successfully generated the thumbnail
 			if ($thumbnail != null) 
 			{
+				$clone_path = $thumbnail->fileName;
+				
 				if (function_exists('getimagesize')) 
 				{
 					$dimensions = getimagesize($clone_path);
