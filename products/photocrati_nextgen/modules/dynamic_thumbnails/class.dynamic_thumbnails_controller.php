@@ -24,6 +24,12 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 			$thumbnail = $storage->generate_image_size($image_id, $size);
 			
 			if ($thumbnail) {
+				// Clear output
+				while (ob_get_level() > 0) 
+				{
+					ob_end_clean();
+				}
+				
 				// output image and headers
 				$thumbnail->show();
 			}

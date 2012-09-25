@@ -66,7 +66,14 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 				$params['watermark'] = $display_settings['display_watermark'];;
 				$params['reflection'] = $display_settings['display_reflection'];;
 				
-        $size = $dynthumbs->get_size_name($params);
+				// Fall back to full in case dynamic images aren't available
+				$size = 'full';
+				
+				if ($dynthumbs != null)
+				{
+        	$size = $dynthumbs->get_size_name($params);
+				}
+				
         $thumbnail_url = $storage->get_image_url($image, $size);
 
         if (!empty($display_settings['template']))
