@@ -90,7 +90,7 @@
 				jQuery('html,body').css('overflow', 'auto');
 			});
 
-			// Open a window, occupying 97% of the screen real estate
+			// Open a window, occupying 90% of the screen real estate
 			this.editor.windowManager.open({
 				file:	attach_to_post_url,
 				width:	window.innerWidth * .95,
