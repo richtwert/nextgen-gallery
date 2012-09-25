@@ -97,6 +97,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			if ($settings->is_valid()) {
 				$this->object->_save_lightbox_library($settings);
 				$this->object->_save_stylesheet_contents($settings->CSSfile);
+                $this->object->_save_image_slugs($settings);
 			}
 
 			// Save the changes made to the settings
@@ -144,6 +145,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
 			_('Styles')					=> $this->object->_render_styling_tab($settings),
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
+            _('Permalinks')             => $this->object->_render_permalinks_tab($settings),
 			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings)
 		);
 
@@ -192,6 +194,27 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'mediarss_activated_yes'	=>		_('Yes'),
 		), TRUE);
 	}
+
+    function _render_permalinks_tab($settings)
+    {
+        return $this->object->render_partial(
+            'permalinks_tab',
+            array(
+                'permalinks_activated'       => $settings->usePermalinks,
+                'permalinks_activated_label' => _('Activate permalinks'),
+                'permalinks_activated_help'  => _('After activating this option you must update your permalink structure once.'),
+                'permalinks_activated_no'    => _('No'),
+                'permalinks_activated_yes'   => _('Yes'),
+
+                'permalinks_slug'       => $settings->permalinkSlug,
+                'permalinks_slug_label' => _('Gallery slug name'),
+
+                'process_label' => _('Create new URL friendly image slugs'),
+                'process_value' => _('Proceed now'),
+            ),
+            TRUE
+        );
+    }
 
 
 	/**
@@ -308,6 +331,32 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		), TRUE);
 	}
 
+    function _save_image_slugs($settings)
+    {
+        if (!isset($_POST['createslugs'])) return;
+
+        global $wpdb;
+
+        $total = array('images', 'gallery', 'album');
+        $total['album']   = intval($wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->nggalbum}`"));
+        $total['gallery'] = intval($wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->nggallery}`"));
+        $total['images']  = intval($wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->nggpictures}`"));
+
+        $messages = array(
+            'album'   => __('Rebuild album structure : %s / %s albums', 'nggallery'),
+            'gallery' => __('Rebuild gallery structure : %s / %s galleries', 'nggallery'),
+            'images'  => __('Rebuild image structure : %s / %s images', 'nggallery'),
+        );
+
+        return $this->render_partial('permalinks_tab_rebuild_msg',
+            array(
+                'ajax_url' => add_query_arg('action', 'ngg_rebuild_unique_slugs', admin_url('admin-ajax.php')),
+                'messages' => $messages,
+                'total'    => $total
+            ),
+            FALSE
+        );
+    }
 
 	/**
 	 * Saves the lightbox library settings
