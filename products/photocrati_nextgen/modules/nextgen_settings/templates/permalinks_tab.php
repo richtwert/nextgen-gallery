@@ -22,7 +22,7 @@
             </p>
         </td>
     </tr>
-    <tr>
+    <tr class='nextgen-settings-permalinks-activated <?php print ($hidden) ? 'hidden' : ''; ?>'>
         <td class='column1'>
             <label for='permalinks_slug'>
                 <?php echo_h($permalinks_slug_label); ?>
@@ -35,7 +35,7 @@
                    value='<?php echo esc_attr($permalinks_slug); ?>'/>
         </td>
     </tr>
-    <tr>
+    <tr class='nextgen-settings-permalinks-activated <?php print ($hidden) ? 'hidden' : ''; ?>'>
         <td class='column1'>
             <?php echo_h($process_label); ?>
         </td>
@@ -46,4 +46,12 @@
                    value='<?php echo $process_value; ?> &raquo;'/>
         </td>
     </tr>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $("input[name='settings[usePermalinks]']").click(function() {
+                $("tr.nextgen-settings-permalinks-activated").toggle('slow');
+            });
+        });
+    </script>
 </table>

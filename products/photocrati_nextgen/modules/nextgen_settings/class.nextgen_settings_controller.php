@@ -205,12 +205,11 @@ class Mixin_NextGen_Settings_Controller extends Mixin
                 'permalinks_activated_help'  => _('After activating this option you must update your permalink structure once.'),
                 'permalinks_activated_no'    => _('No'),
                 'permalinks_activated_yes'   => _('Yes'),
-
-                'permalinks_slug'       => $settings->permalinkSlug,
-                'permalinks_slug_label' => _('Gallery slug name'),
-
-                'process_label' => _('Create new URL friendly image slugs'),
-                'process_value' => _('Proceed now'),
+                'permalinks_slug'            => $settings->permalinkSlug,
+                'permalinks_slug_label'      => _('Gallery slug name'),
+                'process_label'              => _('Create new URL friendly image slugs'),
+                'process_value'              => _('Proceed now'),
+                'hidden'                     => !(bool)$settings->usePermalinks
             ),
             TRUE
         );
