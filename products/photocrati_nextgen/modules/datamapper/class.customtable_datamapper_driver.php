@@ -113,7 +113,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 
 		$key = $this->object->get_primary_key_column();
 		$results = $this->object->run_query(
-			"SELECT COUNT({$key}) FROM {$this->object->get_table_name()}"
+			"SELECT COUNT(`{$key}`) AS `{$key}` FROM `{$this->object->get_table_name()}`"
 		);
 		if ($results && isset($results[0]->$key))
 			$retval = (int)$results[0]->$key;
