@@ -81,8 +81,6 @@
 			// We also make the parent window unscrollable, to avoid
 			// multiple scrollbars
 			this.editor.windowManager.onOpen.add(function(win){
-				win.features.top = (win.features.top - 3) < 0 ? 1 : 3 ;
-				win.features.height -= 3;
 				jQuery('html,body').css('overflow', 'hidden');
 			});
 
@@ -95,8 +93,8 @@
 			// Open a window, occupying 97% of the screen real estate
 			this.editor.windowManager.open({
 				file:	attach_to_post_url,
-				width:	window.innerWidth * .97,
-				height:	(window.innerHeight * .95),
+				width:	window.innerWidth * .95,
+				height:	(window.innerHeight * .90),
 				inline: true,
 				title:	"NextGEN Gallery - Attach To Post"
 			});
