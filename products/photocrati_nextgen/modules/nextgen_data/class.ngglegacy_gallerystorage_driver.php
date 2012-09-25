@@ -209,7 +209,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : null;
 		$destpath = null;
 		$thumbnail = null;
-		
+
 		// XXX this should maybe be removed and extra settings go into $params?
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
@@ -219,7 +219,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			// Ensure target directory exists, but only create 1 subdirectory
 			$image_dir = dirname($image_path);
 			$clone_dir = dirname($clone_path);
-			
+
 			if (!file_exists($clone_dir))
 			{
 				if (strtolower(realpath($image_dir)) != strtolower(realpath($clone_dir)))
@@ -230,7 +230,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					}
 				}
 			}
-			
+
 		  if ($crop_frame == null)
 		  {
 				$destpath = image_resize(
@@ -241,7 +241,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$quality
 				);
 		  }
-		  else 
+		  else
 		  {
 				$destpath = $clone_path;
 				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
@@ -280,13 +280,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		  }
 
 			// We successfully generated the thumbnail
-			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) 
+			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null))
 			{
 				if (is_null($thumbnail))
 				{
 					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
 				}
-				
+
 				if ($watermark == 1 || $watermark === true)
 				{
 					if (in_array($settings->wmType, array('image', 'text')))
@@ -302,13 +302,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($watermark == 'image')
 				{
 					$thumbnail->watermarkImgPath = $settings['wmPath'];
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']); 
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
 				}
 				else if ($watermark == 'text')
 				{
 					$thumbnail->watermarkText = $settings['wmText'];
 					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);  
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
 				}
 
 				if ($reflection)
@@ -322,7 +322,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $thumbnail;
 	}
-	
+
 	/**
 	 * Generates a specific size for an image
 	 * @param int|stdClass|C_NextGen_Gallery_Image $image
@@ -338,22 +338,22 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		}
 
 		// Ensure we have a valid image
-		if ($image) 
+		if ($image)
 		{
 			// Get the thumbnail settings
 			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-			
+
 			if (is_null($width)) {
 				$width = $settings->thumbwidth;
 			}
-			
+
 			if (is_null($height)) {
 				$height = $settings->thumbheight;
 			}
 
 			if (is_null($crop)) {
 				$crop = $settings->thumbfix;
-      }
+			}
 
 			if (is_null($quality)) {
 				$quality = $settings->thumbquality;
@@ -367,7 +367,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$filename = $this->object->get_original_abspath($image);
 			$thumbnail = null;
 			$crop_frame = null;
-			
+
 			if (isset($image->meta_data) && isset($image->meta_data['thumbnail_crop_frame'])) {
 				$crop_frame = $image->meta_data['thumbnail_crop_frame'];
 			}
@@ -380,9 +380,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
       if (file_exists($existing_image_abpath)) {
       	unlink($existing_image_abpath);
       }
-      
+
 			wp_mkdir_p($existing_image_dir);
-			
+
 			$params = array(
 				'width' => $width,
 				'height' => $height,
@@ -392,14 +392,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				'reflection' => $reflection,
 				'crop_frame' => $crop_frame,
 			);
-			
+
 			$clone_path = $existing_image_abpath;
 			$thumbnail = $this->object->generate_image_clone($filename, $clone_path, $params);
-			
+
 			// We successfully generated the thumbnail
-			if ($thumbnail != null) 
+			if ($thumbnail != null)
 			{
-				if (function_exists('getimagesize')) 
+				if (function_exists('getimagesize'))
 				{
 					$dimensions = getimagesize($clone_path);
 				}
@@ -407,12 +407,12 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				{
 					$dimensions = array($width, $height);
 				}
-				
-				if (!isset($image->meta_data)) 
+
+				if (!isset($image->meta_data))
 				{
 					$image->meta_data = array();
 				}
-				
+
 				$image->meta_data[$size] = array(
 					'width'		=>	$dimensions[0],
 					'height'	=>	$dimensions[1],
@@ -425,7 +425,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($retval == 0) {
 					$retval = false;
 				}
-				
+
 				if ($retval && $return_thumb) {
 					return $thumbnail;
 				}
@@ -437,7 +437,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
-	
+
 	/**
 	 * Generates a thumbnail for an image
 	 * @param int|stdClass|C_NextGen_Gallery_Image $image
