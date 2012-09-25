@@ -7,60 +7,29 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 		parent::define($context);
 	}
 
-	function index()
+	function index_action()
 	{
-		$uri = $_SERVER['REQUEST_URI'];
-		$regex = '/^\\/nextgen_image\\/(\\d+)(?:\\/(.*))?/';
-		$match = null;
+		$dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 		
-		if (preg_match($regex, $uri, $match) > 0)
+		$uri = $_SERVER['REQUEST_URI'];
+		$params = $dynthumbs->get_params_from_uri($uri);
+		
+		if ($params != null)
 		{
-			$image_id = $match[1];
-			$uri_args = isset($match[2]) ? explode('/', $match[2]) : array();
-			$params = array(
-				'width' => null,
-				'height' => null,
-				'quality' => null,
-				'crop' => null,
-				'watermark' => null,
-				'reflection' => null,
-			);
-			
-			foreach ($uri_args as $uri_arg)
-			{
-				$size_match = null;
-				
-				if ($uri_arg == 'watermark')
-				{
-					$params['watermark'] = true;
-				}
-				else if ($uri_arg == 'reflection')
-				{
-					$params['reflection'] = true;
-				}
-				else if ($uri_arg == 'crop')
-				{
-					$params['crop'] = true;
-				}
-				else if (preg_match('/(\\d+)x(\\d+)(?:x(\\d+))?/i', $uri_arg, $size_match) > 0)
-				{
-					$params['width'] = $size_match[1];
-					$params['height'] = $size_match[2];
-					$params['quality'] = isset($size_match[3]) ? $size_match[3] : null;
-				}
-			}
-			
 			$storage = $this->get_registry()->get_utility('I_Gallery_Storage');
 			
-			$thumbnail = $storage->generate_thumbnail(
-				$image_id, 
-				$params['width'], $params['height'], 
-				$params['crop'], $params['quality'], 
-				$params['watermark'], $params['reflection'],
-				true
-			);
+			$image_id = $params['image'];
+			$size = $dynthumbs->get_size_name($params);
+			
+			$thumbnail = $storage->generate_image_size($image_id, $size);
 			
 			if ($thumbnail) {
+				// Clear output
+				while (ob_get_level() > 0) 
+				{
+					ob_end_clean();
+				}
+				
 				// output image and headers
 				$thumbnail->show();
 			}
