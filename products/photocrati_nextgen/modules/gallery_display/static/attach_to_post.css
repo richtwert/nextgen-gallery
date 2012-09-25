@@ -34,7 +34,7 @@ html,body {
 
 iframe {
 	width: 100%;
-	height: 100%; /* this does not cause problems with artifical height of attach to post interface */
+	height: 80%;
 	border: 0px;
 	padding: 0px;
 	margin: 0px;
@@ -192,4 +192,5 @@ table {
 	display: block !important;
 	visibility: hidden;
 	position: absolute;
+	top: -5000px;
 }
