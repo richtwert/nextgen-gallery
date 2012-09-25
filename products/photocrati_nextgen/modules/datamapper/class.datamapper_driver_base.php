@@ -417,6 +417,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			}
 			$array = &$object->$array;
 			$value = &$array[$field];
+			if ($value === '' OR is_null($value)) $value = $default_value;
 		}
 
 		// Handle #2
@@ -425,12 +426,9 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			if (!isset($object->$field)) {
 				$object->$field = NULL;
 			}
-			$value = &$object->$field;
+			$value = $object->$field;
+			if ($value === '' OR is_null($value)) $object->$field = $default_value;
 		}
-
-		// Set default value
-		if ($value === '' OR is_null($value)) $value = $default_value;
-
 	}
 }
 

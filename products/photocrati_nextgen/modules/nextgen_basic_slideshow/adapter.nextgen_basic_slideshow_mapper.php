@@ -26,7 +26,7 @@ class Hook_NextGen_Basic_Slideshow_Defaults extends Hook
 			$this->object->_set_default_value($entity, 'settings', 'gallery_height', $settings->irHeight);
 			$this->object->_set_default_value($entity, 'settings', 'thumbnail_width', $settings->thumbwidth);
 			$this->object->_set_default_value($entity, 'settings', 'thumbnail_height', $settings->thumbheight);
-			$this->object->_set_default_value($entity, 'settings', 'cycle_interval', $settings->irRotateTime);
+			$this->object->_set_default_value($entity, 'settings', 'cycle_interval', $settings->irRotatetime);
 			$this->object->_set_default_value($entity, 'settings', 'cycle_effect', $settings->slideFx);
 			$this->object->_set_default_value($entity, 'settings', 'flash_enabled', $settings->enableIR);
 			$this->object->_set_default_value($entity, 'settings', 'flash_path', $settings->irURL);
