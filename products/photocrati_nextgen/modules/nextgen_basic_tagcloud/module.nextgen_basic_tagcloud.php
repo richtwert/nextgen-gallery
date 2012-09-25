@@ -7,12 +7,14 @@
 }
  ***/
 
+define('NEXTGEN_BASIC_TAG_CLOUD_MODULE_NAME', 'photocrati-nextgen_basic_tagcloud');
+
 class M_NextGen_Basic_Tagcloud extends C_Base_Module
 {
     function define()
     {
         parent::define(
-            'photocrati-nextgen_basic_tagcloud',
+			NEXTGEN_BASIC_TAG_CLOUD_MODULE_NAME,
             'NextGen Basic Tagcloud',
             'Provides a tagcloud for NextGEN Gallery',
             '1.9.6',
@@ -43,6 +45,12 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
             'I_Display_Type',
             'A_NextGen_Basic_Tagcloud'
         );
+
+		// Provides default values for the display type
+		$this->get_registry()->add_adapter(
+			'I_Display_Type_Mapper',
+			'A_NextGen_Basic_TagCloud_Mapper'
+		);
     }
 }
 

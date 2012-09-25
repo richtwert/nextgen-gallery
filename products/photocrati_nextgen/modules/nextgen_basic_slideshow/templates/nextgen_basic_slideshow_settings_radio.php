@@ -27,11 +27,11 @@
                id="<?php print $display_type_name . '_' . $name; ?>_no"
                name="<?php print $display_type_name . '[' . $name . ']'; ?>"
                class="<?php print $display_type_name . '_' . $name; ?>"
-               value=""
+               value="0"
                <?php if ($attr) { foreach ($attr as $name => $val) { ?>
                    <?php print $name . "='" . $val . "'\n"; ?>
                <?php }} ?>
-               <?php checked('', $value); ?>/>
+               <?php checked(0, $value); ?>/>
 
         <label for="<?php print $display_type_name . '_' . $name; ?>_no"><?php _e('No'); ?></label>
     </td>

@@ -29,8 +29,6 @@ class Mixin_NextGen_Gallery_Validation
      */
     function validation()
     {
-		$this->object->set_defaults();
-
 		// Set what will be the path to the gallery
 		$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 		$this->object->path = $storage->get_upload_relpath($this->object);
@@ -43,25 +41,6 @@ class Mixin_NextGen_Gallery_Validation
 
 		return $this->object->is_valid();
     }
-
-	/**
-	 * Sets default values for the gallery
-	 */
-	function set_defaults()
-	{
-		// If author is missing, then set to the current user id
-        // TODO: Using wordpress function. Should use abstraction
-        if (!$this->object->author) {
-            $this->object->author = get_current_user_id();
-        }
-
-		// Generate name and slug based off of the title
-		if (isset($this->object->title)) {
-			$this->object->name = sanitize_file_name( sanitize_title($this->object->title));
-			$this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
-			$this->object->slug = nggdb::get_unique_slug( sanitize_title($this->object->title), 'gallery' );
-		}
-	}
 }
 
 /**

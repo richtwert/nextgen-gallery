@@ -291,6 +291,7 @@ class M_Gallery_Display extends C_Base_Module
 		if (preg_match_all("/{$preview_url}\?id=(\d+)/", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');
+//				die(var_dump($_POST));
 				if (!preg_match("/{$preview_url}/", $_POST['post_content']))
 					$displayed_galleries_to_cleanup[] = intval($match[1]);
 			}

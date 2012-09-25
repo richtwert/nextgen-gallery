@@ -70,4 +70,14 @@ class Mixin_Lightbox_Library_Mapper
 		if ($results) $results = $results[0];
 		return $results;
 	}
+
+	/**
+	 * Sets default values for the lightbox library
+	 * @param stdClass|C_DataMapper_Model $entity
+	 */
+	function set_defaults($entity)
+	{
+		$this->object->_set_default_value($entity, 'css_stylesheets', '');
+		$this->object->_set_default_value($entity, 'scripts', '');
+	}
 }

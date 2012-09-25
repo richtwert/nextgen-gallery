@@ -10,6 +10,6 @@
                name='<?php echo esc_attr($display_type_name); ?>[alternative_view_link_text]'
                class='ngg_thumbnail_slideshow_link_text'
                placeholder='<?php _e('link text'); ?>'
-               value='<?php echo esc_attr($alternative_view_link_text); ?>'>
+               value='<?php echo esc_attr($alternative_view_link_text); ?>'/>
     </td>
 </tr>

@@ -9,6 +9,13 @@
 	</div>
 	<?php endif ?>
 
+	<?php if ($return_link): ?>
+	<!-- Return link -->
+	<div class="slideshowlink">
+		<?php echo $return_link ?>
+	</div>
+	<?php endif ?>
+
 	<?php if ($show_piclens_link): ?>
 	<!-- Piclense link -->
 	<div class="piclenselink">
