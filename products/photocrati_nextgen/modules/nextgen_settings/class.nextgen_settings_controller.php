@@ -87,16 +87,17 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		$retval = array();
 
-        var_dump($_POST['resetdefault']);
-
         // WARNING: this will reset all options in I_NextGen_Settings to their defaults
         if (!empty($_POST['resetdefault']))
         {
-            $new_settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+            $new_settings = $this->object->get_registry()
+                                         ->get_utility('I_NextGen_Settings');
 
             if ($new_settings->is_multisite())
             {
-                $multi = $this->object->get_registry()->get_utility('I_NextGen_Settings', array('multisite'))->reset(TRUE);
+                $multi = $this->object->get_registry()
+                                      ->get_utility('I_NextGen_Settings', array('multisite'))
+                                      ->reset(TRUE);
             }
             $single = $new_settings->reset(TRUE);
 
@@ -109,6 +110,18 @@ class Mixin_NextGen_Settings_Controller extends Mixin
             }
 
             return $retval;
+        }
+
+        if (!empty($_POST['uninstall']))
+        {
+            print "uninstall?!<br/>";
+
+            $deactivator = $this->object->get_registry()
+                                        ->get_utility('I_NextGen_Deactivator');
+            $deactivator->uninstall();
+
+            print "done uninstalling<br/>";
+            exit;
         }
 
 		// Do we have sufficient data to continue?

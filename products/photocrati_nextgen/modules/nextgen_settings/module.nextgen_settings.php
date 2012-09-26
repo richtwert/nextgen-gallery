@@ -60,6 +60,14 @@ class M_NextGen_Settings extends C_Base_Module
 			'C_NextGen_Activator'
 		);
 
+        /**
+         * Provides a counterpart deactivation routine
+         */
+        $this->get_registry()->add_utility(
+            'I_NextGen_Deactivator',
+            'C_NextGen_Deactivator'
+        );
+
 		/**
 		 * Provides a utility to perform CRUD operations for Lightbox libraries
 		 */
@@ -94,6 +102,9 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_Ajax_Controller',
 			'A_Stylesheet_Ajax_Actions'
 		);
+
+        // plugin deactivation routine
+        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
 	}
 
 	/**

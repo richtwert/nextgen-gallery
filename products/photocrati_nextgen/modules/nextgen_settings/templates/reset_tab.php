@@ -1,5 +1,5 @@
 <?php global $wpdb; ?>
-<table border='1'>
+<table>
     <tr>
         <td class='column1'>
             <?php echo $reset_label; ?>
