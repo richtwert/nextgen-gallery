@@ -90,7 +90,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 
         // because picture_list implements ArrayAccess any array-specific actions must be taken on
         // $picture_list->container or they won't do anything
-        $picture_list = new C_NextGen_Gallery_Image_Wrapper_Collection();
+        $picture_list = new C_Image_Wrapper_Collection();
         $current_pid  = NULL;
 
         // begin processing
@@ -105,7 +105,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 
         // create our new wrappers
         foreach ($images as $image) {
-            $new_image = new C_NextGen_Gallery_Image_Wrapper($image, $displayed_gallery);
+            $new_image = new C_Image_Wrapper($image, $displayed_gallery);
             if ($pid == $new_image->$image_key)
             {
                 $current_pid = $new_image;

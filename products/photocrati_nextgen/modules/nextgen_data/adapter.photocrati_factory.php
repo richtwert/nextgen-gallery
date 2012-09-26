@@ -4,13 +4,13 @@ class A_Photocrati_Factory extends Mixin
 {
     function gallery($mapper=FALSE, $properties=array(), $context=FALSE)
     {
-        return new C_NextGen_Gallery($properties, $mapper, $context);
+        return new C_Gallery($properties, $mapper, $context);
     }
 
 
     function gallery_image($mapper=FALSE, $properties=array(), $context=FALSE)
     {
-        return new C_NextGen_Gallery_Image($properties, $mapper, $context);
+        return new C_Image($properties, $mapper, $context);
     }
 
 

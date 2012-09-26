@@ -55,7 +55,7 @@ class Mixin_Gallery_Mapper extends Mixin
 
 	/**
 	 * Sets the preview image for the gallery
-	 * @param int|stdClass|C_NextGen_Gallery $gallery
+	 * @param int|stdClass|C_Gallery $gallery
 	 * @return bool
 	 */
 	function set_gallery_preview_image($gallery)

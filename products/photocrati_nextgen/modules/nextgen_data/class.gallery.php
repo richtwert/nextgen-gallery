@@ -46,7 +46,7 @@ class Mixin_NextGen_Gallery_Validation
 /**
  * Creates a model representing a NextGEN Gallery object
  */
-class C_NextGen_Gallery extends C_DataMapper_Model
+class C_Gallery extends C_DataMapper_Model
 {
 	var $_mapper_interface = 'I_Gallery_Mapper';
 

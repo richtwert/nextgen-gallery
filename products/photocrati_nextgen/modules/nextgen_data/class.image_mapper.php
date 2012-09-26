@@ -1,6 +1,6 @@
 <?php
 
-class C_Gallery_Image_Mapper extends C_DataMapper
+class C_Image_Mapper extends C_DataMapper
 {
     public static $_instances = array();
 
@@ -29,7 +29,7 @@ class C_Gallery_Image_Mapper extends C_DataMapper
     {
         if (!isset(self::$_instances[$context]))
         {
-            self::$_instances[$context] = new C_Gallery_Image_Mapper($context);
+            self::$_instances[$context] = new C_Image_Mapper($context);
         }
         return self::$_instances[$context];
     }

@@ -1,6 +1,6 @@
 <?php
 
-class C_NextGen_Gallery_Image_Wrapper_Collection implements ArrayAccess
+class C_Image_Wrapper_Collection implements ArrayAccess
 {
 
     public $container = array();

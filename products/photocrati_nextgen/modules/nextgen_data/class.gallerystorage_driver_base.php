@@ -61,7 +61,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 	/**
 	 * Gets the upload path, optionally for a particular gallery
-	 * @param int|C_NextGen_Gallery|stdClass $gallery
+	 * @param int|C_Gallery|stdClass $gallery
 	 */
 	function get_upload_relpath($gallery=FALSE)
 	{
@@ -292,7 +292,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 	/**
 	 * Gets the url to the original-sized image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return string
 	 */
 	function get_original_url($image)
@@ -303,7 +303,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 	/**
 	 * Alias for get_original_url()
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return string
 	 */
 	function get_full_url($image)
@@ -360,10 +360,10 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 	/**
 	 * Uploads base64 file to a gallery
-	 * @param int|stdClass|C_NextGEN_Gallery $gallery
+	 * @param int|stdClass|C_Gallery $gallery
 	 * @param $data base64-encoded string of data representing the image
 	 * @param type $filename specifies the name of the file
-	 * @return C_NextGen_Gallery_Image
+	 * @return C_Image
 	 */
 	function upload_base64_image($gallery, $data, $filename=FALSE)
 	{

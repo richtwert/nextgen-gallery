@@ -166,6 +166,62 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		else return array();
 	}
 
+
+    /**
+     * Gets gallery entities to be displayed by in the displayed gallery (when album is the source)
+     * @param int $limit
+     * @param int $offset
+     * @param bool $id_only
+     */
+    function get_galleries($limit=FALSE, $offset=FALSE, $ids_only=FALSE)
+    {
+        $mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
+        $gallery_key = $mapper->get_primary_key_column();
+        $retval = array();
+
+        switch ($this->object->source) {
+
+            // TODO: The below is VERY inefficient due to the way ngglegacy stores album information
+            // in the database. We need to divide albums into the following entities:
+            // 1) Albums (previewpic, name, description)
+            // 2) Galleries (already exist)
+            // 3) Album-Galleries (album_id, gallery_id)
+            case 'albums':
+            case 'album':
+                // Fetch galleries for each container (album) specified
+                if ($this->object->container_ids && !$this->object->entity_ids) {
+
+                    // Fetch all albums specified and get the gallery ids
+                    $gallery_ids = array();
+                    $album_mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
+                    $album_key = $album_mapper->get_primary_key_column();
+                    $albums = $album_mapper->find_all(array("{$album_key} IN %s", $this->object->container_ids));
+                    foreach ($albums as $album) $gallery_ids = array_merge($gallery_ids, $album->sortorder);
+
+                    // Create query to fetch galleries
+                    $mapper->select($ids_only ? $gallery_key : '*')->where(array("{$gallery_key} IN %s", $gallery_ids));
+
+                    // Sort the galleries
+                    $mapper->order_by($this->object->order_by, $this->object->order_direction);
+
+                    // Apply a limit to the number of galleries retrieved
+                    if (!$limit) {
+                        $limit = $settings->gallery_display_limit;
+                    }
+                    $mapper->limit($limit, $offset);
+
+                    $retval = $mapper->run_query();
+                }
+                else {
+
+                }
+            case 'recent_galleries':
+            case 'random_galleries':
+            case 'gallery_tags':
+        }
+        return $retval;
+    }
+
 	/**
 	 * Gets only included images
 	 * @param int $limit
@@ -179,20 +235,20 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 
 	/**
 	 * Creates a datamapper query for finding random images
-	 * @param C_Gallery_Image_Mapper $mapper
+	 * @param C_Image_Mapper $mapper
 	 * @param string $image_key
 	 * @param C_NextGen_Settings $settings
 	 * @param int|FALSE $limit
 	 * @param int|FALSE $offset
 	 * @param bool $id_only
-	 * @return C_Gallery_Image_Mapper
+	 * @return C_Image_Mapper
 	 */
 	function _create_random_image_query($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
 		// Create the query
 		$mapper->select($id_only ? $image_key : '*');
 		$mapper->order_by('rand()');
-        $mapper->limit($limit);
+        $mapper->limit($limit, $offset);
 
 		// Exclude specific images
 		if ($this->object->exclusions)
@@ -212,13 +268,13 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	/**
 	 * Creates a datamapper query for images, using galleries as a source
 	 * for images
-	 * @param C_Gallery_Image_Mapper $mapper
+	 * @param C_Image_Mapper $mapper
 	 * @param string $image_key
 	 * @param C_NextGen_Settings $settings
 	 * @param int|FALSE $limit
 	 * @param int|FALSE $offset
 	 * @param bool $id_only
-	 * @return C_Gallery_Image_Mapper
+	 * @return C_Image_Mapper
 	 */
 	function _create_image_query_for_galleries($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
 	{
@@ -298,18 +354,44 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 
 
 	/**
-	 * Get the galleries associated with this display
+	 * Get the galleries (when used as containers, not entities) associated with this
+     * displayed gallery
+     * @return array
 	 */
-	function get_galleries()
+	function get_gallery_containers()
 	{
 		$retval = array();
-		if ($this->object->source == 'gallery') {
+        $gallery_sources = array(
+            'gallery',
+            'galleries',
+            'recent_galleries',
+            'random_galleries',
+            'gallery_tags'
+        );
+        if (in_array($this->object->source, $gallery_sources)) {
 			$mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
 			$gallery_key = $mapper->get_primary_key_column();
 			$mapper->select()->where(array("{$gallery_key} IN (%s)", $this->object->container_ids));
-			return $mapper->run_query();
+			$retval =  $mapper->run_query();
 		}
 		return $retval;
+	}
+
+
+    /**
+     * Gets the albums associated with this displayed gallery
+     * @return array
+     */
+    function get_album_containers()
+	{
+		$retval = array();
+		if ($this->object->source == 'album') {
+			$mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
+            $album_key = $mapper->get_primary_key_column();
+            $mapper->select()->where(array("{$album_key} IN (%s)", $this->object->contianer_ids));
+            $retval =  $mapper->run_query();
+		}
+        return $retval;
 	}
 
 

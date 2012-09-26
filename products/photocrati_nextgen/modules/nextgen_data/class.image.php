@@ -17,7 +17,7 @@ class Mixin_NextGen_Gallery_Image_Validation extends Mixin
 /**
  * Model for NextGen Gallery Images
  */
-class C_NextGen_Gallery_Image extends C_DataMapper_Model
+class C_Image extends C_DataMapper_Model
 {
 	var $_mapper_interface = 'I_Gallery_Image_Mapper';
 
@@ -47,7 +47,7 @@ class C_NextGen_Gallery_Image extends C_DataMapper_Model
 
 	/**
 	 * Returns the model representing the gallery associated with this image
-	 * @return C_NextGen_Gallery|stdClass
+	 * @return C_Gallery|stdClass
 	 */
     function get_gallery($model=FALSE)
     {
