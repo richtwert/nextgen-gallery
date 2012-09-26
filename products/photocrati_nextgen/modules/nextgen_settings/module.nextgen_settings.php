@@ -34,8 +34,9 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->activator  = $this->get_registry()->get_utility('I_NextGen_Activator');
-		$this->controller = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
+		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
+        $this->deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
+		$this->controller  = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
 	}
 
 
@@ -117,6 +118,9 @@ class M_NextGen_Settings extends C_Base_Module
 			'activate_'.PHOTOCRATI_GALLERY_PLUGIN_BASENAME,
 			array(&$this->activator, 'install')
 		);
+
+        // NextGEN Deactivator routines
+        add_action('deactivate_' . PHOTOCRATI_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'uninstall'));
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
