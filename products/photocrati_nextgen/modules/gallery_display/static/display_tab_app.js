@@ -669,7 +669,9 @@ Ember.Chosen = Ember.Select.extend({
 		parentView[this.get('fillCallback')].call(this, this.get('content'), this);
 		var select = jQuery(this.$());
 		select.attr('data-placeholder', '--Select--');
-		jQuery(this.$()).chosen();
+		jQuery(this.$()).chosen({
+			search_contains: true
+		});
 		console.log('Creating chosen drop-down');
 	}
 });
