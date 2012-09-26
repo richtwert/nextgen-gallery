@@ -35,4 +35,18 @@ class Mixin_NextGen_Deactivator extends Mixin
     function uninstall()
     {
     }
+
+    function check_uninstall()
+    {
+        $this->object->add_mixin('Mixin_MVC_Controller_Rendering');
+        $this->object->render_partial(
+            'check_uninstall',
+            array(
+                'deactivate_label'  => _('Only deactivate'),
+                'uninstall_label'   => _('Remove all NextGEN data and deactivate the plugin'),
+                'uninstall_warning' => _('Deactivating NextGEN will leave your data intact. Choose "uninstall" to remove your galleries, albums, etc.')
+            )
+        );
+        throw new E_Clean_Exit();
+    }
 }

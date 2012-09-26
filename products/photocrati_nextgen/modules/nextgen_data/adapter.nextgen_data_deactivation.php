@@ -4,7 +4,7 @@ class A_NextGen_Data_Deactivation extends Mixin
 {
     function initialize()
     {
-        $this->object->add_post_hook(
+        $this->object->add_pre_hook(
             'uninstall',
             'NextGEN Data - Deactivation',
             get_class($this),

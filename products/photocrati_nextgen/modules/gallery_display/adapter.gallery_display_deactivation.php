@@ -4,7 +4,7 @@ class A_Gallery_Display_Deactivation extends Mixin
 {
     function initialize()
     {
-        $this->object->add_post_hook(
+        $this->object->add_pre_hook(
             'uninstall',
             'Gallery Display - Deactivation',
             get_class($this),

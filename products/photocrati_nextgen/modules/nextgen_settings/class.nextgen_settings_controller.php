@@ -114,11 +114,9 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
         if (!empty($_POST['uninstall']))
         {
-            print "uninstall?!<br/>";
-
             $deactivator = $this->object->get_registry()
                                         ->get_utility('I_NextGen_Deactivator');
-            $deactivator->uninstall();
+            $deactivator->check_uninstall();
 
             print "done uninstalling<br/>";
             exit;
