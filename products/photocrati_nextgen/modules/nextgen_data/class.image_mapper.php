@@ -59,7 +59,7 @@ class Mixin_Gallery_Image_Mapper extends Mixin
 
 		// The imagedate must be set
         if ((!isset($entity->imagedate)) OR is_null($entity->imagedate) OR $entity->imagedate == '0000-00-00 00:00:00')
-            $entity->imagedate = date("Y-d-m H:i:s");
+            $entity->imagedate = date("Y-m-d H:i:s");
 
 		// If a filename is set, and no alttext is set, then set the alttext
 		// to the basename of the filename (legacy behavior)

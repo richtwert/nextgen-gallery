@@ -155,10 +155,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 				// For each row, create an entity, update it's properties, and
 				// add it to the result set
 				foreach ($this->_wpdb()->last_result as $row) {
-                    if (preg_match("/SELECT/", $sql)) {
-                        var_dump("Returned from db:");
-                        var_dump($row);
-                    }
 					$retval[] = $this->_convert_to_entity($row);
 				}
 			}
@@ -251,8 +247,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	function _create($entity)
 	{
 		$retval = FALSE;
-        var_dump("Before saving: ");
-        var_dump($this->object->_convert_to_table_data($entity));
 		$id =  $this->object->_wpdb()->insert(
 			$this->object->get_table_name(),
 			$this->object->_convert_to_table_data($entity)
