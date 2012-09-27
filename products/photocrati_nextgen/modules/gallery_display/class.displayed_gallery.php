@@ -83,18 +83,22 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 */
 	function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
 	{
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-		$mapper = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
-		$image_key = $mapper->get_primary_key_column();
-		$mapper->select($id_only ? $image_key : '*');
-		$run_query = TRUE;
+		$settings       = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$mapper         = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+        $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
+        $gallery_key    = $mapper->get_primary_key_column();
+		$image_key      = $mapper->get_primary_key_column();
+        $run_query      = TRUE;
+
+        // Make default field selection
+        $mapper->select($id_only ? $image_key : '*');
 
 		// Create query
 		switch ($this->object->source) {
 			case 'gallery':
 			case 'galleries':
 				$mapper = $this->object->_create_image_query_for_galleries(
-					$mapper, $image_key, $settings, $limit, $offset, $id_only, $skip_exclusions
+					$mapper, $image_key, $gallery_key, $settings, $limit, $offset, $id_only, $skip_exclusions
 				);
 				break;
 			case 'recent':
@@ -108,14 +112,14 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				// Limit by specified galleries
 				if ($this->object->container_ids) {
 					$mapper->where(
-						array("galleryid in (%s)", $this->object->container_ids)
+						array("{$gallery_key} in (%s)", $this->object->container_ids)
 					);
 				}
 				break;
 			case 'random':
 			case 'random_images':
 				$mapper = $this->object->_create_random_image_query(
-					$mapper, $image_key, $settings, $limit, $offset, $id_only
+					$mapper, $image_key, $gallery_key, $settings, $limit, $offset, $id_only
 				);
 				break;
 			case 'image_tags':
@@ -173,51 +177,109 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
      * @param int $offset
      * @param bool $id_only
      */
-    function get_galleries($limit=FALSE, $offset=FALSE, $ids_only=FALSE)
+    function get_album_entities($limit=FALSE, $offset=FALSE, $ids_only=FALSE, $skip_exclusions=FALSE)
     {
-        $mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
+        $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
         $gallery_key = $mapper->get_primary_key_column();
+        $album_mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
+        $album_key = $album_mapper->get_primary_key_column();
         $retval = array();
+
+        // Apply default limit
+        if (!$limit) $limit = $settings->gallery_display_limit;
 
         switch ($this->object->source) {
 
-            // TODO: The below is VERY inefficient due to the way ngglegacy stores album information
-            // in the database. We need to divide albums into the following entities:
-            // 1) Albums (previewpic, name, description)
-            // 2) Galleries (already exist)
-            // 3) Album-Galleries (album_id, gallery_id)
             case 'albums':
             case 'album':
-                // Fetch galleries for each container (album) specified
-                if ($this->object->container_ids && !$this->object->entity_ids) {
+                $entity_ids = $this->object->entity_ids;
 
-                    // Fetch all albums specified and get the gallery ids
-                    $gallery_ids = array();
-                    $album_mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
-                    $album_key = $album_mapper->get_primary_key_column();
-                    $albums = $album_mapper->find_all(array("{$album_key} IN %s", $this->object->container_ids));
-                    foreach ($albums as $album) $gallery_ids = array_merge($gallery_ids, $album->sortorder);
+                // If container ids have been specified, then get their entity ids
+                if ($this->object->container_ids) {
+                    $entity_ids = $this->object->_get_album_entities(
+                        $album_mapper, $album_key, $this->object->container_ids, $ids_only
+                    );
+                }
 
-                    // Create query to fetch galleries
-                    $mapper->select($ids_only ? $gallery_key : '*')->where(array("{$gallery_key} IN %s", $gallery_ids));
+                // Collect gallery ids and sub-album ids
+                $gallery_ids    = array();
+                $galleries      = array();
+                $subalbum_ids   = array();
+                $subalbums      = array();
+                foreach ($entity_ids as $id) {
+                    if (strpos($id, 'a') === 0) $subalbum_ids[] = $id;
+                    else $gallery_ids[] = $id;
+                }
 
-                    // Sort the galleries
-                    $mapper->order_by($this->object->order_by, $this->object->order_direction);
+                // If we're not to return ids, then get the galleries and albums to display
+                if (!$ids_only) {
+                    if ($gallery_ids) $galleries = $gallery_mapper->select('*')->where(array(
+                        "{$gallery_key} IN (%s)", $gallery_ids
+                    ))->run_query();
+                    if ($subalbum_ids) $subalbums = $album_mapper->select('*')->where(array(
+                        "{$album_key} IN (%s)", $subalbum_ids
+                    ))->run_query();
 
-                    // Apply a limit to the number of galleries retrieved
-                    if (!$limit) {
-                        $limit = $settings->gallery_display_limit;
+                    // Return entities in specified order
+                    foreach ($entity_ids as $id) {
+                        $obj = NULL;
+
+                        // Get object, whether it be a gallery or sub-album
+                        if (strpos($id, 'a') === 0) $obj = array_shift($subalbums);
+                        else $obj = array_shift($galleries);
+
+                        // Determine whether the object is excluded
+                        if (in_array($id, $this->object->exclusions)) $obj->exclude = 1;
+                        elseif ($this->object->entity_ids) {
+                            if (in_array($id, $this->object->entity_ids)) $obj->exclude = 0;
+                            else $obj->exclude = 1;
+                        }
+                        else $obj->exclude = 0;
+
+                        // Return the object, if it's not to be excluded and we're to skip exclusions
+                        if (!($skip_exclusions && $exclude == 1)) $retval[] = $obj;
                     }
-                    $mapper->limit($limit, $offset);
-
-                    $retval = $mapper->run_query();
                 }
+
+                // Return just the entity ids
                 else {
-
+                    if ($skip_exclusions) $retval = array_diff($entity_ids, $this->object->exclusions);
+                    else $retval = $entity_ids;
                 }
+                break;
+
+            // Fetch recent galleries
             case 'recent_galleries':
+                $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by($gallery_key, 'DESC')->limit($limit, $offset);
+                if ($this->object->container_ids) {
+                    $gallery_mapper->where(array("{$gallery_key} IN (%s)", $this->object->_get_album_entities(
+                        $album_mapper,
+                        $album_key,
+                        $this->object->container_ids,
+                        $ids_only,
+                        TRUE
+                    )));
+                }
+                break;
+
+            // Fetch random galleries
             case 'random_galleries':
+                $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by($rand())->limit($limit, $offset);
+                $gallery_mapper->where(array("{$gallery_key} NOT IN (%s)", $this->object->exclusions));
+                if ($this->object->container_ids) {
+                    $gallery_mapper->where(array("{$gallery_key} IN (%s)", $this->object->_get_album_entities(
+                        $album_mapper,
+                        $album_key,
+                        $this->object->container_ids,
+                        $ids_only,
+                        TRUE
+                    )));
+                }
+                break;
+
+            // Get a list of galleries using specific tags
             case 'gallery_tags':
+                break;
         }
         return $retval;
     }
@@ -233,6 +295,31 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		return $this->object->get_images($limit, $offset, $id_only, TRUE);
 	}
 
+
+    /**
+     * Gets all entities from a list of albums
+     * @param C_Album_Mapper $album_mapper
+     * @param string $album_key
+     * @param array $album_ids
+     * @param bool $ids_only
+     * @param bool $skip_subalbums
+     * @return array
+     */
+    function _get_album_entities($album_mapper, $album_key, $album_ids=array(), $ids_only=FALSE, $skip_subalbums=FALSE)
+    {
+        $retval = array();
+        $albums = $album_mapper->select($ids_only ? $album_key : '*')->where(array("{$album_key} IN (%s)", $album_ids));
+        $entities = array();
+        foreach ($albums as $album) foreach ($album->sortorder as $entity_id) $entities[] = $entity_id;
+        if ($skip_subalbums) foreach ($entities as $entity_id) {
+          if (strpos($entity_id, 'a') === FALSE) $retval[] = $entity_id;
+        }
+        else $retval = $entities;
+        $entities     = array_slice($offset, $limit);
+        return $entities;
+    }
+
+
 	/**
 	 * Creates a datamapper query for finding random images
 	 * @param C_Image_Mapper $mapper
@@ -243,7 +330,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param bool $id_only
 	 * @return C_Image_Mapper
 	 */
-	function _create_random_image_query($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
+	function _create_random_image_query($mapper, $image_key, $gallery_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
 		// Create the query
 		$mapper->select($id_only ? $image_key : '*');
@@ -257,7 +344,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		// Limit by specified galleries
 		if ($this->object->container_ids) {
 			$mapper->where(
-				array("galleryid in (%s)", $this->object->container_ids)
+				array("{$gallery_key} in (%s)", $this->object->container_ids)
 			);
 		}
 
@@ -276,13 +363,13 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 * @param bool $id_only
 	 * @return C_Image_Mapper
 	 */
-	function _create_image_query_for_galleries($mapper, $image_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
+	function _create_image_query_for_galleries($mapper, $image_key, $gallery_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
 	{
 		// We can do that by specifying what gallery ids we
 		// want images from:
 		if ($this->object->container_ids && !$this->object->entity_ids) {
 			$mapper->where(
-				array("galleryid in (%s)", $this->object->container_ids)
+				array("{$gallery_key} in (%s)", $this->object->container_ids)
 			);
 
 			// We can exclude images from those galleries we're not
@@ -304,7 +391,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		// we can specify the images in particular that we want to fetch
 		elseif ($this->object->entity_ids && (!$this->object->container_ids OR $skip_exclusions)) {
 			$mapper->where(
-				array("pid in %s", $this->object->entity_ids)
+				array("{$image_key} in %s", $this->object->entity_ids)
 			);
 			$mapper->order_by($this->object->order_by, $this->object->order_direction);
 		}
@@ -326,7 +413,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 
 			// Limit by specified galleries
 			$mapper->where(
-				array("galleryid in (%s)", $this->object->container_ids)
+				array("{$gallery_key} in (%s)", $this->object->container_ids)
 			);
 
 			// A user might want to sort the results by the order of
