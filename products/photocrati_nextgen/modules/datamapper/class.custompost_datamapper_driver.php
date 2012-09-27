@@ -331,7 +331,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function _save_entity($entity)
 	{
-		$post = $this->object->_convert_entity_to_post($entity);
+        $post = $this->object->_convert_entity_to_post($entity);
 		$primary_key = $this->object->get_primary_key_column();
 
 		if (($post_id = wp_insert_post($post))) {

@@ -422,31 +422,23 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 
 class C_Dynamic_Thumbnails_Manager extends C_Component
 {
-  public static $_instances = array();
+    static $_instances = array();
     
-	function define($context=FALSE)
-	{
-		parent::define($context);
-		
-    $this->implement('I_Dynamic_Thumbnails_Manager');
-		$this->add_mixin('Mixin_Dynamic_Thumbnails_Manager');
-	}
-	
-	function initialize()
-	{
-		parent::initialize();
-		
-#		var_dump($this->object->get_params_from_name('portfolio-005-nggid014-ngg0dyn-120x90x100-00f0w011c011r010.jpg'));
-#		var_dump($this->object->get_image_name(4, array('width' => 120, 'height' => '90')));
-	}
+    function define($context=FALSE)
+    {
+        parent::define($context);
 
-  static function get_instance($context = False)
-  {
+        $this->implement('I_Dynamic_Thumbnails_Manager');
+        $this->add_mixin('Mixin_Dynamic_Thumbnails_Manager');
+    }
+
+    static function get_instance($context = False)
+    {
 		if (!isset(self::$_instances[$context]))
 		{
 				self::$_instances[$context] = new C_Dynamic_Thumbnails_Manager($context);
 		}
 
 		return self::$_instances[$context];
-  }
+    }
 }

@@ -97,10 +97,10 @@ class Mixin_Gallery_Mapper extends Mixin
 		$this->object->_set_default_value($entity, 'author', get_current_user_id());
 
 		// Generate name and slug based off of the title
-		if (isset($this->object->title)) {
-			$this->object->name = sanitize_file_name( sanitize_title($this->object->title));
-			$this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
-			$this->object->slug = nggdb::get_unique_slug( sanitize_title($this->object->title), 'gallery' );
+		if (isset($entity->title)) {
+			$entity->name = sanitize_file_name( sanitize_title($entity->title));
+			$entity->name = apply_filters('ngg_gallery_name', $entity->name);
+			$entity->slug = nggdb::get_unique_slug( sanitize_title($entity->title), 'gallery' );
 		}
 	}
 }

@@ -85,8 +85,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	{
 		$settings       = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$mapper         = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
-        $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
-        $gallery_key    = $mapper->get_primary_key_column();
+        $gallery_key    = 'galleryid'; // foreign key
 		$image_key      = $mapper->get_primary_key_column();
         $run_query      = TRUE;
 
