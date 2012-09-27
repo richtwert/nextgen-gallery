@@ -82,6 +82,12 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_NextGen_Settings_Controller',
 			'C_NextGen_Settings_Controller'
 		);
+
+        // Provides the deactivator "check uninstall" page
+        $this->get_registry()->add_utility(
+            'I_NextGen_Deactivator_Controller',
+            'C_NextGen_Deactivator_Controller'
+        );
 	}
 
 	/**
@@ -145,6 +151,19 @@ class M_NextGen_Settings extends C_Base_Module
 			$this->page_name,
 			array(&$this->controller, 'index_action')
 		);
+
+        // nextgen-deactivator 'check uninstall' page
+        add_submenu_page(
+            NULL,
+            _('NextGEN Gallery - Check Uninstall'),
+            _('Check Uninstall'),
+            'administrator',
+            'ngg_deactivator_check_uninstall',
+            array(
+                $this->get_registry()->get_utility('I_NextGen_Deactivator_Controller'),
+                'index_action'
+            )
+        );
 	}
 }
 

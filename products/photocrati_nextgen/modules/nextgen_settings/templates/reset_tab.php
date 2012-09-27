@@ -18,15 +18,17 @@
                 <?php echo $uninstall_label; ?>
             </td>
             <td>
-                <input type="submit"
-                       name="uninstall"
+                <button type='button'
+                       name="check_uninstall"
                        class="button delete button-secondary"
-                       value="<?php echo $uninstall_label; ?>"
-                       onclick="javascript:return confirm('<?php echo $uninstall_warning; ?>');"/>
+                       onclick='location.href="<?php echo $check_uninstall_url; ?>";'/>
+                    <?php echo $uninstall_label; ?>
+                </button>
             </td>
         </tr>
         <tr>
             <td class='column1' colspan='2'>
+                <?php var_dump($check_uninstall_url); ?>
                 <p style='color: red;'>
                     <strong><?php echo $uninstall_warning_2; ?></strong>
                     <?php echo $uninstall_warning_3; ?>

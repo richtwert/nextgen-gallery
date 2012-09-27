@@ -112,16 +112,6 @@ class Mixin_NextGen_Settings_Controller extends Mixin
             return $retval;
         }
 
-        if (!empty($_POST['uninstall']))
-        {
-            $deactivator = $this->object->get_registry()
-                                        ->get_utility('I_NextGen_Deactivator');
-            $deactivator->check_uninstall();
-
-            print "done uninstalling<br/>";
-            exit;
-        }
-
 		// Do we have sufficient data to continue?
 		if (($params = $this->object->param('settings'))) {
 
@@ -261,14 +251,14 @@ class Mixin_NextGen_Settings_Controller extends Mixin
                 'reset_value'   => _('Reset settings'),
                 'reset_warning' => _('Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.'),
 
-                'show_uninstall'  => (!is_multisite() || wpmu_site_admin()),
-
+                'show_uninstall'      => (!is_multisite() || wpmu_site_admin()),
                 'uninstall_label'     => _('Uninstall plugin'),
                 'uninstall_warning'   => _('You are about to uninstall this plugin.\nThis is not reversible.\n\nChoose [Cancel] to Stop, [OK] to Uninstall.\n'),
                 'uninstall_desc'      => _('Before deactivating NextGen press the "Uninstall plugin" button. This will remove the data that Wordpress does not remove when deactivating plugins. You should first make a database backup of the following tables:'),
                 'uninstall_warning_2' => _('WARNING:'),
                 'uninstall_warning_3' => _('This cannot be undone.'),
-                'uninstall_tables'    => array($wpdb->nggpictures, $wpdb->nggalbum, $wpdb->nggallery)
+                'uninstall_tables'    => array($wpdb->nggpictures, $wpdb->nggalbum, $wpdb->nggallery),
+                'check_uninstall_url' => menu_page_url('ngg_deactivator_check_uninstall', FALSE)
             ),
             TRUE
         );

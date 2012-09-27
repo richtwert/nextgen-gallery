@@ -2,11 +2,15 @@
 
 <p><?php echo $uninstall_warning; ?></p>
 
-<form>
+<form method='POST'>
+
     <input type='submit'
-           name='deactivate'
+           name='check_uninstall[deactivate]'
            value='<?php echo $deactivate_label; ?>'/>
+
     <input type='submit'
-           name='uninstall'
-           value='<?php echo $uninstall_label; ?>'/>
+           name='check_uninstall[uninstall]'
+           value='<?php echo $uninstall_label; ?>'
+           onclick="javascript:return confirm('<?php echo $uninstall_warning; ?>');"/>
+
 </form>
