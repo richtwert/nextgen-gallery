@@ -180,10 +180,11 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
     function get_album_entities($limit=FALSE, $offset=FALSE, $ids_only=FALSE, $skip_exclusions=FALSE)
     {
         $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
-        $gallery_key = $mapper->get_primary_key_column();
-        $album_mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
-        $album_key = $album_mapper->get_primary_key_column();
-        $retval = array();
+        $gallery_key    = $gallery_mapper->get_primary_key_column();
+        $album_mapper   = $this->object->get_registry()->get_utility('I_Album_Mapper');
+        $album_key      = $album_mapper->get_primary_key_column();
+        $settings       = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $retval         = array();
 
         // Apply default limit
         if (!$limit) $limit = $settings->gallery_display_limit;
@@ -207,8 +208,8 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
                 $subalbum_ids   = array();
                 $subalbums      = array();
                 foreach ($entity_ids as $id) {
-                    if (strpos($id, 'a') === 0) $subalbum_ids[] = $id;
-                    else $gallery_ids[] = $id;
+                    if (strpos($id, 'a') === 0) $subalbum_ids[] = intval(str_replace('a', '', $id));
+                    else $gallery_ids[] = intval($id);
                 }
 
                 // If we're not to return ids, then get the galleries and albums to display
@@ -246,6 +247,9 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
                     if ($skip_exclusions) $retval = array_diff($entity_ids, $this->object->exclusions);
                     else $retval = $entity_ids;
                 }
+
+                // Apply limit and offset
+                $retval = array_slice($retval, $offset, $limit);
                 break;
 
             // Fetch recent galleries
@@ -308,14 +312,14 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
     function _get_album_entities($album_mapper, $album_key, $album_ids=array(), $ids_only=FALSE, $skip_subalbums=FALSE)
     {
         $retval = array();
-        $albums = $album_mapper->select($ids_only ? $album_key : '*')->where(array("{$album_key} IN (%s)", $album_ids));
+        $album_mapper->select($ids_only ? $album_key : '*')->where(array("{$album_key} IN (%s)", $album_ids));
+        $albums = $album_mapper->run_query();
         $entities = array();
         foreach ($albums as $album) foreach ($album->sortorder as $entity_id) $entities[] = $entity_id;
         if ($skip_subalbums) foreach ($entities as $entity_id) {
           if (strpos($entity_id, 'a') === FALSE) $retval[] = $entity_id;
         }
         else $retval = $entities;
-        $entities     = array_slice($offset, $limit);
         return $entities;
     }
 

@@ -29,7 +29,7 @@ class C_Album_Mapper extends C_DataMapper
      */
     static function get_instance($context=FALSE)
     {
-        if (isset(self::$_instances[$context])) {
+        if (!isset(self::$_instances[$context])) {
             $klass = get_class();
             self::$_instances[$context] = new $klass($context);
         }
