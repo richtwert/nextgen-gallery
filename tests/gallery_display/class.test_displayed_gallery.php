@@ -324,5 +324,37 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
         $displayed_gallery->container_ids = array_slice($this->album_ids, 1, 2);
         $entities = $displayed_gallery->get_album_entities();
         $this->assertEqual(count($entities), 2);
+
+        // Test fetching an album which has galleries and sub-albums
+        $displayed_gallery->container_ids = $this->album_ids[count($this->album_ids)-1];
+        $entities = $displayed_gallery->get_album_entities();
+        $this->assertEqual(count($entities), 4);
+        $this->assert_is_album(array_shift($entities));
+        $this->assert_is_gallery(array_shift($entities));
+        $this->assert_is_album(array_shift($entities));
+        $this->assert_is_gallery(array_shift($entities));
+    }
+
+    /**
+     * Asserts that an entity is an album
+     * @param $entity
+     */
+    function assert_is_album($entity)
+    {
+        $alb_key = $this->alb_key;
+        $album = $this->alb_mapper->find($entity->$alb_key);
+        $this->assertEqual($entity->name, $album->name);
+    }
+
+
+    /**
+     * Asserts an entity is a gallery
+     * @param $entity
+     */
+    function assert_is_gallery($entity)
+    {
+        $gal_key = $this->gal_key;
+        $gallery = $this->gal_mapper->find($entity->$gal_key);
+        $this->assertEqual($entity->name, $gallery->name);
     }
 }
