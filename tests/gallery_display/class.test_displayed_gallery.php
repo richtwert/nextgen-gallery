@@ -303,4 +303,25 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
             else $this->fail("get_gallery_containers() returned an invalid gallery");
         }
     }
+
+
+    function test_get_album_entities()
+    {
+        // Test fetching entities from a single album
+        $displayed_gallery = $this->get_factory()->create('displayed_gallery');
+        $displayed_gallery->source = 'album';
+        $displayed_gallery->container_ids = array($this->album_ids[0]);
+        $entities = $displayed_gallery->get_album_entities();
+        $gal_key = $this->gal_key;
+        $this->assertEqual(count($entities), count($this->gallery_ids));
+        for ($i=0; $i<count($entities); $i++) {
+            $gallery = $entities[$i];
+            $this->assertEqual($gallery->$gal_key, $this->gallery_ids[$i]);
+        }
+
+        // Test fetching entities from multiple albums
+        $displayed_gallery->container_ids = array_slice($this->album_ids, 1, 2);
+        $entities = $displayed_gallery->get_album_entities();
+        $this->assertEqual(count($entities), 2);
+    }
 }

@@ -373,6 +373,7 @@ class Mixin_Album_Source_Queries extends Mixin
                         $album_mapper, $album_key, $this->object->container_ids, $ids_only
                     );
                 }
+                var_dump($entity_ids);
 
                 // Collect gallery ids and sub-album ids
                 $gallery_ids    = array();
