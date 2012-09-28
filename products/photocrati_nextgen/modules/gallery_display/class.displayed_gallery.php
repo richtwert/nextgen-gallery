@@ -401,16 +401,20 @@ class Mixin_Album_Source_Queries extends Mixin
                         if (strpos($id, 'a') === 0) $obj = array_shift($subalbums);
                         else $obj = array_shift($galleries);
 
-                        // Determine whether the object is excluded
-                        if (in_array($id, $this->object->exclusions)) $obj->exclude = 1;
-                        elseif ($this->object->entity_ids) {
-                            if (in_array($id, $this->object->entity_ids)) $obj->exclude = 0;
-                            else $obj->exclude = 1;
-                        }
-                        else $obj->exclude = 0;
+                        // If we failed to get an object, we'll assume that users forgot to prefix
+                        // the album id with 'a'.
+                        if ($obj) {
+                            // Determine whether the object is excluded
+                            if (in_array($id, $this->object->exclusions)) $obj->exclude = 1;
+                            elseif ($this->object->entity_ids) {
+                                if (in_array($id, $this->object->entity_ids)) $obj->exclude = 0;
+                                else $obj->exclude = 1;
+                            }
+                            else $obj->exclude = 0;
 
-                        // Return the object, if it's not to be excluded and we're to skip exclusions
-                        if (!($skip_exclusions && $exclude == 1)) $retval[] = $obj;
+                            // Return the object, if it's not to be excluded and we're to skip exclusions
+                            if (!($skip_exclusions && $exclude == 1)) $retval[] = $obj;
+                        }
                     }
                 }
 

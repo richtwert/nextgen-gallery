@@ -306,7 +306,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
     }
 
 
-    function test_get_album_entities()
+    function test_get_album_entities_by_container()
     {
         // Test fetching entities from a single album
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
@@ -333,17 +333,68 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
         $this->assert_is_gallery(array_shift($entities));
         $this->assert_is_album(array_shift($entities));
         $this->assert_is_gallery(array_shift($entities));
+
+        // Test that limit works
+        $entities = $displayed_gallery->get_album_entities(2, 1);
+        $this->assert_is_gallery(array_shift($entities));
+        $this->assert_is_album(array_shift($entities));
     }
+
+
+    function test_get_specific_album_entities()
+    {
+        // Test fetching specific entities to display as an album
+        $displayed_gallery = $this->get_factory()->create('displayed_gallery');
+        $displayed_gallery->source = 'album';
+        $displayed_gallery->entity_ids = array(
+          $this->gallery_ids[0],
+          'a'.$this->album_ids[1],
+          $this->gallery_ids[1]
+        );
+        $entities = $displayed_gallery->get_album_entities();
+        $gal_key = $this->gal_key;
+        $this->assertEqual(count($entities), 3);
+        $this->assertEqual($entities[0]->$gal_key, $this->gallery_ids[0]);
+        $this->assert_is_gallery(array_shift($entities));
+        $this->assert_is_album(array_shift($entities));
+        $this->assert_is_gallery(array_shift($entities));
+
+        // Test that limit works
+        $entities = $displayed_gallery->get_album_entities(2, 1);
+        $this->assert_is_album(array_shift($entities));
+        $this->assert_is_gallery(array_shift($entities));
+    }
+
+
+    function test_specific_albums_entities_with_containers()
+    {
+        $displayed_gallery = $this->get_factory()->create('displayed_gallery');
+        $displayed_gallery->source = 'album';
+        $displayed_gallery->entity_ids = array(
+            'a'.$this->album_ids[1]
+        );
+        $displayed_gallery->container_ids = array(
+            $this->album_ids[count($this->album_ids)-1]
+        );
+        $entities = $displayed_gallery->get_album_entities();
+        $this->assertEqual(count($entities), 4);
+        $this->assert_is_album($entities[0], 1);
+        $this->assert_is_gallery($entities[1], 1);
+        $this->assert_is_album($entities[2], 0);
+        $this->assert_is_gallery($entities[3], 1);
+    }
+
 
     /**
      * Asserts that an entity is an album
      * @param $entity
      */
-    function assert_is_album($entity)
+    function assert_is_album($entity, $excluded=NULL)
     {
         $alb_key = $this->alb_key;
         $album = $this->alb_mapper->find($entity->$alb_key);
         $this->assertEqual($entity->name, $album->name);
+        if (!is_null($excluded)) $this->assertTrue( $entity->exclude == $excluded);
     }
 
 
@@ -351,10 +402,11 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
      * Asserts an entity is a gallery
      * @param $entity
      */
-    function assert_is_gallery($entity)
+    function assert_is_gallery($entity, $excluded=NULL)
     {
         $gal_key = $this->gal_key;
         $gallery = $this->gal_mapper->find($entity->$gal_key);
         $this->assertEqual($entity->name, $gallery->name);
+        if (!is_null($excluded)) $this->assertTrue( $entity->exclude == $excluded);
     }
 }
