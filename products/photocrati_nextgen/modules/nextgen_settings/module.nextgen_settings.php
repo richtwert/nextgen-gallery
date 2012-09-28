@@ -34,8 +34,9 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->activator  = $this->get_registry()->get_utility('I_NextGen_Activator');
-		$this->controller = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
+		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
+        $this->deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
+		$this->controller  = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
 	}
 
 
@@ -60,6 +61,14 @@ class M_NextGen_Settings extends C_Base_Module
 			'C_NextGen_Activator'
 		);
 
+        /**
+         * Provides a counterpart deactivation routine
+         */
+        $this->get_registry()->add_utility(
+            'I_NextGen_Deactivator',
+            'C_NextGen_Deactivator'
+        );
+
 		/**
 		 * Provides a utility to perform CRUD operations for Lightbox libraries
 		 */
@@ -73,6 +82,12 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_NextGen_Settings_Controller',
 			'C_NextGen_Settings_Controller'
 		);
+
+        // Provides the deactivator "check uninstall" page
+        $this->get_registry()->add_utility(
+            'I_NextGen_Deactivator_Controller',
+            'C_NextGen_Deactivator_Controller'
+        );
 	}
 
 	/**
@@ -94,6 +109,9 @@ class M_NextGen_Settings extends C_Base_Module
 			'I_Ajax_Controller',
 			'A_Stylesheet_Ajax_Actions'
 		);
+
+        // plugin deactivation routine
+        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
 	}
 
 	/**
@@ -106,6 +124,9 @@ class M_NextGen_Settings extends C_Base_Module
 			'activate_'.PHOTOCRATI_GALLERY_PLUGIN_BASENAME,
 			array(&$this->activator, 'install')
 		);
+
+        // NextGEN Deactivator routines
+        add_action('deactivate_' . PHOTOCRATI_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
@@ -130,6 +151,19 @@ class M_NextGen_Settings extends C_Base_Module
 			$this->page_name,
 			array(&$this->controller, 'index_action')
 		);
+
+        // nextgen-deactivator 'check uninstall' page
+        add_submenu_page(
+            NULL,
+            _('NextGEN Gallery - Check Uninstall'),
+            _('Check Uninstall'),
+            'administrator',
+            'ngg_deactivator_check_uninstall',
+            array(
+                $this->get_registry()->get_utility('I_NextGen_Deactivator_Controller'),
+                'index_action'
+            )
+        );
 	}
 }
 
