@@ -430,6 +430,7 @@ class Mixin_Album_Source_Queries extends Mixin
 
             // Fetch recent galleries
             case 'recent_galleries':
+                // TODO Not finished - shouldn't be used
                 $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by($gallery_key, 'DESC')->limit($limit, $offset);
                 if ($this->object->container_ids) {
                     $gallery_mapper->where(array("{$gallery_key} IN (%s)", $this->object->_get_album_entities(
@@ -444,7 +445,8 @@ class Mixin_Album_Source_Queries extends Mixin
 
             // Fetch random galleries
             case 'random_galleries':
-                $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by($rand())->limit($limit, $offset);
+                // TODO Not finished - shouldn't be used
+                $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by('rand()')->limit($limit, $offset);
                 $gallery_mapper->where(array("{$gallery_key} NOT IN (%s)", $this->object->exclusions));
                 if ($this->object->container_ids) {
                     $gallery_mapper->where(array("{$gallery_key} IN (%s)", $this->object->_get_album_entities(
@@ -459,6 +461,7 @@ class Mixin_Album_Source_Queries extends Mixin
 
             // Get a list of galleries using specific tags
             case 'gallery_tags':
+                // TODO Not finished - shouldn't be used
                 break;
         }
         return $retval;

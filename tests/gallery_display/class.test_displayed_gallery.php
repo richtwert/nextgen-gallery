@@ -177,10 +177,10 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->assertNull($this->gal_mapper->find($gallery_id));
 		}
 
-//        foreach ($this->album_ids as $album_id) {
-//            $this->alb_mapper->destroy($album_id);
-//            $this->assertNull($this->alb_mapper->find($album_id));
-//        }
+        foreach ($this->album_ids as $album_id) {
+            $this->alb_mapper->destroy($album_id);
+            $this->assertNull($this->alb_mapper->find($album_id));
+        }
 	}
 
 	/**
