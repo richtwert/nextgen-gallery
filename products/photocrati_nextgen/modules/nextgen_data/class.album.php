@@ -46,9 +46,11 @@ class C_Album extends C_DataMapper_Model
  */
 class Mixin_NextGen_Album_Instance_Methods extends Mixin
 {
-    function validate()
+    function validation()
     {
         $this->validates_presence_of('name');
+        $this->validates_numericality_of('previewpic');
+        $this->validates_presence_of('sortorder');
         return $this->object->is_valid();
     }
 

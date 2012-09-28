@@ -380,6 +380,22 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		return $retval;
 	}
 
+
+    /**
+     * Gets validation errors for the entity
+     * @param stdClass|C_DataMapper_Model $entity
+     * @return array
+     */
+    function get_errors($entity)
+    {
+        $model = $entity;
+        if (!$this->object->is_model($entity)) {
+            $model = $this->object->convert_to_model($entity);
+        }
+        $model->validate();
+        return $model->get_errors();
+    }
+
 	/**
 	 * Called to set defaults for the record/model/entity.
 	 * Subclasses and adapters should extend this method to provide their

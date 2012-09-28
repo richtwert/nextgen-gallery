@@ -43,9 +43,10 @@ class C_Album_Mapper extends C_DataMapper
 class Hook_Unserialize_Album_Galleries extends Hook
 {
     function unserialize_galleries($entity)
-    {   if (isset($entity->sortorder) && is_string($entity->sortorder)) {
-        $entity->sortorder = $this->object->unserialize($entity->sortorder);
-    }
+    {
+        if (isset($entity->sortorder) && is_string($entity->sortorder)) {
+            $entity->sortorder = $this->object->unserialize($entity->sortorder);
+        }
     }
 }
 
@@ -73,7 +74,7 @@ class Mixin_Album_Mapper extends Mixin
     function set_defaults($entity)
     {
         $this->object->_set_default_value($entity, 'name', '');
-        $this->object->_set_default_value($entity, 'description', '');
+        $this->object->_set_default_value($entity, 'albumdesc', '');
         $this->object->_set_default_value($entity, 'sortorder', '');
         $this->object->_set_default_value($entity, 'previewpic', 0);
         $this->object->_set_default_value(
