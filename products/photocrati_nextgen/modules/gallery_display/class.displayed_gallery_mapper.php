@@ -84,5 +84,8 @@ class Mixin_Displayed_Gallery_Defaults extends Mixin
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$this->object->_set_default_value($entity, 'order_by', $settings->galSort);
 		$this->object->_set_default_value($entity, 'order_direction', $settings->galSortDir);
+
+        // Ensure we have an exclusions array
+        $this->object->_set_default_value($entity, 'exclusions', array());
 	}
 }

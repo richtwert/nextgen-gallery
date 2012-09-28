@@ -36,6 +36,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
 		// Get keys
         $this->gallery_ids              = array();
+        $this->album_ids                = array();
 		$this->gal_key  =   $gal_key	= $this->gal_mapper->get_primary_key_column();
 		$this->img_key  =   $img_key	= $this->img_mapper->get_primary_key_column();
 		$this->alb_key  =   $alb_key	= $this->alb_mapper->get_primary_key_column();
@@ -176,10 +177,10 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->assertNull($this->gal_mapper->find($gallery_id));
 		}
 
-        foreach ($this->album_ids as $album_id) {
-            $this->alb_mapper->destroy($album_id);
-            $this->assertNull($this->alb_mapper->find($album_id));
-        }
+//        foreach ($this->album_ids as $album_id) {
+//            $this->alb_mapper->destroy($album_id);
+//            $this->assertNull($this->alb_mapper->find($album_id));
+//        }
 	}
 
 	/**

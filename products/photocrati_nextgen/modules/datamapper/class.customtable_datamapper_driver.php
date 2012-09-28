@@ -148,6 +148,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 
 		// If we have a SQL statement to execute, then heck, execute it!
 		if ($sql) {
+            if ($this->object->debug) var_dump($sql);
 			$this->_wpdb()->query($sql);
 			if ($this->_wpdb()->last_result) {
 				$retval = array();
