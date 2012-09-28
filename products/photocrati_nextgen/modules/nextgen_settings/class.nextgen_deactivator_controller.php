@@ -36,45 +36,45 @@ class Mixin_NextGen_Deactivator_Controller extends Mixin
 	{
 		$deactivator = $this->object->get_registry()->get_utility('I_NextGen_Deactivator');
 
-		if ($this->is_post_request()) {
+		if ($this->is_post_request())
+        {
             $params = $this->object->param('check_uninstall');
+
             if (!empty($params['deactivate']))
             {
-                // deactivate stuff
+                $deactivator->deactivate();
             }
 
             if (!empty($params['uninstall']))
             {
-                // do uninstall
                 $deactivator->uninstall();
-                throw new E_Clean_Exit();
+                $deactivator->deactivate();
             }
 
-            var_dump($params);
+            // to the plugins page so they can deactivate nextgen themselves or see that it's been deactivated already
+            $url = get_admin_url() . 'plugins.php';
 
-            print "this is a post request<br/>";
-            exit;
+            if (headers_sent())
+            {
+                echo "<meta http-equiv='refresh' content='0;URL=\"" . $url . "\"'/>";
+            }
+            else {
+                wp_redirect($url);
+            }
+
+            throw new E_Clean_Exit();
 		}
 
         $this->object->render_partial(
-            'check_uninstall',
+            'deactivator_check_uninstall',
             array(
+                'plugins_url'       => get_admin_url() . 'plugins.php',
                 'deactivate_label'  => _('Only deactivate'),
                 'uninstall_label'   => _('Remove all NextGEN data and deactivate the plugin'),
-                'uninstall_warning' => _('Deactivating NextGEN will leave your data intact. Choose "uninstall" to remove your galleries, albums, etc.')
+                'uninstall_warning' => _('Deactivating NextGEN will leave your data intact. Choose "uninstall" to remove your galleries, albums, etc.<br/>You may need to also deactivate NextGEN on the following page.'),
+                'uninstall_confirm' => _('You are about to uninstall this plugin from WordPress.\nThis action is not reversible.\n\nChoose [Cancel] to Stop, [OK] to Uninstall.\n')
             )
         );
     }
-
-
-}
-
-	/**
-	 * Processes the POST request
-	 * @param C_NextGen_Deactivator $deactivator
-	 */
-	function _process_post_request($deactivator)
-	{
-	}
 
 }

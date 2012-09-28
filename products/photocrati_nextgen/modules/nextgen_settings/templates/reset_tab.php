@@ -28,7 +28,6 @@
         </tr>
         <tr>
             <td class='column1' colspan='2'>
-                <?php var_dump($check_uninstall_url); ?>
                 <p style='color: red;'>
                     <strong><?php echo $uninstall_warning_2; ?></strong>
                     <?php echo $uninstall_warning_3; ?>

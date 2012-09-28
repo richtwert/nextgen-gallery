@@ -35,4 +35,9 @@ class Mixin_NextGen_Deactivator extends Mixin
     function uninstall()
     {
     }
+
+    function deactivate()
+    {
+        deactivate_plugins(plugin_basename(__FILE__));
+    }
 }

@@ -11,6 +11,6 @@
     <input type='submit'
            name='check_uninstall[uninstall]'
            value='<?php echo $uninstall_label; ?>'
-           onclick="javascript:return confirm('<?php echo $uninstall_warning; ?>');"/>
+           onclick="javascript:return confirm('<?php echo $uninstall_confirm; ?>');"/>
 
 </form>
