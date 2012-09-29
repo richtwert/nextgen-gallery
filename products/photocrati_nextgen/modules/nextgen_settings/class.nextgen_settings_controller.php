@@ -341,7 +341,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
         // TODO: replace the album count with a datamapper provided tally
         $total['album']   = intval($wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->nggalbum}`"));
         $total['gallery'] = $this->object->get_registry()->get_utility('I_Gallery_Mapper')->count();
-        $total['images']  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper')->count();
+        $total['images']  = $this->object->get_registry()->get_utility('I_Image_Mapper')->count();
 
         $messages = array(
             'album'   => __('Rebuild album structure : %s / %s albums', 'nggallery'),

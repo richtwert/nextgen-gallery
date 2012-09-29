@@ -469,7 +469,7 @@ class C_GalleryStorage_Driver_Base extends C_GalleryStorage_Base
 	{
 		parent::initialize();
 		$this->_gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
-		$this->_image_mapper = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->_image_mapper = $this->get_registry()->get_utility('I_Image_Mapper');
 	}
 
     public static function get_instance($context = False)

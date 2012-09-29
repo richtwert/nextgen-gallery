@@ -21,7 +21,7 @@ class C_Image_Mapper extends C_DataMapper
 			'Hook_Unserialize_Image_Metadata',
 			'unserialize_metadata'
 		);
-		$this->implement('I_Gallery_Image_Mapper');
+		$this->implement('I_Image_Mapper');
 		$this->set_model_factory_method('gallery_image');
 	}
 

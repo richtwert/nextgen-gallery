@@ -78,7 +78,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
      */
     function group_by($columns=array())
     {
-        if (!$this->object->_query_args['group_by_columns'])
+        if (!isset($this->object->_query_args['group_by_columns']))
             $this->object->_query_args['group_by_columns'] = $columns;
         else {
             $this->object->_query_args['group_by_columns'] = array_merge(
@@ -88,6 +88,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
         }
 
         return $this->object;
+    }
 
 	/**
 	 * Adds a WP_Query where clause
@@ -248,6 +249,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function convert_post_to_entity($post, $model=FALSE)
 	{
+
 		$entity = new stdClass();
 		foreach ($post as $key => $value) {
 			if ($key == 'post_content') {
@@ -260,7 +262,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			}
 			else $entity->$key = $value;
 		}
-
+        $this->object->_convert_to_entity($entity);
 		return $model? $this->object->convert_to_model($entity) : $entity;
 	}
 

@@ -173,7 +173,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		{
 			if (is_int($image))
 			{
-        $imap = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+        $imap = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $image = $imap->find($image);
 			}
 			

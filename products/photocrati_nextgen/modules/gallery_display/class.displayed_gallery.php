@@ -82,7 +82,7 @@ class Mixin_Gallery_Source_Queries extends Mixin
     function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
     {
         $settings       = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-        $mapper         = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+        $mapper         = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $gallery_key    = 'galleryid'; // foreign key
         $image_key      = $mapper->get_primary_key_column();
         $run_query      = TRUE;
@@ -407,7 +407,7 @@ class Mixin_Album_Source_Queries extends Mixin
                         else {
                             $obj = array_shift($galleries);
                             $img_total = array_shift($img_totals);
-                            $obj->image_count = $img_total->count;
+                            $obj->image_count = (int)$img_total->count;
                         }
 
                         // If we failed to get an object, we'll assume that users forgot to prefix

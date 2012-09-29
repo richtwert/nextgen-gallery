@@ -28,7 +28,7 @@ class C_NextGen_Metadata extends C_Component
     {
         if (is_numeric($image))
         {
-            $image = $this->get_registry()->get_utility('I_Gallery_Image_Mapper')->find($image);
+            $image = $this->get_registry()->get_utility('I_Image_Mapper')->find($image);
         }
 
         $this->image = apply_filters('ngg_find_image_meta', $image);

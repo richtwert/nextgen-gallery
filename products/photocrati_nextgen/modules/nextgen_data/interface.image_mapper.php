@@ -1,6 +1,6 @@
 <?php
 
-interface I_Gallery_Image_Mapper
+interface I_Image_Mapper
 {
     function get_instance($context = False);
 }

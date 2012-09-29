@@ -15,6 +15,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return=FALSE)
     {
+        die(var_dump($entities = $displayed_gallery->get_album_entities()));
+
         // Are we to display a sub-album
         if (($album    = get_query_var('album'))) {
             $displayed_gallery->entity_ids = array();

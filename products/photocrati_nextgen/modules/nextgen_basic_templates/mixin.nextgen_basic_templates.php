@@ -82,7 +82,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
     function prepare_legacy_parameters($images, $displayed_gallery, $params = array())
     {
         // setup
-		$image_map	  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$image_map	  = $this->object->get_registry()->get_utility('I_Image_Mapper');
 		$gallery_map  = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
 		$image_key	  = $image_map->get_primary_key_column();
 		$gallery_key  = $gallery_map->get_primary_key_column();

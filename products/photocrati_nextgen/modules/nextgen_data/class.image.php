@@ -19,13 +19,13 @@ class Mixin_NextGen_Gallery_Image_Validation extends Mixin
  */
 class C_Image extends C_DataMapper_Model
 {
-	var $_mapper_interface = 'I_Gallery_Image_Mapper';
+	var $_mapper_interface = 'I_Image_Mapper';
 
     function define($properties=FALSE, $mapper=FALSE, $context=FALSE)
     {
         parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_NextGen_Gallery_Image_Validation');
-        $this->implement('I_Gallery_Image');
+        $this->implement('I_Image');
     }
 
 	/**

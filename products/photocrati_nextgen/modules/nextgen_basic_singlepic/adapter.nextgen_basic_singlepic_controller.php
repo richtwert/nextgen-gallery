@@ -18,7 +18,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         global $post;
 
         $storage  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        $imap     = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper');
+        $imap     = $this->object->get_registry()->get_utility('I_Image_Mapper');
 				$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
         $display_settings = $displayed_gallery->display_settings;
