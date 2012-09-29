@@ -71,6 +71,24 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		return $this->object;
 	}
 
+
+    /**
+     * Specifies a list of columns to group by
+     * @param array|string $columns
+     */
+    function group_by($columns=array())
+    {
+        if (!$this->object->_query_args['group_by_columns'])
+            $this->object->_query_args['group_by_columns'] = $columns;
+        else {
+            $this->object->_query_args['group_by_columns'] = array_merge(
+              $this->object->_query_args['group_by_columns'],
+              $columns
+            );
+        }
+
+        return $this->object;
+
 	/**
 	 * Adds a WP_Query where clause
 	 * @param array $where_clauses
