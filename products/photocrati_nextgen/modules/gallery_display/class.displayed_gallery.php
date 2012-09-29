@@ -393,13 +393,22 @@ class Mixin_Album_Source_Queries extends Mixin
                         "{$album_key} IN (%s)", $subalbum_ids
                     ))->run_query();
 
+                    // Get image totals for galleries
+                    $img_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
+                    $img_mapper->select('COUNT(*) AS "count", galleryid')->where(array("galleryid IN (%s)", $gallery_ids))->group_by('galleryid');
+                    $img_totals = $img_mapper->run_query();
+
                     // Return entities in specified order
                     foreach ($entity_ids as $id) {
                         $obj = NULL;
 
                         // Get object, whether it be a gallery or sub-album
                         if (strpos($id, 'a') === 0) $obj = array_shift($subalbums);
-                        else $obj = array_shift($galleries);
+                        else {
+                            $obj = array_shift($galleries);
+                            $img_total = array_shift($img_totals);
+                            $obj->image_count = $img_total->count;
+                        }
 
                         // If we failed to get an object, we'll assume that users forgot to prefix
                         // the album id with 'a'.
@@ -465,6 +474,19 @@ class Mixin_Album_Source_Queries extends Mixin
                 break;
         }
         return $retval;
+    }
+
+
+    /**
+     * Fetches all included entities for particular albums
+     * @param int $limit
+     * @param int $offset
+     * @param bool $ids_only
+     * @return array
+     */
+    function get_included_album_entities($limit, $offset, $ids_only)
+    {
+        return $this->get_album_entities($limit, $offset, $ids_only, TRUE);
     }
 
     /**
