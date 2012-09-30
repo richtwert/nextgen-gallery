@@ -144,7 +144,12 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		if ($this->object->_validate_request()) {
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$images = $this->object->_displayed_gallery->get_images(1);
-			if ($images) $filename = $storage->get_thumb_abspath($images[0]);
+			if ($images) {
+				$image = array_pop($images);
+				if ($storage->generate_image_size($image, 'placeholder', 200, 200, 100, TRUE, FALSE, FALSE)) {
+					$filename = $storage->get_image_abspath($image, 'placeholder');
+				}
+			}
 		}
 		readfile($filename);
 		$this->render();

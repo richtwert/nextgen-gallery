@@ -1,6 +1,6 @@
 html,body {
 	width: 100%;
-	height: 100%;
+	/*height: 100%;*/
 	padding: 0px;
 	margin: 0px;
 	font-size: 13px;
@@ -34,7 +34,7 @@ html,body {
 
 iframe {
 	width: 100%;
-	height: 100%;
+	height: 80%;
 	border: 0px;
 	padding: 0px;
 	margin: 0px;
@@ -192,4 +192,5 @@ table {
 	display: block !important;
 	visibility: hidden;
 	position: absolute;
+	top: -5000px;
 }

@@ -58,9 +58,9 @@ class C_NextGen_Settings_Defaults
                 'galSort'           => 'sortorder', // Sort order
                 'galSortDir'        => 'ASC',       // Sort direction
                 'galNoPages'        => True,        // use no subpages for gallery
-                'galImgBrowser'     => False,       // Show ImageBrowser => instead effect
-                'galHiddenImg'      => False,       // For paged galleries we can hide image
-                'galAjaxNav'        => False,       // AJAX Navigation for Shutter effect
+                'galImgBrowser'     => 0,       // Show ImageBrowser => instead effect
+                'galHiddenImg'      => 0,       // For paged galleries we can hide image
+                'galAjaxNav'        => 0,       // AJAX Navigation for Shutter effect
 
                 // Thumbnail Effect
                 'thumbEffect'  => 'shutter',                           // select effect
@@ -79,22 +79,22 @@ class C_NextGen_Settings_Defaults
                 'wmOpaque' => '100',                  // Font Opaque
 
                 // Image Rotator settings
-                'enableIR'          => False,
+                'enableIR'          => 0,
                 'slideFx'           => 'fade',
                 'irURL'             => '',
-                'irXHTMLvalid'      => False,
+                'irXHTMLvalid'      => 0,
                 'irAudio'           => '',
                 'irWidth'           => 320,
                 'irHeight'          => 240,
                 'irShuffle'         => True,
                 'irLinkfromdisplay' => True,
-                'irShownavigation'  => False,
-                'irShowicons'       => False,
-                'irWatermark'       => False,
+                'irShownavigation'  => 0,
+                'irShowicons'       => 0,
+                'irWatermark'       => 0,
                 'irOverstretch'     => 'True',
                 'irRotatetime'      => 10,
                 'irTransition'      => 'random',
-                'irKenburns'        => False,
+                'irKenburns'        => 0,
                 'irBackcolor'       => '000000',
                 'irFrontcolor'      => 'FFFFFF',
                 'irLightcolor'      => 'CC0000',

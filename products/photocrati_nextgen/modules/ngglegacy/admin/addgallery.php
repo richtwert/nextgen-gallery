@@ -157,6 +157,9 @@ class nggAddGallery {
 
 	<?php if($ngg->options['swfUpload'] && !empty ($this->gallerylist) ) { ?>
     <?php if ( defined('IS_WP_3_3') ) { ?>
+
+<div class='wrap'><h2 class='title'><?php echo_h(_("Add Gallery / Images"))?></h2>
+
     <!-- plupload script -->
     <script type="text/javascript">
     //<![CDATA[
@@ -341,22 +344,23 @@ class nggAddGallery {
 		});
 	/* ]]> */
 	</script>
-	<div id="accordion">
-		<?php foreach ($tabs as $tab_key => $tab_name): ?>
-		<h3 id="<?php echo esc_attr($tab_key) ?>">
-			<a href='#'><?php echo_h($tab_name)?></a>
-		</h3>
-		<div>
-			<?php
-				$method = 'tab_'.$tab_key;
-				if (method_exists($this, $method)) {
-					call_user_func(array(&$this, $method));
-				}
-				else do_action('ngg_tab_content_'.$tab_key);
-			?>
+		<div id="accordion">
+			<?php foreach ($tabs as $tab_key => $tab_name): ?>
+			<h3 id="<?php echo esc_attr($tab_key) ?>">
+				<a href='#'><?php echo_h($tab_name)?></a>
+			</h3>
+			<div>
+				<?php
+					$method = 'tab_'.$tab_key;
+					if (method_exists($this, $method)) {
+						call_user_func(array(&$this, $method));
+					}
+					else do_action('ngg_tab_content_'.$tab_key);
+				?>
+			</div>
+			<?php endforeach; ?>
 		</div>
-		<?php endforeach; ?>
-    </div>
+</div> <!-- end of wrap-->
     <?php
 
     }

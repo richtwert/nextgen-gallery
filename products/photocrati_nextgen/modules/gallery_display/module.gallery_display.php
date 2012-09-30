@@ -124,6 +124,9 @@ class M_Gallery_Display extends C_Base_Module
 			'I_NextGen_Backend_Controller',
 			'A_Display_Settings_Page_Resources'
 		);
+
+        // plugin deactivation routine
+        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_Gallery_Display_Deactivation');
 	}
 
 	/**
@@ -158,7 +161,9 @@ class M_Gallery_Display extends C_Base_Module
 
 		// Add hook to delete displayed galleries when removed from a post
 		add_action('pre_post_update', array(&$this, 'locate_stale_displayed_galleries'));
+		add_action('before_delete_post', array(&$this, 'locate_stale_displayed_galleries'));
 		add_action('post_updated',	array(&$this, 'cleanup_displayed_galleries'));
+		add_action('after_delete_post', array(&$this, 'cleanup_displayed_galleries'));
 
 		// Add hook to subsitute displayed gallery placeholders
 		add_filter('the_content', array(&$this, 'substitute_placeholder_imgs'), 100, 1);
@@ -291,8 +296,14 @@ class M_Gallery_Display extends C_Base_Module
 		if (preg_match_all("/{$preview_url}\?id=(\d+)/", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');
-				if (!preg_match("/{$preview_url}/", $_POST['post_content']))
+				// The post was edited, and the displayed gallery placeholder was removed
+				if (isset($_REQUEST['post_content']) && (!preg_match("/{$preview_url}/", $_POST['post_content']))) {
 					$displayed_galleries_to_cleanup[] = intval($match[1]);
+				}
+				// The post was deleted
+				elseif (!isset($_REQUEST['action'])) {
+					$displayed_galleries_to_cleanup[] = intval($match[1]);
+				}
 			}
 		}
 	}

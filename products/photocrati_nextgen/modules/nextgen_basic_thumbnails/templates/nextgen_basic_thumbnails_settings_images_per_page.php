@@ -12,6 +12,6 @@
                placeholder='<?php _e('# of images'); ?>'
                min='1'
                required='required'
-               value='<?php echo esc_attr($images_per_page); ?>'>
+               value='<?php echo esc_attr($images_per_page); ?>'/>
     </td>
 </tr>

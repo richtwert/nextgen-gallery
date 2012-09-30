@@ -5,12 +5,20 @@
  */
 class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 {
-
+	/**
+	 * Adds a mixin to the parent object
+	 */
     function initialize()
     {
-        $this->add_mixin('Mixin_NextGen_Basic_Templates');
+        $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
     }
 
+	/**
+	 * Renders the front-end display for the imagebrowser display type
+	 * @param C_Displayed_Gallery $displayed_gallery
+	 * @param bool $return
+	 * @return string
+	 */
 	function index_action($displayed_gallery, $return=FALSE)
 	{
 		$picturelist = array();

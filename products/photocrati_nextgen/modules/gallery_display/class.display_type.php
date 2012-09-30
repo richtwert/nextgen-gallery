@@ -56,29 +56,10 @@ class Mixin_Display_Type_Validation extends Mixin
 {
 	function validation()
 	{
-		if (!isset($this->object->defaults_set)) $this->object->set_defaults();
 		$this->object->validates_presence_of('entity_type');
 		$this->object->validates_presence_of('name');
 		$this->object->validates_presence_of('title');
 
 		return $this->object->is_valid();
-	}
-
-
-	function set_defaults()
-	{
-		if (!isset($this->object->settings)) $this->object->settings = array();
-		if (!isset($this->object->settings['show_alternative_view_link']))
-			$this->object->settings['show_alternative_view_link'] = FALSE;
-		if (!isset($this->object->settings['show_return_link']))
-			$this->object->settings['show_return_link'] = TRUE;
-		if (!isset($this->object->settings['alternative_view_link_text']))
-			$this->object->settings['alternative_view_link_text'] = '';
-		if (!isset($this->object->settings['return_link_text']))
-			$this->object->settings['return_link_text'] = '';
-		if (!isset($this->object->preview_image_relpath))
-			$this->object->preview_image_relpath = '';
-
-		$this->object->defaults_set = TRUE;
 	}
 }

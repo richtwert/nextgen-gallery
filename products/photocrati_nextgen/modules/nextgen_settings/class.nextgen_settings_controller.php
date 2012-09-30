@@ -87,6 +87,31 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		$retval = array();
 
+        // WARNING: this will reset all options in I_NextGen_Settings to their defaults
+        if (!empty($_POST['resetdefault']))
+        {
+            $new_settings = $this->object->get_registry()
+                                         ->get_utility('I_NextGen_Settings');
+
+            if ($new_settings->is_multisite())
+            {
+                $multi = $this->object->get_registry()
+                                      ->get_utility('I_NextGen_Settings', array('multisite'))
+                                      ->reset(TRUE);
+            }
+            $single = $new_settings->reset(TRUE);
+
+            if ($single || $multi)
+            {
+                $retval['message'] = $this->object->show_success_for($settings, 'NextGEN Gallery Settings', TRUE);
+            }
+            else {
+                $retval['message'] = $this->object->show_errors_for($settings, TRUE);
+            }
+
+            return $retval;
+        }
+
 		// Do we have sufficient data to continue?
 		if (($params = $this->object->param('settings'))) {
 
@@ -97,6 +122,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			if ($settings->is_valid()) {
 				$this->object->_save_lightbox_library($settings);
 				$this->object->_save_stylesheet_contents($settings->CSSfile);
+                $this->object->_save_image_slugs($settings);
 			}
 
 			// Save the changes made to the settings
@@ -144,7 +170,9 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
 			_('Styles')					=> $this->object->_render_styling_tab($settings),
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
-			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings)
+            _('Permalinks')             => $this->object->_render_permalinks_tab($settings),
+			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings),
+            _('Reset / Uninstall')      => $this->object->_render_reset_tab($settings)
 		);
 
 		if (is_multisite()) {
@@ -193,6 +221,48 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		), TRUE);
 	}
 
+    function _render_permalinks_tab($settings)
+    {
+        return $this->object->render_partial(
+            'permalinks_tab',
+            array(
+                'permalinks_activated'       => $settings->usePermalinks,
+                'permalinks_activated_label' => _('Activate permalinks'),
+                'permalinks_activated_help'  => _('After activating this option you must update your permalink structure once.'),
+                'permalinks_activated_no'    => _('No'),
+                'permalinks_activated_yes'   => _('Yes'),
+                'permalinks_slug'            => $settings->permalinkSlug,
+                'permalinks_slug_label'      => _('Gallery slug name'),
+                'process_label'              => _('Create new URL friendly image slugs'),
+                'process_value'              => _('Proceed now'),
+                'hidden'                     => !(bool)$settings->usePermalinks
+            ),
+            TRUE
+        );
+    }
+
+    function _render_reset_tab($settings)
+    {
+        global $wpdb;
+        return $this->object->render_partial(
+            'reset_tab',
+            array(
+                'reset_label'   => _('Reset all settings to defaults'),
+                'reset_value'   => _('Reset settings'),
+                'reset_warning' => _('Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.'),
+
+                'show_uninstall'      => (!is_multisite() || wpmu_site_admin()),
+                'uninstall_label'     => _('Uninstall plugin'),
+                'uninstall_warning'   => _('You are about to uninstall this plugin.\nThis is not reversible.\n\nChoose [Cancel] to Stop, [OK] to Uninstall.\n'),
+                'uninstall_desc'      => _('Before deactivating NextGen press the "Uninstall plugin" button. This will remove the data that Wordpress does not remove when deactivating plugins. You should first make a database backup of the following tables:'),
+                'uninstall_warning_2' => _('WARNING:'),
+                'uninstall_warning_3' => _('This cannot be undone.'),
+                'uninstall_tables'    => array($wpdb->nggpictures, $wpdb->nggalbum, $wpdb->nggallery),
+                'check_uninstall_url' => menu_page_url('ngg_deactivator_check_uninstall', FALSE)
+            ),
+            TRUE
+        );
+    }
 
 	/**
 	 * Renders the tab to customize the styles used for the galleries
@@ -308,6 +378,34 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		), TRUE);
 	}
 
+    function _save_image_slugs($settings)
+    {
+        if (!isset($_POST['createslugs'])) return;
+
+        global $wpdb;
+
+        $total = array('images', 'gallery', 'album');
+
+        // TODO: replace the album count with a datamapper provided tally
+        $total['album']   = intval($wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->nggalbum}`"));
+        $total['gallery'] = $this->object->get_registry()->get_utility('I_Gallery_Mapper')->count();
+        $total['images']  = $this->object->get_registry()->get_utility('I_Gallery_Image_Mapper')->count();
+
+        $messages = array(
+            'album'   => __('Rebuild album structure : %s / %s albums', 'nggallery'),
+            'gallery' => __('Rebuild gallery structure : %s / %s galleries', 'nggallery'),
+            'images'  => __('Rebuild image structure : %s / %s images', 'nggallery'),
+        );
+
+        return $this->render_partial('permalinks_tab_rebuild_msg',
+            array(
+                'ajax_url' => add_query_arg('action', 'ngg_rebuild_unique_slugs', admin_url('admin-ajax.php')),
+                'messages' => $messages,
+                'total'    => $total
+            ),
+            FALSE
+        );
+    }
 
 	/**
 	 * Saves the lightbox library settings

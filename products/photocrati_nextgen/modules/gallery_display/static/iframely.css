@@ -7,3 +7,7 @@ html#iframely{
 	float: none;
 	padding: 0px;
 }
+
+#iframely, #iframely body {
+	height: auto;
+}

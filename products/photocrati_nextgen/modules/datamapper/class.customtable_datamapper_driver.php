@@ -113,7 +113,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 
 		$key = $this->object->get_primary_key_column();
 		$results = $this->object->run_query(
-			"SELECT COUNT({$key}) FROM {$this->object->get_table_name()}"
+			"SELECT COUNT(`{$key}`) AS `{$key}` FROM `{$this->object->get_table_name()}`"
 		);
 		if ($results && isset($results[0]->$key))
 			$retval = (int)$results[0]->$key;
@@ -172,6 +172,8 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		$retval = FALSE;
 
 		unset($entity->id_field);
+		$has_defaults = property_exists($entity, 'has_defaults') ? $entity->has_defaults : FALSE;
+		unset($entity->has_defaults);
 		$primary_key = $this->object->get_primary_key_column();
 		if (isset($entity->$primary_key)) {
 			if($this->object->_update($entity)) $retval = intval($entity->$primary_key);
@@ -185,6 +187,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 			}
 		}
 		$entity->id_field = $primary_key;
+		$entity->has_defaults = $has_defaults;
 
 		return $retval;
 	}
