@@ -87,8 +87,6 @@ function createNewThumb() {
 	if ( !current_user_can('NextGEN Manage gallery') ) 
 		die('-1');	
 
-	include_once( nggGallery::graphic_library() );
-
 	$id 	 = (int) $_POST['id'];
 	$picture = nggdb::find_image( $id );
 
@@ -96,44 +94,16 @@ function createNewThumb() {
 	$y = round( $_POST['y'] * $_POST['rr'], 0);
 	$w = round( $_POST['w'] * $_POST['rr'], 0);
 	$h = round( $_POST['h'] * $_POST['rr'], 0);
+	$crop_frame = array('x' => $x, 'y' => $y, 'width' => $w, 'height' => $h);
 	
-	$thumb = new ngg_Thumbnail($picture->imagePath, TRUE);
+	$registry = C_Component_Registry::get_instance();
+  $storage  = $registry->get_utility('I_Gallery_Storage');
 	
-	$thumb->crop($x, $y, $w, $h);
-    
-    // Note : the routine is a bit different to create_thumbnail(), due to rounding it's resized in the other way
-	if ($ngg->options['thumbfix'])  {
-		// check for portrait format
-		if ($thumb->currentDimensions['height'] > $thumb->currentDimensions['width']) {
-			// first resize to the wanted height, here changed to create_thumbnail()
-			$thumb->resize(0, $ngg->options['thumbheight']);
-			// get optimal y startpos
-			$ypos = ($thumb->currentDimensions['height'] - $ngg->options['thumbheight']) / 2;
-			$thumb->crop(0, $ypos, $ngg->options['thumbwidth'],$ngg->options['thumbheight']);	
-		} else {
-			// first resize to the wanted width, here changed to create_thumbnail()
-            $thumb->resize($ngg->options['thumbwidth'], 0);
-			//	
-			// get optimal x startpos
-			$xpos = ($thumb->currentDimensions['width'] - $ngg->options['thumbwidth']) / 2;
-			$thumb->crop($xpos, 0, $ngg->options['thumbwidth'],$ngg->options['thumbheight']);	
-		}
-	//this create a thumbnail but keep ratio settings	
-	} else {
-		$thumb->resize($ngg->options['thumbwidth'],$ngg->options['thumbheight']);	
-	}    
+	// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
+	$params = array('watermark' => false, 'reflection' => false, 'crop' => true, 'crop_frame' => $crop_frame);
+	$result = $storage->generate_thumbnail($id, $params);
 	
-	if ( $thumb->save($picture->thumbPath, 100)) {
-		
-		//read the new sizes
-		$new_size = @getimagesize ( $picture->thumbPath );
-		$size['width'] = $new_size[0];
-		$size['height'] = $new_size[1]; 
-		
-		// add them to the database
-		nggdb::update_image_meta($picture->pid, array( 'thumbnail' => $size) );
-		nggdb::update_image_meta($picture->pid, array( 'thumbnail_crop_frame' => array('x' => $x, 'y' => $y, 'width' => $w, 'height' => $h, 'thumbnail_width' => $size['width'], 'thumbnail_height' => $size['height'])) );
-		
+	if ($result) {
 		echo "OK";
 	} else {
 		header('HTTP/1.1 500 Internal Server Error');			
@@ -141,7 +111,6 @@ function createNewThumb() {
 	}
 	
 	exit();
-	
 }
 	
 add_action('wp_ajax_rotateImage', 'ngg_rotateImage');

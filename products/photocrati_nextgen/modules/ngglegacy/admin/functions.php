@@ -258,70 +258,18 @@ class nggAdmin{
 	 */
 	function create_thumbnail($image) {
 		
-		global $ngg;
+		$registry = C_Component_Registry::get_instance();
+    $storage  = $registry->get_utility('I_Gallery_Storage');
 		
-		if(! class_exists('ngg_Thumbnail'))
-			require_once( nggGallery::graphic_library() );
+		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
+		$params = array('watermark' => false, 'reflection' => false);
+		$result = $storage->generate_thumbnail($image, $params);
 		
-		if ( is_numeric($image) )
-			$image = nggdb::find_image( $image );
-
-		if ( !is_object($image) ) 
-			return __('Object didn\'t contain correct data','nggallery');
-
-		// before we start we import the meta data to database (required for uploads before V1.4.0)
-		nggAdmin::maybe_import_meta( $image->pid );
-        		
-		// check for existing thumbnail
-		if (file_exists($image->thumbPath))
-			if (!is_writable($image->thumbPath))
-				return esc_html( $image->filename ) . __(' is not writeable ','nggallery');
-
-		$thumb = new ngg_Thumbnail($image->imagePath, TRUE);
-
-		// skip if file is not there
-		if (!$thumb->error) {
-			if ($ngg->options['thumbfix'])  {
-
-				// calculate correct ratio
-				$wratio = $ngg->options['thumbwidth'] / $thumb->currentDimensions['width'];
-				$hratio = $ngg->options['thumbheight'] / $thumb->currentDimensions['height'];
-				
-				if ($wratio > $hratio) {
-					// first resize to the wanted width
-					$thumb->resize($ngg->options['thumbwidth'], 0);
-					// get optimal y startpos
-					$ypos = ($thumb->currentDimensions['height'] - $ngg->options['thumbheight']) / 2;
-					$thumb->crop(0, $ypos, $ngg->options['thumbwidth'],$ngg->options['thumbheight']);	
-				} else {
-					// first resize to the wanted height
-					$thumb->resize(0, $ngg->options['thumbheight']);	
-					// get optimal x startpos
-					$xpos = ($thumb->currentDimensions['width'] - $ngg->options['thumbwidth']) / 2;
-					$thumb->crop($xpos, 0, $ngg->options['thumbwidth'],$ngg->options['thumbheight']);	
-				}
-			//this create a thumbnail but keep ratio settings	
-			} else {
-				$thumb->resize($ngg->options['thumbwidth'],$ngg->options['thumbheight']);	
-			}
-			
-			// save the new thumbnail
-			$thumb->save($image->thumbPath, $ngg->options['thumbquality']);
-			nggAdmin::chmod ($image->thumbPath); 
-			
-			//read the new sizes
-			$new_size = @getimagesize ( $image->thumbPath );
-			$size['width'] = $new_size[0];
-			$size['height'] = $new_size[1]; 
-			
-			// add them to the database
-			nggdb::update_image_meta($image->pid, array( 'thumbnail' => $size) );
-		} 
-				
-		$thumb->destruct();
-		
-		if ( !empty($thumb->errmsg) )
-			return ' <strong>' . esc_html( $image->filename ) . ' (Error : '.$thumb->errmsg .')</strong>';
+		if (!$result)
+		{
+			// XXX there isn't any error handling unfortunately at the moment in the generate_thumbnail functions, need a way to return proper error status
+			return __('Error while creating thumbnail.', 'nggallery');
+		}
 		
 		// success
 		return '1'; 
@@ -338,48 +286,29 @@ class nggAdmin{
 	 */
 	function resize_image($image, $width = 0, $height = 0) {
 		
-		global $ngg;
+		$registry = C_Component_Registry::get_instance();
+    $storage  = $registry->get_utility('I_Gallery_Storage');
 		
-		if(! class_exists('ngg_Thumbnail'))
-			require_once( nggGallery::graphic_library() );
-
-		if ( is_numeric($image) )
-			$image = nggdb::find_image( $image );
+		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
+		$params = array('watermark' => false, 'reflection' => false);
 		
-		if ( !is_object($image) ) 
-			return __('Object didn\'t contain correct data','nggallery');	
-		
-		// before we start we import the meta data to database (required for uploads before V1.4.0)
-		nggAdmin::maybe_import_meta( $image->pid );
-		
-		// if no parameter is set, take global settings
-		$width  = ($width  == 0) ? $ngg->options['imgWidth']  : $width;
-		$height = ($height == 0) ? $ngg->options['imgHeight'] : $height;
-		
-		if (!is_writable($image->imagePath))
-			return ' <strong>' . esc_html( $image->filename ) . __(' is not writeable','nggallery') . '</strong>';
-		
-		$file = new ngg_Thumbnail($image->imagePath, TRUE);
-
-		// skip if file is not there
-		if (!$file->error) {
-			
-			// If required save a backup copy of the file
-			if ( ($ngg->options['imgBackup'] == 1) && (!file_exists($image->imagePath . '_backup')) )
-				@copy ($image->imagePath, $image->imagePath . '_backup');
-			
-			$file->resize($width, $height);
-			$file->save($image->imagePath, $ngg->options['imgQuality']);
-			// read the new sizes
-			$size = @getimagesize ( $image->imagePath );
-			// add them to the database
-			nggdb::update_image_meta($image->pid, array( 'width' => $size[0], 'height' => $size[1] ) );
-			$file->destruct();
-		} else {
-            $file->destruct();
-			return ' <strong>' . esc_html( $image->filename ) . ' (Error : ' . $file->errmsg . ')</strong>';
+		if ($width > 0) {
+			$params['width'] = $width;
 		}
-
+		
+		if ($height > 0) {
+			$params['height'] = $height;
+		}
+		
+		$result = $storage->generate_image_size($image, 'full', $params);
+		
+		if (!$result)
+		{
+			// XXX there isn't any error handling unfortunately at the moment in the generate_thumbnail functions, need a way to return proper error status
+			return __('Error while resizing image.', 'nggallery');
+		}
+		
+		// success
 		return '1';
 	}
 	
@@ -490,49 +419,20 @@ class nggAdmin{
 	 */
 	function set_watermark($image) {
 		
-		global $ngg;
-
-		if(! class_exists('ngg_Thumbnail'))
-			require_once( nggGallery::graphic_library() );
+		$registry = C_Component_Registry::get_instance();
+    $storage  = $registry->get_utility('I_Gallery_Storage');
 		
-		if ( is_numeric($image) )
-			$image = nggdb::find_image( $image );
+		// XXX NextGEN Legacy was only handling watermarks at this stage, so we're forcefully disabling all else
+		$params = array('watermark' => true, 'reflection' => false, 'crop' => false);
+		$result = $storage->generate_image_size($image, 'full', $params);
 		
-		if ( !is_object($image) ) 
-			return __('Object didn\'t contain correct data','nggallery');		
-
-		// before we start we import the meta data to database (required for uploads before V1.4.0)
-		nggAdmin::maybe_import_meta( $image->pid );	
-
-		if (!is_writable($image->imagePath))
-			return ' <strong>' . esc_html( $image->filename ) . __(' is not writeable','nggallery') . '</strong>';
-		
-		$file = new ngg_Thumbnail( $image->imagePath, TRUE );
-
-		// skip if file is not there
-		if (!$file->error) {
-			
-			// If required save a backup copy of the file
-			if ( ($ngg->options['imgBackup'] == 1) && (!file_exists($image->imagePath . '_backup')) )
-				@copy ($image->imagePath, $image->imagePath . '_backup');
-			
-			if ($ngg->options['wmType'] == 'image') {
-				$file->watermarkImgPath = $ngg->options['wmPath'];
-				$file->watermarkImage($ngg->options['wmPos'], $ngg->options['wmXpos'], $ngg->options['wmYpos']); 
-			}
-			if ($ngg->options['wmType'] == 'text') {
-				$file->watermarkText = $ngg->options['wmText'];
-				$file->watermarkCreateText($ngg->options['wmColor'], $ngg->options['wmFont'], $ngg->options['wmSize'], $ngg->options['wmOpaque']);
-				$file->watermarkImage($ngg->options['wmPos'], $ngg->options['wmXpos'], $ngg->options['wmYpos']);  
-			}
-			$file->save($image->imagePath, $ngg->options['imgQuality']);
+		if (!$result)
+		{
+			// XXX there isn't any error handling unfortunately at the moment in the generate_thumbnail functions, need a way to return proper error status
+			return __('Error while applying watermark to image.', 'nggallery');
 		}
 		
-		$file->destruct();
-
-		if ( !empty($file->errmsg) )
-			return ' <strong>' . esc_html( $image->filename ) . ' (Error : '.$file->errmsg .')</strong>';		
-
+		// success
 		return '1';
 	}
 
