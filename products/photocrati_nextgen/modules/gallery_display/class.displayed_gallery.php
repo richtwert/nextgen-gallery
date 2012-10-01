@@ -402,12 +402,22 @@ class Mixin_Album_Source_Queries extends Mixin
                     foreach ($entity_ids as $id) {
                         $obj = NULL;
 
-                        // Get object, whether it be a gallery or sub-album
-                        if (strpos($id, 'a') === 0) $obj = array_shift($subalbums);
+                        // Is the object an album? If so,
+                        // make it look like a gallery
+                        if (strpos($id, 'a') === 0) {
+                            $obj            = array_shift($subalbums);
+                            $obj->galdesc   = $obj->albumdesc;
+                            $obj->title     = $obj->name;
+                            $obj->is_album  = TRUE;
+                            $obj->counter   = 0;
+                        }
+
+                        // The object is a gallery. Get the image count
                         else {
-                            $obj = array_shift($galleries);
-                            $img_total = array_shift($img_totals);
-                            $obj->image_count = (int)$img_total->count;
+                            $obj            = array_shift($galleries);
+                            $img_total      = array_shift($img_totals);
+                            $obj->counter   = (int)$img_total->count;
+                            $obj->is_album  = FALSE;
                         }
 
                         // If we failed to get an object, we'll assume that users forgot to prefix
@@ -501,7 +511,7 @@ class Mixin_Album_Source_Queries extends Mixin
     function _get_album_entities($album_mapper, $album_key, $album_ids=array(), $ids_only=FALSE, $skip_subalbums=FALSE)
     {
         $retval = array();
-        $album_mapper->select($ids_only ? $album_key : '*')->where(array("{$album_key} IN (%s)", $album_ids));
+        $album_mapper->select($ids_only ? $album_key.', sortorder' : '*')->where(array("{$album_key} IN (%s)", $album_ids));
         $albums = $album_mapper->run_query();
         $entities = array();
         foreach ($albums as $album) foreach ($album->sortorder as $entity_id) $entities[] = $entity_id;

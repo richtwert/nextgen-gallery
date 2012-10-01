@@ -15,8 +15,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return=FALSE)
     {
-        die(var_dump($entities = $displayed_gallery->get_album_entities()));
-
         // Are we to display a sub-album
         if (($album    = get_query_var('album'))) {
             $displayed_gallery->entity_ids = array();
@@ -48,14 +46,69 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             }
 
             // Add additional parameters
+            $display_settings['image_gen']              = &$this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
             $display_settings['current_page']			= $current_page;
             $display_settings['entities']               = &$entities;
+            $display_settings['storage']                = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
+
+            // Render legacy template
+            if ($display_settings['template']) {
+                $display_settings = $this->prepare_legacy_album_params($display_settings);
+                return $this->legacy_render($display_settings['template'], $display_settings, $return);
+            }
         }
 
         // Display "no entities found" message
         else {
+             return $this->object->render_partial('no_images_found');
+        }
+    }
 
+
+    function prepare_legacy_album_params($params)
+    {
+        $image_mapper           = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $storage                = $params['storage'];
+        $image_gen              = $params['image_gen'];
+        $image_gen_params       = array(
+            'width'             => $params['thumbnail_width'],
+            'height'            => $params['thumbnail_height']
+        );
+
+        // If pagination is not set, then set it to FALSE
+        if (!isset($params['pagination'])) $params['pagination'] = FALSE;
+
+        // Transform entities
+        $params['galleries']    = $params['entities'];
+        unset($params['entities']);
+        foreach ($params['galleries'] as &$gallery) {
+
+            // Get the preview image url
+           $gallery->previewurl = '';
+            if ($gallery->previewpic && $gallery->previewpic > 0) {
+                if (($image = $image_mapper->find(intval($gallery->previewpic)))) {
+                    die($storage->get_image_url($image_gen->get_size_name($image_gen_params)));
+                    $gallery->previewurl    = $storage->get_image_url($image_gen->get_size_name($image_gen_params));
+                    $gallery->previewname   = $gallery->name;
+                }
+            }
+
+            // Get the page link
+            $uri = $_SERVER['REQUEST_URI'];
+            $uri = remove_query_arg('gallery', $uri);
+            $uri = remove_query_arg('album', $uri);
+            $gallery->pagelink = add_query_arg(($gallery->is_album ? 'album' : 'gallery'), $gallery->slug);
+
+            // Let plugins modify the gallery
+            $gallery = apply_filters('ngg_album_galleryobject', $gallery);
         }
 
+        // Clean up
+        unset($storage);
+        unset($image_mapper);
+        unset($image_gen);
+        unset($image_gen_params);
+
+        return $params;
     }
 }

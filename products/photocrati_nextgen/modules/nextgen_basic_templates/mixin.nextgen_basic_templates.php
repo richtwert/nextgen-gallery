@@ -31,43 +31,50 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      */
     function legacy_render($template_name, $vars = array(), $return=FALSE)
     {
-        foreach ($vars as $key => $val) {
-            $$key = $val;
-        }
+        $retval             = "[Not a valid template]";
+        $template_abspath   = FALSE;
 
         // hook into the render feature to allow other plugins to include templates
-        $custom_template = apply_filters('ngg_render_template', false, $template_name);
-        if (($custom_template != false) && file_exists($custom_template))
-        {
-            include($custom_template);
-            return;
-        }
+        $custom_template = apply_filters('ngg_render_template', $template_name);
 
-        if ('.php' != substr($template_name, -4))
-        {
-            $template_name = $template_name . '.php';
-        }
+        // Ensure we have a PHP extension
+        if (strpos($custom_template, '.php') === FALSE) $custom_template .= '.php';
 
-        foreach ($this->object->get_template_directories() as $dir) {
-            if (file_exists($dir . DIRECTORY_SEPARATOR . $template_name))
-            {
-				if ($return) {
-					ob_start();
-					include ($dir . DIRECTORY_SEPARATOR . $template_name);
-					$retval = ob_get_contents();
-					ob_end_clean();
-					return $retval;
-				}
-				else {
-					include ($dir . DIRECTORY_SEPARATOR . $template_name);
-					return;
-				}
+        // Find the abspath of the template to render
+        if (!file_exists($custom_template)) {
+            foreach ($this->object->get_template_directories() as $dir) {
+                if ($template_abspath) break;
+                $filename = path_join($dir, $custom_template);
+                if (file_exists($filename))     $template_abspath = $filename;
+                elseif (strpos($custom_template, '-template') === FALSE) {
+                    $filename = path_join($dir, str_replace('.php', '', $custom_template).'-template.php');
+                    if (file_exists($filename)) $template_abspath = $filename;
+                }
             }
         }
 
-        // test without the "-template" name one time more
-        $template_name = array_shift(explode('-', $template_name , 2));
-        $this->object->legacy_render($template_name, $vars);
+        // An absoluate path was already given
+        else {
+            $template_abspath = $custom_template;
+        }
+
+        // Render/render the template
+        extract($vars);
+        if ($return) {
+            if ($template_abspath) {
+                ob_start();
+                include($template_abspath);
+                $retval = ob_get_contents();
+                ob_end_clean();
+            }
+        }
+        else {
+            if ($template_abspath) include ($template_abspath);
+            else echo $retval;
+        }
+
+        return $retval;
+
     }
 
     /**
