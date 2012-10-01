@@ -126,7 +126,8 @@ class M_NextGen_Settings extends C_Base_Module
 		);
 
         // NextGEN Deactivator routines
-        add_action('deactivate_' . PHOTOCRATI_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
+        register_deactivation_hook(PHOTOCRATI_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
+        register_uninstall_hook(PHOTOCRATI_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
