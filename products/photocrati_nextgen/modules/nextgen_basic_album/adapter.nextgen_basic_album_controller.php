@@ -87,7 +87,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
            $gallery->previewurl = '';
             if ($gallery->previewpic && $gallery->previewpic > 0) {
                 if (($image = $image_mapper->find(intval($gallery->previewpic)))) {
-                    die($storage->get_image_url($image_gen->get_size_name($image_gen_params)));
+                    var_dump($storage->get_image_url($image_gen->get_size_name($image_gen_params)));
                     $gallery->previewurl    = $storage->get_image_url($image_gen->get_size_name($image_gen_params));
                     $gallery->previewname   = $gallery->name;
                 }

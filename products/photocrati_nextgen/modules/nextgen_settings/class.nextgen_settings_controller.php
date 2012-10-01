@@ -87,6 +87,31 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		$retval = array();
 
+        // WARNING: this will reset all options in I_NextGen_Settings to their defaults
+        if (!empty($_POST['resetdefault']))
+        {
+            $new_settings = $this->object->get_registry()
+                                         ->get_utility('I_NextGen_Settings');
+
+            if ($new_settings->is_multisite())
+            {
+                $multi = $this->object->get_registry()
+                                      ->get_utility('I_NextGen_Settings', array('multisite'))
+                                      ->reset(TRUE);
+            }
+            $single = $new_settings->reset(TRUE);
+
+            if ($single || $multi)
+            {
+                $retval['message'] = $this->object->show_success_for($settings, 'NextGEN Gallery Settings', TRUE);
+            }
+            else {
+                $retval['message'] = $this->object->show_errors_for($settings, TRUE);
+            }
+
+            return $retval;
+        }
+
 		// Do we have sufficient data to continue?
 		if (($params = $this->object->param('settings'))) {
 
@@ -146,7 +171,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Styles')					=> $this->object->_render_styling_tab($settings),
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
             _('Permalinks')             => $this->object->_render_permalinks_tab($settings),
-			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings)
+			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings),
+            _('Reset / Uninstall')      => $this->object->_render_reset_tab($settings)
 		);
 
 		if (is_multisite()) {
@@ -215,6 +241,28 @@ class Mixin_NextGen_Settings_Controller extends Mixin
         );
     }
 
+    function _render_reset_tab($settings)
+    {
+        global $wpdb;
+        return $this->object->render_partial(
+            'reset_tab',
+            array(
+                'reset_label'   => _('Reset all settings to defaults'),
+                'reset_value'   => _('Reset settings'),
+                'reset_warning' => _('Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.'),
+
+                'show_uninstall'      => (!is_multisite() || wpmu_site_admin()),
+                'uninstall_label'     => _('Uninstall plugin'),
+                'uninstall_warning'   => _('You are about to uninstall this plugin.\nThis is not reversible.\n\nChoose [Cancel] to Stop, [OK] to Uninstall.\n'),
+                'uninstall_desc'      => _('Before deactivating NextGen press the "Uninstall plugin" button. This will remove the data that Wordpress does not remove when deactivating plugins. You should first make a database backup of the following tables:'),
+                'uninstall_warning_2' => _('WARNING:'),
+                'uninstall_warning_3' => _('This cannot be undone.'),
+                'uninstall_tables'    => array($wpdb->nggpictures, $wpdb->nggalbum, $wpdb->nggallery),
+                'check_uninstall_url' => menu_page_url('ngg_deactivator_check_uninstall', FALSE)
+            ),
+            TRUE
+        );
+    }
 
 	/**
 	 * Renders the tab to customize the styles used for the galleries

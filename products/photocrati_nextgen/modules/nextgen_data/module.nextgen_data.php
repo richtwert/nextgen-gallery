@@ -54,6 +54,8 @@ class M_NextGen_Data extends C_Base_Module
         $this->get_registry()->add_adapter('I_Image',     'A_Auto_Resize_Image', 'imported_image');
 		$this->get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
 		$this->get_registry()->add_adapter('I_Component_Factory', 'A_GalleryStorage_Factory');
+        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Data_Deactivation');
+
     }
 
 
