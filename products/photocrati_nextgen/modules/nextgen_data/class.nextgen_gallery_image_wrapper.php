@@ -453,7 +453,29 @@ class C_NextGen_Gallery_Image_Wrapper
      */
     function cached_singlepic_file($width = '', $height = '', $mode = '' )
     {
-        return FALSE;
+        $dynthumbs = C_Component_Registry::get_instance()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $storage = $this->get_storage();
+
+        // determine what to do with 'mode'
+        $display_reflection = FALSE;
+        $display_watermark  = FALSE;
+
+        if (!is_array($mode))
+            $mode = explode(',', $mode);
+        if (in_array('web20', $mode))
+            $display_reflection = TRUE;
+        if (in_array('watermark', $mode))
+            $display_watermark = TRUE;
+
+        // and go for it
+        $params = array(
+            'width'      => $width,
+            'height'     => $height,
+            'watermark'  => $display_watermark,
+            'reflection' => $display_reflection
+        );
+
+        return $storage->get_image_url((object)$this->_cache, $dynthumbs->get_size_name($params));
     }
 
     /**
