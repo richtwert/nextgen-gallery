@@ -181,7 +181,8 @@ class C_NextGen_Gallery_Image_Wrapper
                 return $this->_cache['imageHTML'];
 
             case 'imagePath':
-                $this->_cache['imagePath'] = WINABSPATH  . $this->__get('path') . '/' . $this->__get('filename');
+                $storage = $this->get_storage();
+                $this->_cache['imagePath'] = $storage->get_image_abspath($this->_orig_image, 'full');
                 return $this->_cache['imagePath'];
 
             case 'imageURL':
