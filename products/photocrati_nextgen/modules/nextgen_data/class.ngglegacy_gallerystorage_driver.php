@@ -155,7 +155,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGEN_Gallery $gallery
 	 * @param type $filename, specifies the name of the file
 	 * @param type $data if specified, expects base64 encoded string of data
-	 * @return C_NextGen_Gallery_Image
+	 * @return C_Image
 	 */
 	function upload_image($gallery, $filename=FALSE, $data=FALSE)
 	{
@@ -194,7 +194,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @param array $params
 	 * @return object
 	 */
@@ -398,7 +398,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	
 	/**
 	 * Generates a specific size for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return bool
 	 */
 	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
@@ -575,7 +575,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	
 	/**
 	 * Generates a thumbnail for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return bool
 	 */
 	function generate_thumbnail($image, $params = null, $skip_defaults = false)
@@ -770,7 +770,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
     /**
      * Recover image from backup copy and reprocess it
      *
-     * @param int|stdClass|C_NextGen_Gallery_Image $image
+     * @param int|stdClass|C_Image $image
      * @return string result code
      */
     function recover_image($image) {

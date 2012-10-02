@@ -529,8 +529,8 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		if (get_class($image) == 'C_Test_NggLegacy_GalleryStorage_Driver') {
 		}
 		$this->assertTrue(
-			in_array(get_class($image), array('stdClass','C_NextGen_Gallery_Image')),
-			"Image is not a stdClass or C_NextGen_Gallery_Image instance"
+			in_array(get_class($image), array('stdClass','C_Image')),
+			"Image is not a stdClass or C_Image instance"
 		);
 		$this->assertTrue(is_int($image->$image_key), "Image ID is not an integer");
 		$this->assertTrue($image->$image_key > 0, "Image ID is not greater than zero");
