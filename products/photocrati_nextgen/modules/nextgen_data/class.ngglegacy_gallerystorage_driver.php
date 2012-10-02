@@ -514,9 +514,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$existing_image_dir = dirname($existing_image_abpath);
 
 			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it
-      if (file_exists($existing_image_abpath)) {
-      	unlink($existing_image_abpath);
-      }
+            if (file_exists($existing_image_abpath)) {
+                unlink($existing_image_abpath);
+            }
       
 			wp_mkdir_p($existing_image_dir);
 			
@@ -534,7 +534,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 				else
 				{
-					$dimensions = array($width, $height);
+					$dimensions = array($params['width'], $params['height']);
 				}
 				
 				if (!isset($image->meta_data)) 
@@ -562,7 +562,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 				
 				if ($retval) {
-					return $thumbnail;
+					$retval = $thumbnail;
 				}
 			}
 			else {

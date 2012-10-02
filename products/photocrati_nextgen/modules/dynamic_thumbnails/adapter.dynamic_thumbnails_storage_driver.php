@@ -52,10 +52,10 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 		{
-			$retval = NULL;
+            $retval = NULL;
 			$abspath = $this->object->get_image_abspath($image, $size, true);
 
-			if (!$abspath)
+			if ($abspath)
 			{
 				$params = $dynthumbs->get_params_from_name($size, true);
 				$retval = $dynthumbs->get_image_url($image, $params);

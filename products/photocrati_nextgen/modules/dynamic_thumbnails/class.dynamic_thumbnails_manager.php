@@ -359,8 +359,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 				{
 					// Set W H Q
 					$params['width'] = intval($param_size[0]);
-					$params['height'] = intval($param_size[1]);
-					$params['quality'] = intval(isset($param_size[2]) ? $param_size[2] : 100);
+					$params['height'] = intval  ($param_size[1]);
+					$params['quality'] = intval(isset($param_size[2]) && $param_size[2] != '' ? $param_size[2] : 100);
 				}
 			}
 		}
