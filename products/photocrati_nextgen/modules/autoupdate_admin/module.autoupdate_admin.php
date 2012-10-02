@@ -108,12 +108,17 @@ class M_AutoUpdate_Admin extends C_Base_Module
 					
 					if ($update_list != null)
 					{
-						$update_list = json_decode($update_list);
+						$update_list = json_decode($update_list, true);
+						
+						if ($update_list == null)
+						{
+							// JSON was invalid
+							$check_date = null;
+						}
 					}
-	
-					if ($check_date == null || $update_list == null || (time() - $check_date) >= 60 * 60 * 8)
+					
+					if ($check_date == null || (time() - $check_date) >= 60 * 60 * 8)
 					{
-				  	// XXX this should be cached and checked only once in a while
 				  	$return = $this->_updater->check_product_list();
 				  	
 				  	if ($return != null && is_array($return))
