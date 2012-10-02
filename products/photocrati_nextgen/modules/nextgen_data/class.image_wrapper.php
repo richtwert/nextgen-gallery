@@ -120,6 +120,10 @@ class C_Image_Wrapper
         // at the bottom we default to returning $this->_cache[$name].
         switch ($name)
         {
+            case 'alttext':
+                $this->_cache['alttext'] = (empty($this->_cache['alttext'])) ?  ' ' : html_entity_decode(stripslashes(nggGallery::i18n($this->_cache['alttext'], 'pic_' . $this->__get('id') . '_alttext')));
+                return $this->_cache['alttext'];
+
             case 'author':
                 if ($this->_legacy)
                 {
@@ -140,6 +144,10 @@ class C_Image_Wrapper
                 }
                 $this->_cache['caption'] = $caption;
                 return $this->_cache['caption'];
+
+            case 'description':
+                $this->_cache['description'] = (empty($this->_cache['description'])) ? ' ' : html_entity_decode(stripslashes(nggGallery::i18n($this->_cache['description'], 'pic_' . $this->__get('id') . '_description')));
+                return $this->_cache['description'];
 
             case 'galdesc':
                 if ($this->_legacy)
@@ -295,7 +303,7 @@ class C_Image_Wrapper
             case 'thumbHTML':
                 $tmp = '<a href="' . $this->__get('imageURL') . '" title="'
                      . htmlspecialchars(stripslashes(nggGallery::i18n($this->__get('description'), 'pic_' . $this->__get('id') . '_description')))
-                     . '" ' . $this->get_thumbcode($this->__get('name')) . '>' . '<img alt="' . $this->alttext
+                     . '" ' . $this->get_thumbcode($this->__get('name')) . '>' . '<img alt="' . $this->__get('alttext')
                      . '" src="' . $this->thumbURL . '"/>' . '</a>';
                 $this->_cache['href'] = $tmp;
                 $this->_cache['thumbHTML'] = $tmp;
