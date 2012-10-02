@@ -18,7 +18,7 @@ if (!class_exists('nggImage'))
         {
             $image->meta_data = @unserialize($image->meta_data);
             C_Component_Registry::get_instance();
-            $this->_ngiw = new C_NextGen_Gallery_Image_Wrapper($image, NULL, TRUE);
+            $this->_ngiw = new C_Image_Wrapper($image, NULL, TRUE);
         }
 
         public function __set($name, $value)
