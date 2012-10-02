@@ -82,6 +82,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
      */
     function display_images($params, $inner_content=NULL)
     {
+        $retval = '';
         $displayed_gallery = NULL;
 
         // Get the NextGEN settings to provide some defaults
@@ -180,15 +181,21 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
         }
 
         // Validate the displayed gallery
-        if ($displayed_gallery && $displayed_gallery->validate()) {
+        if ($displayed_gallery) {
+            if ($displayed_gallery->validate()) {
 
-            // Set a temporary id
-            $displayed_gallery->id(md5(serialize($displayed_gallery)));
+                // Set a temporary id
+                $displayed_gallery->id(md5(serialize($displayed_gallery)));
 
-            // Display!
-            $this->object->render_displayed_gallery($displayed_gallery);
+                // Display!
+                $this->object->render_displayed_gallery($displayed_gallery);
+            }
+            else $retval =  "Invalid Displayed Gallery".var_dump($displayed_gallery->get_errors());
         }
-        else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
+        else {
+            $retval = "Invalid Displayed Gallery";
+        }
+        return $retval;
     }
 
 
@@ -215,11 +222,5 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
         return $controller->is_alternative_view_request() ?
             $controller->alternative_index($displayed_gallery, $return) :
             $controller->index_action($displayed_gallery, $return);
-    }
-
-
-    function _get_param($name, $default, $params)
-    {
-        return (isset($params[$name])) ? $params[$name] : $default;
     }
 }

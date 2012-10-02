@@ -165,6 +165,7 @@ class M_Gallery_Display extends C_Base_Module
         add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
         add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
         add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
+        add_shortcode('album',        array(&$this, 'wrap_shortcode_album'));
 
 		// Add hook to delete displayed galleries when removed from a post
 		add_action('pre_post_update', array(&$this, 'locate_stale_displayed_galleries'));
@@ -392,7 +393,11 @@ class M_Gallery_Display extends C_Base_Module
      */
     function wrap_shortcode_album($params, $inner_content=NULL)
     {
-        // not yet implemented
+        $params['source']           = $this->_get_param('source', 'albums', $params);
+        $params['container_ids']    = $this->_get_param('id', NULL, $params);
+        $params['display_type']     = $this->_get_param('display_type', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_ALBUM, $params);
+        unset($params['id']);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -408,7 +413,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
         unset($params['id']);
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -428,7 +433,7 @@ class M_Gallery_Display extends C_Base_Module
         }
         unset($params['id']);
         unset($params['images']);
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -444,7 +449,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
         unset($params['gallery']);
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -471,7 +476,7 @@ class M_Gallery_Display extends C_Base_Module
         unset($params['max']);
         unset($params['id']);
 
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -496,7 +501,7 @@ class M_Gallery_Display extends C_Base_Module
         unset($params['max']);
         unset($params['id']);
 
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -511,7 +516,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
         $params['image_id'] = $this->_get_param('id', NULL, $params);
         unset($params['id']);
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -538,7 +543,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -554,7 +559,19 @@ class M_Gallery_Display extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
         unset($params['id']);
-        $this->object->display_images($params, $inner_content);
+        $this->renderer->display_images($params, $inner_content);
+    }
+
+    /**
+     * Gets a value from the parameter array, and if not available, uses the default value
+     * @param string $name
+     * @param mixed $default
+     * @param array $params
+     * @return mixed
+     */
+    function _get_param($name, $default, $params)
+    {
+        return (isset($params[$name])) ? $params[$name] : $default;
     }
 }
 
