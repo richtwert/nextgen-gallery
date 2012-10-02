@@ -26,8 +26,8 @@ class M_Thumbnails extends C_Base_Module
     {
         $this->get_registry()->add_adapter('I_Component_Factory', 'A_Thumbnail_Factory');
 		$this->get_registry()->add_adapter('I_Gallery_Storage', 'A_Thumbnail_Gallery_Storage');
-        $this->get_registry()->add_adapter('I_Gallery_Image', 'A_Thumbnail_Paths');
-        $this->get_registry()->add_adapter('I_Gallery_Image', 'A_Generate_Thumbnails', 'imported_image');
+        $this->get_registry()->add_adapter('I_Image', 'A_Thumbnail_Paths');
+        $this->get_registry()->add_adapter('I_Image', 'A_Generate_Thumbnails', 'imported_image');
         $this->get_registry()->add_adapter('I_Attached_Gallery', 'A_Attached_Gallery_Thumbnails');
     }
 

@@ -8,6 +8,7 @@ interface I_DataMapper_Driver
 	function where_and($conditions=array());
 	function where($conditions=array());
 	function where_or($conditions=array());
+    function group_by($columns=array());
 	function find($id=NULL);
 	function find_first();
 	function find_last();

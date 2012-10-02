@@ -33,6 +33,7 @@ class M_DataMapper extends C_Base_Module
 		add_filter('posts_request', array(&$this, 'set_custom_wp_query'), 50, 2);
 		add_filter('posts_fields', array(&$this, 'set_custom_wp_query_fields'), 50, 2);
 		add_filter('posts_where', array(&$this, 'set_custom_wp_query_where'), 50, 2);
+        add_filter('posts_groupby', array(&$this, 'set_custom_wp_query_groupby'), 50, 2);
 	}
 
 	/**
@@ -74,6 +75,28 @@ class M_DataMapper extends C_Base_Module
 		$this->add_post_name_where_clauses($where, $wp_query);
 		return $where;
 	}
+
+
+    /**
+     * Adds additional group by clauses to the SQL query
+     * @param string $groupby
+     * @param WP_Query $wp_query
+     * @return string
+     */
+    function set_custom_wp_query_groupby($groupby, &$wp_query)
+    {
+        $retval = $groupby;
+        $group_by_columns = $wp_query->get('group_by_columns');
+        if ($group_by_columns) {
+            $retval = str_replace('GROUP BY', '', $retval);
+            $columns = explode(',', $retval);
+            foreach (array_reverse($columns) as $column) {
+                array_unshift($group_by_columns, trim($column));
+            }
+            $retval = "GROUP BY ".implode(', ', $group_by_columns);
+        }
+        return $retval;
+    }
 
 
 	/**

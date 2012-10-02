@@ -107,7 +107,8 @@ class C_NextGen_Settings_Defaults
                 // Framework settings
                 'datamapper_driver' => 'custom_table_datamapper',
                 'gallerystorage_driver' => 'ngglegacy_gallery_storage',
-				'gallery_display_limit'	=> 1000
+				'gallery_display_limit'	=> 1000,
+                'album_display_limit'   => 1000,
             );
 
 			// Thumbnail sizes

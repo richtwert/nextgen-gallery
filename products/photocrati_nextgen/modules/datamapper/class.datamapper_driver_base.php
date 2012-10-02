@@ -89,17 +89,24 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	 */
 	function find($entity, $model=FALSE)
 	{
+        $retval = NULL;
+
+        // Get primary key of the entity
 		$pkey = $this->object->get_primary_key_column();
-		if (!is_numeric($entity)) $entity = intval($entity->$pkey);
+		if (!is_numeric($entity)) {
+            $entity = isset($entity->$pkey) ? intval($entity->$pkey) : FALSE;
+        }
 
-		$results = $this->object->select()->where_and(
-				array("{$pkey} = %d", $entity)
-		)->limit(1,0)->run_query();
+        // If we have an entity ID, then get the record
+        if ($entity) {
+            $results = $this->object->select()->where_and(
+                array("{$pkey} = %d", $entity)
+            )->limit(1,0)->run_query();
 
-		if ($results)
-			return $model? $this->object->convert_to_model($results[0]) : $results[0];
-		else
-			return NULL;
+            if ($results) $retval = $model ? $this->object->convert_to_model($results[0]) :  $results[0];
+        }
+
+        return $retval;
 	}
 
 	/**
@@ -320,7 +327,6 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {
-			var_dump($ex);
 			throw new E_InvalidEntityException;
 		}
 
@@ -366,7 +372,6 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$saved_entity = $model->get_entity();
 			unset($saved_entity->_errors);
 			$retval = $this->object->_save_entity($saved_entity);
-
 		}
 
 		// We always return the same type of entity that we given
@@ -374,6 +379,22 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 		return $retval;
 	}
+
+
+    /**
+     * Gets validation errors for the entity
+     * @param stdClass|C_DataMapper_Model $entity
+     * @return array
+     */
+    function get_errors($entity)
+    {
+        $model = $entity;
+        if (!$this->object->is_model($entity)) {
+            $model = $this->object->convert_to_model($entity);
+        }
+        $model->validate();
+        return $model->get_errors();
+    }
 
 	/**
 	 * Called to set defaults for the record/model/entity.

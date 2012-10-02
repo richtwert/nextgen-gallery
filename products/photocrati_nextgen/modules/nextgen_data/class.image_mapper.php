@@ -1,6 +1,6 @@
 <?php
 
-class C_Gallery_Image_Mapper extends C_DataMapper
+class C_Image_Mapper extends C_DataMapper
 {
     public static $_instances = array();
 
@@ -21,7 +21,7 @@ class C_Gallery_Image_Mapper extends C_DataMapper
 			'Hook_Unserialize_Image_Metadata',
 			'unserialize_metadata'
 		);
-		$this->implement('I_Gallery_Image_Mapper');
+		$this->implement('I_Image_Mapper');
 		$this->set_model_factory_method('gallery_image');
 	}
 
@@ -29,7 +29,7 @@ class C_Gallery_Image_Mapper extends C_DataMapper
     {
         if (!isset(self::$_instances[$context]))
         {
-            self::$_instances[$context] = new C_Gallery_Image_Mapper($context);
+            self::$_instances[$context] = new C_Image_Mapper($context);
         }
         return self::$_instances[$context];
     }
@@ -58,16 +58,17 @@ class Mixin_Gallery_Image_Mapper extends Mixin
 		$this->object->_set_default_value($entity, 'sortorder', 0);
 
 		// The imagedate must be set
-		$this->object->_set_default_value($entity, 'imagedate', date("Y-d-m h-i-s"));
+        if ((!isset($entity->imagedate)) OR is_null($entity->imagedate) OR $entity->imagedate == '0000-00-00 00:00:00')
+            $entity->imagedate = date("Y-m-d H:i:s");
 
 		// If a filename is set, and no alttext is set, then set the alttext
 		// to the basename of the filename (legacy behavior)
-		if ($this->object->filename) {
-			$path_parts = pathinfo( $this->object->filename);
+		if (isset($entity->filename)) {
+			$path_parts = pathinfo( $entity->filename);
 			$alttext = ( !isset($path_parts['filename']) ) ?
 				substr($path_parts['basename'], 0,strpos($path_parts['basename'], '.')) :
 				$path_parts['filename'];
-			$this->object->_set_default_value($alttext);
+			$this->object->_set_default_value($entity, 'alttext', $alttext);
 		}
 	}
 }

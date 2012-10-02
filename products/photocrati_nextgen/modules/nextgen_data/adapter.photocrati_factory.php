@@ -4,51 +4,24 @@ class A_Photocrati_Factory extends Mixin
 {
     function gallery($mapper=FALSE, $properties=array(), $context=FALSE)
     {
-        return new C_NextGen_Gallery($properties, $mapper, $context);
+        return new C_Gallery($properties, $mapper, $context);
     }
 
 
     function gallery_image($mapper=FALSE, $properties=array(), $context=FALSE)
     {
-        return new C_NextGen_Gallery_Image($properties, $mapper, $context);
+        return new C_Image($properties, $mapper, $context);
     }
 
 
-    function gallery_type_controller($gallery_type, $admin=FALSE, $context=FALSE)
+    function image($mapper=FALSE, $properties=array(), $context=FALSE)
     {
-        $retval = NULL;
-        $gallery_type = C_Gallery_Type_Registry::get($gallery_type);
-        if ($gallery_type) {
-            if ($admin)
-                $retval = new $gallery_type['admin_controller']($context);
-            else
-                $retval = new $gallery_type['public_controller']($context);
-        }
-
-        return $retval;
+        return new C_Image($properties, $mapper, $context);
     }
 
 
-    function gallery_type_config($gallery_type, $settings=array(), $context=FALSE)
+    function album($mapper=FALSE, $properties=array(), $context=FALSE)
     {
-        $retval = NULL;
-
-        $gallery_type = C_Gallery_Type_Registry::get($gallery_type);
-        if ($gallery_type) {
-            $retval = new $gallery_type['config']($settings, $context);
-        }
-        return $retval;
-    }
-
-
-    function lightbox_library($properties=array(), $context=FALSE)
-    {
-        return new C_Lightbox_Library($properties, $context);
-    }
-
-
-    function nggImage($gallery, $context=FALSE)
-    {
-        return new C_nggImage_Wrapper($gallery, $context);
+        return new C_Album($mapper, $properties, $context);
     }
 }

@@ -71,6 +71,19 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		return $this->object;
 	}
 
+
+    /**
+     * Specifics a group by clause for one or more columns
+     * @param array|string $columns
+     */
+    function group_by($columns=array())
+    {
+        if (!is_array($columns)) $columns = array($columns);
+        $this->object->_group_by_columns = array_merge($this->object->_group_by_columns, $columns);
+        return $this->object;
+    }
+
+
 	/**
 	 * Adds a where clause to the driver
 	 * @param array $where_clauses
@@ -142,12 +155,14 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 			}
 			if ($where_clauses) $sql[] = 'WHERE '.implode(' AND ', $where_clauses);
 			if ($this->object->_order_clauses) $sql[] = 'ORDER BY '.implode(', ', $this->object->_order_clauses);
+            if ($this->object->_group_by_columns) $sql[] = 'GROUP BY '.implode(', ', $this->object->_group_by_columns);
 			if ($this->object->_limit_clause) $sql[] = $this->object->_limit_clause;
 			$sql = implode(' ', $sql);
 		}
 
 		// If we have a SQL statement to execute, then heck, execute it!
 		if ($sql) {
+            if ($this->object->debug) var_dump($sql);
 			$this->_wpdb()->query($sql);
 			if ($this->_wpdb()->last_result) {
 				$retval = array();
@@ -365,6 +380,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	{
 		$this->object->_where_clauses = array();
 		$this->object->_order_clauses = array();
+        $this->object->_group_by_columns = array();
 		$this->object->_limit_clause = '';
 		$this->object->_select_clause = '';
 	}
@@ -378,6 +394,7 @@ class C_CustomTable_DataMapper_Driver extends C_DataMapper_Driver_Base
 	 */
 	var $_where_clauses = array();
 	var $_order_clauses = array();
+    var $_group_by_columns = array();
 	var $_limit_clause = '';
 	var $_select_clause = '';
 	var $_columns = array();

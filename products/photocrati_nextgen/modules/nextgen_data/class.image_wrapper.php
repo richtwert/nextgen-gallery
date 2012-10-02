@@ -3,7 +3,7 @@
 /**
  * This class provides a lazy-loading wrapper to the NextGen-Legacy "nggImage" class for use in legacy style templates
  */
-class C_NextGen_Gallery_Image_Wrapper
+class C_Image_Wrapper
 {
     public $_cache;         // cache of retrieved values
     public $_settings;      // I_NextGen_Settings cache

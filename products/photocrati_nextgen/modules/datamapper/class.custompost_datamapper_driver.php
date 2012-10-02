@@ -71,6 +71,25 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		return $this->object;
 	}
 
+
+    /**
+     * Specifies a list of columns to group by
+     * @param array|string $columns
+     */
+    function group_by($columns=array())
+    {
+        if (!isset($this->object->_query_args['group_by_columns']))
+            $this->object->_query_args['group_by_columns'] = $columns;
+        else {
+            $this->object->_query_args['group_by_columns'] = array_merge(
+              $this->object->_query_args['group_by_columns'],
+              $columns
+            );
+        }
+
+        return $this->object;
+    }
+
 	/**
 	 * Adds a WP_Query where clause
 	 * @param array $where_clauses
@@ -230,6 +249,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function convert_post_to_entity($post, $model=FALSE)
 	{
+
 		$entity = new stdClass();
 		foreach ($post as $key => $value) {
 			if ($key == 'post_content') {
@@ -242,7 +262,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			}
 			else $entity->$key = $value;
 		}
-
+        $this->object->_convert_to_entity($entity);
 		return $model? $this->object->convert_to_model($entity) : $entity;
 	}
 
@@ -331,7 +351,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	 */
 	function _save_entity($entity)
 	{
-		$post = $this->object->_convert_entity_to_post($entity);
+        $post = $this->object->_convert_entity_to_post($entity);
 		$primary_key = $this->object->get_primary_key_column();
 
 		if (($post_id = wp_insert_post($post))) {
