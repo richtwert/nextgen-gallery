@@ -103,23 +103,41 @@ class M_AutoUpdate_Admin extends C_Base_Module
 		    
 		    if ($this->_updater != null)
 		    {
-		    	// XXX this should be cached and checked only once in a while
-		    	$return = $this->_updater->check_product_list();
-		    	
-		    	if ($return != null && is_array($return))
-		    	{
-		    		$update_list = array();
-		    		
-		    		foreach ($return as $item)
-		    		{
-		    			if (in_array($item['action'], array('module-add', 'module-remove', 'module-update')))
-		    			{
-		    				$update_list[] = $item;
-		    			}
-		    		}
-		    		
-		    		$this->_update_list = $update_list;
-		    	}
+					$update_list = get_option('photocrati_auto_update_admin_update_list', null);
+					$check_date = get_option('photocrati_auto_update_admin_check_date', null);
+					
+					if ($update_list != null)
+					{
+						$update_list = json_decode($update_list);
+					}
+	
+					if ($check_date == null || $update_list == null || (time() - $check_date) >= 60 * 60 * 8)
+					{
+				  	// XXX this should be cached and checked only once in a while
+				  	$return = $this->_updater->check_product_list();
+				  	
+				  	if ($return != null && is_array($return))
+				  	{
+				  		$update_list = array();
+				  		
+				  		foreach ($return as $item)
+				  		{
+				  			if (in_array($item['action'], array('module-add', 'module-remove', 'module-update')))
+				  			{
+				  				$update_list[] = $item;
+				  			}
+				  		}
+				  		
+							update_option('photocrati_auto_update_admin_update_list', json_encode($update_list));
+				  	}
+				  	
+						update_option('photocrati_auto_update_admin_check_date', time());
+					}
+					
+					if ($update_list != null)
+					{
+			  		$this->_update_list = $update_list;
+					}
 		    }
     	}
     	
