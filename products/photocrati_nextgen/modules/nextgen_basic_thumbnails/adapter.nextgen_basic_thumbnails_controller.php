@@ -56,34 +56,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		// Are there images to display?
 		if ($images) {
 
-			/***
-			// We try to replicate what a call to nggShowGallery() would
-			// render as much as possible. The reason why we don't make a call
-			// to nggShowGallery() is that it assumes that only one gallery
-			// is being displayed, and I don't feel confident modifying it
-			// to behave otherwise. I'd sooner replicate the look n' feel
-			// and deprecate the nggShowGallery() method
-			***/
-
-            if ($display_settings['ajax_pagination'] || $display_settings['show_piclens_link'])
-            {
-                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-                $entity = $displayed_gallery->get_entity();
-                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-            }
-            if ($display_settings['ajax_pagination'])
-            {
-                wp_localize_script(
-                    'nextgen-basic-thumbnails-ajax-pagination',
-                    'ngg_ajax',
-                    array(
-                        'path' => NGGALLERY_URLPATH,
-                        'callback' => trailingslashit(home_url()) . 'photocrati_ajax?action=get_page&transient_id=' . $entity->ID,
-                        'loading' => __('loading', 'nggallery')
-                    )
-                );
-            }
-
 			// Create pagination
 			if ($display_settings['images_per_page'] && !$display_settings['disable_pagination']) {
 				$pagination = new nggNavigation;
@@ -145,8 +117,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			wp_enqueue_script('piclens', $this->static_url('piclens/lite/piclens.js'));
 		}
 
-        wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL . DIRECTORY_SEPARATOR . 'ajax_pagination.js');
-
+        wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->static_url('ajax_pagination.js'));
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
@@ -158,7 +129,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails.js';
+        return $this->object->static_url('nextgen_basic_thumbnails.js');
 	}
 
 	/**
@@ -168,7 +139,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails_init.js';
+        return $this->object->static_url('nextgen_basic_thumbnails_init.js');
 	}
 
     /**

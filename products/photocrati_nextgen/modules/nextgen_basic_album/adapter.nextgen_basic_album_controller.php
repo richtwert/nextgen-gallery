@@ -26,7 +26,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
         // Are we to display a gallery ?
         elseif ($gallery  = get_query_var('gallery')) {
-            $renderer = $this->object->get_registry()->get_utility('I_Display_Type_Renderer');
+            $renderer = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
             $renderer->display_images(array(
                 'source'        => 'galleries',
                 'container_ids' => array($gallery),

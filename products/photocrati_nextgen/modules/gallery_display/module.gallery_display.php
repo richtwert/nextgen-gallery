@@ -103,8 +103,8 @@ class M_Gallery_Display extends C_Base_Module
 
         // This utility provides the capabilities of rendering a display type
         $this->get_registry()->add_utility(
-            'I_Display_Type_Renderer',
-            'C_Display_Type_Renderer'
+            'I_Displayed_Gallery_Renderer',
+            'C_Displayed_Gallery_Renderer'
         );
 	}
 
@@ -153,7 +153,7 @@ class M_Gallery_Display extends C_Base_Module
 		}
 
 		// Add a shortcode for displaying galleries
-        $this->renderer     = $this->get_registry()->get_utility('I_Display_Type_Renderer');
+        $this->renderer     = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		add_shortcode('ngg_images', array(&$this->renderer, 'display_images'));
 
         // wrap the old nextgen tags to call our display_images()

@@ -577,4 +577,17 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
 		return  $mapper->find_by_name($this->object->display_type, TRUE);
 	}
+
+
+    /**
+     * Returns a transient for the displayed gallery
+     * @return string
+     */
+    function to_transient()
+    {
+        $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+        $key = 'dg_'.$this->object->id();
+        $transient_handler->set_value($key, $this->object->get_entity());
+        return $key;
+    }
 }
