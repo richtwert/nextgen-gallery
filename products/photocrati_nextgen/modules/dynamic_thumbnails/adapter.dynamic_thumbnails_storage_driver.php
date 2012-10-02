@@ -46,25 +46,23 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 		return $retval;
 	}
 
-	function get_image_url($image, $size=FALSE)
+	function get_image_url($image, $size='full')
 	{
+        $retval = NULL;
 		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
-		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
-		{
-            $retval = NULL;
-			$abspath = $this->object->get_image_abspath($image, $size, true);
+		if ($dynthumbs && $dynthumbs->is_size_dynamic($size)) {
 
-			if ($abspath)
-			{
+            if (($abspath = $this->object->get_image_abspath($image, $size, true))) {
 				$params = $dynthumbs->get_params_from_name($size, true);
 				$retval = $dynthumbs->get_image_url($image, $params);
 			}
-
-			return $retval;
 		}
+        else {
+            $retval = $this->call_parent('get_image_url', $image, $size);
+        }
 
-		return $this->call_parent('get_image_url', $image, $size);
+		return $retval;
 	}
 
 	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
