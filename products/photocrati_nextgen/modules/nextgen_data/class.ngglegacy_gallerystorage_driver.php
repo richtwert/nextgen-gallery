@@ -41,7 +41,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Get the gallery path persisted in the database for the gallery
-	 * @param int|stdClass|C_Gallery $gallery
+	 * @param int|stdClass|C_NextGen_Gallery $gallery
 	 */
 	function get_gallery_abspath($gallery)
 	{
@@ -152,10 +152,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Uploads an image for a particular gallerys
-	 * @param int|stdClass|C_Gallery $gallery
+	 * @param int|stdClass|C_NextGEN_Gallery $gallery
 	 * @param type $filename, specifies the name of the file
 	 * @param type $data if specified, expects base64 encoded string of data
-	 * @return C_Image
+	 * @return C_NextGen_Gallery_Image
 	 */
 	function upload_image($gallery, $filename=FALSE, $data=FALSE)
 	{
@@ -194,7 +194,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
-	 * @param int|stdClass|C_Image $image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @param array $params
 	 * @return object
 	 */
@@ -209,17 +209,17 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : null;
 		$destpath = null;
 		$thumbnail = null;
-
+		
 		// XXX this should maybe be removed and extra settings go into $params?
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Ensure we have a valid image
-		if ($image_path && file_exists($image_path) && $width && $height)
+		if ($image_path && file_exists($image_path) && strtolower($image_path) != strtolower($clone_path))
 		{
 			// Ensure target directory exists, but only create 1 subdirectory
 			$image_dir = dirname($image_path);
 			$clone_dir = dirname($clone_path);
-
+			
 			if (!file_exists($clone_dir))
 			{
 				if (strtolower(realpath($image_dir)) != strtolower(realpath($clone_dir)))
@@ -230,36 +230,69 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					}
 				}
 			}
-
+		
 			$image_extension = pathinfo($image_path, PATHINFO_EXTENSION);
 			$clone_extension = pathinfo($clone_path, PATHINFO_EXTENSION);
-
+			
 			if ($image_extension != null)
 			{
 				$image_extension = '.' . $image_extension;
 			}
-
+			
 			if ($clone_extension != null)
 			{
 				$clone_extension = '.' . $clone_extension;
 			}
-
+			
 			$image_basename = basename($image_path, $image_extension);
 			$clone_basename = basename($clone_path, $clone_extension);
 			$clone_suffix = $clone_basename;
-
+			
 			if (strpos($clone_basename, $image_basename) !== false)
 			{
 				$clone_suffix = substr($clone_basename, strlen($image_basename));
 			}
-
+			
 			if ($clone_suffix[0] == '-')
 			{
 				// WordPress adds '-' on its own
 				$clone_suffix = substr($clone_suffix, 1);
 			}
-
-		  if ($crop_frame == null)
+			
+			$dimensions = null;
+		
+			if (function_exists('getimagesize')) {
+				$dimensions = getimagesize($image_path);
+			}
+			
+			if ($width == null || $height == null) {
+				if ($dimensions != null) {
+					
+					if ($width == null) {
+						$width = $dimensions[0];
+					}
+			
+					if ($height == null) {
+						$height = $dimensions[1];
+					}
+				}
+				else {
+					// XXX Don't think there's any other option here but to fail miserably...use some hard-coded defaults maybe?
+					return null;
+				}
+			}
+			
+			if ($dimensions != null) {
+				if ($width > $dimensions[0]) {
+					$width = $dimensions[0];
+				}
+				
+				if ($height > $dimensions[1]) {
+					$height = $dimensions[1];
+				}
+			}
+				
+		  if ($crop_frame == null || !$crop)
 		  {
 				$destpath = image_resize(
 						$image_path,
@@ -269,46 +302,54 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$quality
 				);
 		  }
-		  else
+		  else 
 		  {
 				$destpath = $clone_path;
 				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
-				$algo = 'shrink'; // either 'adapt' or 'shrink'
-
-				$crop_x = (int) round($crop_frame['x']);
-				$crop_y = (int) round($crop_frame['y']);
-				$crop_width = (int) round($crop_frame['width']);
-				$crop_height = (int) round($crop_frame['height']);
-				$crop_thumbnail_width = (int) round($crop_frame['thumbnail_width']);
-				$crop_thumbnail_height = (int) round($crop_frame['thumbnail_height']);
-
-				$crop_factor_x = $crop_width / $crop_thumbnail_width;
-				$crop_factor_y = $crop_height / $crop_thumbnail_height;
-
-				if ($algo == 'adapt')
+				
+				if ($crop)
 				{
-					$crop_width = (int) round($width * $crop_factor_x);
-					$crop_height = (int) round($height * $crop_factor_y);
+					$algo = 'shrink'; // either 'adapt' or 'shrink'
+
+					$crop_x = (int) round($crop_frame['x']);
+					$crop_y = (int) round($crop_frame['y']);
+					$crop_width = (int) round($crop_frame['width']);
+					$crop_height = (int) round($crop_frame['height']);
+					$crop_final_width = (int) round($crop_frame['final_width']);
+					$crop_final_height = (int) round($crop_frame['final_height']);
+
+					$crop_factor_x = $crop_width / $crop_final_width;
+					$crop_factor_y = $crop_height / $crop_final_height;
+
+					if ($algo == 'adapt')
+					{
+						$crop_width = (int) round($width * $crop_factor_x);
+						$crop_height = (int) round($height * $crop_factor_y);
+					}
+
+					$crop_diff_x = (int) round(($crop_width - $width) / 2);
+					$crop_diff_y = (int) round(($crop_height - $height) / 2);
+
+					$crop_x += $crop_diff_x;
+					$crop_y += $crop_diff_y;
+
+					if ($algo == 'shrink')
+					{
+						$crop_width = $width;
+						$crop_height = $height;
+					}
+
+					$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
 				}
-
-				$crop_diff_x = (int) round(($crop_width - $width) / 2);
-				$crop_diff_y = (int) round(($crop_height - $height) / 2);
-
-				$crop_x += $crop_diff_x;
-				$crop_y += $crop_diff_y;
-
-				if ($algo == 'shrink')
-				{
-					$crop_width = $width;
-					$crop_height = $height;
-				}
-
-				$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
+			
+				// Just constraint dimensions to ensure there's no stretching or deformations
+				list($width, $height) = wp_constrain_dimensions($dimensions[0], $dimensions[1], $width, $height);
+				
 				$thumbnail->resize($width, $height);
 		  }
 
 			// We successfully generated the thumbnail
-			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null))
+			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) 
 			{
 				if (is_null($thumbnail))
 				{
@@ -318,7 +359,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				{
 					$thumbnail->filename = $destpath;
 				}
-
+				
 				if ($watermark == 1 || $watermark === true)
 				{
 					if (in_array($settings->wmType, array('image', 'text')))
@@ -334,13 +375,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($watermark == 'image')
 				{
 					$thumbnail->watermarkImgPath = $settings['wmPath'];
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']); 
 				}
 				else if ($watermark == 'text')
 				{
 					$thumbnail->watermarkText = $settings['wmText'];
 					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
+					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);  
 				}
 
 				if ($reflection)
@@ -354,13 +395,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $thumbnail;
 	}
-
+	
 	/**
 	 * Generates a specific size for an image
-	 * @param int|stdClass|C_Image $image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return bool
 	 */
-	function generate_image_size($image, $size, $width=NULL, $height=NULL, $quality=NULL, $crop=NULL, $watermark=NULL, $reflection=NULL)
+	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
 	{
 		$retval = FALSE;
 
@@ -370,38 +411,102 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		}
 
 		// Ensure we have a valid image
-		if ($image)
+		if ($image) 
 		{
-			// Get the thumbnail settings
 			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			
+			if (!$skip_defaults)
+			{
+				// Get default settings
+				//
+				if (!isset($params['crop'])) {
+					$params['crop'] = $settings->thumbfix;
+		    }
 
-			if (is_null($width)) {
-				$width = $settings->thumbwidth;
+				if (!isset($params['quality'])) {
+					$params['quality'] = $settings->thumbquality;
+				}
+
+				if (!isset($params['watermark'])) {
+					$params['watermark'] = $settings->wmType;
+				}
 			}
-
-			if (is_null($height)) {
-				$height = $settings->thumbheight;
-			}
-
-			if (is_null($crop)) {
-				$crop = $settings->thumbfix;
-      }
-
-			if (is_null($quality)) {
-				$quality = $settings->thumbquality;
-			}
-
-			if (is_null($watermark)) {
-				$watermark = $settings->wmType;
+			
+			// width and height when omitted make generate_image_clone create a clone with original size, so try find defaults regardless of $skip_defaults
+			if (!isset($params['width']) || !isset($params['height'])) {
+				// First try to search if this size was already created
+				if (isset($image->meta_data) && isset($image->meta_data[$size])) {
+					$dimensions = $image->meta_data[$size];
+					
+					if (!isset($params['width'])) {
+						$params['width'] = $dimensions['width'];
+					}
+			
+					if (!isset($params['height'])) {
+						$params['height'] = $dimensions['height'];
+					}
+				}
+				// if search fails try the 2 default built-in sizes, first thumbnail...
+				else if ($size == 'thumbnail') {
+					if (!isset($params['width'])) {
+						$params['width'] = $settings->thumbwidth;
+					}
+			
+					if (!isset($params['height'])) {
+						$params['height'] = $settings->thumbheight;
+					}
+				}
+				// ...and then full, which is the size specified in the global resize options
+				else if ($size == 'full') {
+					if (!isset($params['width'])) {
+						if ($settings->imgAutoResize) {
+							$params['width'] = $settings->imgWidth;
+						}
+					}
+			
+					if (!isset($params['height'])) {
+						if ($settings->imgAutoResize) {
+							$params['height'] = $settings->imgHeight;
+						}
+					}
+				}
 			}
 
 			// Get the image filename
 			$filename = $this->object->get_original_abspath($image);
 			$thumbnail = null;
-			$crop_frame = null;
-
-			if (isset($image->meta_data) && isset($image->meta_data['thumbnail_crop_frame'])) {
-				$crop_frame = $image->meta_data['thumbnail_crop_frame'];
+			
+			if ($size == 'full' && $settings->imgBackup == 1) {
+				// XXX change this? 'full' should be the resized path and 'original' the _backup path
+				$backup_path = $this->object->get_backup_abspath($image);
+				
+				if (!file_exists($backup_path))
+				{
+					@copy($filename, $backup_path);
+				}
+			}
+		
+			if (!isset($params['crop_frame'])) {
+				if (isset($image->meta_data[$size]['crop_frame'])) {
+					$params['crop_frame'] = $image->meta_data[$size]['crop_frame'];
+					
+					if (!isset($params['crop_frame']['final_width'])) {
+						$params['crop_frame']['final_width'] = $image->meta_data[$size]['width'];
+					}
+				
+					if (!isset($params['crop_frame']['final_height'])) {
+						$params['crop_frame']['final_height'] = $image->meta_data[$size]['height'];
+					}
+				}
+			}
+			else {
+				if (!isset($params['crop_frame']['final_width'])) {
+					$params['crop_frame']['final_width'] = $params['width'];
+				}
+				
+				if (!isset($params['crop_frame']['final_height'])) {
+					$params['crop_frame']['final_height'] = $params['height'];
+				}
 			}
 
 			// Generate the thumbnail using WordPress
@@ -412,28 +517,18 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
       if (file_exists($existing_image_abpath)) {
       	unlink($existing_image_abpath);
       }
-
+      
 			wp_mkdir_p($existing_image_dir);
-
-			$params = array(
-				'width' => $width,
-				'height' => $height,
-				'quality' => $quality,
-				'crop' => $crop,
-				'watermark' => $watermark,
-				'reflection' => $reflection,
-				'crop_frame' => $crop_frame,
-			);
-
+			
 			$clone_path = $existing_image_abpath;
 			$thumbnail = $this->object->generate_image_clone($filename, $clone_path, $params);
-
+			
 			// We successfully generated the thumbnail
 			if ($thumbnail != null)
 			{
 				$clone_path = $thumbnail->fileName;
-
-				if (function_exists('getimagesize'))
+				
+				if (function_exists('getimagesize')) 
 				{
 					$dimensions = getimagesize($clone_path);
 				}
@@ -441,25 +536,31 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				{
 					$dimensions = array($width, $height);
 				}
-
-				if (!isset($image->meta_data))
+				
+				if (!isset($image->meta_data)) 
 				{
 					$image->meta_data = array();
 				}
-
-				$image->meta_data[$size] = array(
+				
+				$size_meta = array(
 					'width'		=>	$dimensions[0],
 					'height'	=>	$dimensions[1],
 					'filename'	=>	$clone_path,
 					'generated'	=> microtime()
 				);
+				
+				if (isset($params['crop_frame'])) {
+					$size_meta['crop_frame'] = $params['crop_frame'];
+				}
+				
+				$image->meta_data[$size] = $size_meta;
 
 				$retval = $this->object->_image_mapper->save($image);
 
 				if ($retval == 0) {
 					$retval = false;
 				}
-
+				
 				if ($retval) {
 					return $thumbnail;
 				}
@@ -471,16 +572,16 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
-
+	
 	/**
 	 * Generates a thumbnail for an image
-	 * @param int|stdClass|C_Image $image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
 	 * @return bool
 	 */
-	function generate_thumbnail($image, $width=NULL, $height=NULL, $quality=NULL, $crop=NULL, $watermark=NULL, $reflection=NULL)
+	function generate_thumbnail($image, $params = null, $skip_defaults = false)
 	{
-		$sized_image = $this->object->generate_image_size($image, 'thumbnail', $width, $height, $quality, $crop, $watermark, $reflection);
-
+		$sized_image = $this->object->generate_image_size($image, 'thumbnail', $params, $skip_defaults);
+		
 		return $sized_image != null;
 	}
 
@@ -669,7 +770,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
     /**
      * Recover image from backup copy and reprocess it
      *
-     * @param int|stdClass|C_Image $image
+     * @param int|stdClass|C_NextGen_Gallery_Image $image
      * @return string result code
      */
     function recover_image($image) {

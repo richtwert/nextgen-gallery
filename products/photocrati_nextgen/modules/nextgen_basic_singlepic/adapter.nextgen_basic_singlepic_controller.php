@@ -61,10 +61,10 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 
 				$params['width'] = $display_settings['width'];
 				$params['height'] = $display_settings['height'];;
-				$params['quality'] = $display_settings['crop'];;
-				$params['crop'] = $display_settings['quality'];;
-				$params['watermark'] = $display_settings['display_watermark'];;
-				$params['reflection'] = $display_settings['display_reflection'];;
+				$params['quality'] = $display_settings['quality'];
+				$params['crop'] = $display_settings['crop'];
+				$params['watermark'] = $display_settings['display_watermark'];
+				$params['reflection'] = $display_settings['display_reflection'];
 				
 				// Fall back to full in case dynamic images aren't available
 				$size = 'full';

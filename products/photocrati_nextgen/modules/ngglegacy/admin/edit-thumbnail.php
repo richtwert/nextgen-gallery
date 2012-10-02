@@ -59,7 +59,7 @@ else {
 	}
 }
 
-$thumbnail_crop_frame = isset($picture->meta_data['thumbnail_crop_frame']) ? $picture->meta_data['thumbnail_crop_frame'] : null;
+$thumbnail_crop_frame = isset($picture->meta_data['thumbnail']['crop_frame']) ? $picture->meta_data['thumbnail']['crop_frame'] : null;
 $default_crop_js_parameter = null;
 
 if ($thumbnail_crop_frame != null)

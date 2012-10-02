@@ -9,41 +9,20 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	
 	function _get_params_sanitized($params)
 	{
-		// XXX pick defaults below from NGG settings?
-		if (!isset($params['quality']))
-		{
-			$params['quality'] = 100;
-		}
-		
-		if (!isset($params['crop']))
-		{
-			$params['crop'] = true;
-		}
-		
-		if (!isset($params['watermark']))
-		{
-			$params['watermark'] = true;
-		}
-		
-		if (!isset($params['reflection']))
-		{
-			$params['reflection'] = false;
-		}
-		
 		return $params;
 	}
 	
 	function get_uri_from_params($params)
 	{
 		$params = $this->object->_get_params_sanitized($params);
-		$image = $params['image'];
+		$image = isset($params['image']) ? $params['image'] : null;
 		$image_id = is_int($image) ? $image : $image->pid;
-		$image_width = $params['width'];
-		$image_height = $params['height'];
-		$image_quality = $params['quality'];
-		$image_crop = $params['crop'];
-		$image_watermark = $params['watermark'];
-		$image_reflection = $params['reflection'];
+		$image_width = isset($params['width']) ? $params['width'] : null;;
+		$image_height = isset($params['height']) ? $params['height'] : null;;
+		$image_quality = isset($params['quality']) ? $params['quality'] : null;;
+		$image_crop = isset($params['crop']) ? $params['crop'] : null;;
+		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;;
+		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;;
 		
 		$uri = null;
 		
@@ -97,12 +76,6 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 			$uri_args = isset($match[2]) ? explode('/', $match[2]) : array();
 			$params = array(
 				'image' => $image_id,
-				'width' => null,
-				'height' => null,
-				'quality' => null,
-				'crop' => null,
-				'watermark' => null,
-				'reflection' => null,
 			);
 			
 			foreach ($uri_args as $uri_arg)
@@ -125,7 +98,11 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 				{
 					$params['width'] = $size_match[1];
 					$params['height'] = $size_match[2];
-					$params['quality'] = isset($size_match[3]) ? $size_match[3] : null;
+					
+					if (isset($size_match[3]))
+					{
+						$params['quality'] = $size_match[3];
+					}
 				}
 			}
 			
@@ -158,12 +135,12 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		
 		$params = $this->object->_get_params_sanitized($params);
 		$image = isset($params['image']) ? $params['image'] : null;
-		$image_width = $params['width'];
-		$image_height = $params['height'];
-		$image_quality = $params['quality'];
-		$image_crop = $params['crop'];
-		$image_watermark = $params['watermark'];
-		$image_reflection = $params['reflection'];
+		$image_width = isset($params['width']) ? $params['width'] : null;
+		$image_height = isset($params['height']) ? $params['height'] : null;
+		$image_quality = isset($params['quality']) ? $params['quality'] : null;
+		$image_crop = isset($params['crop']) ? $params['crop'] : null;
+		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;
+		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;
 		
 		$extension = null;
 		$name = null;

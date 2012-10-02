@@ -67,22 +67,20 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 		return $this->call_parent('get_image_url', $image, $size);
 	}
 
-	function generate_image_size($image, $size, $width=NULL, $height=NULL, $quality=NULL, $crop=NULL, $watermark=NULL, $reflection=NULL, $return_thumb=false)
+	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
 	{
 		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 		{
-			$params = $dynthumbs->get_params_from_name($size, true);
-
-			$width = $params['width'];
-			$height = $params['height'];
-			$quality = $params['quality'];
-			$crop = $params['crop'];
-			$watermark = $params['watermark'];
-			$reflection = $params['reflection'];
+			$named_params = $dynthumbs->get_params_from_name($size, true);
+			
+			foreach ($named_params as $param_name => $param_value)
+			{
+				$params[$param_name] = $param_value;
+			}
 		}
 
-		return $this->call_parent('generate_image_size', $image, $size, $width, $height, $quality, $crop, $watermark, $reflection, $return_thumb);
+		return $this->call_parent('generate_image_size', $image, $size, $params, $skip_defaults);
 	}
 }

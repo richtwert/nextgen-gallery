@@ -12,14 +12,17 @@ class C_Image_Wrapper
     public $_orig_image;    // original provided image
     public $_orig_image_id; // original image ID
     public $_cache_overrides; // allow for forcing variable values
+    public $_legacy = FALSE;
 
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
      *
      * @param object $gallery Individual result from displayed_gallery->get_images()
+     * @param object $displayed_gallery Displayed gallery
+     * @param bool $legacy Whether the image source is from NextGen Legacy or NextGen
      * @return void
      */
-    public function __construct($image, $displayed_gallery)
+    public function __construct($image, $displayed_gallery, $legacy = FALSE)
     {
         // for clarity
         if (isset($displayed_gallery->display_settings['number_of_columns']))
@@ -40,7 +43,7 @@ class C_Image_Wrapper
             'thumbPath' => '',    // Server Path to the thumbnail
             'href'      => '',    // A href link code
 
-            // TODO: remove thumbPrefix and thumbFolder (constants)
+            // Mostly constant
             'thumbPrefix' => 'thumbs_',  // FolderPrefix to the thumbnail
             'thumbFolder' => '/thumbs/', // Foldername to the thumbnail
 
@@ -80,8 +83,10 @@ class C_Image_Wrapper
         // cache the results
         ksort($image);
         $this->_cache = $image;
-        $id_field = $image['id_field'];
+        $id_field = (!empty($image['id_field']) ? $image['id_field'] : 'pid');
         $this->_orig_image_id = $image[$id_field];
+
+        $this->_legacy = $legacy;
     }
 
     public function __set($name, $value)
@@ -116,8 +121,14 @@ class C_Image_Wrapper
         switch ($name)
         {
             case 'author':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['author'] = $gallery->name;
                 return $this->_cache['author'];
 
@@ -131,14 +142,26 @@ class C_Image_Wrapper
                 return $this->_cache['caption'];
 
             case 'galdesc':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['galdesc'] = $gallery->name;
                 return $this->_cache['galdesc'];
 
             case 'gid':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['gid'] = $gallery->name;
                 return $this->_cache['gid'];
 
@@ -158,12 +181,13 @@ class C_Image_Wrapper
                 return $this->_cache['imageHTML'];
 
             case 'imagePath':
-                $this->_cache['imagePath'] = WINABSPATH  . $this->__get('path') . '/' . $this->__get('filename');
+                $storage = $this->get_storage();
+                $this->_cache['imagePath'] = $storage->get_image_abspath($this->_orig_image, 'full');
                 return $this->_cache['imagePath'];
 
             case 'imageURL':
                 $storage = $this->get_storage();
-                $this->_cache['imageURL'] = $storage->get_image_url($this->_orig_image);
+                $this->_cache['imageURL'] = $storage->get_image_url($this->_orig_image, 'full');
                 return $this->_cache['imageURL'];
 
             case 'linktitle':
@@ -171,20 +195,38 @@ class C_Image_Wrapper
                 return $this->_cache['linktitle'];
 
             case 'name':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['name'] = $gallery->name;
                 return $this->_cache['name'];
 
             case 'pageid':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['pageid'] = $gallery->name;
                 return $this->_cache['pageid'];
 
             case 'path':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['path'] = $gallery->name;
                 return $this->_cache['path'];
 
@@ -218,8 +260,14 @@ class C_Image_Wrapper
                 return $this->_cache['pidlink'];
 
             case 'previewpic':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['previewpic'] = $gallery->name;
                 return $this->_cache['previewpic'];
 
@@ -229,8 +277,14 @@ class C_Image_Wrapper
                 return "width='{$w}' height='{$h}'";
 
             case 'slug':
-                $gallery_map = $this->get_gallery($this->__get('galleryid'));
-                $gallery = $gallery_map->find($this->__get('galleryid'));
+                if ($this->_legacy)
+                {
+                    $gallery = $this->get_legacy_gallery($this->__get('galleryid'));
+                }
+                else {
+                    $gallery_map = $this->get_gallery($this->__get('galleryid'));
+                    $gallery = $gallery_map->find($this->__get('galleryid'));
+                }
                 $this->_cache['slug'] = $gallery->name;
                 return $this->_cache['slug'];
 
@@ -269,7 +323,7 @@ class C_Image_Wrapper
 
             case 'url':
                 $storage = $this->get_storage();
-                $this->_cache['url'] = $storage->get_image_url($this->_orig_image);
+                $this->_cache['url'] = $storage->get_image_url($this->_orig_image, 'full');
                 return $this->_cache['url'];
 
             default:
@@ -324,6 +378,19 @@ class C_Image_Wrapper
         {
             return $this->container->get_gallery($gallery_id);
         }
+        $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
+        return $gallery_map->find($gallery_id);
+    }
+
+    /**
+     * Retrieves I_Gallery_Mapper instance.
+     *
+     * @param int $gallery_id Gallery ID
+     * @return mixed
+     */
+    function get_legacy_gallery($gallery_id)
+    {
+        return C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper')->find($gallery_id);
     }
 
     /**
@@ -384,8 +451,31 @@ class C_Image_Wrapper
      * @param string $mode could be watermark | web20 | crop
      * @return the url for the image or false if failed
      */
-    function cached_singlepic_file($width = '', $height = '', $mode = '' ) {
-        return FALSE;
+    function cached_singlepic_file($width = '', $height = '', $mode = '' )
+    {
+        $dynthumbs = C_Component_Registry::get_instance()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $storage = $this->get_storage();
+
+        // determine what to do with 'mode'
+        $display_reflection = FALSE;
+        $display_watermark  = FALSE;
+
+        if (!is_array($mode))
+            $mode = explode(',', $mode);
+        if (in_array('web20', $mode))
+            $display_reflection = TRUE;
+        if (in_array('watermark', $mode))
+            $display_watermark = TRUE;
+
+        // and go for it
+        $params = array(
+            'width'      => $width,
+            'height'     => $height,
+            'watermark'  => $display_watermark,
+            'reflection' => $display_reflection
+        );
+
+        return $storage->get_image_url((object)$this->_cache, $dynthumbs->get_size_name($params));
     }
 
     /**
@@ -401,8 +491,18 @@ class C_Image_Wrapper
      *
      * TODO: Get a permalink to a page presenting the image
      */
-    function get_permalink() {
+    function get_permalink()
+    {
         return $this->__get('permalink');
+    }
+
+    /**
+     * Returns the _cache array; used by nggImage
+     * @return array
+     */
+    function _get_image()
+    {
+        return $this->_cache;
     }
 
 }
