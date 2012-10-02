@@ -55,7 +55,7 @@ jQuery(function($){
 
 
         toggle_busy:                    function() {
-            $('body').css('cursor', $('body').css('cursor') == 'wait' ? 'auto' : 'wait');
+            $('body, a').css('cursor', $('body').css('cursor') == 'wait' ? 'auto' : 'wait');
         }
     };
 
