@@ -15,52 +15,63 @@ class A_NextGen_Basic_Album_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return=FALSE)
     {
+        $display_settings = $displayed_gallery->display_settings;
+
         // Are we to display a sub-album
         if (($album    = get_query_var('album'))) {
             $displayed_gallery->entity_ids = array();
             $displayed_gallery->container_ids = $album === '0' OR $album === 'all' ? array() : array($album);
 
         }
+
+        // Are we to display a gallery ?
         elseif ($gallery  = get_query_var('gallery')) {
-            // TODO: How do we display a gallery? It would encompass alternative-reviews I would think. *shrugs*
+            $renderer = $this->object->get_registry()->get_utility('I_Display_Type_Renderer');
+            $renderer->display_images(array(
+                'source'        => 'galleries',
+                'container_ids' => array($gallery),
+                'display_type'  => $display_settings['gallery_display_type']
+            ));
         }
 
-        // Get all settings required for displaying this album
-        $display_settings = $displayed_gallery->display_settings;
-        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
-        $offset = $display_settings['galleries_per_page'] * ($current_page - 1);
-        $total = $displayed_gallery->get_album_entity_count();
-        $entities = $displayed_gallery->get_album_entities($display_settings['galleries_per_page'], $offset);
-
-        // If there are entities to be displayed
-        if ($entities) {
-
-            //  Create pagination
-            if ($display_settings['galleries_per_page'] && !$display_settings['disable_pagination']) {
-                $pagination = new nggNavigation;
-                $display_settings['pagination'] = $pagination->create_navigation(
-                    $current_page,
-                    $total,
-                    $display_settings['galleries_per_page']
-                );
-            }
-
-            // Add additional parameters
-            $display_settings['image_gen']              = &$this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-            $display_settings['current_page']			= $current_page;
-            $display_settings['entities']               = &$entities;
-            $display_settings['storage']                = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
-
-            // Render legacy template
-            if ($display_settings['template']) {
-                $display_settings = $this->prepare_legacy_album_params($display_settings);
-                return $this->legacy_render($display_settings['template'], $display_settings, $return);
-            }
-        }
-
-        // Display "no entities found" message
+        // We're viewing the album
         else {
-             return $this->object->render_partial('no_images_found');
+            // Get all settings required for displaying this album
+            $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+            $offset = $display_settings['galleries_per_page'] * ($current_page - 1);
+            $total = $displayed_gallery->get_album_entity_count();
+            $entities = $displayed_gallery->get_album_entities($display_settings['galleries_per_page'], $offset);
+
+            // If there are entities to be displayed
+            if ($entities) {
+
+                //  Create pagination
+                if ($display_settings['galleries_per_page'] && !$display_settings['disable_pagination']) {
+                    $pagination = new nggNavigation;
+                    $display_settings['pagination'] = $pagination->create_navigation(
+                        $current_page,
+                        $total,
+                        $display_settings['galleries_per_page']
+                    );
+                }
+
+                // Add additional parameters
+                $display_settings['image_gen']              = &$this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+                $display_settings['current_page']			= $current_page;
+                $display_settings['entities']               = &$entities;
+                $display_settings['storage']                = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
+
+                // Render legacy template
+                if ($display_settings['template']) {
+                    $display_settings = $this->prepare_legacy_album_params($display_settings);
+                    return $this->legacy_render($display_settings['template'], $display_settings, $return);
+                }
+            }
+
+            // Display "no entities found" message
+            else {
+                return $this->object->render_partial('no_images_found');
+            }
         }
     }
 
@@ -96,7 +107,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $uri = $_SERVER['REQUEST_URI'];
             $uri = remove_query_arg('gallery', $uri);
             $uri = remove_query_arg('album', $uri);
-            $gallery->pagelink = add_query_arg(($gallery->is_album ? 'album' : 'gallery'), $gallery->slug);
+            $id_field = $gallery->id_field;
+            $gallery->pagelink = add_query_arg(($gallery->is_album ? 'album' : 'gallery'), $gallery->$id_field);
 
             // Let plugins modify the gallery
             $gallery = apply_filters('ngg_album_galleryobject', $gallery);

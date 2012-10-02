@@ -14,10 +14,11 @@ define(
 
 class M_Gallery_Display extends C_Base_Module
 {
-	var $display_settings_page_name = 'ngg_display_settings';
-	var $controller = NULL;
-	var $attach_to_post_route = 'wp-admin/attach_to_post';
-	var $attach_to_post_tinymce_plugin = 'NextGEN_AttachToPost';
+	var $display_settings_page_name     = 'ngg_display_settings';
+	var $controller                     = NULL;
+    var $renderer                       = NULL;
+	var $attach_to_post_route           = 'wp-admin/attach_to_post';
+	var $attach_to_post_tinymce_plugin  = 'NextGEN_AttachToPost';
 
 	function define()
 	{
@@ -31,7 +32,6 @@ class M_Gallery_Display extends C_Base_Module
 			'http://www.photocrati.com'
 		);
 
-		$this->add_mixin('Mixin_Render_Display_Type');
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 	}
 
@@ -41,7 +41,7 @@ class M_Gallery_Display extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->controller = $this->get_registry()->get_utility('I_Display_Settings_Controller');
+		$this->controller   = $this->get_registry()->get_utility('I_Display_Settings_Controller');
 		$this->_add_routes();
 	}
 
@@ -100,6 +100,12 @@ class M_Gallery_Display extends C_Base_Module
 			'I_Displayed_Gallery_Mapper',
 			'C_Displayed_Gallery_Mapper'
 		);
+
+        // This utility provides the capabilities of rendering a display type
+        $this->get_registry()->add_utility(
+            'I_Display_Type_Renderer',
+            'C_Display_Type_Renderer'
+        );
 	}
 
 
@@ -147,7 +153,8 @@ class M_Gallery_Display extends C_Base_Module
 		}
 
 		// Add a shortcode for displaying galleries
-		add_shortcode('ngg_images', array(&$this, 'display_images'));
+        $this->renderer     = $this->get_registry()->get_utility('I_Display_Type_Renderer');
+		add_shortcode('ngg_images', array(&$this->renderer, 'display_images'));
 
         // wrap the old nextgen tags to call our display_images()
         add_shortcode('imagebrowser', array(&$this, 'wrap_shortcode_imagebrowser'));
@@ -171,6 +178,61 @@ class M_Gallery_Display extends C_Base_Module
 
         add_action('init', array(&$this, 'serve_alternative_view_request'));
 	}
+
+    /**
+     * Substitutes the gallery placeholder content with the gallery type frontend
+     * view, returns a list of static resources that need to be loaded
+     * @param stdClass $post
+     */
+    function substitute_placeholder_imgs($content)
+    {
+        // Load html into parser
+        $doc = new simple_html_dom();
+        if ($content) {
+            $doc->load($content);
+
+            // Find all placeholder images
+            $imgs = $doc->find("img[class='ngg_displayed_gallery']");
+            if ($imgs) {
+
+                // Get the displayed gallery mapper
+                $mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+
+                // Substitute each image for the gallery type frontent content
+                foreach ($imgs as $img) {
+
+                    // The placeholder MUST have a gallery instance id
+                    $preview_url = preg_quote(PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
+                    if (preg_match("/{$preview_url}\?id=(\d+)/", $img->src, $match)) {
+
+                        // Find the displayed gallery
+                        $displayed_gallery_id = $match[1];
+                        $displayed_gallery = $mapper->find($displayed_gallery_id, TRUE);
+
+                        // Get the content for the displayed gallery
+                        $content = '<p>'._('Invalid Displayed Gallery').'</p>';
+                        if ($displayed_gallery) {
+                            $content = $this->renderer->render_displayed_gallery($displayed_gallery, TRUE);
+                        }
+
+                        // Replace the placeholder with the displayed gallery content
+                        $img->outertext = $this->compress_html($content);
+                    }
+                }
+                $content = (string)$doc->save();
+            }
+            return $content;
+        }
+    }
+
+    //  this function gets rid of tabs, line breaks, and white space
+    function compress_html($html)
+    {
+        $html = preg_replace("/>\s+/", ">", $html);
+        $html = preg_replace("/\s+</", "<", $html);
+        $html = preg_replace("/<!--(?:(?!-->).)*-->/m", "", $html);
+        return $html;
+    }
 
 
 	/**
@@ -320,6 +382,180 @@ class M_Gallery_Display extends C_Base_Module
 		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 		foreach ($displayed_galleries_to_cleanup as $id) $mapper->destroy($id);
 	}
+
+
+    /**
+     * Short-cut for rendering an album
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_album($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+
+    /**
+     * Short-cut for rendering an imagebrowser
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
+    {
+        $params['image_ids']    = $this->_get_param('id', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering an thumbnail gallery
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_nggallery($params, $inner_content=NULL)
+    {
+        $params['gallery_ids']     = $this->_get_param('id', NULL, $params);
+        $params['display_type']    = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        if (isset($params['images']))
+        {
+            $params['images_per_page'] = $this->_get_param('images', NULL, $params);
+        }
+        unset($params['id']);
+        unset($params['images']);
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering a thumbnail gallery based on tags
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_nggtags($params, $inner_content=NULL)
+    {
+        $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['gallery']);
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering a thumbnail gallery with random images
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_random($params, $inner_content=NULL)
+    {
+        $params['source']             = $this->_get_param('source', 'random', $params);
+        $params['images_per_page']    = $this->_get_param('max', NULL, $params);
+        $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
+        $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+
+        // inside if because Mixin_Displayed_Gallery_Instance_Methods->get_images() doesn't handle NULL container_ids
+        // correctly
+        if (isset($params['id']))
+        {
+            $params['container_ids'] = $this->_get_param('id', NULL, $params);
+        }
+
+        unset($params['max']);
+        unset($params['id']);
+
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering a thumbnail gallery with recent images
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_recent($params, $inner_content=NULL)
+    {
+        $params['source']             = $this->_get_param('source', 'recent', $params);
+        $params['images_per_page']    = $this->_get_param('max', NULL, $params);
+        $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
+        $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+
+        if (isset($params['id']))
+        {
+            $params['container_ids'] = $this->_get_param('id', NULL, $params);
+        }
+
+        unset($params['max']);
+        unset($params['id']);
+
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering an singlepic gallery
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_singlepic($params, $inner_content=NULL)
+    {
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
+        $params['image_id'] = $this->_get_param('id', NULL, $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering an slideshow
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_slideshow($params, $inner_content=NULL)
+    {
+        // not yet implemented
+    }
+
+
+    /**
+     * Short-cut for rendering a tagcloud
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_tagcloud($params, $inner_content=NULL)
+    {
+        $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
+        $this->object->display_images($params, $inner_content);
+    }
+
+
+    /**
+     * Short-cut for rendering a thumbnail gallery
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+    function wrap_shortcode_thumb($params, $inner_content=NULL)
+    {
+        $params['entity_ids']   = $this->_get_param('id', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['id']);
+        $this->object->display_images($params, $inner_content);
+    }
 }
 
 new M_Gallery_Display();
