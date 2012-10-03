@@ -58,6 +58,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		if ($gallery && isset($gallery->path)) {
 			$retval = path_join(ABSPATH, $gallery->path);
 		}
+        elseif ($gallery) {
+            // fallback to the upload abspath
+            $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+            $retval = $storage->get_upload_abspath($gallery);
+        }
 
 		return $retval;
 	}
