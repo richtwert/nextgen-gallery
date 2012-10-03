@@ -15,24 +15,22 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 
 	/**
 	 * Renders the front-end display for the imagebrowser display type
+     *
 	 * @param C_Displayed_Gallery $displayed_gallery
 	 * @param bool $return
 	 * @return string
 	 */
-	function index_action($displayed_gallery, $return=FALSE)
+	function index_action($displayed_gallery, $return = FALSE)
 	{
-		$picturelist = array();
+		$picture_list = array();
 
 		foreach ($displayed_gallery->get_included_images() as $image) {
-			$picturelist[$image->{$image->id_field}] = $image;
+			$picture_list[$image->{$image->id_field}] = $image;
 		}
 
-		if ($picturelist)
+		if ($picture_list)
         {
-            $retval = $this->Render_Image_Browser(
-                $picturelist,
-                $displayed_gallery->display_settings['template']
-			);
+            $retval = $this->render_image_browser($displayed_gallery, $picture_list);
 
 			if ($return)
             {
@@ -49,119 +47,139 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 	}
 
     /**
-     * nggCreateImageBrowser()
+     * Returns the rendered template of an image browser display
      *
-     * @access internal
-     * @param array $picturelist
-     * @param string $template (optional) name for a template file, look for imagebrowser-$template
-     * @return the content
+     * @param C_Displayed_Gallery
+     * @param array $picture_list
+     * @return string Rendered HTML (probably)
      */
-    function Render_Image_Browser($picturelist, $template = '')
+    function render_image_browser($displayed_gallery, $picture_list)
     {
         global $nggRewrite;
 
+        $display_settings = $displayed_gallery->display_settings;
         $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $storage  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        $imap     = $this->object->get_registry()->get_utility('I_Image_Mapper');
 
+        // the pid may be a slug so we must track it & the slug target's database id
         $pid = get_query_var('pid');
-        $current_page = (get_the_ID() == false) ? 0 : get_the_ID();
-        $picarray = array();
-        $act_pid = NULL;
+        $numeric_pid = NULL;
 
-        // create a array with id's for better walk inside
-        foreach ($picturelist as $picture) {
-            $picarray[] = $picture->pid;
+        // makes the upcoming which-image-am-I loop easier
+        $picture_array = array();
+        foreach ($picture_list as $picture) {
+            $picture_array[] = $picture->{$imap->get_primary_key_column()};
         }
 
-        $total = count($picarray);
-
+        // Determine which image in the list we need to display
         if (!empty($pid))
         {
             if (is_numeric($pid))
             {
-                $act_pid = intval($pid);
+                $numeric_pid = intval($pid);
             }
             else {
                 // in the case it's a slug we need to search for the pid
-                foreach ($picturelist as $key => $picture) {
+                foreach ($picture_list as $key => $picture) {
                     if ($picture->image_slug == $pid)
                     {
-                        $act_pid = $key;
+                        $numeric_pid = $key;
                         break;
                     }
                 }
             }
         }
         else {
-            reset($picarray);
-            $act_pid = current($picarray);
+            reset($picture_array);
+            $numeric_pid = current($picture_array);
         }
 
-        // get ids for back/next
-        $key = array_search($act_pid, $picarray);
+        // get ids to the next and previous images
+        $total = count($picture_array);
+        $key = array_search($numeric_pid, $picture_array);
         if (!$key)
         {
-            $act_pid = reset($picarray);
-            $key = key($picarray);
+            $numeric_pid = reset($picture_array);
+            $key = key($picture_array);
         }
 
-        $back_pid = ($key >= 1) ? $picarray[$key-1] : end($picarray);
-        $next_pid = ($key < ($total - 1)) ? $picarray[$key + 1] : reset($picarray);
+        // for "viewing image #13 of $total"
+        $picture_list_pos = $key + 1;
 
-        // get the picture data
-        $picture = nggdb::find_image($act_pid);
+        // our image to display
+        $picture = new C_Image_Wrapper($imap->find($numeric_pid), NULL, TRUE);
+        $picture = apply_filters('ngg_image_object', $picture, $numeric_pid);
 
-        // if we didn't get some data, exit now
-        if (is_null($picture))
-        {
-            return;
-        }
-
-        // add more variables for render output
-        $picture->href_link = $picture->get_href_link();
-        $args['pid'] = ($settings->usePermalinks) ? $picturelist[$back_pid]->image_slug : $back_pid;
-        $picture->previous_image_link = $nggRewrite->get_permalink($args);
-        $picture->previous_pid = $back_pid;
-        $args['pid'] = ($settings->usePermalinks) ? $picturelist[$next_pid]->image_slug : $next_pid;
-        $picture->next_image_link  = $nggRewrite->get_permalink($args);
-        $picture->next_pid = $next_pid;
-        $picture->number = $key + 1;
-        $picture->total = $total;
-        $picture->linktitle = (empty($picture->description)) ? ' ' : htmlspecialchars(stripslashes(nggGallery::i18n($picture->description, 'pic_' . $picture->pid . '_description')));
-        $picture->alttext = (empty($picture->alttext)) ?  ' ' : html_entity_decode(stripslashes(nggGallery::i18n($picture->alttext, 'pic_' . $picture->pid . '_alttext')));
-        $picture->description = (empty($picture->description)) ? ' ' : html_entity_decode(stripslashes(nggGallery::i18n($picture->description, 'pic_' . $picture->pid . '_description')));
-        $picture->anchor = 'ngg-imagebrowser-' . $picture->galleryid . '-' . $current_page;
-
-        // filter to add custom content for the output
-        $picture = apply_filters('ngg_image_object', $picture, $act_pid);
-
-        // let's get the meta data
-        $meta = new nggMeta($act_pid);
-        $meta->sanitize();
-        $exif = $meta->get_EXIF();
-        $iptc = $meta->get_IPTC();
-        $xmp  = $meta->get_XMP();
-        $db   = $meta->get_saved_meta();
-
-        //if we get no exif information we try the database
-        $exif = ($exif == false) ? $db : $exif;
-
-        // look for imagebrowser-$template.php or pure imagebrowser.php
-        $filename = (empty($template)) ? 'imagebrowser' : 'imagebrowser-' . $template;
-
-        // create the output
-        $out = $this->object->legacy_render(
-            $filename,
-            array(
-                'image' => $picture,
-                'meta' => $meta,
-                'exif' => $exif,
-                'iptc' => $iptc,
-                'xmp' => $xmp,
-                'db' => $db
-            )
+        // determine URI to the next & previous images
+        $back_pid = ($key >= 1) ? $picture_array[$key - 1] : end($picture_array);
+        $prev_image_link = $nggRewrite->get_permalink(
+            array('pid' => ($settings->usePermalinks) ? $picture_list[$back_pid]->image_slug : $back_pid)
         );
 
-        return $out;
+        $next_pid = ($key < ($total - 1)) ? $picture_array[$key + 1] : reset($picture_array);
+        $next_image_link = $nggRewrite->get_permalink(
+            array('pid' => ($settings->usePermalinks) ? $picture_list[$next_pid]->image_slug : $next_pid)
+        );
+
+        // css class
+        $anchor = 'ngg-imagebrowser-' . $picture->galleryid . '-' . (get_the_ID() == false) ? 0 : get_the_ID();
+
+        // try to read EXIF data, but fallback to the db presets
+        $meta = new C_NextGen_Metadata($picture);
+        $meta->sanitize();
+        $meta_results = array(
+            'exif' => $meta->get_EXIF(),
+            'iptc' => $meta->get_IPTC(),
+            'xmp'  => $meta->get_XMP(),
+            'db'   => $meta->get_saved_meta()
+        );
+        $meta_results['exif'] = ($meta_results['exif'] == false) ? $meta_results['db'] : $meta_results['exif'];
+
+        if (!empty($display_settings['template']))
+        {
+            $picture->href_link = $picture->get_href_link();
+            $picture->previous_image_link = $prev_image_link;
+            $picture->previous_pid = $back_pid;
+            $picture->next_image_link = $next_image_link;
+            $picture->next_pid = $next_pid;
+            $picture->number = $picture_list_pos;
+            $picture->total = $total;
+            $picture->anchor = $anchor;
+
+            return $this->object->legacy_render(
+                $display_settings['template'],
+                array(
+                    'image' => $picture,
+                    'meta'  => $meta,
+                    'exif'  => $meta_results['exif'],
+                    'iptc'  => $meta_results['iptc'],
+                    'xmp'   => $meta_results['xmp'],
+                    'db'    => $meta_results['db']
+                ),
+                TRUE
+            );
+        }
+        else {
+            $params = $display_settings;
+            $params['anchor']       = $anchor;
+            $params['image']        = $picture;
+            $params['storage']      = &$storage;
+            $params['previous_pid'] = $back_pid;
+            $params['next_pid']     = $next_pid;
+            $params['number']       = $picture_list_pos;
+            $params['total']        = $total;
+
+            $params['previous_image_link'] = $prev_image_link;
+            $params['next_image_link']     = $next_image_link;
+            $params['effect_code']         = $this->object->get_effect_code($displayed_gallery);
+
+            return $this->object->render_partial(
+                'nextgen_basic_imagebrowser',
+                $params,
+                TRUE
+            );
+        }
     }
 
     /**

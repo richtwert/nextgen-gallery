@@ -24,6 +24,5 @@ class Hook_NextGen_Basic_ImageBrowser_Validation extends Hook
 {
 	function validation()
 	{
-
 	}
 }

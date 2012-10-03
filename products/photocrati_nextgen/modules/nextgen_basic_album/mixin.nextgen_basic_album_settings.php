@@ -9,7 +9,6 @@ class Mixin_NextGen_Basic_Album_Settings extends Mixin
     function _get_field_names()
     {
         return array(
-            'thumbnail_dimensions',
             'nextgen_basic_album_gallery_display_type',
             'nextgen_basic_album_galleries_per_page',
             'nextgen_basic_templates_template',

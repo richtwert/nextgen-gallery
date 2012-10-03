@@ -84,9 +84,12 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         $image_mapper           = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $storage                = $params['storage'];
         $image_gen              = $params['image_gen'];
+
+        // legacy templates expect these dimensions
         $image_gen_params       = array(
-            'width'             => $params['thumbnail_width'],
-            'height'            => $params['thumbnail_height']
+            'width'             => 91,
+            'height'            => 68,
+            'crop'              => TRUE
         );
 
         // If pagination is not set, then set it to FALSE
