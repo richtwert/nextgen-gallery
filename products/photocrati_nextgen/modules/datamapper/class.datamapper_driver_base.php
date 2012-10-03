@@ -372,6 +372,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$saved_entity = $model->get_entity();
 			
 			unset($saved_entity->_errors);
+			
 			unset($saved_entity->errmsg);
 			unset($saved_entity->error);
 			unset($saved_entity->imageURL);
@@ -383,7 +384,6 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			unset($saved_entity->thumbFolder);
 			unset($saved_entity->thumbcode);
 			unset($saved_entity->path);
-			unset($saved_entity->title);
 			unset($saved_entity->pageid);
 			unset($saved_entity->previewpic);
 			unset($saved_entity->permalink);
