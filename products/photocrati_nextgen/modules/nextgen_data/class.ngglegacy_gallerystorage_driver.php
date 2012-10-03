@@ -422,10 +422,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			if (!$skip_defaults)
 			{
 				// Get default settings
-				//
 				if (!isset($params['crop'])) {
 					$params['crop'] = $settings->thumbfix;
-		    }
+		        }
 
 				if (!isset($params['quality'])) {
 					$params['quality'] = $settings->thumbquality;

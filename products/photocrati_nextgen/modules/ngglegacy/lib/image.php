@@ -14,6 +14,8 @@ if (!class_exists('nggImage'))
         public $_ngiw;
         public $_propogate = TRUE;
 
+
+        // TODO: Make nggImage a subclass of C_Component and use the wrapper functionality
         function __construct($image)
         {
             $image->meta_data = @unserialize($image->meta_data);
