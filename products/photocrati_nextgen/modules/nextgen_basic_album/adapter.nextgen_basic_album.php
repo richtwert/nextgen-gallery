@@ -27,7 +27,7 @@ class Hook_NextGen_Basic_Album_Validation extends Hook
         $this->validates_presence_of('template');
         $this->validates_presence_of('gallery_display_type');
         $this->validates_presence_of('thumbnail_width');
-        $this->validates_presence_of('thumbnail_width');
+        $this->validates_presence_of('thumbnail_height');
         $this->validates_presence_of('galleries_per_page');
         $this->validates_numericality_of('thumbnail_width');
         $this->validates_numericality_of('thumbnail_height');
