@@ -370,7 +370,32 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 		if ($model->is_valid()) {
 			$saved_entity = $model->get_entity();
+			
 			unset($saved_entity->_errors);
+			
+			unset($saved_entity->errmsg);
+			unset($saved_entity->error);
+			unset($saved_entity->imageURL);
+			unset($saved_entity->thumbURL);
+			unset($saved_entity->imagePath);
+			unset($saved_entity->thumbPath);
+			unset($saved_entity->href);
+			unset($saved_entity->thumbPrefix);
+			unset($saved_entity->thumbFolder);
+			unset($saved_entity->thumbcode);
+			unset($saved_entity->path);
+			unset($saved_entity->pageid);
+			unset($saved_entity->previewpic);
+			unset($saved_entity->permalink);
+			unset($saved_entity->image_slug);
+			unset($saved_entity->post_id);
+			unset($saved_entity->gid);
+			unset($saved_entity->galdesc);
+			unset($saved_entity->slug);
+			unset($saved_entity->author);
+			unset($saved_entity->imageHTML);
+			unset($saved_entity->thumbHTML);
+			
 			$retval = $this->object->_save_entity($saved_entity);
 		}
 

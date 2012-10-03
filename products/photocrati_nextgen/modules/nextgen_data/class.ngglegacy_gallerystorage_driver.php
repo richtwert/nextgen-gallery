@@ -70,6 +70,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_image_abspath($image, $size='full', $check_existance=FALSE)
 	{
 		$retval = NULL;
+		
+		if ($size == false) {
+			$size = 'full';
+		}
 
 		// If we have the id, get the actual image entity
 		if (is_numeric($image)) {
@@ -130,7 +134,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 			}
 		}
-
+		
 		return $retval;
 	}
 

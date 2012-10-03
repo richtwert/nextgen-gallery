@@ -89,8 +89,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         ob_start();
         extract($__vars);
         include($__filename);
-        $__content = ob_get_contents();
-        ob_end_clean();
+        $__content = ob_get_clean();
 
         if ($__return) return $__content;
         else echo $__content;
