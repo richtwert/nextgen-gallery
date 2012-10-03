@@ -48,19 +48,22 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 
 	function get_image_url($image, $size='full')
 	{
-        $retval = NULL;
+    $retval = NULL;
 		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size)) {
-
-            if (($abspath = $this->object->get_image_abspath($image, $size, true))) {
+			
+			$abspath = $this->object->get_image_abspath($image, $size, true);
+			
+      if ($abspath == null) {
 				$params = $dynthumbs->get_params_from_name($size, true);
 				$retval = $dynthumbs->get_image_url($image, $params);
 			}
 		}
-        else {
-            $retval = $this->call_parent('get_image_url', $image, $size);
-        }
+    
+    if ($retval == null) {
+    	$retval = $this->call_parent('get_image_url', $image, $size);
+    }
 
 		return $retval;
 	}
