@@ -141,8 +141,6 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 						$this->storage->get_original_dimensions($image)
 					);
 
-                    $tmp = $this->storage->generate_image_size($image, 'thumbnail');
-
                     // Get the thumbnail-sized image dimensions
                     $dimensions = $this->storage->get_thumbnail_dimensions($image);
 
