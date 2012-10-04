@@ -433,6 +433,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * to the DOM
 	 */
 	_source_Changed:			function(){
+        var self = this;
 		 var view = NggDisplayTab.get('attached_source_view');
 		 if (view) view.remove();
 		 var source_id = this.get('source_id');
@@ -440,6 +441,15 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			 this[source_id+'_selected_as_source'].call(this);
 
 		 }
+
+        // Change the list of display types available for selection
+        jQuery('.display_type_preview').each(function(){
+           var $this = jQuery(this);
+            if ($this.hasClass(self.get('source').get('display_type'))) {
+                $this.removeClass('hidden');
+            }
+            else $this.addClass('hidden');
+        });
 	}.observes('source'),
 
 

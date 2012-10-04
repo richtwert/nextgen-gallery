@@ -1,6 +1,6 @@
 <script type="text/x-handlebars">
 <?php foreach ($display_types as $display_type): ?>
-<div class="display_type_preview">
+<div class="display_type_preview <?php echo esc_attr($display_type->entity_type)?>" id="<?php echo esc_attr($display_type->name)?>">
 	<div class="image_container">
 		<div>
 			{{view Ember.RadioButton

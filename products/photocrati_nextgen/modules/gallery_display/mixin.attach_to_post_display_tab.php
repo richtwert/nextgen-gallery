@@ -207,11 +207,31 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	function get_sources()
 	{
 		return array(
-			array('id'	=>	'galleries',	'title'	=>	'Galleries'),
-			array('id'	=>	'albums',		'title'	=>	'Albums'),
-			array('id'	=>	'image_tags',	'title'	=>	'Image Tags'),
-			array('id'	=>	'recent_images','title' =>	'Recent Images'),
-			array('id'	=>	'random_images','title'	=>	'Random Images')
+			array(
+                'id'	        =>	'galleries',
+                'title'	        =>	'Galleries',
+                'display_type'  =>  'gallery'
+            ),
+			array(
+                'id'	        =>	'albums',
+                'title'	        =>	'Albums',
+                'display_type'  =>  'album'
+            ),
+			array(
+                'id'	        =>	'image_tags',
+                'title'	        =>	'Image Tags',
+                'display_type'  =>  'gallery'
+            ),
+			array(
+                'id'	        =>	'recent_images',
+                'title'         =>	'Recent Images',
+                'display_type'  =>  'gallery'
+            ),
+			array(
+                'id'	        =>	'random_images',
+                'title'	        =>	'Random Images',
+                'display_type'  =>  'gallery'
+            )
 		);
 	}
 
