@@ -125,12 +125,19 @@ class A_Attach_To_Post_Ajax extends Mixin
 			$response['limit']	= $limit = $limit ? $limit : 0;
 			$response['offset'] = $offset = $offset ? $offset : 0;
 			$response['count']	= $displayed_gallery->get_entity_count();
-			$response['entities'] = array();
+			$response['entities'] = $displayed_gallery->get_entities($limit,$offset);
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-			foreach ($displayed_gallery->get_entities($limit,$offset) as $image) {
-				$image->thumb_url	=	$storage->get_thumb_url($image);
-				$image->thumb_size	=	$storage->get_thumb_dimensions($image);
-				$response['entities']	[]= $image;
+			foreach ( $response['entities'] as &$entity) {
+                $image = $entity;
+                if (in_array($displayed_gallery->source, array('album','albums'))) {
+                    $image = $entity->previewpic;
+                    if ($entity->is_album) {
+                        $id = $entity->{$entity->id_field};
+                        $entity->{$entity->id_field} = 'a'.$id;
+                    }
+                }
+                $entity->thumb_url	=	$storage->get_thumb_url($image);
+                $entity->thumb_size	=	$storage->get_thumb_dimensions($image);
 			}
 		}
 		else {

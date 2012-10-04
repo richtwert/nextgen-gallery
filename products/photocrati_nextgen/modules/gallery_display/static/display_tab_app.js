@@ -493,7 +493,6 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
      * The source has been changed to Albums
      */
     albums_selected_as_source:          function(){
-        debugger;
         this.attach_source_view();
     },
 
