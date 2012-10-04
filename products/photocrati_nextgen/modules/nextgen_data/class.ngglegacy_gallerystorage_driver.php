@@ -209,15 +209,15 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 */
 	function generate_image_clone($image_path, $clone_path, $params)
 	{
-		$width = isset($params['width']) ? $params['width'] : null;
-		$height = isset($params['height']) ? $params['height'] : null;
-		$quality = isset($params['quality']) ? $params['quality'] : null;
-		$crop = isset($params['crop']) ? $params['crop'] : null;
-		$watermark = isset($params['watermark']) ? $params['watermark'] : null;
-		$reflection = isset($params['reflection']) ? $params['reflection'] : null;
-		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : null;
-		$destpath = null;
-		$thumbnail = null;
+		$width      = isset($params['width'])      ? $params['width']      : NULL;
+		$height     = isset($params['height'])     ? $params['height']     : NULL;
+		$quality    = isset($params['quality'])    ? $params['quality']    : NULL;
+		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
+		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
+		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
+		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : NULL;
+		$destpath   = NULL;
+		$thumbnail  = NULL;
 		
 		// XXX this should maybe be removed and extra settings go into $params?
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');

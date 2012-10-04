@@ -517,6 +517,161 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         );
     }
 
+    /**
+     * generate_image_clone() handles the file operations (resizing, cropping, watermarks, etc)
+     */
+    function test_generate_image_clone()
+    {
+        $orig_image_path = $this->storage->get_image_abspath($this->image);
+        $dest_image_path = $orig_image_path . '_test_generate_image_clone';
+
+        // when given empty parameters it should return NULL
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, array());
+        $this->assertNull($image, 'Returned non null result with empty parameters array');
+
+        // our file should come back named like test-50x33.jpg
+        $params = array('width' => 50);
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $this->assertEqual(
+            basename($image->fileName),
+            pathinfo(
+                $orig_image_path, PATHINFO_FILENAME)
+                . "-{$image->currentDimensions['width']}x{$image->currentDimensions['height']}."
+                . pathinfo($orig_image_path, PATHINFO_EXTENSION
+            ),
+            'Returned image has an incorrect filename'
+        );
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Cloned image file does not exist'
+        );
+
+        $this->assertFalse(
+            $image->error,
+            sprintf('Reported error: %s', $image->errmsg)
+        );
+
+        $this->assertTrue(
+            (md5_file($orig_image_path) != md5_file($image->fileName)),
+            'File md5sum unchanged'
+        );
+
+        $this->_generate_image_clone_effects($orig_image_path,    $dest_image_path);
+        $this->_generate_image_clone_dimensions($orig_image_path, $dest_image_path);
+    }
+
+    function _generate_image_clone_dimensions($orig_image_path, $dest_image_path)
+    {
+        // test image width first
+        $params = array('width' => 50);
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $size = getimagesize($image->fileName);
+
+        $this->assertEqual(
+            $image->currentDimensions['width'],
+            $params['width'],
+            'Returned width not the same as requested'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions['width'],
+            $size[0],
+            'Incorrect width metadata returned'
+        );
+
+        // test height
+        $params = array('height' => 50);
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $size = getimagesize($image->fileName);
+
+        $this->assertEqual(
+            $image->currentDimensions['height'],
+            $params['height'],
+            'Returned height was not the same as requested'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions['height'],
+            $size[1],
+            'Incorrect height metadata returned'
+        );
+    }
+
+    function _generate_image_clone_effects($orig_image_path, $dest_image_path)
+    {
+        // because effects (quality, watermark, reflections) aren't applied if the image isn't also resized
+        // we determine what our "base" md5sum is by shrinking the width of the image by a single pixel. this way
+        // we can compare the md5sum of the width-1 image with the new image to ensure that the image was at least
+        // altered in some way besides just resizing it.
+        $size = getimagesize($orig_image_path);
+        $params = array('width' => ($size[0] - 1));
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $orig_image_md5 = md5_file($image->fileName);
+
+        // test compression quality
+        $params = array(
+            'width' => ($size[0] - 1),
+            'quality' => 1
+        );
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Was not able to clone image with a quality setting'
+        );
+
+        $this->assertNotEqual(
+            md5_file($image->fileName),
+            $orig_image_md5,
+            'Image quality setting was not applied'
+        );
+
+        // test reflections
+        $params = array(
+            'reflection' => TRUE,
+            'width' => ($size[0] - 1)
+        );
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Was not able to clone image with a reflection'
+        );
+
+        $this->assertNotEqual(
+            md5_file($image->fileName),
+            $orig_image_md5,
+            'Image reflection was not applied'
+        );
+
+        // test watermarks
+        $params = array(
+            'watermark' => TRUE,
+            'width' => ($size[0] - 1)
+        );
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+
+        $this->assertEqual(
+            is_file($image->fileName),
+            'Was not able to clone image with a watermark'
+        );
+
+        $this->assertNotEqual(
+            md5_file($image->fileName),
+            $orig_image_md5,
+            'Image watermark was not applied'
+        );
+    }
+
+    /*
+     * generate_image_size() is a wrapper to generate_image_clone() that also handles the metadata
+     * and database work of copying images
+     */
+    function test_generate_image_size()
+    {
+    }
+
 //
 //	/*** HELPER METHODS ******************************************************/
 //
