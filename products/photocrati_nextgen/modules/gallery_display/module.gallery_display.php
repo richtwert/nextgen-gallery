@@ -466,7 +466,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
         $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
 
-        // inside if because Mixin_Displayed_Gallery_Instance_Methods->get_images() doesn't handle NULL container_ids
+        // inside if because Mixin_Displayed_Gallery_Instance_Methods->get_entities() doesn't handle NULL container_ids
         // correctly
         if (isset($params['id']))
         {

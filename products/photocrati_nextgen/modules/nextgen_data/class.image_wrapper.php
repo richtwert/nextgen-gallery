@@ -17,7 +17,7 @@ class C_Image_Wrapper
     /**
      * Constructor. Converts the image class into an array and fills from defaults any missing values
      *
-     * @param object $gallery Individual result from displayed_gallery->get_images()
+     * @param object $gallery Individual result from displayed_gallery->get_entities()
      * @param object $displayed_gallery Displayed gallery
      * @param bool $legacy Whether the image source is from NextGen Legacy or NextGen
      * @return void

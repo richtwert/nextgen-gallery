@@ -5,6 +5,7 @@ var NggDisplayTab = Em.Application.create({
 
 	sources:						Ember.A(),
 	galleries:						Ember.A(),
+    albums:                         Ember.A(),
 	image_tags:						Ember.A(),
 
 	/**
@@ -200,9 +201,7 @@ var NggDisplayTab = Em.Application.create({
 		this.fetch_entities(
 			obj_container,
 			'galleryid',
-			{source: 'galleries', container_ids: [gallery_id]},
-			25,
-			0
+			{source: 'galleries', container_ids: [gallery_id]}
 		);
 	},
 
@@ -210,11 +209,31 @@ var NggDisplayTab = Em.Application.create({
 		this.fetch_entities(
 			this.displayed_gallery.get('entities'),
 			'term_id',
-			{source: 'image_tags', container_ids:	this.displayed_gallery.get('container_ids')},
-			25,
-			0
+			{source: 'image_tags', container_ids:	this.displayed_gallery.get('container_ids')}
 		);
-	}
+	},
+
+
+    fetch_album_entities:           function(obj_container, album_id){
+        this.fetch_in_chunks(
+            {
+                action:	            'get_displayed_gallery_entities',
+                displayed_gallery:  {source: 'albums', container_ids: [album_id]}
+            },
+            'entities',
+            obj_container,
+            25,
+            0,
+            function(item){
+                item.set('container_id', album_id);
+                item.set('exclude', item.get('exclude') == 0 ? false : true);
+                return item;
+            },
+            function(){
+                return this.get('source_id') != 'albums'
+            }
+        );
+    }
 });
 
 
@@ -226,6 +245,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	source:						'',
 	containers:					Ember.A(),
 	galleriesBinding:			'NggDisplayTab.galleries',
+    albumsBinding:              'NggDisplayTab.albums',
 	image_tagsBinding:			'NggDisplayTab.image_tags',
 	sourcesBinding:				'NggDisplayTab.sources',
 	previous_container_ids:		Ember.A(),
@@ -283,6 +303,14 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	push_to_image_tags:			function(item){
 		this.get('image_tags').pushObject(item);
 	},
+
+
+    /**
+     * Used by init() to preload an existing displayed gallery with albums
+     */
+    push_to_albums:             function(item){
+        this.get('albums').pushObject(item);
+    },
 
 	/**
 	 * Returns the ID of the selected source
@@ -460,6 +488,15 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		this.attach_preview_area();
 	},
 
+
+    /**
+     * The source has been changed to Albums
+     */
+    albums_selected_as_source:          function(){
+        debugger;
+        this.attach_source_view();
+    },
+
 	/**
 	 * Attach the preview area view
 	 */
@@ -579,7 +616,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * The list of containers changed. Adjust what entities are present
 	 * based on the selected galleries
 	 */
-	_update_entities_for_galleries:	function() {
+	_update_entities_for_galleries:     function() {
 		if (!existing ||
 		 !(this.get('container_ids').join == existing.container_ids.join &&
 		  this.get('entities').length>0)) {
@@ -601,10 +638,29 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * The list of containers changed. Adjust what entries are present
 	 * based on the selected image tags
 	 */
-	_update_entities_for_image_tags: function(){
+	_update_entities_for_image_tags:    function(){
 		this.set('entities', Ember.A());
 		NggDisplayTab.fetch_image_tag_images();
 	},
+
+
+    _update_entities_for_albums:        function(){
+        if (!existing ||
+            !(this.get('container_ids').join == existing.container_ids.join &&
+                this.get('entities').length>0)) {
+            var self = this;
+            var diff = this.get('container_difference');
+            diff.additions.forEach(function(id){
+                NggDisplayTab.fetch_album_entities(
+                    self.get('entities'),
+                    id
+                );
+            });
+            diff.removals.forEach(function(id){
+                self.remove_entities(id);
+            });
+        }
+    },
 
 	/**
 	 * The list of containers changed. We don't display
@@ -708,6 +764,37 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 			}
 		);
 	}
+});
+
+
+NggDisplayTab.displayed_gallery.albums_source_view =        Ember.View.create({
+    tagName:            'tbody',
+    templateName:       'albums_source_view',
+    fetch_albums:       function(collection, chosen_ddl){
+        collection.clear();
+        NggDisplayTab.fetch_in_chunks(
+            {action: 'get_existing_albums'},
+            'albums',
+            collection,
+            25,
+            0,
+            function(item){
+                var arr = this.get('displayed_gallery').get('containers').map(function(obj, index, arr){
+                    return (item.get('id') == obj.get('id')) ? item : obj
+                });
+                this.get('displayed_gallery').set('containers', arr);
+
+                return item;
+            },
+            function(){
+                return this.get('source_id') == 'albums';
+            },
+            function(){
+                chosen_ddl.update();
+            }
+        );
+
+    }
 });
 
 

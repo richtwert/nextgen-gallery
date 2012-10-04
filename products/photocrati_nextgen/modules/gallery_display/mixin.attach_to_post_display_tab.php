@@ -240,6 +240,15 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	}
 
 
+    function _render_albums_source_template()
+    {
+        return $this->object->render_partial('albums_source', array(
+            'template_name'             =>  'albums_source_view',
+            'existing_albums_label'     =>  _('Albums:'),
+        ), TRUE);
+    }
+
+
 	/**
 	 * Renders the Handlebars template for the image tags source
 	 * @return string

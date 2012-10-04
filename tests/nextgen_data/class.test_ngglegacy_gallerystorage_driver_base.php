@@ -34,7 +34,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 		// Get the mappers required for these tests
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
-		$this->image_mapper   = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->image_mapper   = $this->get_registry()->get_utility('I_Image_Mapper');
 
 		// Create test gallery to work with
 		$this->gallery = (object) array(

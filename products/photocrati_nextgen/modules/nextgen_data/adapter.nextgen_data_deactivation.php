@@ -15,7 +15,7 @@ class A_NextGen_Data_Deactivation extends Mixin
     function uninstall_nextgen_data()
     {
         $mappers = array(
-            'I_Gallery_Image_Mapper',
+            'I_Image_Mapper',
             'I_Gallery_Mapper'
         );
         foreach ($mappers as $map_name) {

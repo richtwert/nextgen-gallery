@@ -29,10 +29,25 @@ class Mixin_NextGen_Gallery_Validation
      */
     function validation()
     {
-		// Set what will be the path to the gallery
-		$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-		$this->object->path = $storage->get_upload_relpath($this->object);
-		unset($storage);
+        // If a title is present, we can auto-populate some other properties
+        if (isset($this->object->title)) {
+
+            // If no name is present, use the title to generate one
+            if (!isset($this->object->name)) {
+                $this->object->name = sanitize_file_name( sanitize_title($this->object->title));
+                $this->object->name = apply_filters('ngg_gallery_name', $this->object->name);
+            }
+
+            // If no slug is set, use the title to generate one
+            if (!isset($this->object->slug)) {
+                $this->object->slug = nggdb::get_unique_slug( sanitize_title($this->object->title), 'gallery' );
+            }
+        }
+
+        // Set what will be the path to the gallery
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        $this->object->path = $storage->get_upload_relpath($this->object);
+        unset($storage);
 
         $this->object->validates_presence_of('title');
 		$this->object->validates_presence_of('name');

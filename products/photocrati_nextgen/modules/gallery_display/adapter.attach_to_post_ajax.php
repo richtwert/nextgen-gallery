@@ -55,6 +55,32 @@ class A_Attach_To_Post_Ajax extends Mixin
 		return $response;
 	}
 
+
+    /**
+     * Gets existing albums
+     * @return array
+     */
+    function get_existing_albums_action()
+    {
+        $response = array();
+
+        $limit  = $this->object->param('limit');
+        $offset = $this->object->param('offset');
+
+        // We return the total # of albums, so that the client can make pagination requests
+        $mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
+        $response['total'] = $mapper->count();
+        $response['limit'] = $limit = $limit ? $limit : 0;
+        $response['offset']= $offset = $offset ? $offset : 0;
+
+        // Get the albums
+        $mapper->select();
+        if ($limit) $mapper->limit($limit, $offset);
+        $response['albums'] = $mapper->run_query();
+
+        return $response;
+    }
+
 	/**
 	 * Gets existing image tags
 	 * @return array
@@ -98,10 +124,10 @@ class A_Attach_To_Post_Ajax extends Mixin
 			foreach ($params as $key => $value) $displayed_gallery->$key = $value;
 			$response['limit']	= $limit = $limit ? $limit : 0;
 			$response['offset'] = $offset = $offset ? $offset : 0;
-			$response['count']	= $displayed_gallery->get_image_count();
+			$response['count']	= $displayed_gallery->get_entity_count();
 			$response['entities'] = array();
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-			foreach ($displayed_gallery->get_images($limit,$offset) as $image) {
+			foreach ($displayed_gallery->get_entities($limit,$offset) as $image) {
 				$image->thumb_url	=	$storage->get_thumb_url($image);
 				$image->thumb_size	=	$storage->get_thumb_dimensions($image);
 				$response['entities']	[]= $image;

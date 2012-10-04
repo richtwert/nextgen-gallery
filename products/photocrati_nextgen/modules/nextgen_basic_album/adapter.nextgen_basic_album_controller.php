@@ -41,8 +41,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             // Get all settings required for displaying this album
             $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
             $offset = $display_settings['galleries_per_page'] * ($current_page - 1);
-            $total = $displayed_gallery->get_album_entity_count();
-            $entities = $displayed_gallery->get_album_entities($display_settings['galleries_per_page'], $offset);
+            $total = $displayed_gallery->get_entity_count();
+            $entities = $displayed_gallery->get_entities($display_settings['galleries_per_page'], $offset);
 
             // If there are entities to be displayed
             if ($entities) {

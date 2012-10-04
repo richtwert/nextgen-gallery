@@ -79,13 +79,14 @@ class Mixin_Gallery_Source_Queries extends Mixin
      * @param int $limit
      * @param int $offset
      */
-    function get_images($limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
+    function get_entities($limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
     {
-        $settings       = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-        $mapper         = $this->object->get_registry()->get_utility('I_Image_Mapper');
-        $gallery_key    = 'galleryid'; // foreign key
-        $image_key      = $mapper->get_primary_key_column();
-        $run_query      = TRUE;
+        $settings           = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $mapper             = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $gallery_key        = 'galleryid'; // foreign key
+        $image_key          = $mapper->get_primary_key_column();
+        $run_image_query    = TRUE;
+        $retval             = array();
 
         // Make default field selection
         $mapper->select($id_only ? $image_key : '*');
@@ -141,7 +142,7 @@ class Mixin_Gallery_Source_Queries extends Mixin
 
                     // Get all images using the provided image tags
                     $image_ids = get_objects_in_term($term_ids, 'ngg_tag');
-                    if (empty($image_ids)) $run_query = FALSE;
+                    if (empty($image_ids)) $run_image_query = FALSE;
                     else {
                         $mapper->where(
                             array("{$image_key} IN (%s)", $image_ids)
@@ -149,22 +150,26 @@ class Mixin_Gallery_Source_Queries extends Mixin
                     }
                 }
                 break;
+            case 'albums':
+            case 'album':
+                $run_image_query = FALSE;
+                $retval = $this->object->_create_album_query($limit, $offset, $id_only, $skip_exclusions);
+                break;
             default:
-                $run_query = FALSE;
+                $run_image_query = FALSE;
                 break;
         }
-        if ($run_query) {
+        if ($run_image_query) {
 
             // Apply a limit to the number of images retrieved
             if (!$limit) {
                 $limit = $settings->gallery_display_limit;
             }
             $mapper->limit($limit, $offset);
-
-            // Return the results
-            return $mapper->run_query();
+            $retval = $mapper->run_query();
         }
-        else return array();
+
+        return $retval;
     }
 
 
@@ -174,9 +179,9 @@ class Mixin_Gallery_Source_Queries extends Mixin
      * @param int $offset
      * @param bool $id_only
      */
-    function get_included_images($limit=FALSE, $offset=FALSE, $id_only=FALSE)
+    function get_included_entities($limit=FALSE, $offset=FALSE, $id_only=FALSE)
     {
-        return $this->object->get_images($limit, $offset, $id_only, TRUE);
+        return $this->object->get_entities($limit, $offset, $id_only, TRUE);
     }
 
     /**
@@ -331,9 +336,9 @@ class Mixin_Gallery_Source_Queries extends Mixin
      * @param int|FALSE $offset
      * @return int
      */
-    function get_image_count($limit=FALSE, $offset=FALSE)
+    function get_entity_count($limit=FALSE, $offset=FALSE)
     {
-        $result = $this->object->get_images($limit, $offset, TRUE);
+        $result = $this->object->get_entities($limit, $offset, TRUE);
         if ($result) $result = count($result);
         else $result = 0;
         return $result;
@@ -349,7 +354,7 @@ class Mixin_Album_Source_Queries extends Mixin
      * @param int $offset
      * @param bool $id_only
      */
-    function get_album_entities($limit=FALSE, $offset=FALSE, $ids_only=FALSE, $skip_exclusions=FALSE)
+    function _create_album_query($limit=FALSE, $offset=FALSE, $ids_only=FALSE, $skip_exclusions=FALSE)
     {
         $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
         $gallery_key    = $gallery_mapper->get_primary_key_column();
@@ -360,144 +365,91 @@ class Mixin_Album_Source_Queries extends Mixin
 
         // Apply default limit
         if (!$limit) $limit = $settings->gallery_display_limit;
+        if (!$offset)$offset = 0;
 
-        switch ($this->object->source) {
+        // Assume where the entities are coming from
+        $entity_ids = $this->object->entity_ids;
 
-            case 'albums':
-            case 'album':
-                $entity_ids = $this->object->entity_ids;
-
-                // If container ids have been specified, then get their entity ids
-                if ($this->object->container_ids) {
-                    $entity_ids = $this->object->_get_album_entities(
-                        $album_mapper, $album_key, $this->object->container_ids, $ids_only
-                    );
-                }
-
-                // Collect gallery ids and sub-album ids
-                $gallery_ids    = array();
-                $galleries      = array();
-                $subalbum_ids   = array();
-                $subalbums      = array();
-                foreach ($entity_ids as $id) {
-                    if (strpos($id, 'a') === 0) $subalbum_ids[] = intval(str_replace('a', '', $id));
-                    else $gallery_ids[] = intval($id);
-                }
-
-                // If we're not to return ids, then get the galleries and albums to display
-                if (!$ids_only) {
-                    if ($gallery_ids) $galleries = $gallery_mapper->select('*')->where(array(
-                        "{$gallery_key} IN (%s)", $gallery_ids
-                    ))->run_query();
-                    if ($subalbum_ids) $subalbums = $album_mapper->select('*')->where(array(
-                        "{$album_key} IN (%s)", $subalbum_ids
-                    ))->run_query();
-
-                    // Get image totals for galleries
-                    $img_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
-                    $img_mapper->select('COUNT(*) AS "count", galleryid')->where(array("galleryid IN (%s)", $gallery_ids))->group_by('galleryid');
-                    $img_totals = $img_mapper->run_query();
-
-                    // Return entities in specified order
-                    foreach ($entity_ids as $id) {
-                        $obj = NULL;
-
-                        // Is the object an album? If so,
-                        // make it look like a gallery
-                        if (strpos($id, 'a') === 0) {
-                            $obj            = array_shift($subalbums);
-                            $obj->galdesc   = $obj->albumdesc;
-                            $obj->title     = $obj->name;
-                            $obj->is_album  = TRUE;
-                            $obj->counter   = 0;
-                        }
-
-                        // The object is a gallery. Get the image count
-                        else {
-                            $obj            = array_shift($galleries);
-                            $img_total      = array_shift($img_totals);
-                            $obj->counter   = (int)$img_total->count;
-                            $obj->is_album  = FALSE;
-                        }
-
-                        // If we failed to get an object, we'll assume that users forgot to prefix
-                        // the album id with 'a'.
-                        if ($obj) {
-                            // Determine whether the object is excluded
-                            if (in_array($id, $this->object->exclusions)) $obj->exclude = 1;
-                            elseif ($this->object->entity_ids) {
-                                if (in_array($id, $this->object->entity_ids)) $obj->exclude = 0;
-                                else $obj->exclude = 1;
-                            }
-                            else $obj->exclude = 0;
-
-                            // Return the object, if it's not to be excluded and we're to skip exclusions
-                            if (!($skip_exclusions && $exclude == 1)) $retval[] = $obj;
-                        }
-                    }
-                }
-
-                // Return just the entity ids
-                else {
-                    if ($skip_exclusions) $retval = array_diff($entity_ids, $this->object->exclusions);
-                    else $retval = $entity_ids;
-                }
-
-                // Apply limit and offset
-                $retval = array_slice($retval, $offset, $limit);
-                break;
-
-            // Fetch recent galleries
-            case 'recent_galleries':
-                // TODO Not finished - shouldn't be used
-                $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by($gallery_key, 'DESC')->limit($limit, $offset);
-                if ($this->object->container_ids) {
-                    $gallery_mapper->where(array("{$gallery_key} IN (%s)", $this->object->_get_album_entities(
-                        $album_mapper,
-                        $album_key,
-                        $this->object->container_ids,
-                        $ids_only,
-                        TRUE
-                    )));
-                }
-                break;
-
-            // Fetch random galleries
-            case 'random_galleries':
-                // TODO Not finished - shouldn't be used
-                $gallery_mapper->select($ids_only ? $gallery_key : '*')->order_by('rand()')->limit($limit, $offset);
-                $gallery_mapper->where(array("{$gallery_key} NOT IN (%s)", $this->object->exclusions));
-                if ($this->object->container_ids) {
-                    $gallery_mapper->where(array("{$gallery_key} IN (%s)", $this->object->_get_album_entities(
-                        $album_mapper,
-                        $album_key,
-                        $this->object->container_ids,
-                        $ids_only,
-                        TRUE
-                    )));
-                }
-                break;
-
-            // Get a list of galleries using specific tags
-            case 'gallery_tags':
-                // TODO Not finished - shouldn't be used
-                break;
+        // If container ids have been specified, then get their entity ids
+        if ($this->object->container_ids) {
+            $entity_ids = $this->object->_get_album_entities(
+                $album_mapper, $album_key, $this->object->container_ids, $ids_only
+            );
         }
-        return $retval;
+
+        // Collect gallery ids and sub-album ids
+        $gallery_ids    = array();
+        $galleries      = array();
+        $subalbum_ids   = array();
+        $subalbums      = array();
+        foreach ($entity_ids as $id) {
+            if (strpos($id, 'a') === 0) $subalbum_ids[] = intval(str_replace('a', '', $id));
+            else $gallery_ids[] = intval($id);
+        }
+
+        // If we're not to return ids, then get the galleries and albums to display
+        if (!$ids_only) {
+            if ($gallery_ids) $galleries = $gallery_mapper->select('*')->where(array(
+                "{$gallery_key} IN (%s)", $gallery_ids
+            ))->run_query();
+            if ($subalbum_ids) $subalbums = $album_mapper->select('*')->where(array(
+                "{$album_key} IN (%s)", $subalbum_ids
+            ))->run_query();
+
+            // Get image totals for galleries
+            $img_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
+            $img_mapper->select('COUNT(*) AS "count", galleryid')->where(array("galleryid IN (%s)", $gallery_ids))->group_by('galleryid');
+            $img_totals = $img_mapper->run_query();
+
+            // Return entities in specified order
+            foreach ($entity_ids as $id) {
+                $obj = NULL;
+
+                // Is the object an album? If so,
+                // make it look like a gallery
+                if (strpos($id, 'a') === 0) {
+                    $obj            = array_shift($subalbums);
+                    $obj->galdesc   = $obj->albumdesc;
+                    $obj->title     = $obj->name;
+                    $obj->is_album  = TRUE;
+                    $obj->counter   = 0;
+                }
+
+                // The object is a gallery. Get the image count
+                else {
+                    $obj            = array_shift($galleries);
+                    $img_total      = array_shift($img_totals);
+                    $obj->counter   = (int)$img_total->count;
+                    $obj->is_album  = FALSE;
+                }
+
+                // If we failed to get an object, we'll assume that users forgot to prefix
+                // the album id with 'a'.
+                if ($obj) {
+                    // Determine whether the object is excluded
+                    if (in_array($id, $this->object->exclusions)) $obj->exclude = 1;
+                    elseif ($this->object->entity_ids) {
+                        if (in_array($id, $this->object->entity_ids)) $obj->exclude = 0;
+                        else $obj->exclude = 1;
+                    }
+                    else $obj->exclude = 0;
+
+                    // Return the object, if it's not to be excluded and we're to skip exclusions
+                    if (!($skip_exclusions && $obj->exclude == 1)) $retval[] = $obj;
+                }
+            }
+        }
+
+        // Return just the entity ids
+        else {
+            if ($skip_exclusions) $retval = array_diff($entity_ids, $this->object->exclusions);
+            else $retval = $entity_ids;
+        }
+
+        // Apply limit and offset
+        return array_slice($retval, $offset, $limit);
     }
 
-
-    /**
-     * Fetches all included entities for particular albums
-     * @param int $limit
-     * @param int $offset
-     * @param bool $ids_only
-     * @return array
-     */
-    function get_included_album_entities($limit, $offset, $ids_only)
-    {
-        return $this->get_album_entities($limit, $offset, $ids_only, TRUE);
-    }
 
     /**
      * Gets all entities from a list of albums
@@ -544,21 +496,6 @@ class Mixin_Album_Source_Queries extends Mixin
             $retval =  $mapper->run_query();
         }
         return $retval;
-    }
-
-
-    /**
-     * Gets the number of images to display
-     * @param int|FALSE $limit
-     * @param int|FALSE $offset
-     * @return int
-     */
-    function get_album_entity_count($limit=FALSE, $offset=FALSE)
-    {
-        $result = $this->object->get_album_entities($limit, $offset, TRUE);
-        if ($result) $result = count($result);
-        else $result = 0;
-        return $result;
     }
 }
 

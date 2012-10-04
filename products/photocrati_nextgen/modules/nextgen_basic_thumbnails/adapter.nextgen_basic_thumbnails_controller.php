@@ -22,14 +22,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		$current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        $total = $displayed_gallery->get_image_count();
+        $total = $displayed_gallery->get_entity_count();
 
         // Get the images to be displayed
         if ($display_settings['images_per_page'] > 0 && $display_settings['show_all_in_lightbox'])
         {
             // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
             // as hidden (style="display: none")
-            $images = $displayed_gallery->get_included_images($total);
+            $images = $displayed_gallery->get_included_entities($total);
             $i = 0;
             foreach ($images as &$image) {
                 if ($i < $display_settings['images_per_page'] * ($current_page - 1))
@@ -45,7 +45,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         }
         else {
             // just display the images for this page, as normal
-            $images = $displayed_gallery->get_included_images($display_settings['images_per_page'], $offset);
+            $images = $displayed_gallery->get_included_entities($display_settings['images_per_page'], $offset);
         }
 
         if (in_array($displayed_gallery->source, array('random', 'recent')))

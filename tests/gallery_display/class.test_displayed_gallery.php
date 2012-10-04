@@ -21,7 +21,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 	{
 		parent::__construct();
 		$this->gal_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
-		$this->img_mapper = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->img_mapper = $this->get_registry()->get_utility('I_Image_Mapper');
 		$this->alb_mapper = $this->get_registry()->get_utility('I_Album_Mapper');
 		$this->storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
 		$this->test_image_abspath = path_join(dirname(__FILE__), 'test.jpg');
@@ -194,37 +194,37 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'gallery';
 		$displayed_gallery->container_ids = $this->gallery_ids[0];
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$this->assertEqual(count($images), 3);
-		$this->assertEqual($displayed_gallery->get_image_count(), 3);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 3);
 
 		// Get the images for all galleries
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'gallery';
 		$displayed_gallery->container_ids = $this->gallery_ids;
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$this->assertEqual(count($images), 6);
-		$this->assertEqual($displayed_gallery->get_image_count(), 6);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 6);
 
 		// Exclude one of the images
 		$displayed_gallery->exclusions = array($this->image_ids[0]);
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$this->assertEqual(count($images), 5);
-		$this->assertEqual($displayed_gallery->get_image_count(), 5);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 5);
 
 		// Set limits
-		$images = $displayed_gallery->get_images(2);
-		$this->assertEqual($displayed_gallery->get_image_count(), 5);
+		$images = $displayed_gallery->get_entities(2);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 5);
 		$this->assertEqual(count($images), 2);
 
 		// Test ordering
 		$displayed_gallery->container_ids = $this->gallery_ids[0];
 		$displayed_gallery->order_by = 'alttext';
 		$displayed_gallery->exclusions = array();
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$first_image = $images[0];
 		$this->assertEqual(count($images), 3);
-		$this->assertEqual($displayed_gallery->get_image_count(), 3);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 3);
 		$this->assertEqual($first_image->alttext, "A Test Image #2");
 
 		// Test getting specific image ids (first & last image)
@@ -234,9 +234,9 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 			$this->image_ids[0],
 			$this->image_ids[count($this->image_ids)-1]
 		);
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$this->assertEqual(count($images), 2);
-		$this->assertEqual($displayed_gallery->get_image_count(), 2);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 2);
 		$this->assertEqual($images[0]->$image_key, $this->image_ids[0]);
 		$this->assertEqual($images[1]->$image_key, $this->image_ids[count($this->image_ids)-1]);
 
@@ -244,9 +244,9 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		// exclusions
 		$displayed_gallery->container_ids = $this->gallery_ids;
 		$displayed_gallery->order_by = 'sortorder';
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$this->assertEqual(count($images), 6);
-		$this->assertEqual($displayed_gallery->get_image_count(), 6);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 6);
 		$this->assertEqual($images[0]->$image_key, $this->image_ids[0]);
 		$this->assertEqual($images[1]->$image_key, $this->image_ids[count($this->image_ids)-1]);
 	}
@@ -257,8 +257,8 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		// Test getting 5 of the most recent images
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'recent';
-		$images = $displayed_gallery->get_images(5);
-		$this->assertEqual($displayed_gallery->get_image_count(), count($this->img_mapper->find_all()));
+		$images = $displayed_gallery->get_entities(5);
+		$this->assertEqual($displayed_gallery->get_entity_count(), count($this->img_mapper->find_all()));
 		$this->assertEqual(count($images), 5);
 		$this->assertEqual($images[0]->pid, $this->image_ids[count($this->image_ids)-1]);
 
@@ -266,8 +266,8 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		$displayed_gallery->exclusions = array(
 			$this->image_ids[count($this->image_ids)-1]
 		);
-		$images = $displayed_gallery->get_images(5);
-		$this->assertEqual($displayed_gallery->get_image_count(), count($this->img_mapper->find_all())-1);
+		$images = $displayed_gallery->get_entities(5);
+		$this->assertEqual($displayed_gallery->get_entity_count(), count($this->img_mapper->find_all())-1);
 		$this->assertEqual(count($images), 5);
 		$this->assertEqual($images[0]->pid, $this->image_ids[count($this->image_ids)-2]);
 	}
@@ -279,9 +279,9 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'random';
 		$displayed_gallery->container_ids = $this->gallery_ids;
-		$images = $displayed_gallery->get_images();
+		$images = $displayed_gallery->get_entities();
 		$this->assertEqual(count($images), 6);
-		$this->assertEqual($displayed_gallery->get_image_count(), 6);
+		$this->assertEqual($displayed_gallery->get_entity_count(), 6);
 		foreach ($images as $image) {
 			$this->assertTrue(in_array($image->pid, $this->image_ids));
 		}
@@ -312,7 +312,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
         $displayed_gallery->source = 'album';
         $displayed_gallery->container_ids = array($this->album_ids[0]);
-        $entities = $displayed_gallery->get_album_entities();
+        $entities = $displayed_gallery->get_entities();
         $gal_key = $this->gal_key;
         $this->assertEqual(count($entities), count($this->gallery_ids));
         for ($i=0; $i<count($entities); $i++) {
@@ -322,12 +322,12 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
         // Test fetching entities from multiple albums
         $displayed_gallery->container_ids = array_slice($this->album_ids, 1, 2);
-        $entities = $displayed_gallery->get_album_entities();
+        $entities = $displayed_gallery->get_entities();
         $this->assertEqual(count($entities), 2);
 
         // Test fetching an album which has galleries and sub-albums
         $displayed_gallery->container_ids = $this->album_ids[count($this->album_ids)-1];
-        $entities = $displayed_gallery->get_album_entities();
+        $entities = $displayed_gallery->get_entities();
         $this->assertEqual(count($entities), 4);
         $this->assert_is_album(array_shift($entities));
         $this->assert_is_gallery(array_shift($entities));
@@ -335,7 +335,8 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
         $this->assert_is_gallery(array_shift($entities));
 
         // Test that limit works
-        $entities = $displayed_gallery->get_album_entities(2, 1);
+        $entities = $displayed_gallery->get_entities(2, 1);
+        $this->assertEqual(count($entities), 2);
         $this->assert_is_gallery(array_shift($entities));
         $this->assert_is_album(array_shift($entities));
     }
@@ -351,16 +352,17 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
           'a'.$this->album_ids[1],
           $this->gallery_ids[1]
         );
-        $entities = $displayed_gallery->get_album_entities();
+        $entities = $displayed_gallery->get_entities();
         $gal_key = $this->gal_key;
         $this->assertEqual(count($entities), 3);
         $this->assertEqual($entities[0]->$gal_key, $this->gallery_ids[0]);
         $this->assert_is_gallery(array_shift($entities));
         $this->assert_is_album(array_shift($entities));
         $this->assert_is_gallery(array_shift($entities));
-
-        // Test that limit works
-        $entities = $displayed_gallery->get_album_entities(2, 1);
+//
+//        // Test that limit works
+        $entities = $displayed_gallery->get_entities(2, 1);
+        $this->assertEqual(count($entities), 2);
         $this->assert_is_album(array_shift($entities));
         $this->assert_is_gallery(array_shift($entities));
     }
@@ -376,7 +378,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
         $displayed_gallery->container_ids = array(
             $this->album_ids[count($this->album_ids)-1]
         );
-        $entities = $displayed_gallery->get_album_entities();
+        $entities = $displayed_gallery->get_entities();
         $this->assertEqual(count($entities), 4);
         $this->assert_is_album($entities[0], 1);
         $this->assert_is_gallery($entities[1], 1);
@@ -405,8 +407,11 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
     function assert_is_gallery($entity, $excluded=NULL)
     {
         $gal_key = $this->gal_key;
-        $gallery = $this->gal_mapper->find($entity->$gal_key);
-        $this->assertEqual($entity->name, $gallery->name);
-        if (!is_null($excluded)) $this->assertTrue( $entity->exclude == $excluded);
+        if (isset($entity->$gal_key)) {
+            $gallery = $this->gal_mapper->find($entity->$gal_key);
+            $this->assertEqual($entity->name, $gallery->name);
+            if (!is_null($excluded)) $this->assertTrue( $entity->exclude == $excluded);
+        }
+        else $this->fail("Entity is not a gallery");
     }
 }

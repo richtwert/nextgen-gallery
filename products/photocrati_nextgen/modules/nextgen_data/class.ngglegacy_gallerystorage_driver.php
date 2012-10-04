@@ -70,8 +70,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_image_abspath($image, $size='full', $check_existance=FALSE)
 	{
 		$retval = NULL;
-		
-		if ($size == false) {
+
+        // Ensure that we have a size
+		if (!$size) {
 			$size = 'full';
 		}
 
@@ -159,7 +160,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGEN_Gallery $gallery
 	 * @param type $filename, specifies the name of the file
 	 * @param type $data if specified, expects base64 encoded string of data
-	 * @return C_NextGen_Gallery_Image
+	 * @return C_Image
 	 */
 	function upload_image($gallery, $filename=FALSE, $data=FALSE)
 	{
@@ -198,7 +199,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @param array $params
 	 * @return object
 	 */
@@ -402,7 +403,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	
 	/**
 	 * Generates a specific size for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return bool
 	 */
 	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
@@ -476,7 +477,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 
 			// Get the image filename
-			$filename = $this->object->get_original_abspath($image);
+			$filename = $this->object->get_original_abspath($image, 'original');
 			$thumbnail = null;
 			
 			if ($size == 'full' && $settings->imgBackup == 1) {
@@ -578,7 +579,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	
 	/**
 	 * Generates a thumbnail for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return bool
 	 */
 	function generate_thumbnail($image, $params = null, $skip_defaults = false)
@@ -773,7 +774,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
     /**
      * Recover image from backup copy and reprocess it
      *
-     * @param int|stdClass|C_NextGen_Gallery_Image $image
+     * @param int|stdClass|C_Image $image
      * @return string result code
      */
     function recover_image($image) {
