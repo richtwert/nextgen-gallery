@@ -214,7 +214,7 @@ var NggDisplayTab = Em.Application.create({
 	},
 
 
-    fetch_album_entities:           function(obj_container, album_id){
+    fetch_album_entities:           function(obj_container, album_id, done_callback){
         this.fetch_in_chunks(
             {
                 action:	            'get_displayed_gallery_entities',
@@ -231,7 +231,8 @@ var NggDisplayTab = Em.Application.create({
             },
             function(){
                 return this.get('source_id') != 'albums'
-            }
+            },
+            done_callback
         );
     }
 });
@@ -250,6 +251,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	sourcesBinding:				'NggDisplayTab.sources',
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
+    entities_to_remove:         Ember.A(),
 	display_type:				false,
 	display_settings:			false,
 
@@ -607,6 +609,38 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		}
 	},
 
+    /**
+     * Removes entities that belong to the specified album
+     * @param container_id
+     */
+    remove_album_entities:  function(container_id){
+        var self = this;
+        NggDisplayTab.fetch_album_entities(
+            self.get('entities_to_remove'),
+            container_id,
+            function(){
+                var loop = true;
+                var entities = self.get('entities');
+                var entities_to_remove = self.get('entities_to_remove');
+                console.log("I should remove:");
+                console.log(entities_to_remove);
+                while (loop) {
+                    loop = false;
+                    for (var i=0; i<entities.length; i++) {
+                        var entity = entities[i];
+                        var entity_id  = entity.get('id');
+                        if (entities_to_remove.filterProperty('id', entity_id).length > 0) {
+                            entities.removeAt(i);
+                            loop = true;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        );
+    },
+
 
 	/**
 	 * Fetches images from a selected list of galleries
@@ -626,9 +660,10 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * based on the selected galleries
 	 */
 	_update_entities_for_galleries:     function() {
-		if (!existing ||
-		 !(this.get('container_ids').join == existing.container_ids.join &&
-		  this.get('entities').length>0)) {
+        if (!existing ||
+            !(this.get('container_ids').join() == existing.container_ids.join()
+                && this.get('entities').length>0
+                && this.get('previous_container_ids').join() == existing.container_ids.join())) {
 			var self = this;
 			var diff = this.get('container_difference');
 			diff.additions.forEach(function(id){
@@ -655,8 +690,9 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 
     _update_entities_for_albums:        function(){
         if (!existing ||
-            !(this.get('container_ids').join == existing.container_ids.join &&
-                this.get('entities').length>0)) {
+            !(this.get('container_ids').join() == existing.container_ids.join()
+            && this.get('entities').length>0
+            && this.get('previous_container_ids').join() == existing.container_ids.join())) {
             var self = this;
             var diff = this.get('container_difference');
             diff.additions.forEach(function(id){
@@ -666,7 +702,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
                 );
             });
             diff.removals.forEach(function(id){
-                self.remove_entities(id);
+                self.remove_album_entities(id);
             });
         }
     },
@@ -907,7 +943,6 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 			var retval = false;
 			var item = this.get('entities').findProperty('id', this.get('value'));
 			if (typeof(item) != 'undefined') retval = item.exclude;
-			console.log(item.id, retval);
 			return retval;
 		}.property('displayed_gallery.excluded_entities.@each.length', 'value'),
 

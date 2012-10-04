@@ -71,7 +71,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
-                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $entity->ID);
+                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $displayed_gallery->get_entity()->ID);
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
@@ -350,9 +350,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_show_slideshow_link',
 			'nextgen_basic_thumbnail_show_return_link',
             'nextgen_basic_thumbnails_show_piclens_link',
-			'nextgen_basic_templates_template',
 			'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_thumbnails_hidden',
+            'nextgen_basic_templates_template',
 		);
 	}
 }
