@@ -258,6 +258,15 @@ class nggAdmin{
 	 */
 	function create_thumbnail($image) {
 		
+		if (is_object($image)) {
+			if (isset($image->id)) {
+				$image = $image->id;
+			}
+			elseif (isset($image->pid)) {
+				$image = $image->pid;
+			}
+		}
+		
 		$registry = C_Component_Registry::get_instance();
     $storage  = $registry->get_utility('I_Gallery_Storage');
 		
@@ -285,6 +294,15 @@ class nggAdmin{
 	 * @return string result code
 	 */
 	function resize_image($image, $width = 0, $height = 0) {
+		
+		if (is_object($image)) {
+			if (isset($image->id)) {
+				$image = $image->id;
+			}
+			elseif (isset($image->pid)) {
+				$image = $image->pid;
+			}
+		}
 		
 		$registry = C_Component_Registry::get_instance();
     $storage  = $registry->get_utility('I_Gallery_Storage');
@@ -418,6 +436,15 @@ class nggAdmin{
 	 * @return string result code
 	 */
 	function set_watermark($image) {
+		
+		if (is_object($image)) {
+			if (isset($image->id)) {
+				$image = $image->id;
+			}
+			elseif (isset($image->pid)) {
+				$image = $image->pid;
+			}
+		}
 		
 		$registry = C_Component_Registry::get_instance();
     $storage  = $registry->get_utility('I_Gallery_Storage');
