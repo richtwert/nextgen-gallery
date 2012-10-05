@@ -21,9 +21,9 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		// Get the images to be displayed
 		$retval = '';
-    $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
     
-		if (($images = $displayed_gallery->get_included_entities($displayed_gallery->get_included_entities(), 0))) {
+		if (($images = $displayed_gallery->get_included_entities($displayed_gallery->get_entity_count()))) {
 
 			// Get the gallery storage component
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
