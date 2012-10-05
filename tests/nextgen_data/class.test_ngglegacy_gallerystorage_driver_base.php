@@ -686,8 +686,82 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
      * generate_image_size() is a wrapper to generate_image_clone() that also handles the metadata
      * and database work of copying images
      */
-    function test_generate_image_size()
+    function test_generate_image_size_thumbnail()
     {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+
+        $orig_image_path = $this->storage->get_image_abspath($this->image);
+
+        // to be safe we specify our own watermark text
+        $orig_wm_text = $settings->wmText;
+        $settings->wmText = 'Generate Image Size';
+
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail');
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Cloned image file does not exist'
+        );
+
+        $this->assertFalse(
+            $image->error,
+            sprintf('Reported error: %s', $image->errmsg)
+        );
+
+        $this->assertTrue(
+            (md5_file($orig_image_path) != md5_file($image->fileName)),
+            'File md5sum unchanged'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $settings->thumbwidth,
+                'height' => $settings->thumbheight
+            ),
+            'Thumbnail generation did not use default thumbnail dimensions'
+        );
+
+        $this->assertEqual(
+            $image->watermarkText,
+            $settings->wmText,
+            'Thumbnail generation did not use default watermark text'
+        );
+
+        // and restore our settings
+        $settings->wmText = $orig_wm_text;
+    }
+
+    function test_generate_image_size_full()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_imgAutoResize = $settings->imgAutoResize;
+        $settings->imgAutoResize = FALSE;
+
+        print "<h1>scroll to here</h1>";
+
+        $image = $this->storage->generate_image_size($this->image, 'full');
+        var_dump(
+            $settings->imgAutoResize,
+            $settings->imgWidth,
+            $settings->imgHeight,
+            $image
+        );
+
+        print "<h1>scroll here - part two</h1>";
+
+        $settings->imgAutoResize = TRUE;
+        $image = $this->storage->generate_image_size($this->image, 'full');
+        var_dump(
+            $settings->imgAutoResize,
+            $settings->imgWidth,
+            $settings->imgHeight,
+            $image
+        );
+
+        $settings->imgAutoResize = $orig_imgAutoResize;
+
+        print "<hr/>";
     }
 
 //
