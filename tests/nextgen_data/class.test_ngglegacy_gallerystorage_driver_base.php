@@ -525,13 +525,18 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         $orig_image_path = $this->storage->get_image_abspath($this->image);
         $dest_image_path = $orig_image_path . '_test_generate_image_clone';
 
+        // these exist outside the db, so we must clean them up manually
+        $image_files = array();
+
         // when given empty parameters it should return NULL
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, array());
+        @$image_files[] = $image->fileName;
         $this->assertNull($image, 'Returned non null result with empty parameters array');
 
         // our file should come back named like test-50x33.jpg
         $params = array('width' => 50);
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
         $this->assertEqual(
             basename($image->fileName),
             pathinfo(
@@ -557,15 +562,23 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
             'File md5sum unchanged'
         );
 
-        $this->_generate_image_clone_effects($orig_image_path,    $dest_image_path);
-        $this->_generate_image_clone_dimensions($orig_image_path, $dest_image_path);
+        $this->_generate_image_clone_effects($orig_image_path,    $dest_image_path, $image_files);
+        $this->_generate_image_clone_dimensions($orig_image_path, $dest_image_path, $image_files);
+
+        foreach ($image_files as $file) {
+            if (is_file($file))
+            {
+                unlink($file);
+            }
+        }
     }
 
-    function _generate_image_clone_dimensions($orig_image_path, $dest_image_path)
+    function _generate_image_clone_dimensions($orig_image_path, $dest_image_path, &$image_files)
     {
         // test image width first
         $params = array('width' => 50);
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
         $size = getimagesize($image->fileName);
 
         $this->assertEqual(
@@ -583,6 +596,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         // test height
         $params = array('height' => 50);
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
         $size = getimagesize($image->fileName);
 
         $this->assertEqual(
@@ -598,7 +612,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         );
     }
 
-    function _generate_image_clone_effects($orig_image_path, $dest_image_path)
+    function _generate_image_clone_effects($orig_image_path, $dest_image_path, &$image_files)
     {
         // because effects (quality, watermark, reflections) aren't applied if the image isn't also resized
         // we determine what our "base" md5sum is by shrinking the width of the image by a single pixel. this way
@@ -607,6 +621,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         $size = getimagesize($orig_image_path);
         $params = array('width' => ($size[0] - 1));
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
         $orig_image_md5 = md5_file($image->fileName);
 
         // test compression quality
@@ -615,6 +630,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
             'quality' => 1
         );
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
 
         $this->assertTrue(
             is_file($image->fileName),
@@ -633,6 +649,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
             'width' => ($size[0] - 1)
         );
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
 
         $this->assertTrue(
             is_file($image->fileName),
@@ -651,6 +668,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
             'width' => ($size[0] - 1)
         );
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
 
         $this->assertEqual(
             is_file($image->fileName),
