@@ -144,7 +144,8 @@ var NggDisplayTab = Em.Application.create({
 						limit,
 						offset,
 						filter,
-						condition
+						condition,
+                        done
 					);
 				}
 			}
@@ -176,7 +177,7 @@ var NggDisplayTab = Em.Application.create({
 	/**
 	 * Fetches entities of a displayed gallery or gallery
 	 */
-	fetch_entities:					function(obj_container, container_id_field, params){
+	fetch_entities:					function(obj_container, container_id_field, params, done_callback){
 		this.fetch_in_chunks(
 			{action:	'get_displayed_gallery_entities', displayed_gallery: params},
 			'entities',
@@ -190,7 +191,8 @@ var NggDisplayTab = Em.Application.create({
 			},
 			function(){
 				return this.get('source_id') != 'albums'
-			}
+			},
+            done_callback
 		);
 	},
 
@@ -205,6 +207,10 @@ var NggDisplayTab = Em.Application.create({
 		);
 	},
 
+
+    /**
+     * Fetches images for specific image tags
+     */
 	fetch_image_tag_images:			function(){
 		this.fetch_entities(
 			this.displayed_gallery.get('entities'),
@@ -214,6 +220,12 @@ var NggDisplayTab = Em.Application.create({
 	},
 
 
+    /**
+     * Fetches entities for a particular album
+     * @param obj_container
+     * @param album_id
+     * @param done_callback
+     */
     fetch_album_entities:           function(obj_container, album_id, done_callback){
         this.fetch_in_chunks(
             {
@@ -889,39 +901,43 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 	 * Once the element has been added to the DOM, execute some JQuery
 	 */
 	didInsertElement:			function(){
+        var self = this;
+
 		// Enable sorting!
 		var last_offset = 0;
-		jQuery('#preview_entity_list').sortable({
-			axis:	'y',
-			opacity: 0.7,
-			items:	'li:not(.header)',
-			containment: 'parent'
-		}).bind('sort', function(event, ui){
-			var direction = ui.offset.top > last_offset ? 'down' : 'up';
-			var win_height = jQuery(window).height();
-			var doc_height = jQuery(document).height();
-			ui.offset.bottom = doc_height - ui.offset.top;
+        Ember.run.next(function(){
+            jQuery('#preview_entity_list').sortable({
+                axis:	'y',
+                opacity: 0.7,
+                items:	'li:not(.header)',
+                containment: 'parent'
+            }).bind('sort', function(event, ui){
+                var direction = ui.offset.top > last_offset ? 'down' : 'up';
+                var win_height = jQuery(window).height();
+                var doc_height = jQuery(document).height();
+                ui.offset.bottom = doc_height - ui.offset.top;
 
-			// Determine if the user is scrolling down
-			if (direction == 'down' && win_height + window.scrollY >= ui.offset.top) {
+                // Determine if the user is scrolling down
+                if (direction == 'down' && win_height + window.scrollY >= ui.offset.top) {
 
-				// Calculate how to autoscroll
-				if (jQuery(window).height() - ui.offset.top <= ui.item.height()) {
-					window.scrollBy(0, ui.item.height()/15);
-				}
-			}
+                    // Calculate how to autoscroll
+                    if (jQuery(window).height() - ui.offset.top <= ui.item.height()) {
+                        window.scrollBy(0, ui.item.height()/15);
+                    }
+                }
 
-			// Determine if the user is scrolling up
-			else if (direction == 'up' && ui.offset.top <= window.scrollY) {
+                // Determine if the user is scrolling up
+                else if (direction == 'up' && ui.offset.top <= window.scrollY) {
 
-				// Calculate how to autoscroll
-				if (jQuery(window).height() - jQuery(document).height() - ui.offset.top <= ui.item.height()) {
-					window.scrollBy(0, ui.item.height()/15*-1);
-				}
-			}
+                    // Calculate how to autoscroll
+                    if (jQuery(window).height() - jQuery(document).height() - ui.offset.top <= ui.item.height()) {
+                        window.scrollBy(0, ui.item.height()/15*-1);
+                    }
+                }
 
-			last_offset = ui.offset.top;
-		});
+                last_offset = ui.offset.top;
+            });
+        });
 	},
 
 	/**
@@ -932,9 +948,9 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 		type:						'checkbox',
 		classBindings:				['checked'],
 		attributeBindings:			['checked', 'value', 'type'],
-		displayed_galleryBinding:	'parentView.displayed_gallery',
-		excluded_entitiesBinding:	'parentView.displayed_gallery.excluded_entities',
-		entitiesBinding:			'parentView.displayed_gallery.entities',
+		displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
+		excluded_entitiesBinding:	'NggDisplayTab.displayed_gallery.excluded_entities',
+		entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
 
 		/**
 		 * Determines whether the checkbox should be 'checked' or not
