@@ -527,4 +527,18 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
         $transient_handler->set_value($key, $this->object->get_entity());
         return $key;
     }
+
+
+    /**
+     * Applies the values of a transient to this object
+     * @param string $transient_id
+     */
+    function apply_transient($transient_id)
+    {
+        $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
+        $transient = $transient_handler->get_value($transient_id);
+        if ($transient) {
+            $this->object->_stdObject = $transient;
+        }
+    }
 }
