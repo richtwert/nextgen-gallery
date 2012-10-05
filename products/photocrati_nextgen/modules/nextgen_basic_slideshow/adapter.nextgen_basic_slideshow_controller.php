@@ -43,10 +43,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			// Are we displayed a flash slideshow?
 			if ($displayed_gallery->display_settings['flash_enabled']) {
 				include_once(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array('lib', 'swfobject.php'))));
-				$transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-				$entity = $displayed_gallery->get_entity();
-				$transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-				$mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $entity->ID);
+                $transient_id = $displayed_gallery->to_transient();
+				$mediarss_link = real_site_url('/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $transient_id);
 				$params['mediarss_link'] = $mediarss_link;
 			}
 
