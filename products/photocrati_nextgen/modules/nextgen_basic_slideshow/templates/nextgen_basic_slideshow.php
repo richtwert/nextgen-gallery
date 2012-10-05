@@ -124,7 +124,7 @@
 	<div
 		class="ngg-galleryoverview ngg-slideshow"
 		id="<?php echo_h($anchor)?>"
-		style="width:<?php echo_h($gallery_width) ?>px; height:<?php echo_h($gallery_height) ?>px;">
+		style="width:<?php echo_h($gallery_width) ?>px; height:<?php echo_h($gallery_height) ?>px;overflow: visible;">
 
 		<div
 			class="ngg-slideshow-loader"
