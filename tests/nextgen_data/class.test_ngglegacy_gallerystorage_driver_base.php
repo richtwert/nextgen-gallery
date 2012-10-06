@@ -171,7 +171,6 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 	function test_get_upload_abspath()
 	{
-
 		// The get_upload_abs_path() method accepts the gallery id or an object
 		// representing the gallery to be passed as the first argument
 		$gallery = $this->gallery_mapper->find($this->gid);
@@ -689,12 +688,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
     function test_generate_image_size_thumbnail()
     {
         $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
-
         $orig_image_path = $this->storage->get_image_abspath($this->image);
-
-        // to be safe we specify our own watermark text
-        $orig_wm_text = $settings->wmText;
-        $settings->wmText = 'Generate Image Size';
 
         $image = $this->storage->generate_image_size($this->image, 'thumbnail');
 
@@ -722,46 +716,129 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
             'Thumbnail generation did not use default thumbnail dimensions'
         );
 
+        $old_image = $this->image_mapper->find($this->image);
+        $this->assertEqual(
+            $image->fileName,
+            $old_image->meta_data['thumbnail']['filename'],
+            'Thumbnail filename was not saved to the parent image attributes'
+        );
+    }
+
+    function test_generate_image_size_full_no_auto_resize()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_imgAutoResize = $settings->imgAutoResize;
+        $settings->imgAutoResize = FALSE;
+        $image = $this->storage->generate_image_size($this->image, 'full');
+
+        $this->assertFalse(
+            $image,
+            'Returned image should be false when imgAutoResize == False'
+        );
+
+        $settings->imgAutoResize = $orig_imgAutoResize;
+    }
+
+    function test_generate_image_size_full_with_auto_resize()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_imgAutoResize = $settings->imgAutoResize;
+        $settings->imgAutoResize = TRUE;
+
+        $image = $this->storage->generate_image_size($this->image, 'full');
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Thumbnail file does not exist'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $settings->imgWidth,
+                'height' => $settings->imgHeight
+            )
+        );
+
+        $size = getimagesize($image->fileName);
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $size[0],
+                'height' => $size[1]
+            )
+        );
+
+        $settings->imgAutoResize = $orig_imgAutoResize;
+    }
+
+    function test_generate_image_size_thumbnail_with_dimension_parameters()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+
+        $params = array(
+            'width' => 50
+        );
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail', $params);
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Thumbnail file does not exist'
+        );
+
+        // passing a lone width/height to generate_image_clone() will give an image with the right aspect ratio
+        // but generate_image_size fills in default values. Expect a width of 50 and a height of 600 (or your
+        // default) here.
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $params['width'],
+                'height' => $settings->thumbheight
+            )
+        );
+
+        $size = getimagesize($image->fileName);
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $size[0],
+                'height' => $size[1]
+            )
+        );
+    }
+
+    function test_generate_image_size_watermark()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_wm_text = $settings->wmText;
+        $settings->wmText = 'Generate Image Size';
+
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail');
+
         $this->assertEqual(
             $image->watermarkText,
             $settings->wmText,
             'Thumbnail generation did not use default watermark text'
         );
 
-        // and restore our settings
         $settings->wmText = $orig_wm_text;
     }
 
-    function test_generate_image_size_full()
+    function test_generate_image_size_skip_parameters()
     {
         $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
-        $orig_imgAutoResize = $settings->imgAutoResize;
-        $settings->imgAutoResize = FALSE;
+        $orig_wm_text = $settings->wmText;
+        $settings->wmText = 'Generate Image Size';
 
-        print "<h1>scroll to here</h1>";
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail', NULL, TRUE);
 
-        $image = $this->storage->generate_image_size($this->image, 'full');
-        var_dump(
-            $settings->imgAutoResize,
-            $settings->imgWidth,
-            $settings->imgHeight,
-            $image
+        $this->assertEqual(
+            $image->watermarkText,
+            '',
+            'Thumbnail generation applied a watermark it should not have'
         );
 
-        print "<h1>scroll here - part two</h1>";
-
-        $settings->imgAutoResize = TRUE;
-        $image = $this->storage->generate_image_size($this->image, 'full');
-        var_dump(
-            $settings->imgAutoResize,
-            $settings->imgWidth,
-            $settings->imgHeight,
-            $image
-        );
-
-        $settings->imgAutoResize = $orig_imgAutoResize;
-
-        print "<hr/>";
+        $settings->wmText = $orig_wm_text;
     }
 
 //

@@ -313,7 +313,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		  }
 		  else 
 		  {
-              print "<h1>ONE</h1>";
 				$destpath = $clone_path;
 				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
 				
@@ -358,17 +357,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				$thumbnail->resize($width, $height);
 		  }
 
-            print "<h1>look here now</h1>";
-            var_dump(
-                $destpath,
-                file_exists($destpath),
-                $thumbnail
-            );
-
 			// We successfully generated the thumbnail
 			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) 
 			{
-                print "<h1>two</h1>";
 				if (is_null($thumbnail))
 				{
 					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
@@ -378,9 +369,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					$thumbnail->filename = $destpath;
 				}
 
-                print "<h1>NOW look here</h1>";
-                var_dump($thumbnail);
-				
 				if ($watermark == 1 || $watermark === true)
 				{
 					if (in_array($settings->wmType, array('image', 'text')))
@@ -534,26 +522,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$existing_image_abpath = $this->object->get_image_abspath($image, $size);
 			$existing_image_dir = dirname($existing_image_abpath);
 
-			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it
-            if (file_exists($existing_image_abpath)) {
-                unlink($existing_image_abpath);
-            }
-      
 			wp_mkdir_p($existing_image_dir);
 			
 			$clone_path = $existing_image_abpath;
 			$thumbnail = $this->object->generate_image_clone($filename, $clone_path, $params);
 
-            print "<h1>thumbnail:</h1>";
-            var_dump(
-                $thumbnail,
-                $filename,
-                $clone_path,
-                $params
-            );
-
-            print "<hr/>";
-			
 			// We successfully generated the thumbnail
 			if ($thumbnail != null)
 			{
