@@ -34,7 +34,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 		// Get the mappers required for these tests
 		$this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
-		$this->image_mapper   = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->image_mapper   = $this->get_registry()->get_utility('I_Image_Mapper');
 
 		// Create test gallery to work with
 		$this->gallery = (object) array(
@@ -141,15 +141,16 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 						$this->storage->get_original_dimensions($image)
 					);
 
-					// Get the thumbnail-sized image dimensions
-					$dimensions = $this->storage->get_thumbnail_dimensions($image);
-					$this->assert_valid_dimensions($dimensions);
+                    // Get the thumbnail-sized image dimensions
+                    $dimensions = $this->storage->get_thumbnail_dimensions($image);
 
-					// get_thumb_dimensions is an alias to get_thumbnail_dimensions()
-					$this->assertEqual(
-						$dimensions,
-						$this->storage->get_thumbnail_dimensions($image)
-					);
+                    $this->assert_valid_dimensions($dimensions);
+
+                    // get_thumb_dimensions is an alias to get_thumbnail_dimensions()
+                    $this->assertEqual(
+                        $dimensions,
+                        $this->storage->get_thumbnail_dimensions($image)
+                    );
 				}
 			}
 		}
@@ -170,7 +171,6 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
 	function test_get_upload_abspath()
 	{
-
 		// The get_upload_abs_path() method accepts the gallery id or an object
 		// representing the gallery to be passed as the first argument
 		$gallery = $this->gallery_mapper->find($this->gid);
@@ -516,6 +516,331 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         );
     }
 
+    /**
+     * generate_image_clone() handles the file operations (resizing, cropping, watermarks, etc)
+     */
+    function test_generate_image_clone()
+    {
+        $orig_image_path = $this->storage->get_image_abspath($this->image);
+        $dest_image_path = $orig_image_path . '_test_generate_image_clone';
+
+        // these exist outside the db, so we must clean them up manually
+        $image_files = array();
+
+        // when given empty parameters it should return NULL
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, array());
+        @$image_files[] = $image->fileName;
+        $this->assertNull($image, 'Returned non null result with empty parameters array');
+
+        // our file should come back named like test-50x33.jpg
+        $params = array('width' => 50);
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+        $this->assertEqual(
+            basename($image->fileName),
+            pathinfo(
+                $orig_image_path, PATHINFO_FILENAME)
+                . "-{$image->currentDimensions['width']}x{$image->currentDimensions['height']}."
+                . pathinfo($orig_image_path, PATHINFO_EXTENSION
+            ),
+            'Returned image has an incorrect filename'
+        );
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Cloned image file does not exist'
+        );
+
+        $this->assertFalse(
+            $image->error,
+            sprintf('Reported error: %s', $image->errmsg)
+        );
+
+        $this->assertTrue(
+            (md5_file($orig_image_path) != md5_file($image->fileName)),
+            'File md5sum unchanged'
+        );
+
+        $this->_generate_image_clone_effects($orig_image_path,    $dest_image_path, $image_files);
+        $this->_generate_image_clone_dimensions($orig_image_path, $dest_image_path, $image_files);
+
+        foreach ($image_files as $file) {
+            if (is_file($file))
+            {
+                unlink($file);
+            }
+        }
+    }
+
+    function _generate_image_clone_dimensions($orig_image_path, $dest_image_path, &$image_files)
+    {
+        // test image width first
+        $params = array('width' => 50);
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+        $size = getimagesize($image->fileName);
+
+        $this->assertEqual(
+            $image->currentDimensions['width'],
+            $params['width'],
+            'Returned width not the same as requested'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions['width'],
+            $size[0],
+            'Incorrect width metadata returned'
+        );
+
+        // test height
+        $params = array('height' => 50);
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+        $size = getimagesize($image->fileName);
+
+        $this->assertEqual(
+            $image->currentDimensions['height'],
+            $params['height'],
+            'Returned height was not the same as requested'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions['height'],
+            $size[1],
+            'Incorrect height metadata returned'
+        );
+    }
+
+    function _generate_image_clone_effects($orig_image_path, $dest_image_path, &$image_files)
+    {
+        // because effects (quality, watermark, reflections) aren't applied if the image isn't also resized
+        // we determine what our "base" md5sum is by shrinking the width of the image by a single pixel. this way
+        // we can compare the md5sum of the width-1 image with the new image to ensure that the image was at least
+        // altered in some way besides just resizing it.
+        $size = getimagesize($orig_image_path);
+        $params = array('width' => ($size[0] - 1));
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+        $orig_image_md5 = md5_file($image->fileName);
+
+        // test compression quality
+        $params = array(
+            'width' => ($size[0] - 1),
+            'quality' => 1
+        );
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Was not able to clone image with a quality setting'
+        );
+
+        $this->assertNotEqual(
+            md5_file($image->fileName),
+            $orig_image_md5,
+            'Image quality setting was not applied'
+        );
+
+        // test reflections
+        $params = array(
+            'reflection' => TRUE,
+            'width' => ($size[0] - 1)
+        );
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Was not able to clone image with a reflection'
+        );
+
+        $this->assertNotEqual(
+            md5_file($image->fileName),
+            $orig_image_md5,
+            'Image reflection was not applied'
+        );
+
+        // test watermarks
+        $params = array(
+            'watermark' => TRUE,
+            'width' => ($size[0] - 1)
+        );
+        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
+        $image_files[] = $image->fileName;
+
+        $this->assertEqual(
+            is_file($image->fileName),
+            'Was not able to clone image with a watermark'
+        );
+
+        $this->assertNotEqual(
+            md5_file($image->fileName),
+            $orig_image_md5,
+            'Image watermark was not applied'
+        );
+    }
+
+    /*
+     * generate_image_size() is a wrapper to generate_image_clone() that also handles the metadata
+     * and database work of copying images
+     */
+    function test_generate_image_size_thumbnail()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_image_path = $this->storage->get_image_abspath($this->image);
+
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail');
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Cloned image file does not exist'
+        );
+
+        $this->assertFalse(
+            $image->error,
+            sprintf('Reported error: %s', $image->errmsg)
+        );
+
+        $this->assertTrue(
+            (md5_file($orig_image_path) != md5_file($image->fileName)),
+            'File md5sum unchanged'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $settings->thumbwidth,
+                'height' => $settings->thumbheight
+            ),
+            'Thumbnail generation did not use default thumbnail dimensions'
+        );
+
+        $old_image = $this->image_mapper->find($this->image);
+        $this->assertEqual(
+            $image->fileName,
+            $old_image->meta_data['thumbnail']['filename'],
+            'Thumbnail filename was not saved to the parent image attributes'
+        );
+    }
+
+    function test_generate_image_size_full_no_auto_resize()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_imgAutoResize = $settings->imgAutoResize;
+        $settings->imgAutoResize = FALSE;
+        $image = $this->storage->generate_image_size($this->image, 'full');
+
+        $this->assertFalse(
+            $image,
+            'Returned image should be false when imgAutoResize == False'
+        );
+
+        $settings->imgAutoResize = $orig_imgAutoResize;
+    }
+
+    function test_generate_image_size_full_with_auto_resize()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_imgAutoResize = $settings->imgAutoResize;
+        $settings->imgAutoResize = TRUE;
+
+        $image = $this->storage->generate_image_size($this->image, 'full');
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Thumbnail file does not exist'
+        );
+
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $settings->imgWidth,
+                'height' => $settings->imgHeight
+            )
+        );
+
+        $size = getimagesize($image->fileName);
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $size[0],
+                'height' => $size[1]
+            )
+        );
+
+        $settings->imgAutoResize = $orig_imgAutoResize;
+    }
+
+    function test_generate_image_size_thumbnail_with_dimension_parameters()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+
+        $params = array(
+            'width' => 50
+        );
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail', $params);
+
+        $this->assertTrue(
+            is_file($image->fileName),
+            'Thumbnail file does not exist'
+        );
+
+        // passing a lone width/height to generate_image_clone() will give an image with the right aspect ratio
+        // but generate_image_size fills in default values. Expect a width of 50 and a height of 600 (or your
+        // default) here.
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $params['width'],
+                'height' => $settings->thumbheight
+            )
+        );
+
+        $size = getimagesize($image->fileName);
+        $this->assertEqual(
+            $image->currentDimensions,
+            array(
+                'width'  => $size[0],
+                'height' => $size[1]
+            )
+        );
+    }
+
+    function test_generate_image_size_watermark()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_wm_text = $settings->wmText;
+        $settings->wmText = 'Generate Image Size';
+
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail');
+
+        $this->assertEqual(
+            $image->watermarkText,
+            $settings->wmText,
+            'Thumbnail generation did not use default watermark text'
+        );
+
+        $settings->wmText = $orig_wm_text;
+    }
+
+    function test_generate_image_size_skip_parameters()
+    {
+        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $orig_wm_text = $settings->wmText;
+        $settings->wmText = 'Generate Image Size';
+
+        $image = $this->storage->generate_image_size($this->image, 'thumbnail', NULL, TRUE);
+
+        $this->assertEqual(
+            $image->watermarkText,
+            '',
+            'Thumbnail generation applied a watermark it should not have'
+        );
+
+        $settings->wmText = $orig_wm_text;
+    }
+
 //
 //	/*** HELPER METHODS ******************************************************/
 //
@@ -529,8 +854,8 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		if (get_class($image) == 'C_Test_NggLegacy_GalleryStorage_Driver') {
 		}
 		$this->assertTrue(
-			in_array(get_class($image), array('stdClass','C_NextGen_Gallery_Image')),
-			"Image is not a stdClass or C_NextGen_Gallery_Image instance"
+			in_array(get_class($image), array('stdClass','C_Image')),
+			"Image is not a stdClass or C_Image instance"
 		);
 		$this->assertTrue(is_int($image->$image_key), "Image ID is not an integer");
 		$this->assertTrue($image->$image_key > 0, "Image ID is not greater than zero");

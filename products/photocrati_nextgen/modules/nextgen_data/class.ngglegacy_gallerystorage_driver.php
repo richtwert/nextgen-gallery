@@ -58,6 +58,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		if ($gallery && isset($gallery->path)) {
 			$retval = path_join(ABSPATH, $gallery->path);
 		}
+        elseif ($gallery) {
+            // fallback to the upload abspath
+            $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+            $retval = $storage->get_upload_abspath($gallery);
+        }
 
 		return $retval;
 	}
@@ -159,7 +164,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 * @param int|stdClass|C_NextGEN_Gallery $gallery
 	 * @param type $filename, specifies the name of the file
 	 * @param type $data if specified, expects base64 encoded string of data
-	 * @return C_NextGen_Gallery_Image
+	 * @return C_Image
 	 */
 	function upload_image($gallery, $filename=FALSE, $data=FALSE)
 	{
@@ -198,27 +203,27 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 	/**
 	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @param array $params
 	 * @return object
 	 */
 	function generate_image_clone($image_path, $clone_path, $params)
 	{
-		$width = isset($params['width']) ? $params['width'] : null;
-		$height = isset($params['height']) ? $params['height'] : null;
-		$quality = isset($params['quality']) ? $params['quality'] : null;
-		$crop = isset($params['crop']) ? $params['crop'] : null;
-		$watermark = isset($params['watermark']) ? $params['watermark'] : null;
-		$reflection = isset($params['reflection']) ? $params['reflection'] : null;
-		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : null;
-		$destpath = null;
-		$thumbnail = null;
+		$width      = isset($params['width'])      ? $params['width']      : NULL;
+		$height     = isset($params['height'])     ? $params['height']     : NULL;
+		$quality    = isset($params['quality'])    ? $params['quality']    : NULL;
+		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
+		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
+		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
+		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : NULL;
+		$destpath   = NULL;
+		$thumbnail  = NULL;
 		
 		// XXX this should maybe be removed and extra settings go into $params?
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Ensure we have a valid image
-		if ($image_path && file_exists($image_path) && strtolower($image_path) != strtolower($clone_path))
+		if ($image_path && file_exists($image_path))
 		{
 			// Ensure target directory exists, but only create 1 subdirectory
 			$image_dir = dirname($image_path);
@@ -363,7 +368,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				{
 					$thumbnail->filename = $destpath;
 				}
-				
+
 				if ($watermark == 1 || $watermark === true)
 				{
 					if (in_array($settings->wmType, array('image', 'text')))
@@ -402,7 +407,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	
 	/**
 	 * Generates a specific size for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return bool
 	 */
 	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
@@ -517,16 +522,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$existing_image_abpath = $this->object->get_image_abspath($image, $size);
 			$existing_image_dir = dirname($existing_image_abpath);
 
-			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it
-            if (file_exists($existing_image_abpath)) {
-                unlink($existing_image_abpath);
-            }
-      
 			wp_mkdir_p($existing_image_dir);
 			
 			$clone_path = $existing_image_abpath;
 			$thumbnail = $this->object->generate_image_clone($filename, $clone_path, $params);
-			
+
 			// We successfully generated the thumbnail
 			if ($thumbnail != null)
 			{
@@ -579,7 +579,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	
 	/**
 	 * Generates a thumbnail for an image
-	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @param int|stdClass|C_Image $image
 	 * @return bool
 	 */
 	function generate_thumbnail($image, $params = null, $skip_defaults = false)
@@ -774,7 +774,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
     /**
      * Recover image from backup copy and reprocess it
      *
-     * @param int|stdClass|C_NextGen_Gallery_Image $image
+     * @param int|stdClass|C_Image $image
      * @return string result code
      */
     function recover_image($image) {

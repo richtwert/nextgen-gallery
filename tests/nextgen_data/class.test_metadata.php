@@ -18,7 +18,7 @@ class C_Test_Nextgen_Metadata extends C_Test_Component_Base
         parent::setUp();
         // Get the mappers required for these tests
         $this->gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
-        $this->image_mapper   = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
+        $this->image_mapper   = $this->get_registry()->get_utility('I_Image_Mapper');
 
         // Create test gallery to work with
         $this->gallery = (object) array('title' => 'NextGen Gallery');
