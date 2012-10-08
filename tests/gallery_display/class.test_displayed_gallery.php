@@ -21,7 +21,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 	{
 		parent::__construct();
 		$this->gal_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
-		$this->img_mapper = $this->get_registry()->get_utility('I_Gallery_Image_Mapper');
+		$this->img_mapper = $this->get_registry()->get_utility('I_Image_Mapper');
 		$this->alb_mapper = $this->get_registry()->get_utility('I_Album_Mapper');
 		$this->storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
 		$this->test_image_abspath = path_join(dirname(__FILE__), 'test.jpg');
