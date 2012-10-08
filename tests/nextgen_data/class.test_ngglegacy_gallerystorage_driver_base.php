@@ -613,19 +613,12 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
     function _generate_image_clone_effects($orig_image_path, $dest_image_path, &$image_files)
     {
-        // because effects (quality, watermark, reflections) aren't applied if the image isn't also resized
-        // we determine what our "base" md5sum is by shrinking the width of the image by a single pixel. this way
-        // we can compare the md5sum of the width-1 image with the new image to ensure that the image was at least
-        // altered in some way besides just resizing it.
         $size = getimagesize($orig_image_path);
-        $params = array('width' => ($size[0] - 1));
-        $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
-        $image_files[] = $image->fileName;
-        $orig_image_md5 = md5_file($image->fileName);
+        $orig_image_md5 = md5_file($orig_image_path);
 
         // test compression quality
         $params = array(
-            'width' => ($size[0] - 1),
+            'width' => $size[0],
             'quality' => 1
         );
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
@@ -645,7 +638,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         // test reflections
         $params = array(
             'reflection' => TRUE,
-            'width' => ($size[0] - 1)
+            'width' => $size[0]
         );
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
         $image_files[] = $image->fileName;
@@ -664,7 +657,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
         // test watermarks
         $params = array(
             'watermark' => TRUE,
-            'width' => ($size[0] - 1)
+            'width' => $size[0]
         );
         $image = $this->storage->generate_image_clone($orig_image_path, $dest_image_path, $params);
         $image_files[] = $image->fileName;
