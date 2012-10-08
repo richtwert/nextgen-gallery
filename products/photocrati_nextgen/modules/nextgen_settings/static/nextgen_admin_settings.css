@@ -12,3 +12,14 @@
 .url_field {
 	width: 400px;
 }
+
+.nextgen_settings_colorpicker {
+    width: 85px !important;
+    text-align: center;
+    margin-left: 50px;
+}
+
+#nextgen_settings_wmXpos,
+#nextgen_settings_wmYpos {
+    width: 65px;
+}
