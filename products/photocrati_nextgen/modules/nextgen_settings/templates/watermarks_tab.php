@@ -66,6 +66,15 @@
         </td>
     </tr>
 
+    <tr>
+        <td>
+            <?php echo $preview_label; ?>
+        </td>
+        <td>
+            <img src='<?php echo $thumbnail_url; ?>'/>
+        </td>
+    </tr>
+
 	<tr>
 		<td colspan="2">
 			<a

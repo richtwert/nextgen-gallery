@@ -21,5 +21,9 @@
 
 #nextgen_settings_wmXpos,
 #nextgen_settings_wmYpos {
-    width: 65px;
+    width: 65px !important;
+}
+
+table.nextgen_settings_position {
+    width: auto !important;
 }
