@@ -286,6 +286,22 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
 	function _render_watermarks_tab($settings)
 	{
+        $thumbs  = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        $imap    = $this->object->get_registry()->get_utility('I_Image_Mapper');
+
+        $thumbnail_url = $storage->get_image_url(
+            $imap->find_first(),
+            $thumbs->get_size_name(
+                array(
+                    'width' => 300,
+                    'height' => 250,
+                    'crop' => FALSE,
+                    'watermark' => TRUE
+                )
+            )
+        );
+
 		return $this->render_partial('watermarks_tab', array(
 			'notice'					=>	_('Please note : You can only activate the watermark under -> Manage Gallery . This action cannot be undone.'),
 			'watermark_source_label'	=>	_('How will you generate a watermark?'),
@@ -298,7 +314,9 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'offset_x'					=>	$settings->wmXpos,
 			'offset_y'					=>	$settings->wmYpos,
 			'hidden_label'				=>	_('(Show Customization Options)'),
-			'active_label'				=>	_('(Hide Customization Options)')
+			'active_label'				=>	_('(Hide Customization Options)'),
+            'thumbnail_url'             => $thumbnail_url,
+            'preview_label'             => _('Preview of saved settings:')
 		), TRUE);
 	}
 
