@@ -207,6 +207,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$width = isset($params['width']) ? $params['width'] : null;
 		$height = isset($params['height']) ? $params['height'] : null;
 		$quality = isset($params['quality']) ? $params['quality'] : null;
+		$type = isset($params['type']) ? $params['type'] : null;
 		$crop = isset($params['crop']) ? $params['crop'] : null;
 		$watermark = isset($params['watermark']) ? $params['watermark'] : null;
 		$reflection = isset($params['reflection']) ? $params['reflection'] : null;
@@ -236,28 +237,33 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 		
 			$image_extension = pathinfo($image_path, PATHINFO_EXTENSION);
+			$image_extension_str = null;
 			$clone_extension = pathinfo($clone_path, PATHINFO_EXTENSION);
+			$clone_extension_str = null;
 			
 			if ($image_extension != null)
 			{
-				$image_extension = '.' . $image_extension;
+				$image_extension_str = '.' . $image_extension;
 			}
 			
 			if ($clone_extension != null)
 			{
-				$clone_extension = '.' . $clone_extension;
+				$clone_extension_str = '.' . $clone_extension;
 			}
 			
-			$image_basename = basename($image_path, $image_extension);
-			$clone_basename = basename($clone_path, $clone_extension);
-			$clone_suffix = $clone_basename;
+			$image_basename = basename($image_path, $image_extension_str);
+			$clone_basename = basename($clone_path, $clone_extension_str);
+			// We use a default suffix as passing in null as the suffix will make WordPress use a default
+			$clone_suffix = 'clone';
+			$format_list = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png');
+			$clone_format = null; // format is determined below and based on $type otherwise left to null
 			
 			if (strpos($clone_basename, $image_basename) !== false)
 			{
 				$clone_suffix = substr($clone_basename, strlen($image_basename));
 			}
 			
-			if ($clone_suffix[0] == '-')
+			if ($clone_suffix != null && $clone_suffix[0] == '-')
 			{
 				// WordPress adds '-' on its own
 				$clone_suffix = substr($clone_suffix, 1);
@@ -294,8 +300,30 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($height > $dimensions[1]) {
 					$height = $dimensions[1];
 				}
-			}
+			
+				$image_format = $dimensions[2];
 				
+				if ($type != null)
+				{
+					if (is_string($type))
+					{
+						$type = strtolower($type);
+						
+						// Indexes in the $format_list array correspond to IMAGETYPE_XXX values appropriately
+						if (($index = array_search($type, $format_list)) !== false)
+						{
+							$type = $index;
+				
+							if ($type != $image_format)
+							{
+								// Note: this only changes the FORMAT of the image but not the extension
+								$clone_format = $type;
+							}
+						}
+					}
+				}
+			}
+			
 		  if ($crop_frame == null || !$crop)
 		  {
 				$destpath = image_resize(
@@ -355,6 +383,41 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			// We successfully generated the thumbnail
 			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) 
 			{
+				if ($clone_format != null)
+				{
+					if (isset($format_list[$clone_format]))
+					{
+						$clone_format_extension = $format_list[$clone_format];
+						$clone_format_extension_str = null;
+						
+						if ($clone_format_extension != null)
+						{
+							$clone_format_extension_str = '.' . $clone_format_extension;
+						}
+						
+						$destpath_info = pathinfo($destpath);
+						$destpath_extension = $destpath_info['extension'];
+						$destpath_extension_str = null;
+			
+						if ($destpath_extension != null)
+						{
+							$destpath_extension_str = '.' . $destpath_extension;
+						}
+						
+						if (strtolower($destpath_extension) != strtolower($clone_format_extension))
+						{
+							$destpath_dir = $destpath_info['dirname'];
+							$destpath_basename = $destpath_info['filename'];
+							$destpath_new = $destpath_dir . DIRECTORY_SEPARATOR . $destpath_basename . $clone_format_extension_str;
+							
+							if (rename($destpath, $destpath_new))
+							{
+								$destpath = $destpath_new;
+							}
+						}
+					}
+				}
+				
 				if (is_null($thumbnail))
 				{
 					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
@@ -391,6 +454,12 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				if ($reflection)
 				{
 					$thumbnail->createReflection(40, 40, 50, FALSE, '#a4a4a4');
+				}
+				
+				if ($clone_format != null && isset($format_list[$clone_format]))
+				{
+					// Force format
+					$thumbnail->format = strtoupper($format_list[$clone_format]);
 				}
 
 				$thumbnail->save($destpath, $quality);
@@ -589,6 +658,41 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		return $sized_image != null;
 	}
 
+	/**
+	 * Outputs/renders an image
+	 * @param int|stdClass|C_NextGen_Gallery_Image $image
+	 * @return bool
+	 */
+	function render_image($image, $size=FALSE)
+	{
+		$abspath = $this->get_image_abspath($image, $size, true);
+		$image_rx = null;
+		
+		if ($abspath != null)
+		{
+			$image_rx = new C_NggLegacy_Thumbnail($abspath, true);
+		}
+		else
+		{
+			$image_rx = $this->object->generate_image_size($image, $size);
+		}
+		
+		if ($image_rx != null)
+		{
+			// Clear output
+			while (ob_get_level() > 0) 
+			{
+				ob_end_clean();
+			}
+			
+			// output image and headers
+			$image_rx->show();
+			
+			return true;
+		}
+		
+		return false;
+	}
 
 	function delete_image($image, $size=FALSE)
 	{
