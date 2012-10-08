@@ -328,9 +328,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					}
 				}
 			}
-			
-		  if ($crop_frame == null || !$crop)
-		  {
+
+            // wp' image_resize() fails if the dimensions are unchanged
+            if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height))
+            {
 				$destpath = image_resize(
 						$image_path,
 						$width, $height, $crop,
@@ -338,9 +339,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$clone_dir,
 						$quality
 				);
-		  }
-		  else 
-		  {
+            }
+            else
+            {
 				$destpath = $clone_path;
 				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
 				
@@ -383,7 +384,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				list($width, $height) = wp_constrain_dimensions($dimensions[0], $dimensions[1], $width, $height);
 				
 				$thumbnail->resize($width, $height);
-		  }
+            }
 
 			// We successfully generated the thumbnail
 			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) 
@@ -685,14 +686,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		if ($image_rx != null)
 		{
 			// Clear output
-			while (ob_get_level() > 0) 
+			while (ob_get_level() > 0)
 			{
 				ob_end_clean();
 			}
 			
 			// output image and headers
 			$image_rx->show();
-			
+
 			return true;
 		}
 		
