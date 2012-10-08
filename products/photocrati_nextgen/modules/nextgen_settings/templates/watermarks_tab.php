@@ -21,7 +21,7 @@
 
     <tr>
         <td>
-            <?php _e('Position','nggallery'); ?>
+            <?php echo $position_label; ?>
         </td>
         <td>
             <table class='nextgen_settings_position' border='1'>
@@ -46,7 +46,7 @@
 
     <tr>
         <td>
-            <?php _e('Offset','nggallery'); ?>
+            <?php echo $offset_label; ?>
         </td>
         <td>
             <label for='nextgen_settings_wmXpos'>w</label>
