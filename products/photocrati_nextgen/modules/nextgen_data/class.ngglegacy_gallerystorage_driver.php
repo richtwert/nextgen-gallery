@@ -212,6 +212,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$width      = isset($params['width'])      ? $params['width']      : NULL;
 		$height     = isset($params['height'])     ? $params['height']     : NULL;
 		$quality    = isset($params['quality'])    ? $params['quality']    : NULL;
+		$type = isset($params['type']) ? $params['type'] : NULL;
 		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
 		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
 		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
@@ -590,6 +591,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$existing_image_abpath = $this->object->get_image_abspath($image, $size);
 			$existing_image_dir = dirname($existing_image_abpath);
 
+			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it, leaving commented in as reminder in case there are issues in the future
+      if (file_exists($existing_image_abpath)) {
+          //unlink($existing_image_abpath);
+      }
+      
 			wp_mkdir_p($existing_image_dir);
 			
 			$clone_path = $existing_image_abpath;
