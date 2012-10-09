@@ -55,8 +55,10 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $display_settings['display_watermark'] = TRUE;
 
         // legacy assumed no width/height meant full size unlike generate_thumbnail: force a full resolution
-        if (empty($display_settings['width']))  $display_settings['width']  = $image->meta_data['width'];
-        if (empty($display_settings['height'])) $display_settings['height'] = $image->meta_data['height'];
+        if (empty($display_settings['width']))
+            $display_settings['width'] = $image->meta_data['width'];
+        if (empty($display_settings['height']))
+            $display_settings['height'] = $image->meta_data['height'];
 
         $params['width'] = $display_settings['width'];
         $params['height'] = $display_settings['height'];;
