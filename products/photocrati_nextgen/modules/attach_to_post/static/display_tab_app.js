@@ -1,3 +1,35 @@
+jQuery(function($){
+    $.fn.extend({
+        safeClone: function() {
+            var clone;
+            clone = $(this).clone();
+            clone.find('script[id^=metamorph]').remove();
+            clone.removeClass('ember-view');
+            clone.find('*').each(function() {
+                var $this;
+                $this = $(this);
+                $this.removeClass('ember-view');
+                return $.each($this[0].attributes, function(index, attr) {
+                    if (attr.name.indexOf('data-bindattr') === -1) {
+                        return;
+                    }
+                    return $this.removeAttr(attr.name);
+                });
+            });
+            if (clone.attr('id')) {
+                var remove = true;
+                if (clone.attr('name') && clone.attr('name').indexOf('ember') !== -1) remove = false;
+                if (remove) clone.removeAttr('id');
+            }
+
+            clone.find('[id^=ember]').removeAttr('id');
+            return clone;
+        }
+    });
+});
+
+
+
 /************************************************************
  * Define the application
  */
@@ -5,21 +37,13 @@ var NggDisplayTab = Em.Application.create({
 
 	sources:						Ember.A(),
 	galleries:						Ember.A(),
+    albums:                         Ember.A(),
 	image_tags:						Ember.A(),
 
 	/**
 	 * The currently displayed source view
 	 */
 	attached_source_view:			null,
-
-
-	/**
-	 * Populates all existing data
-	 */
-	ready:							function(){
-		this.fetch_sources();
-	},
-
 
 	/**
 	 * Saves the displayed gallery
@@ -143,7 +167,8 @@ var NggDisplayTab = Em.Application.create({
 						limit,
 						offset,
 						filter,
-						condition
+						condition,
+                        done
 					);
 				}
 			}
@@ -166,7 +191,7 @@ var NggDisplayTab = Em.Application.create({
 			25,
 			0,
 			function(item){
-				if (existing && item.id == existing.source) this.get('displayed_gallery').set('source', item);
+				if (existing && item.id == existing.source) this.displayed_gallery.set('source', item);
 				return item;
 			}
 		);
@@ -175,7 +200,7 @@ var NggDisplayTab = Em.Application.create({
 	/**
 	 * Fetches entities of a displayed gallery or gallery
 	 */
-	fetch_entities:					function(obj_container, container_id_field, params){
+	fetch_entities:					function(obj_container, container_id_field, params, done_callback){
 		this.fetch_in_chunks(
 			{action:	'get_displayed_gallery_entities', displayed_gallery: params},
 			'entities',
@@ -189,7 +214,8 @@ var NggDisplayTab = Em.Application.create({
 			},
 			function(){
 				return this.get('source_id') != 'albums'
-			}
+			},
+            done_callback
 		);
 	},
 
@@ -200,21 +226,50 @@ var NggDisplayTab = Em.Application.create({
 		this.fetch_entities(
 			obj_container,
 			'galleryid',
-			{source: 'galleries', container_ids: [gallery_id]},
-			25,
-			0
+			{source: 'galleries', container_ids: [gallery_id]}
 		);
 	},
 
+
+    /**
+     * Fetches images for specific image tags
+     */
 	fetch_image_tag_images:			function(){
 		this.fetch_entities(
 			this.displayed_gallery.get('entities'),
 			'term_id',
-			{source: 'image_tags', container_ids:	this.displayed_gallery.get('container_ids')},
-			25,
-			0
+			{source: 'image_tags', container_ids:	this.displayed_gallery.get('container_ids')}
 		);
-	}
+	},
+
+
+    /**
+     * Fetches entities for a particular album
+     * @param obj_container
+     * @param album_id
+     * @param done_callback
+     */
+    fetch_album_entities:           function(obj_container, album_id, done_callback){
+        this.fetch_in_chunks(
+            {
+                action:	            'get_displayed_gallery_entities',
+                displayed_gallery:  {source: 'albums', container_ids: [album_id]}
+            },
+            'entities',
+            obj_container,
+            25,
+            0,
+            function(item){
+                item.set('container_id', album_id);
+                item.set('exclude', item.get('exclude') == 0 ? false : true);
+                return item;
+            },
+            function(){
+                return this.get('source_id') != 'albums'
+            },
+            done_callback
+        );
+    }
 });
 
 
@@ -226,10 +281,16 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	source:						'',
 	containers:					Ember.A(),
 	galleriesBinding:			'NggDisplayTab.galleries',
+    albumsBinding:              'NggDisplayTab.albums',
 	image_tagsBinding:			'NggDisplayTab.image_tags',
 	sourcesBinding:				'NggDisplayTab.sources',
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
+    sorted_entities:            Ember.A(),
+    entities_to_remove:         Ember.ArrayController.create({
+        contentBinding: 'NggDisplayTab.displayed_gallery.entities',
+        sortProperties: ['sort_order']
+    }),
 	display_type:				false,
 	display_settings:			false,
 
@@ -237,6 +298,9 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * Initializes the object
 	 */
 	preload:						function(){
+        NggDisplayTab.fetch_sources();
+
+
 		// If we're editing an existing displayed gallery, then
 		// update the model
 		if (existing != null) {
@@ -283,6 +347,14 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	push_to_image_tags:			function(item){
 		this.get('image_tags').pushObject(item);
 	},
+
+
+    /**
+     * Used by init() to preload an existing displayed gallery with albums
+     */
+    push_to_albums:             function(item){
+        this.get('albums').pushObject(item);
+    },
 
 	/**
 	 * Returns the ID of the selected source
@@ -405,6 +477,7 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * to the DOM
 	 */
 	_source_Changed:			function(){
+        var self = this;
 		 var view = NggDisplayTab.get('attached_source_view');
 		 if (view) view.remove();
 		 var source_id = this.get('source_id');
@@ -412,6 +485,15 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 			 this[source_id+'_selected_as_source'].call(this);
 
 		 }
+
+        // Change the list of display types available for selection
+        jQuery('.display_type_preview').each(function(){
+           var $this = jQuery(this);
+            if ($this.hasClass(self.get('source').get('display_type'))) {
+                $this.removeClass('hidden');
+            }
+            else $this.addClass('hidden');
+        });
 	}.observes('source'),
 
 
@@ -459,6 +541,14 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	random_images_selected_as_source:	function(){
 		this.attach_preview_area();
 	},
+
+
+    /**
+     * The source has been changed to Albums
+     */
+    albums_selected_as_source:          function(){
+        this.attach_source_view();
+    },
 
 	/**
 	 * Attach the preview area view
@@ -561,6 +651,38 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 		}
 	},
 
+    /**
+     * Removes entities that belong to the specified album
+     * @param container_id
+     */
+    remove_album_entities:  function(container_id){
+        var self = this;
+        NggDisplayTab.fetch_album_entities(
+            self.get('entities_to_remove'),
+            container_id,
+            function(){
+                var loop = true;
+                var entities = self.get('entities');
+                var entities_to_remove = self.get('entities_to_remove');
+                console.log("I should remove:");
+                console.log(entities_to_remove);
+                while (loop) {
+                    loop = false;
+                    for (var i=0; i<entities.length; i++) {
+                        var entity = entities[i];
+                        var entity_id  = entity.get('id');
+                        if (entities_to_remove.filterProperty('id', entity_id).length > 0) {
+                            entities.removeAt(i);
+                            loop = true;
+                            break;
+                        }
+                    }
+                }
+
+            }
+        );
+    },
+
 
 	/**
 	 * Fetches images from a selected list of galleries
@@ -579,10 +701,11 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * The list of containers changed. Adjust what entities are present
 	 * based on the selected galleries
 	 */
-	_update_entities_for_galleries:	function() {
-		if (!existing ||
-		 !(this.get('container_ids').join == existing.container_ids.join &&
-		  this.get('entities').length>0)) {
+	_update_entities_for_galleries:     function() {
+        if (!existing ||
+            !(this.get('container_ids').join() == existing.container_ids.join()
+                && this.get('entities').length>0
+                && this.get('previous_container_ids').join() == existing.container_ids.join())) {
 			var self = this;
 			var diff = this.get('container_difference');
 			diff.additions.forEach(function(id){
@@ -601,10 +724,30 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * The list of containers changed. Adjust what entries are present
 	 * based on the selected image tags
 	 */
-	_update_entities_for_image_tags: function(){
+	_update_entities_for_image_tags:    function(){
 		this.set('entities', Ember.A());
 		NggDisplayTab.fetch_image_tag_images();
 	},
+
+
+    _update_entities_for_albums:        function(){
+        if (!existing ||
+            !(this.get('container_ids').join() == existing.container_ids.join()
+            && this.get('entities').length>0
+            && this.get('previous_container_ids').join() == existing.container_ids.join())) {
+            var self = this;
+            var diff = this.get('container_difference');
+            diff.additions.forEach(function(id){
+                NggDisplayTab.fetch_album_entities(
+                    self.get('entities'),
+                    id
+                );
+            });
+            diff.removals.forEach(function(id){
+                self.remove_album_entities(id);
+            });
+        }
+    },
 
 	/**
 	 * The list of containers changed. We don't display
@@ -711,6 +854,37 @@ NggDisplayTab.displayed_gallery.galleries_source_view = 	Ember.View.create({
 });
 
 
+NggDisplayTab.displayed_gallery.albums_source_view =        Ember.View.create({
+    tagName:            'tbody',
+    templateName:       'albums_source_view',
+    fetch_albums:       function(collection, chosen_ddl){
+        collection.clear();
+        NggDisplayTab.fetch_in_chunks(
+            {action: 'get_existing_albums'},
+            'albums',
+            collection,
+            25,
+            0,
+            function(item){
+                var arr = this.get('displayed_gallery').get('containers').map(function(obj, index, arr){
+                    return (item.get('id') == obj.get('id')) ? item : obj
+                });
+                this.get('displayed_gallery').set('containers', arr);
+
+                return item;
+            },
+            function(){
+                return this.get('source_id') == 'albums';
+            },
+            function(){
+                chosen_ddl.update();
+            }
+        );
+
+    }
+});
+
+
 /************************************************************
 * Gets the view used to render source configuration fields
 * for the "image_tags" source
@@ -752,45 +926,24 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 	entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
 	displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
 	source_idBinding:			'NggDisplayTab.displayed_gallery.source_id',
-
-	/**
-	 * Once the element has been added to the DOM, execute some JQuery
-	 */
-	didInsertElement:			function(){
-		// Enable sorting!
-		var last_offset = 0;
-		jQuery('#preview_entity_list').sortable({
-			axis:	'y',
-			opacity: 0.7,
-			items:	'li:not(.header)',
-			containment: 'parent'
-		}).bind('sort', function(event, ui){
-			var direction = ui.offset.top > last_offset ? 'down' : 'up';
-			var win_height = jQuery(window).height();
-			var doc_height = jQuery(document).height();
-			ui.offset.bottom = doc_height - ui.offset.top;
-
-			// Determine if the user is scrolling down
-			if (direction == 'down' && win_height + window.scrollY >= ui.offset.top) {
-
-				// Calculate how to autoscroll
-				if (jQuery(window).height() - ui.offset.top <= ui.item.height()) {
-					window.scrollBy(0, ui.item.height()/15);
-				}
-			}
-
-			// Determine if the user is scrolling up
-			else if (direction == 'up' && ui.offset.top <= window.scrollY) {
-
-				// Calculate how to autoscroll
-				if (jQuery(window).height() - jQuery(document).height() - ui.offset.top <= ui.item.height()) {
-					window.scrollBy(0, ui.item.height()/15*-1);
-				}
-			}
-
-			last_offset = ui.offset.top;
-		});
-	},
+    sortedImageListView:        Ember.CollectionView.extend({
+       contentBinding:                 'parentView.entities',
+       tagName:                        'ul',
+       didInsertElement:        function(){
+           var view = this;
+           view.$().sortable({
+               opacity: 0.7,
+               containment: 'parent',
+               stop: function(event, ui) {
+                   var item_id = parseInt(ui.item.find('img').attr('id'));
+                   self.get('entities').findProperty('id', item_id).set('sort_order', ui.item.index());
+               },
+               helper: function(event, ui) {
+                   return $(ui).safeClone();
+               }
+           })
+       }
+    }),
 
 	/**
 	 * Provides an exclude button for a particular entities in the preview area
@@ -800,9 +953,9 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 		type:						'checkbox',
 		classBindings:				['checked'],
 		attributeBindings:			['checked', 'value', 'type'],
-		displayed_galleryBinding:	'parentView.displayed_gallery',
-		excluded_entitiesBinding:	'parentView.displayed_gallery.excluded_entities',
-		entitiesBinding:			'parentView.displayed_gallery.entities',
+		displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
+		excluded_entitiesBinding:	'NggDisplayTab.displayed_gallery.excluded_entities',
+		entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
 
 		/**
 		 * Determines whether the checkbox should be 'checked' or not
@@ -811,7 +964,6 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 			var retval = false;
 			var item = this.get('entities').findProperty('id', this.get('value'));
 			if (typeof(item) != 'undefined') retval = item.exclude;
-			console.log(item.id, retval);
 			return retval;
 		}.property('displayed_gallery.excluded_entities.@each.length', 'value'),
 

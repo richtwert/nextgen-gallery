@@ -1,13 +1,13 @@
 <?php
 
-class C_Display_Type_Renderer extends C_Component
+class C_Displayed_Gallery_Renderer extends C_Component
 {
     static $_instances = array();
 
     /**
      * Returns an instance of the class
      * @param mixed $context
-     * @return C_Display_Type_Renderer
+     * @return C_Displayed_Gallery_Renderer
      */
     function get_instance($context=FALSE)
     {
@@ -26,8 +26,8 @@ class C_Display_Type_Renderer extends C_Component
     function define($context=FALSE)
     {
         parent::define($context);
-        $this->add_mixin('Mixin_Display_Type_Renderer');
-        $this->implement('I_Display_Type_Renderer');
+        $this->add_mixin('Mixin_Displayed_Gallery_Renderer');
+        $this->implement('I_Displayed_Gallery_Renderer');
     }
 }
 
@@ -35,7 +35,7 @@ class C_Display_Type_Renderer extends C_Component
 /**
  * Provides the ability to render a display type
  */
-class Mixin_Display_Type_Renderer extends Mixin
+class Mixin_Displayed_Gallery_Renderer extends Mixin
 {
     /**
      * Displays a "displayed gallery" instance
@@ -82,6 +82,7 @@ class Mixin_Display_Type_Renderer extends Mixin
      */
     function display_images($params, $inner_content=NULL)
     {
+        $retval = '';
         $displayed_gallery = NULL;
 
         // Get the NextGEN settings to provide some defaults
@@ -180,15 +181,21 @@ class Mixin_Display_Type_Renderer extends Mixin
         }
 
         // Validate the displayed gallery
-        if ($displayed_gallery && $displayed_gallery->validate()) {
+        if ($displayed_gallery) {
+            if ($displayed_gallery->validate()) {
 
-            // Set a temporary id
-            $displayed_gallery->id(md5(serialize($displayed_gallery)));
+                // Set a temporary id
+                $displayed_gallery->id(md5(serialize($displayed_gallery)));
 
-            // Display!
-            $this->object->render_displayed_gallery($displayed_gallery);
+                // Display!
+                $this->object->render_displayed_gallery($displayed_gallery);
+            }
+            else $retval =  "Invalid Displayed Gallery".var_dump($displayed_gallery->get_errors());
         }
-        else return "Invalid Displayed Gallery".print_r($displayed_gallery->get_errors());
+        else {
+            $retval = "Invalid Displayed Gallery";
+        }
+        return $retval;
     }
 
 
@@ -198,6 +205,9 @@ class Mixin_Display_Type_Renderer extends Mixin
      */
     function render_displayed_gallery($displayed_gallery, $return=FALSE)
     {
+        // Save the displayed gallery as a transient
+        $displayed_gallery->to_transient();
+
         // Get the display type controller
         $controller = $this->get_registry()->get_utility(
             'I_Display_Type_Controller', $displayed_gallery->display_type
@@ -212,11 +222,5 @@ class Mixin_Display_Type_Renderer extends Mixin
         return $controller->is_alternative_view_request() ?
             $controller->alternative_index($displayed_gallery, $return) :
             $controller->index_action($displayed_gallery, $return);
-    }
-
-
-    function _get_param($name, $default, $params)
-    {
-        return (isset($params[$name])) ? $params[$name] : $default;
     }
 }

@@ -22,14 +22,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		$current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        $total = $displayed_gallery->get_image_count();
+        $total = $displayed_gallery->get_entity_count();
 
         // Get the images to be displayed
         if ($display_settings['images_per_page'] > 0 && $display_settings['show_all_in_lightbox'])
         {
             // the "Add Hidden Images" feature works by loading ALL images and then marking the ones not on this page
             // as hidden (style="display: none")
-            $images = $displayed_gallery->get_included_images($total);
+            $images = $displayed_gallery->get_included_entities($total);
             $i = 0;
             foreach ($images as &$image) {
                 if ($i < $display_settings['images_per_page'] * ($current_page - 1))
@@ -45,7 +45,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         }
         else {
             // just display the images for this page, as normal
-            $images = $displayed_gallery->get_included_images($display_settings['images_per_page'], $offset);
+            $images = $displayed_gallery->get_included_entities($display_settings['images_per_page'], $offset);
         }
 
         if (in_array($displayed_gallery->source, array('random', 'recent')))
@@ -55,34 +55,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 		// Are there images to display?
 		if ($images) {
-
-			/***
-			// We try to replicate what a call to nggShowGallery() would
-			// render as much as possible. The reason why we don't make a call
-			// to nggShowGallery() is that it assumes that only one gallery
-			// is being displayed, and I don't feel confident modifying it
-			// to behave otherwise. I'd sooner replicate the look n' feel
-			// and deprecate the nggShowGallery() method
-			***/
-
-            if ($display_settings['ajax_pagination'] || $display_settings['show_piclens_link'])
-            {
-                $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
-                $entity = $displayed_gallery->get_entity();
-                $transient_handler->set_value('displayed_gallery_' . $entity->ID, $entity);
-            }
-            if ($display_settings['ajax_pagination'])
-            {
-                wp_localize_script(
-                    'nextgen-basic-thumbnails-ajax-pagination',
-                    'ngg_ajax',
-                    array(
-                        'path' => NGGALLERY_URLPATH,
-                        'callback' => trailingslashit(home_url()) . 'photocrati_ajax?action=get_page&transient_id=' . $entity->ID,
-                        'loading' => __('loading', 'nggallery')
-                    )
-                );
-            }
 
 			// Create pagination
 			if ($display_settings['images_per_page'] && !$display_settings['disable_pagination']) {
@@ -99,7 +71,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
-                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $entity->ID);
+                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $displayed_gallery->to_transient());
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
@@ -145,8 +117,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			wp_enqueue_script('piclens', $this->static_url('piclens/lite/piclens.js'));
 		}
 
-        wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL . DIRECTORY_SEPARATOR . 'ajax_pagination.js');
-
+        wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->static_url('ajax_pagination.js'));
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
@@ -158,7 +129,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails.js';
+        return $this->object->static_url('nextgen_basic_thumbnails.js');
 	}
 
 	/**
@@ -168,7 +139,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS_JS_URL.'/nextgen_basic_thumbnails_init.js';
+        return $this->object->static_url('nextgen_basic_thumbnails_init.js');
 	}
 
     /**
@@ -379,9 +350,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             'nextgen_basic_thumbnails_show_slideshow_link',
 			'nextgen_basic_thumbnail_show_return_link',
             'nextgen_basic_thumbnails_show_piclens_link',
-			'nextgen_basic_templates_template',
 			'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_thumbnails_hidden',
+            'nextgen_basic_templates_template',
 		);
 	}
 }

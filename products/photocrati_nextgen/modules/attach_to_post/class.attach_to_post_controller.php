@@ -142,13 +142,16 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$filename = $this->static_file('invalid_image.png');
 		$this->set_content_type('jpeg');
 		if ($this->object->_validate_request()) {
-			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-			$images = $this->object->_displayed_gallery->get_images(1);
+            $dyn_thumbs =   $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+			$storage    = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			$images     = $this->object->_displayed_gallery->get_entities(1);
 			if ($images) {
 				$image = array_pop($images);
-				if ($storage->generate_image_size($image, 'placeholder', 200, 200, 100, TRUE, FALSE, FALSE)) {
-					$filename = $storage->get_image_abspath($image, 'placeholder');
-				}
+                $filename = $storage->get_image_abspath($image, $dyn_thumbs->get_size_name(array(
+                    'width'     =>  200,
+                    'height'    =>  200,
+                    'quality'   =>  90,
+                ), TRUE));
 			}
 		}
 		readfile($filename);

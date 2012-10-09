@@ -370,9 +370,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 		if ($model->is_valid()) {
 			$saved_entity = $model->get_entity();
-			
 			unset($saved_entity->_errors);
-			
 			$retval = $this->object->_save_entity($saved_entity);
 		}
 

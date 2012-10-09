@@ -38,7 +38,7 @@
 			editor.addButton('NextGEN_AttachToPost', {
 				title:	'NextGEN Gallery - Attach To Post',
 				cmd:	'ngg_attach_to_post',
-				image:	'http://www.mricons.com/store/png/110948_27864_24_gallery_image_landscape_photo_icon.png'
+				image:	'tinymce_button.png'
 			});
 
 			// When the shortcode is clicked, open the attach to post interface

@@ -2,32 +2,24 @@
 
 class A_Ajax_Pagination_Actions extends Mixin
 {
-    function get_page_action()
+    function get_displayed_gallery_page_action()
     {
-        $displayed_gallery = NULL;
+        $retval = array();
         $mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 
-        if ($transient_id = $this->object->param('transient_id'))
+        if (($id = $this->object->param('displayed_gallery_id')))
         {
             // retrieve by transient id
-            $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
             $factory           = $this->object->get_registry()->get_utility('I_Component_Factory');
-            $transient = $transient_handler->get_value('displayed_gallery_' . $transient_id);
-            $displayed_gallery = $factory->create(
-                'displayed_gallery', $mapper, $transient
-            );
+            $transient_key     = 'dg_'.$id;
+            $displayed_gallery = $factory->create('displayed_gallery', $mapper);
+            $displayed_gallery->apply_transient($transient_key);
+
+            // render the displayed gallery
+            $this->renderer                 = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+            $retval['html']                 = $this->renderer->render_displayed_gallery($displayed_gallery, TRUE);
+            $retval['displayed_gallery_id'] = $displayed_gallery->id();
         }
-
-        // Display!
-        ob_start();
-        $controller = $this->get_registry()->get_utility('I_Display_Type_Controller', $displayed_gallery->display_type);
-        $controller->enqueue_frontend_resources($displayed_gallery);
-        $controller->index_action($displayed_gallery);
-        $output = ob_get_contents();
-        ob_end_clean();
-
-        print $output;
-
-        throw new E_Clean_Exit();
+        return $retval;
     }
 }
