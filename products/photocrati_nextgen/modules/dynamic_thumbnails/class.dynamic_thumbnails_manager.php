@@ -17,12 +17,13 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$params = $this->object->_get_params_sanitized($params);
 		$image = isset($params['image']) ? $params['image'] : null;
 		$image_id = is_int($image) ? $image : $image->pid;
-		$image_width = isset($params['width']) ? $params['width'] : null;;
-		$image_height = isset($params['height']) ? $params['height'] : null;;
-		$image_quality = isset($params['quality']) ? $params['quality'] : null;;
-		$image_crop = isset($params['crop']) ? $params['crop'] : null;;
-		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;;
-		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;;
+		$image_width = isset($params['width']) ? $params['width'] : null;
+		$image_height = isset($params['height']) ? $params['height'] : null;
+		$image_quality = isset($params['quality']) ? $params['quality'] : null;
+		$image_type = isset($params['type']) ? $params['type'] : null;
+		$image_crop = isset($params['crop']) ? $params['crop'] : null;
+		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;
+		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;
 		
 		$uri = null;
 		
@@ -30,7 +31,19 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$uri .= $this->object->get_route_name() . '/';
 		$uri .= strval($image_id) . '/';
 		
-		$uri .= $image_width . 'x' . $image_height . 'x' . $image_quality . '/';
+		$uri .= $image_width . 'x' . $image_height;
+		
+		if ($image_quality != null)
+		{
+			$uri .= 'x' . $image_quality;
+		}
+		
+		$uri .= '/';
+		
+		if ($image_type != null)
+		{
+			$uri .= $image_type . '/';
+		}
 		
 		if ($image_crop)
 		{
@@ -94,6 +107,10 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 				{
 					$params['crop'] = true;
 				}
+				else if (in_array(strtolower($uri_arg), array('gif', 'jpg', 'png')))
+				{
+					$params['type'] = $uri_arg;
+				}
 				else if (preg_match('/(\\d+)x(\\d+)(?:x(\\d+))?/i', $uri_arg, $size_match) > 0)
 				{
 					$params['width'] = $size_match[1];
@@ -118,7 +135,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 			'id' => 'nggid0',
 			'size' => 'ngg0dyn-',
 			'flags' => '00f0',
-			'flag' => array('w0' => 'watermark', 'c0' => 'crop', 'r0' => 'reflection'),
+			'flag' => array('w0' => 'watermark', 'c0' => 'crop', 'r0' => 'reflection', 't0' => 'type'),
 			'flag_len' => 2,
 			'max_value_length' => 15, // Note: this can't be increased beyond 15, as a single hexadecimal character is used to encode the value length in names. Increasing it over 15 requires changing the algorithm to use an arbitrary letter instead of a hexadecimal digit (this would bump max length to 35, 9 numbers + 26 letters)
 		);
@@ -138,9 +155,6 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$image_width = isset($params['width']) ? $params['width'] : null;
 		$image_height = isset($params['height']) ? $params['height'] : null;
 		$image_quality = isset($params['quality']) ? $params['quality'] : null;
-		$image_crop = isset($params['crop']) ? $params['crop'] : null;
-		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;
-		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;
 		
 		$extension = null;
 		$name = null;
@@ -184,7 +198,13 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		}
 		
 		$name .= $size_prefix;
-		$name .= strval($image_width) . 'x' . strval($image_height) . 'x' . strval($image_quality);
+		$name .= strval($image_width) . 'x' . strval($image_height);
+		
+		if ($image_quality != null)
+		{
+			$name .= 'x' . $image_quality;
+		}
+		
 		$name .= '-';
 		
 		$name .= $flags_prefix;
@@ -359,8 +379,12 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 				{
 					// Set W H Q
 					$params['width'] = intval($param_size[0]);
-					$params['height'] = intval  ($param_size[1]);
-					$params['quality'] = intval(isset($param_size[2]) && $param_size[2] != '' ? $param_size[2] : 100);
+					$params['height'] = intval($param_size[1]);
+					
+					if (isset($param_size[2]) && intval($param_size[2]) > 0)
+					{
+						$params['quality'] = intval($param_size[2]);
+					}
 				}
 			}
 		}
@@ -403,19 +427,19 @@ class C_Dynamic_Thumbnails_Manager extends C_Component
     
     function define($context=FALSE)
     {
-        parent::define($context);
+			parent::define($context);
 
-        $this->implement('I_Dynamic_Thumbnails_Manager');
-        $this->add_mixin('Mixin_Dynamic_Thumbnails_Manager');
+			$this->implement('I_Dynamic_Thumbnails_Manager');
+			$this->add_mixin('Mixin_Dynamic_Thumbnails_Manager');
     }
 
     static function get_instance($context = False)
     {
-		if (!isset(self::$_instances[$context]))
-		{
-				self::$_instances[$context] = new C_Dynamic_Thumbnails_Manager($context);
-		}
+			if (!isset(self::$_instances[$context]))
+			{
+					self::$_instances[$context] = new C_Dynamic_Thumbnails_Manager($context);
+			}
 
-		return self::$_instances[$context];
+			return self::$_instances[$context];
     }
 }
