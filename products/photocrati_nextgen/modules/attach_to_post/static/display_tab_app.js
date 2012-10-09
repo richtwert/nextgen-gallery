@@ -1,3 +1,35 @@
+jQuery(function($){
+    $.fn.extend({
+        safeClone: function() {
+            var clone;
+            clone = $(this).clone();
+            clone.find('script[id^=metamorph]').remove();
+            clone.removeClass('ember-view');
+            clone.find('*').each(function() {
+                var $this;
+                $this = $(this);
+                $this.removeClass('ember-view');
+                return $.each($this[0].attributes, function(index, attr) {
+                    if (attr.name.indexOf('data-bindattr') === -1) {
+                        return;
+                    }
+                    return $this.removeAttr(attr.name);
+                });
+            });
+            if (clone.attr('id')) {
+                var remove = true;
+                if (clone.attr('name') && clone.attr('name').indexOf('ember') !== -1) remove = false;
+                if (remove) clone.removeAttr('id');
+            }
+
+            clone.find('[id^=ember]').removeAttr('id');
+            return clone;
+        }
+    });
+});
+
+
+
 /************************************************************
  * Define the application
  */
@@ -12,15 +44,6 @@ var NggDisplayTab = Em.Application.create({
 	 * The currently displayed source view
 	 */
 	attached_source_view:			null,
-
-
-	/**
-	 * Populates all existing data
-	 */
-	ready:							function(){
-		this.fetch_sources();
-	},
-
 
 	/**
 	 * Saves the displayed gallery
@@ -168,7 +191,7 @@ var NggDisplayTab = Em.Application.create({
 			25,
 			0,
 			function(item){
-				if (existing && item.id == existing.source) this.get('displayed_gallery').set('source', item);
+				if (existing && item.id == existing.source) this.displayed_gallery.set('source', item);
 				return item;
 			}
 		);
@@ -263,7 +286,11 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	sourcesBinding:				'NggDisplayTab.sources',
 	previous_container_ids:		Ember.A(),
 	entities:					Ember.A(),
-    entities_to_remove:         Ember.A(),
+    sorted_entities:            Ember.A(),
+    entities_to_remove:         Ember.ArrayController.create({
+        contentBinding: 'NggDisplayTab.displayed_gallery.entities',
+        sortProperties: ['sort_order']
+    }),
 	display_type:				false,
 	display_settings:			false,
 
@@ -271,6 +298,9 @@ NggDisplayTab.displayed_gallery				= Em.Object.create({
 	 * Initializes the object
 	 */
 	preload:						function(){
+        NggDisplayTab.fetch_sources();
+
+
 		// If we're editing an existing displayed gallery, then
 		// update the model
 		if (existing != null) {
@@ -896,49 +926,24 @@ NggDisplayTab.Preview_View	= Ember.View.extend({
 	entitiesBinding:			'NggDisplayTab.displayed_gallery.entities',
 	displayed_galleryBinding:	'NggDisplayTab.displayed_gallery',
 	source_idBinding:			'NggDisplayTab.displayed_gallery.source_id',
-
-	/**
-	 * Once the element has been added to the DOM, execute some JQuery
-	 */
-	didInsertElement:			function(){
-        var self = this;
-
-		// Enable sorting!
-		var last_offset = 0;
-        Ember.run.next(function(){
-            jQuery('#preview_entity_list').sortable({
-                axis:	'y',
-                opacity: 0.7,
-                items:	'li:not(.header)',
-                containment: 'parent'
-            }).bind('sort', function(event, ui){
-                var direction = ui.offset.top > last_offset ? 'down' : 'up';
-                var win_height = jQuery(window).height();
-                var doc_height = jQuery(document).height();
-                ui.offset.bottom = doc_height - ui.offset.top;
-
-                // Determine if the user is scrolling down
-                if (direction == 'down' && win_height + window.scrollY >= ui.offset.top) {
-
-                    // Calculate how to autoscroll
-                    if (jQuery(window).height() - ui.offset.top <= ui.item.height()) {
-                        window.scrollBy(0, ui.item.height()/15);
-                    }
-                }
-
-                // Determine if the user is scrolling up
-                else if (direction == 'up' && ui.offset.top <= window.scrollY) {
-
-                    // Calculate how to autoscroll
-                    if (jQuery(window).height() - jQuery(document).height() - ui.offset.top <= ui.item.height()) {
-                        window.scrollBy(0, ui.item.height()/15*-1);
-                    }
-                }
-
-                last_offset = ui.offset.top;
-            });
-        });
-	},
+    sortedImageListView:        Ember.CollectionView.extend({
+       contentBinding:                 'parentView.entities',
+       tagName:                        'ul',
+       didInsertElement:        function(){
+           var view = this;
+           view.$().sortable({
+               opacity: 0.7,
+               containment: 'parent',
+               stop: function(event, ui) {
+                   var item_id = parseInt(ui.item.find('img').attr('id'));
+                   self.get('entities').findProperty('id', item_id).set('sort_order', ui.item.index());
+               },
+               helper: function(event, ui) {
+                   return $(ui).safeClone();
+               }
+           })
+       }
+    }),
 
 	/**
 	 * Provides an exclude button for a particular entities in the preview area
