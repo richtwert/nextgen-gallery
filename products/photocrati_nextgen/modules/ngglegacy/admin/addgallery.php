@@ -155,10 +155,9 @@ class nggAddGallery {
 
 	<?php //include('templates/social_media_buttons.php'); ?>
 
-	<?php if($ngg->options['swfUpload'] && !empty ($this->gallerylist) ) { ?>
-    <?php if ( defined('IS_WP_3_3') ) { ?>
+	<div class='wrap'><h2 class='title'><?php echo_h(_("Add Gallery / Images"))?></h2>
 
-<div class='wrap'><h2 class='title'><?php echo_h(_("Add Gallery / Images"))?></h2>
+	<?php if($ngg->options['swfUpload'] && !empty ($this->gallerylist) ) { ?>
 
     <!-- plupload script -->
     <script type="text/javascript">
@@ -244,70 +243,6 @@ class nggAddGallery {
     });
     //]]>
     </script>
-    <?php } else { ?>
-	<!-- SWFUpload script -->
-	<script type="text/javascript">
-		var ngg_swf_upload;
-
-		window.onload = function () {
-			ngg_swf_upload = new SWFUpload({
-				// Backend settings
-				upload_url : "<?php echo esc_js( $swf_upload_link ); ?>",
-				flash_url : "<?php echo esc_js( includes_url('js/swfupload/swfupload.swf') ); ?>",
-
-				// Button Settings
-				button_placeholder_id : "spanButtonPlaceholder",
-				button_width: 300,
-				button_height: 27,
-			  button_text_top_padding: 3,
-				button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-				button_cursor: SWFUpload.CURSOR.HAND,
-
-				// File Upload Settings
-				file_size_limit : "<?php echo wp_max_upload_size(); ?>b",
-				file_types : "<?php echo $file_types; ?>",
-				file_types_description : "<?php _e('Image Files', 'nggallery') ;?>",
-
-				// Queue handler
-				file_queued_handler : fileQueued,
-
-				// Upload handler
-				upload_start_handler : uploadStart,
-				upload_progress_handler : uploadProgress,
-				upload_error_handler : uploadError,
-				upload_success_handler : uploadSuccess,
-				upload_complete_handler : uploadComplete,
-
-				post_params : {
-					"auth_cookie" : "<?php echo (is_ssl() ? $_COOKIE[SECURE_AUTH_COOKIE] : $_COOKIE[AUTH_COOKIE]); ?>",
-                    "logged_in_cookie": "<?php echo $_COOKIE[LOGGED_IN_COOKIE]; ?>",
-                    "_wpnonce" : "<?php echo wp_create_nonce('ngg_swfupload'); ?>",
-					"galleryselect" : "0"
-				},
-
-				// i18names
-				custom_settings : {
-					"remove" : "<?php _e('remove', 'nggallery') ;?>",
-					"browse" : "<?php _e('Browse...', 'nggallery') ;?>",
-					"upload" : "<?php _e('Upload images', 'nggallery') ;?>"
-				},
-
-				// Debug settings
-				debug: false
-
-			});
-
-			// on load change the upload to swfupload
-			initSWFUpload();
-
-			nggAjaxOptions = {
-			  	header: "<?php _e('Upload images', 'nggallery') ;?>",
-			  	maxStep: 100
-			};
-
-		};
-	</script>
-    <?php } ?>
 	<?php } else { ?>
 	<!-- MultiFile script -->
 	<script type="text/javascript">
@@ -486,7 +421,7 @@ class nggAddGallery {
 
 			<tr valign="top">
 				<th scope="row"><?php _e('Upload image', 'nggallery') ;?></th>
-                <?php if ($ngg->options['swfUpload'] && defined('IS_WP_3_3') ) { ?>
+                <?php if ($ngg->options['swfUpload']) { ?>
 				<td>
                 <div id="plupload-upload-ui">
                 	<div>
