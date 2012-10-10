@@ -148,6 +148,15 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
     }
 
     /**
+     * Empties the gallery cache directory of content
+     */
+    function flush_cache($gallery)
+    {
+        $cache = $this->object->get_registry()->get_utility('I_Cache');
+        $cache->flush_directory($this->object->get_cache_abspath($gallery));
+    }
+
+    /**
      * Gets the absolute path of the backup of an original image
      * @param string $image
      */

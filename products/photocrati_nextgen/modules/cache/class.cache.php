@@ -1,12 +1,24 @@
 <?php
 
-class C_Cache extends C_MVC_Controller
+class C_Cache extends C_Component
 {
+    public static $_instances = array();
+
 	function define($context = FALSE)
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Cache');
+        $this->implement('I_Cache');
 	}
+
+    public static function get_instance($context = False)
+    {
+        if (!isset(self::$_instances[$context]))
+        {
+            self::$_instances[$context] = new C_Cache($context);
+        }
+        return self::$_instances[$context];
+    }
 }
 
 class Mixin_Cache extends Mixin
@@ -20,6 +32,14 @@ class Mixin_Cache extends Mixin
      */
     public function flush_directory($directory, $recursive = TRUE, $regex = NULL)
     {
+        /**
+         * It is possible that the cache directory has not been created yet
+         */
+        if (!is_dir($directory))
+        {
+            return;
+        }
+
         if ($recursive)
         {
             $directory = new DirectoryIterator($directory);
@@ -46,6 +66,20 @@ class Mixin_Cache extends Mixin
             elseif ($file->isDir() && !$file->isDot() && $recursive) {
                 rmdir($file->getPathname());
             }
+        }
+    }
+
+    /**
+     * Flushes cache from all available galleries
+     *
+     * @param array $galleries When provided only the requested galleries' cache is flushed
+     */
+    public function flush_galleries($galleries = array())
+    {
+        $map = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        foreach ($map->find_all() as $gallery) {
+            $storage->flush_cache($gallery);
         }
     }
 

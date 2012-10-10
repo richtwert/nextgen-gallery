@@ -29,6 +29,14 @@ class M_Cache extends C_Base_Module
 	{
 		parent::initialize();
 	}
+
+    /**
+     * Register utilities
+     */
+    function _register_utilities()
+    {
+        $this->get_registry()->add_utility('I_Cache', 'C_Cache');
+    }
 }
 
 new M_Cache();

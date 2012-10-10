@@ -425,8 +425,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
     {
         if (!isset($_POST['flush_cache'])) return;
 
-        $deactivator = $this->object->get_registry()->get_utility('I_NextGen_Deactivator');
-        $deactivator->flush_cache();
+        $cache = $this->object->get_registry()->get_utility('I_Cache');
+        $cache->flush_galleries();
     }
 
     function _save_image_slugs($settings)
