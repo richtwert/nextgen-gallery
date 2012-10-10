@@ -58,6 +58,34 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		return $this->object->get_image_abspath($image, 'full');
 	}
 
+    /**
+     * Returns the absolute path to the cache directory of a gallery.
+     *
+     * Without the gallery parameter the legacy (pre 2.0) shared directory is returned.
+     *
+     * @param int|stdClass|C_Gallery $gallery (optional)
+     * @return string Absolute path to cache directory
+     */
+    function get_cache_abspath($gallery = FALSE)
+    {
+        $retval = NULL;
+
+        if (FALSE == $gallery)
+        {
+            $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+            $retval = path_join(WINABSPATH, $settings->gallerypath);
+            $retval = path_join($retval, 'cache');
+        }
+        else {
+            if (is_numeric($gallery))
+            {
+                $gallery = $this->object->_gallery_mapper->find($gallery);
+            }
+            $retval = path_join($this->object->get_gallery_abspath($gallery), 'dynamic');
+        }
+
+        return $retval;
+    }
 
 	/**
 	 * Gets the upload path, optionally for a particular gallery
