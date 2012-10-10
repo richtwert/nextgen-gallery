@@ -48,15 +48,119 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		return FALSE;
 	}
 
+    /**
+     * Gets the id of a gallery, regardless of whether an integer
+     * or object was passed as an argument
+     * @param mixed $gallery_obj_or_id
+     */
+    function _get_gallery_id($gallery_obj_or_id)
+    {
+        $retval = NULL;
 
-		/**
-	 * Gets the absolute path where the full-sized image is stored
-	 * @param int|object $image
-	 */
-	function get_full_abspath($image)
-	{
-		return $this->object->get_image_abspath($image, 'full');
-	}
+        $gallery_key = $this->object->_gallery_mapper->get_primary_key_column();
+        if (is_object($gallery_obj_or_id)) {
+            if (isset($gallery_obj_or_id->$gallery_key)) {
+                $retval = $gallery_obj_or_id->$gallery_key;
+            }
+        }
+        elseif(is_numeric($gallery_obj_or_id)) {
+            $retval = $gallery_obj_or_id;
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Gets the id of an image, regardless of whether an integer
+     * or object was passed as an argument
+     * @param type $image_obj_or_id
+     */
+    function _get_image_id($image_obj_or_id)
+    {
+        $retval = NULL;
+
+        $image_key = $this->object->_image_mapper->get_primary_key_column();
+        if (is_object($image_obj_or_id)) {
+            if (isset($image_obj_or_id->$image_key)) {
+                $retval = $image_obj_or_id->$image_key;
+            }
+        }
+        elseif (is_numeric($image_obj_or_id)) {
+            $retval = $image_obj_or_id;
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Backs up an image file
+     * @param int|object $image
+     */
+    function backup_image($image)
+    {
+        $retval = FALSE;
+
+        if (($image_path = $this->object->get_image_abspath($image))) {
+            $retval = copy($image_path, $this->object->get_backup_abspath($image));
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Copies images into another gallery
+     * @param array $images
+     * @param int|object $gallery
+     * @param boolean $db optionally only copy the image files
+     * @param boolean $move move the image instead of copying
+     */
+    function copy_images($images, $gallery, $db=TRUE, $move=FALSE)
+    {
+        $retval = FALSE;
+
+        // Ensure we have a valid gallery
+        if (($gallery = $this->object->_get_gallery_id($gallery))) {
+            $gallery_path = $this->object->get_gallery_abspath($gallery);
+            $image_key = $this->object->_image_mapper->get_primary_key_column();
+            $retval = TRUE;
+
+            // Iterate through each image to copy...
+            foreach ($images as $image) {
+
+                // Copy each image size
+                foreach ($this->object->get_image_sizes() as $size) {
+                    $image_path = $this->object->get_image_abspath($image, $size);
+                    $dst = path_join($gallery_path, basename($image_path));
+                    $success = $move ? move($image_path, $dst) : copy($image_path, $dst);
+                    if (!$success) $retval = FALSE;
+                }
+
+                // Copy the db entry
+                if ($db) {
+                    if (is_numeric($image)) $this->object->_image_mapper($image);
+                    unset($image->$image_key);
+                    $image->galleryid = $gallery;
+                }
+            }
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Gets the absolute path of the backup of an original image
+     * @param string $image
+     */
+    function get_backup_abspath($image)
+    {
+        $retval = NULL;
+
+        if (($image_path = $this->object->get_image_abspath($image))) {
+            $retval = $image_path.'_backup';
+        }
+
+        return $retval;
+    }
 
     /**
      * Returns the absolute path to the cache directory of a gallery.
@@ -87,6 +191,163 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
         return $retval;
     }
 
+    /**
+	 * Gets the absolute path where the full-sized image is stored
+	 * @param int|object $image
+	 */
+	function get_full_abspath($image)
+	{
+		return $this->object->get_image_abspath($image, 'full');
+	}
+
+    /**
+     * Alias to get_image_dimensions()
+     * @param int|object $image
+     * @return array
+     */
+    function get_full_dimensions($image)
+    {
+        return $this->object->get_image_dimensions($image, 'full');
+    }
+
+    /**
+     * Alias to get_image_html()
+     * @param int|object $image
+     * @return string
+     */
+    function get_full_html($image)
+    {
+        return $this->object->get_image_html($image, 'full');
+    }
+
+    /**
+     * Alias for get_original_url()
+     *
+     * @param int|stdClass|C_Image $image
+     * @return string
+     */
+    function get_full_url($image)
+    {
+        return $this->object->get_image_url($image, 'full');
+    }
+
+    /**
+     * Gets the dimensions for a particular-sized image
+     *
+     * @param int|object $image
+     * @param string $size
+     * @return array
+     */
+    function get_image_dimensions($image, $size='full')
+    {
+        $retval = NULL;
+
+        // If an image id was provided, get the entity
+        if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
+
+        // Ensure we have a valid image
+        if ($image) {
+
+            // Adjust size parameter
+            switch ($size) {
+                case 'original':
+                    $size = 'full';
+                    break;
+                case 'thumbnails':
+                case 'thumbnail':
+                case 'thumb':
+                case 'thumbs':
+                    $size = 'thumbnail';
+                    break;
+            }
+
+            // Image dimensions are stored in the $image->meta_data
+            // property for all implementations
+            if (isset($image->meta_data) && isset($image->meta_data[$size])) {
+                $retval = $image->meta_data[$size];
+            }
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Gets the HTML for an image
+     * @param int|object $image
+     * @param string $size
+     * @return string
+     */
+    function get_image_html($image, $size='full')
+    {
+        $retval = "";
+
+        if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
+
+        if ($image) {
+
+            // Get the image properties
+            $alttext = esc_attr($image->alttext);
+            $title	 = $alttext;
+
+            // Get the dimensions
+            $dimensions = $this->object->get_image_dimensions($image, $size);
+
+            // Get the image url
+            $image_url = $this->object->get_image_url($image, $size);
+
+            $retval = implode(' ', array(
+                '<img',
+                "alt=\"{$alttext}\"",
+                "title=\"{$title}\"",
+                "src=\"{$image_url}\"",
+                "width=\"{$dimensions['width']}\"",
+                "height=\"{$dimensions['height']}\"",
+                '/>'
+            ));
+        }
+
+        return $retval;
+    }
+
+    /**
+     * An alias for get_full_abspath()
+     * @param int|object $image
+     */
+    function get_original_abspath($image)
+    {
+        return $this->object->get_image_abspath($image, 'full');
+    }
+
+    /**
+     * Alias to get_image_dimensions()
+     * @param int|object $image
+     * @return array
+     */
+    function get_original_dimensions($image)
+    {
+        return $this->object->get_image_dimensions($image, 'full');
+    }
+
+    /**
+     * Alias to get_image_html()
+     * @param int|object $image
+     * @return string
+     */
+    function get_original_html($image)
+    {
+        return $this->object->get_image_html($image, 'full');
+    }
+
+    /**
+     * Gets the url to the original-sized image
+     * @param int|stdClass|C_Image $image
+     * @return string
+     */
+    function get_original_url($image)
+    {
+        return $this->object->get_image_url($image, 'full');
+    }
+
 	/**
 	 * Gets the upload path, optionally for a particular gallery
 	 * @param int|C_Gallery|stdClass $gallery
@@ -95,215 +356,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	{
 		return str_replace(ABSPATH, '', $this->object->get_upload_abspath($gallery));
 	}
-
-
-	/**
-	 * An alias for get_full_abspath()
-	 * @param int|object $image
-	 */
-	function get_original_abspath($image)
-	{
-		return $this->object->get_image_abspath($image, 'full');
-	}
-
-
-	/**
-	 * Gets the dimensions for a particular-sized image
-	 * @param int|object $image
-	 * @param string $size
-	 * @return array
-	 */
-	function get_image_dimensions($image, $size='full')
-	{
-		$retval = NULL;
-
-		// If an image id was provided, get the entity
-		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
-
-		// Ensure we have a valid image
-		if ($image) {
-
-			// Adjust size parameter
-			switch ($size) {
-				case 'original':
-					$size = 'full';
-					break;
-				case 'thumbnails':
-				case 'thumbnail':
-				case 'thumb':
-				case 'thumbs':
-					$size = 'thumbnail';
-					break;
-			}
-
-			// Image dimensions are stored in the $image->meta_data
-			// property for all implementations
-			if (isset($image->meta_data) && isset($image->meta_data[$size])) {
-				$retval = $image->meta_data[$size];
-			}
-		}
-
-		return $retval;
-	}
-
-
-	/**
-	 * Alias to get_image_dimensions()
-	 * @param int|object $image
-	 * @return array
-	 */
-	function get_full_dimensions($image)
-	{
-		return $this->object->get_image_dimensions($image, 'full');
-	}
-
-
-	/**
-	 * Alias to get_image_dimensions()
-	 * @param int|object $image
-	 * @return array
-	 */
-	function get_original_dimensions($image)
-	{
-		return $this->object->get_image_dimensions($image, 'full');
-	}
-
-
-
-
-	/**
-	 * Gets the absolute path of the backup of an original image
-	 * @param string $image
-	 */
-	function get_backup_abspath($image)
-	{
-		$retval = NULL;
-
-		if (($image_path = $this->object->get_image_abspath($image))) {
-			$retval = $image_path.'_backup';
-		}
-
-		return $retval;
-	}
-
-
-	/**
-	 * Gets the HTML for an image
-	 * @param int|object $image
-	 * @param string $size
-	 * @return string
-	 */
-	function get_image_html($image, $size='full')
-	{
-		$retval = "";
-
-		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
-
-		if ($image) {
-
-			// Get the image properties
-			$alttext = esc_attr($image->alttext);
-			$title	 = $alttext;
-
-			// Get the dimensions
-			$dimensions = $this->object->get_image_dimensions($image, $size);
-
-			// Get the image url
-			$image_url = $this->object->get_image_url($image, $size);
-
-			$retval = implode(' ', array(
-				'<img',
-				"alt=\"{$alttext}\"",
-				"title=\"{$title}\"",
-				"src=\"{$image_url}\"",
-				"width=\"{$dimensions['width']}\"",
-				"height=\"{$dimensions['height']}\"",
-				'/>'
-			));
-		}
-
-		return $retval;
-	}
-
-
-	/**
-	 * Alias to get_image_html()
-	 * @param int|object $image
-	 * @return string
-	 */
-	function get_original_html($image)
-	{
-		return $this->object->get_image_html($image, 'full');
-	}
-
-
-	/**
-	 * Alias to get_image_html()
-	 * @param int|object $image
-	 * @return string
-	 */
-	function get_full_html($image)
-	{
-		return $this->object->get_image_html($image, 'full');
-	}
-
-
-	/**
-	 * Backs up an image file
-	 * @param int|object $image
-	 */
-	function backup_image($image)
-	{
-		$retval = FALSE;
-
-		if (($image_path = $this->object->get_image_abspath($image))) {
-			$retval = copy($image_path, $this->object->get_backup_abspath($image));
-		}
-
-		return $retval;
-	}
-
-
-	/**
-	 * Copies images into another gallery
-	 * @param array $images
-	 * @param int|object $gallery
-	 * @param boolean $db optionally only copy the image files
-	 * @param boolean $move move the image instead of copying
-	 */
-	function copy_images($images, $gallery, $db=TRUE, $move=FALSE)
-	{
-		$retval = FALSE;
-
-		// Ensure we have a valid gallery
-		if (($gallery = $this->object->_get_gallery_id($gallery))) {
-			$gallery_path = $this->object->get_gallery_abspath($gallery);
-			$image_key = $this->object->_image_mapper->get_primary_key_column();
-			$retval = TRUE;
-
-			// Iterate through each image to copy...
-			foreach ($images as $image) {
-
-				// Copy each image size
-				foreach ($this->object->get_image_sizes() as $size) {
-					$image_path = $this->object->get_image_abspath($image, $size);
-					$dst = path_join($gallery_path, basename($image_path));
-					$success = $move ? move($image_path, $dst) : copy($image_path, $dst);
-					if (!$success) $retval = FALSE;
-				}
-
-				// Copy the db entry
-				if ($db) {
-					if (is_numeric($image)) $this->object->_image_mapper($image);
-					unset($image->$image_key);
-					$image->galleryid = $gallery;
-				}
-			}
-		}
-
-		return $retval;
-	}
-
 
 	/**
 	 * Moves images from to another gallery
@@ -316,75 +368,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	{
 		return $this->object->copy_images($images, $gallery, $db, TRUE);
 	}
-
-
-	/**
-	 * Gets the url to the original-sized image
-	 * @param int|stdClass|C_Image $image
-	 * @return string
-	 */
-	function get_original_url($image)
-	{
-		return $this->object->get_image_url($image, 'full');
-	}
-
-
-	/**
-	 * Alias for get_original_url()
-	 * @param int|stdClass|C_Image $image
-	 * @return string
-	 */
-	function get_full_url($image)
-	{
-		return $this->object->get_image_url($image, 'full');
-	}
-
-
-	/**
-	 * Gets the id of a gallery, regardless of whether an integer
-	 * or object was passed as an argument
-	 * @param mixed $gallery_obj_or_id
-	 */
-	function _get_gallery_id($gallery_obj_or_id)
-	{
-		$retval = NULL;
-
-		$gallery_key = $this->object->_gallery_mapper->get_primary_key_column();
-		if (is_object($gallery_obj_or_id)) {
-			if (isset($gallery_obj_or_id->$gallery_key)) {
-				$retval = $gallery_obj_or_id->$gallery_key;
-			}
-		}
-		elseif(is_numeric($gallery_obj_or_id)) {
-			$retval = $gallery_obj_or_id;
-		}
-
-		return $retval;
-	}
-
-
-	/**
-	 * Gets the id of an image, regardless of whether an integer
-	 * or object was passed as an argument
-	 * @param type $image_obj_or_id
-	 */
-	function _get_image_id($image_obj_or_id)
-	{
-		$retval = NULL;
-
-		$image_key = $this->object->_image_mapper->get_primary_key_column();
-		if (is_object($image_obj_or_id)) {
-			if (isset($image_obj_or_id->$image_key)) {
-				$retval = $image_obj_or_id->$image_key;
-			}
-		}
-		elseif (is_numeric($image_obj_or_id)) {
-			$retval = $image_obj_or_id;
-		}
-
-		return $retval;
-	}
-
 
 	/**
 	 * Uploads base64 file to a gallery
