@@ -87,7 +87,7 @@ class C_Widget_Slideshow extends WP_Widget
         $ngg_options = get_option('ngg_options');
 
         // redirect all calls to the JavaScript slideshow if wanted
-        if ($ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === true || NGGALLERY_IREXIST == false)
+        if ($ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === TRUE || NGGALLERY_IREXIST == FALSE)
             return nggShow_JS_Slideshow($galleryID, $irWidth, $irHeight, 'ngg-widget-slideshow');
 
         if (empty($irWidth))

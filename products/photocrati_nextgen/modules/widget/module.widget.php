@@ -43,9 +43,9 @@ class M_Widget extends C_Base_Module
      */
     function _register_hooks()
     {
-        // add_action('widgets_init', create_function('', 'return register_widget("nggMediaRssWidget");'));
-        // add_action('widgets_init', create_function('', 'return register_widget("nggWidget");'));
-        // add_action('widgets_init', create_function('', 'return register_widget("nggSlideshowWidget");'));
+         add_action('widgets_init', create_function('', 'return register_widget("C_Widget_Gallery");'));
+         add_action('widgets_init', create_function('', 'return register_widget("C_Widget_MediaRSS");'));
+         add_action('widgets_init', create_function('', 'return register_widget("C_Widget_Slideshow");'));
     }
 
 }

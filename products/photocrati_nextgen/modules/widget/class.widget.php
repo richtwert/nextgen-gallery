@@ -11,7 +11,7 @@ class C_Widget extends C_Component
         $this->implement('I_Widget');
     }
 
-    public static function get_instance($context = False)
+    public static function get_instance($context = FALSE)
     {
         if (!isset(self::$_instances[$context]))
         {
@@ -24,30 +24,14 @@ class C_Widget extends C_Component
 class Mixin_Widget extends Mixin
 {
     /**
-     * nggSlideshowWidget($galleryID, $width, $height)
-     *
      * Function for templates without widget support
-     * @param integer $galleryID
-     * @param string $width
-     * @param string $height
+     * 
      * @return echo the widget content
      */
-    function nggSlideshowWidget($galleryID, $width = '', $height = '')
-    {
-        $widget = new C_Widget_Slideshow();
-        echo $widget->render_slideshow($galleryID, $width, $height);
-    }
-
-    /**
-     * nggDisplayRandomImages($number, $width, $height, $exclude, $list,$show)
-     *
-     * Function for templates without widget support
-     * @return echo the widget content
-     */
-    function nggDisplayRandomImages($number, $width = '75', $height = '50', $exclude = 'all', $list = '', $show = 'thumbnail')
+    function echo_widget_random($number, $width = '75', $height = '50', $exclude = 'all', $list = '', $show = 'thumbnail')
     {
         $options = array(
-            'title'    => false,
+            'title'    => FALSE,
             'items'    => $number,
             'show'     => $show ,
             'type'     => 'random',
@@ -55,22 +39,21 @@ class Mixin_Widget extends Mixin
             'height'   => $height,
             'exclude'  => $exclude,
             'list'     => $list,
-            'webslice' => false
+            'webslice' => FALSE
         );
         $widget = new C_Widget_Gallery();
         $widget->widget($args = array('widget_id' => 'sidebar_1'), $options);
     }
-
+    
     /**
-     * nggDisplayRecentImages($number, $width, $height, $exclude, $list, $show)
-     *
      * Function for templates without widget support
+     * 
      * @return echo the widget content
      */
-    function nggDisplayRecentImages($number, $width = '75', $height = '50', $exclude = 'all', $list = '', $show = 'thumbnail')
+    function echo_widget_recent($number, $width = '75', $height = '50', $exclude = 'all', $list = '', $show = 'thumbnail')
     {
         $options = array(
-            'title'    => false,
+            'title'    => FALSE,
             'items'    => $number,
             'show'     => $show ,
             'type'     => 'recent',
@@ -78,9 +61,23 @@ class Mixin_Widget extends Mixin
             'height'   => $height,
             'exclude'  => $exclude,
             'list'     => $list,
-            'webslice' => false
+            'webslice' => FALSE
         );
         $widget = new C_Widget_Gallery();
         $widget->widget($args = array('widget_id' => 'sidebar_1'), $options);
     }
+
+    /**
+     * Function for templates without widget support
+     *
+     * @param integer $galleryID
+     * @param string $width
+     * @param string $height
+     * @return echo the widget content
+     */
+    function echo_widget_slideshow($galleryID, $width = '', $height = '')
+    {
+        $widget = new C_Widget_Slideshow();
+        echo $widget->render_slideshow($galleryID, $width, $height);
+    }    
 }

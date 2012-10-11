@@ -22,7 +22,7 @@ class C_Widget_Gallery extends WP_Widget
                 'width'    => '75',
                 'exclude'  => 'all',
                 'list'     =>  '',
-                'webslice' => true
+                'webslice' => TRUE
             )
         );
         $title  = esc_attr($instance['title']);
@@ -60,7 +60,7 @@ class C_Widget_Gallery extends WP_Widget
 
         <p>
             <label for="<?php echo $this->get_field_id('webslice'); ?>">
-                <input id="<?php echo $this->get_field_id('webslice'); ?>" name="<?php echo $this->get_field_name('webslice'); ?>" type="checkbox" value="1" <?php checked(true , $instance['webslice']); ?> /> <?php _e('Enable IE8 Web Slices','nggallery'); ?>
+                <input id="<?php echo $this->get_field_id('webslice'); ?>" name="<?php echo $this->get_field_name('webslice'); ?>" type="checkbox" value="1" <?php checked(TRUE , $instance['webslice']); ?> /> <?php _e('Enable IE8 Web Slices','nggallery'); ?>
             </label>
         </p>
 

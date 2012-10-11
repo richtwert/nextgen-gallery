@@ -17,10 +17,10 @@ class C_Widget_MediaRSS extends WP_Widget
             (array)$instance,
             array(
                 'title' => 'Media RSS',
-                'show_global_mrss' => true,
+                'show_global_mrss' => TRUE,
                 'mrss_text' => __('Media RSS', 'nggallery'),
                 'mrss_title' => __('Link to the main image feed', 'nggallery'),
-                'show_icon' => true
+                'show_icon' => TRUE
             )
         );
 
@@ -38,14 +38,14 @@ class C_Widget_MediaRSS extends WP_Widget
 
         <p>
             <label for="<?php echo $this->get_field_id('show_icon'); ?>">
-                <input id="<?php echo $this->get_field_id('show_icon'); ?>" name="<?php echo $this->get_field_name('show_icon'); ?>" type="checkbox" value="1" <?php checked(true , $instance['show_icon']); ?> />
+                <input id="<?php echo $this->get_field_id('show_icon'); ?>" name="<?php echo $this->get_field_name('show_icon'); ?>" type="checkbox" value="1" <?php checked(TRUE , $instance['show_icon']); ?> />
                 <?php _e('Show Media RSS icon', 'nggallery'); ?>
             </label>
         </p>
 
         <p>
             <label for="<?php echo $this->get_field_id('show_global_mrss'); ?>">
-                <input id="<?php echo $this->get_field_id('show_global_mrss'); ?>" name="<?php echo $this->get_field_name('show_global_mrss'); ?>" type="checkbox" value="1" <?php checked(true , $instance['show_global_mrss']); ?> /> <?php _e('Show the Media RSS link', 'nggallery'); ?>
+                <input id="<?php echo $this->get_field_id('show_global_mrss'); ?>" name="<?php echo $this->get_field_name('show_global_mrss'); ?>" type="checkbox" value="1" <?php checked(TRUE , $instance['show_global_mrss']); ?> /> <?php _e('Show the Media RSS link', 'nggallery'); ?>
             </label>
         </p>
 
@@ -106,7 +106,7 @@ class C_Widget_MediaRSS extends WP_Widget
         echo $after_widget;
     }
 
-    function get_mrss_link($mrss_url, $show_icon = true, $title, $text, $use_piclens)
+    function get_mrss_link($mrss_url, $show_icon = TRUE, $title, $text, $use_piclens)
     {
         $out  = '';
 
