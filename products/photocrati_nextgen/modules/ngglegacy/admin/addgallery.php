@@ -207,6 +207,19 @@ class nggAddGallery {
     		up.refresh();
 			var accordion_content = $('#uploadimage').next('div');
 			accordion_content[0].scrollTop = accordion_content.height();
+			
+				// when loaded into an iframe ensure we update iframe height accordingly
+				if (top != window) {
+					if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {
+						parent.resize_attach_to_post_tab(window.frameElement, true);
+					}
+					else {
+						jQuery(parent.document).find('iframe.ngg-attach-to-post').each(function (i, elem) {
+							var jElem = jQuery(elem);
+							jElem.height(jElem.contents().height());
+						});
+					}
+				}
     	});
 
     	uploader.bind('BeforeUpload', function(up, file) {
