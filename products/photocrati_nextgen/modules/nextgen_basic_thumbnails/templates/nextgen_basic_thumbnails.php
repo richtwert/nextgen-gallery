@@ -9,7 +9,7 @@
 	</div>
 	<?php endif ?>
 
-	<?php if ($return_link): ?>
+	<?php if (!empty($return_link)): ?>
 	<!-- Return link -->
 	<div class="slideshowlink">
 		<?php echo $return_link ?>
