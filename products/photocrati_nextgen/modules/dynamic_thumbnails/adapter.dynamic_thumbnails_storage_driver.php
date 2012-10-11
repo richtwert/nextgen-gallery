@@ -17,9 +17,8 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 			// Ensure we have the image entity - user could have passed in an
 			// incorrect id
 			if (is_object($image)) {
-				if (($gallery_path = $this->object->get_gallery_abspath($image->galleryid))) {
-					$folder = 'dynamic';
-					$folder_path = path_join($gallery_path, $folder);
+				if ($folder_path = $this->object->get_cache_abspath($image->galleryid))
+                {
 					$params = $dynthumbs->get_params_from_name($size, true);
 					$image_filename = $dynthumbs->get_image_name($image, $params);
 
