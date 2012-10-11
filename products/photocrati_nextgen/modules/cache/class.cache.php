@@ -32,9 +32,7 @@ class Mixin_Cache extends Mixin
      */
     public function flush_directory($directory, $recursive = TRUE, $regex = NULL)
     {
-        /**
-         * It is possible that the cache directory has not been created yet
-         */
+        // It is possible that the cache directory has not been created yet
         if (!is_dir($directory))
         {
             return;
@@ -76,10 +74,11 @@ class Mixin_Cache extends Mixin
      */
     public function flush_galleries($galleries = array())
     {
-        $map = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
-        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        foreach ($map->find_all() as $gallery) {
-            $storage->flush_cache($gallery);
+        if (empty($galleries))
+            $galleries = $this->object->get_registry()->get_utility('I_Gallery_Mapper')->find_all();
+
+        foreach ($galleries as $gallery) {
+            $this->object->get_registry()->get_utility('I_Gallery_Storage')->flush_cache($gallery);
         }
     }
 
