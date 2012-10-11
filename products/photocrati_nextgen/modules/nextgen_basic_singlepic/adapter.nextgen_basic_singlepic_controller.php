@@ -15,8 +15,6 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return = FALSE)
     {
-        global $post;
-
         $storage   = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $imap      = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
@@ -49,30 +47,33 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         $display_settings['link'] = (!empty($display_settings['link'])) ? $display_settings['link'] : $storage->get_image_url($image);
 
         // mode is a legacy parameter
-        if (!is_array($display_settings['mode'])) $display_settings['mode'] = explode(',', $display_settings['mode']);
+        if (!is_array($display_settings['mode']))
+            $display_settings['mode'] = explode(',', $display_settings['mode']);
         if (in_array('web20', $display_settings['mode']))
             $display_settings['display_reflection'] = TRUE;
         if (in_array('watermark', $display_settings['mode']))
             $display_settings['display_watermark'] = TRUE;
 
         // legacy assumed no width/height meant full size unlike generate_thumbnail: force a full resolution
-        if (empty($display_settings['width']))  $display_settings['width']  = $image->meta_data['width'];
-        if (empty($display_settings['height'])) $display_settings['height'] = $image->meta_data['height'];
+        if (empty($display_settings['width']))
+            $display_settings['width'] = $image->meta_data['width'];
+        if (empty($display_settings['height']))
+            $display_settings['height'] = $image->meta_data['height'];
 
-				$params['width'] = $display_settings['width'];
-				$params['height'] = $display_settings['height'];;
-				$params['quality'] = $display_settings['quality'];
-				$params['crop'] = $display_settings['crop'];
-				$params['watermark'] = $display_settings['display_watermark'];
-				$params['reflection'] = $display_settings['display_reflection'];
+        $params['width'] = $display_settings['width'];
+        $params['height'] = $display_settings['height'];;
+        $params['quality'] = $display_settings['quality'];
+        $params['crop'] = $display_settings['crop'];
+        $params['watermark'] = $display_settings['display_watermark'];
+        $params['reflection'] = $display_settings['display_reflection'];
 				
-				// Fall back to full in case dynamic images aren't available
-				$size = 'full';
+        // Fall back to full in case dynamic images aren't available
+        $size = 'full';
 				
-				if ($dynthumbs != null)
-				{
-        	$size = $dynthumbs->get_size_name($params);
-				}
+        if ($dynthumbs != null)
+        {
+            $size = $dynthumbs->get_size_name($params);
+        }
 				
         $thumbnail_url = $storage->get_image_url($image, $size);
 

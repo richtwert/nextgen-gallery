@@ -123,6 +123,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 				$this->object->_save_lightbox_library($settings);
 				$this->object->_save_stylesheet_contents($settings->CSSfile);
                 $this->object->_save_image_slugs($settings);
+                $this->object->_flush_nextgen_cache();
 			}
 
 			// Save the changes made to the settings
@@ -172,6 +173,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
             _('Permalinks')             => $this->object->_render_permalinks_tab($settings),
 			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings),
+            _('Cache')                  => $this->object->_render_cache_tab($settings),
             _('Reset / Uninstall')      => $this->object->_render_reset_tab($settings)
 		);
 
@@ -181,6 +183,24 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
 		return $tabs;
 	}
+
+    /**
+     * Renders a form controlling the deactivator cache
+     *
+     * @param C_NextGen_Settings $settings
+     * @return string Rendered HTML
+     */
+    function _render_cache_tab($settings)
+    {
+        return $this->object->render_partial(
+            'cache_tab',
+            array(
+                'flush_cache_label' => _('Clear cache'),
+                'flush_cache_value' => _('Clear all NextGEN cache folders')
+            ),
+            TRUE
+        );
+    }
 
 	/**
 	 * Renders a form to managing NextGEN Multisite Settings
@@ -395,6 +415,19 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'selected'					=>	$settings->thumbEffect,
 		), TRUE);
 	}
+
+    /**
+     * Passes control to NextGen-Deactivator->flush_cache() if the user requested it
+     *
+     * @return void
+     */
+    function _flush_nextgen_cache()
+    {
+        if (!isset($_POST['flush_cache'])) return;
+
+        $cache = $this->object->get_registry()->get_utility('I_Cache');
+        $cache->flush_galleries();
+    }
 
     function _save_image_slugs($settings)
     {
