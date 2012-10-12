@@ -80,7 +80,7 @@ class C_Widget_Slideshow extends WP_Widget
 
     function render_slideshow($galleryID, $irWidth = '', $irHeight = '')
     {
-        require_once (dirname(__FILE__) . '/../lib/swfobject.php');
+        include_once(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array('lib', 'swfobject.php'))));
 
         $ngg_options = get_option('ngg_options');
 

@@ -28,7 +28,7 @@ class C_Widget_MediaRSS extends WP_Widget
         );
 
         $parent->render_partial(
-            'form_slideshow',
+            'form_mediarss',
             array(
                 'self'       => $this,
                 'instance'   => $instance,
@@ -61,7 +61,7 @@ class C_Widget_MediaRSS extends WP_Widget
         
         extract($args);
 
-        $ngg_options = nggGallery::get_option('ngg_options');
+        $settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
 
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
@@ -81,7 +81,7 @@ class C_Widget_MediaRSS extends WP_Widget
                 $show_icon,
                 stripslashes($mrss_title),
                 stripslashes($mrss_text),
-                $ngg_options['usePicLens']
+                $settings->usePicLens
             );
             echo "</li>\n";
         }
