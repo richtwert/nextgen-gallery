@@ -12,6 +12,9 @@ class C_Widget_MediaRSS extends WP_Widget
 
     function form($instance)
     {
+        // used for rendering utilities
+        $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
+
         // defaults
         $instance = wp_parse_args(
             (array)$instance,
@@ -24,43 +27,16 @@ class C_Widget_MediaRSS extends WP_Widget
             )
         );
 
-        $title      = esc_attr($instance['title']);
-        $mrss_text  = esc_attr($instance['mrss_text']);
-        $mrss_title = esc_attr($instance['mrss_title']);
-
-        // The widget form
-        ?>
-        <p>
-            <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title :','nggallery'); ?><br />
-                <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title');?>" type="text" value="<?php echo $title; ?>" />
-            </label>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('show_icon'); ?>">
-                <input id="<?php echo $this->get_field_id('show_icon'); ?>" name="<?php echo $this->get_field_name('show_icon'); ?>" type="checkbox" value="1" <?php checked(TRUE , $instance['show_icon']); ?> />
-                <?php _e('Show Media RSS icon', 'nggallery'); ?>
-            </label>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('show_global_mrss'); ?>">
-                <input id="<?php echo $this->get_field_id('show_global_mrss'); ?>" name="<?php echo $this->get_field_name('show_global_mrss'); ?>" type="checkbox" value="1" <?php checked(TRUE , $instance['show_global_mrss']); ?> /> <?php _e('Show the Media RSS link', 'nggallery'); ?>
-            </label>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('mrss_text'); ?>"><?php _e('Text for Media RSS link:', 'nggallery'); ?><br />
-                <input class="widefat" id="<?php echo $this->get_field_id('mrss_text'); ?>" name="<?php echo $this->get_field_name('mrss_text'); ?>" type="text" value="<?php echo $mrss_text; ?>" /></label>
-            </label>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('mrss_title'); ?>"><?php _e('Tooltip text for Media RSS link:', 'nggallery'); ?><br />
-                <input class="widefat" id="<?php echo $this->get_field_id('mrss_title'); ?>" name="<?php echo $this->get_field_name('mrss_title'); ?>" type="text" value="<?php echo $mrss_title; ?>" /></label>
-            </label>
-        </p>
-        <?php
+        $parent->render_partial(
+            'form_slideshow',
+            array(
+                'self'       => $this,
+                'instance'   => $instance,
+                'title'      => esc_attr($instance['title']),
+                'mrss_text'  => esc_attr($instance['mrss_text']),
+                'mrss_title' => esc_attr($instance['mrss_title'])
+            )
+        );
     }
 
     function update($new_instance, $old_instance)

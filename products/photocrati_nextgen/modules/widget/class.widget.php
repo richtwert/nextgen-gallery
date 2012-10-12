@@ -1,6 +1,6 @@
 <?php
 
-class C_Widget extends C_Component
+class C_Widget extends C_MVC_Controller
 {
     public static $_instances = array();
 

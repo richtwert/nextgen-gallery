@@ -12,6 +12,9 @@ class C_Widget_Slideshow extends WP_Widget
     {
         global $wpdb;
 
+        // used for rendering utilities
+        $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
+
         // defaults
         $instance = wp_parse_args(
             (array)$instance,
@@ -22,32 +25,18 @@ class C_Widget_Slideshow extends WP_Widget
                 'width' => '160'
             )
         );
-        $title  = esc_attr($instance['title']);
-        $height = esc_attr($instance['height']);
-        $width  = esc_attr($instance['width']);
-        $tables = $wpdb->get_results("SELECT * FROM {$wpdb->nggallery} ORDER BY 'name' ASC");
-        ?>
-        <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label> <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" /></p>
-        <p>
-            <label for="<?php echo $this->get_field_id('galleryid'); ?>"><?php _e('Select Gallery:', 'nggallery'); ?></label>
-            <select size="1" name="<?php echo $this->get_field_name('galleryid'); ?>" id="<?php echo $this->get_field_id('galleryid'); ?>" class="widefat">
-                <option value="0" <?php if (0 == $instance['galleryid']) echo "selected='selected' "; ?> ><?php _e('All images', 'nggallery'); ?></option>
-                <?php
-                if ($tables)
-                {
-                    foreach($tables as $table) {
-                        echo '<option value="' . $table->gid . '" ';
-                        if ($table->gid == $instance['galleryid'])
-                            echo "selected='selected' ";
-                        echo '>' . $table->name . '</option>' . "\n\t";
-                    }
-                }
-                ?>
-            </select>
-        </p>
-        <p><label for="<?php echo $this->get_field_id('height'); ?>"><?php _e('Height:', 'nggallery'); ?></label> <input id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" style="padding: 3px; width: 45px;" value="<?php echo $height; ?>" /></p>
-        <p><label for="<?php echo $this->get_field_id('width'); ?>"><?php _e('Width:', 'nggallery'); ?></label> <input id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" style="padding: 3px; width: 45px;" value="<?php echo $width; ?>" /></p>
-        <?php
+
+        $parent->render_partial(
+            'form_slideshow',
+            array(
+                'self'     => $this,
+                'instance' => $instance,
+                'title'    => esc_attr($instance['title']),
+                'height'   => esc_attr($instance['height']),
+                'width'    => esc_attr($instance['width']),
+                'tables'   => $wpdb->get_results("SELECT * FROM {$wpdb->nggallery} ORDER BY 'name' ASC")
+            )
+        );
     }
 
     function update($new_instance, $old_instance)

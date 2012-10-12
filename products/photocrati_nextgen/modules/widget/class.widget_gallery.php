@@ -10,6 +10,9 @@ class C_Widget_Gallery extends WP_Widget
 
     function form($instance)
     {
+        // used for rendering utilities
+        $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
+
         // defaults
         $instance = wp_parse_args(
             (array)$instance,
@@ -25,68 +28,18 @@ class C_Widget_Gallery extends WP_Widget
                 'width'    => '75'
             )
         );
-        $title  = esc_attr($instance['title']);
-        $items  = intval($instance['items']);
-        $height = esc_attr($instance['height']);
-        $width  = esc_attr($instance['width']);
 
-        ?>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title :','nggallery'); ?>
-                <input id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title');?>" type="text" class="widefat" value="<?php echo $title; ?>" />
-            </label>
-        </p>
-
-        <p>
-            <?php _e('Show :','nggallery'); ?><br />
-            <label for="<?php echo $this->get_field_id('items'); ?>">
-                <input style="width: 50px;" id="<?php echo $this->get_field_id('items'); ?>" name="<?php echo $this->get_field_name('items');?>" type="text" value="<?php echo $items; ?>" />
-            </label>
-            <select id="<?php echo $this->get_field_id('show'); ?>" name="<?php echo $this->get_field_name('show'); ?>" >
-                <option <?php selected("thumbnail" , $instance['show']); ?> value="thumbnail"><?php _e('Thumbnails','nggallery'); ?></option>
-                <option <?php selected("original" , $instance['show']); ?> value="original"><?php _e('Original images','nggallery'); ?></option>
-            </select>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('type'); ?>_random">
-                <input id="<?php echo $this->get_field_id('type'); ?>_random" name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="random" <?php checked("random" , $instance['type']); ?> /> <?php _e('random','nggallery'); ?>
-            </label>
-            <label for="<?php echo $this->get_field_id('type'); ?>_recent">
-                <input id="<?php echo $this->get_field_id('type'); ?>_recent" name="<?php echo $this->get_field_name('type'); ?>" type="radio" value="recent" <?php checked("recent" , $instance['type']); ?> /> <?php _e('recent added ','nggallery'); ?>
-            </label>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('webslice'); ?>">
-                <input id="<?php echo $this->get_field_id('webslice'); ?>" name="<?php echo $this->get_field_name('webslice'); ?>" type="checkbox" value="1" <?php checked(TRUE , $instance['webslice']); ?> /> <?php _e('Enable IE8 Web Slices','nggallery'); ?>
-            </label>
-        </p>
-
-        <p>
-            <?php _e('Width x Height :','nggallery'); ?><br />
-            <input style="width: 50px; padding:3px;" id="<?php echo $this->get_field_id('width'); ?>" name="<?php echo $this->get_field_name('width'); ?>" type="text" value="<?php echo $width; ?>" /> x
-            <input style="width: 50px; padding:3px;" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo $height; ?>" /> (px)
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('exclude'); ?>"><?php _e('Select :','nggallery'); ?>
-                <select id="<?php echo $this->get_field_id('exclude'); ?>" name="<?php echo $this->get_field_name('exclude'); ?>" class="widefat">
-                    <option <?php selected("all" , $instance['exclude']); ?>  value="all" ><?php _e('All galleries','nggallery'); ?></option>
-                    <option <?php selected("denied" , $instance['exclude']); ?> value="denied" ><?php _e('Only which are not listed','nggallery'); ?></option>
-                    <option <?php selected("allow" , $instance['exclude']); ?>  value="allow" ><?php _e('Only which are listed','nggallery'); ?></option>
-                </select>
-            </label>
-        </p>
-
-        <p>
-            <label for="<?php echo $this->get_field_id('list'); ?>"><?php _e('Gallery ID :','nggallery'); ?>
-                <input id="<?php echo $this->get_field_id('list'); ?>" name="<?php echo $this->get_field_name('list'); ?>" type="text" class="widefat" value="<?php echo $instance['list']; ?>" />
-                <br /><small><?php _e('Gallery IDs, separated by commas.','nggallery'); ?></small>
-            </label>
-        </p>
-    <?php
+        $parent->render_partial(
+            'form_gallery',
+            array(
+                'self'     => $this,
+                'instance' => $instance,
+                'title'    => esc_attr($instance['title']),
+                'items'    => intval($instance['items']),
+                'height'   => esc_attr($instance['height']),
+                'width'    => esc_attr($instance['width'])
+            )
+        );
     }
 
     function update($new_instance, $old_instance)
