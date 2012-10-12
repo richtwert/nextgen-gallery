@@ -70,80 +70,78 @@ class C_Widget_Gallery extends WP_Widget
 
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
-        global $wpdb;
+        $parent      = C_Component_Registry::get_instance()->get_utility('I_Widget');
+        $image_map   = C_Component_Registry::get_instance()->get_utility('I_Image_Mapper');
+        $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
 
-        $count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->nggpictures} WHERE exclude != 1");
+        // if there's fewer images than our maximum, lower the # to display
+        $count = $image_map->count();
         if ($count < $instance['items'])
             $instance['items'] = $count;
 
-        $exclude_list = '';
+        // begin building our query
+        $query = $image_map->select();
 
-        // Thanks to Kay Germer for the idea & addon code
+        // random display
+        if ($instance['type'] == 'random')
+        {
+            $query->order_by('rand()');
+            $query->limit($instance['items']);
+        }
+        else {
+            // 'recent' display
+            $query->order_by($image_map->get_primary_key_column(), 'DESC');
+            $query->limit($instance['items'], 0);
+        }
+
+        // thanks to Kay Germer for the idea & addon code
         if ((!empty($instance['list'])) && ($instance['exclude'] != 'all'))
         {
             $instance['list'] = explode(',', $instance['list']);
-
-            // Prepare for SQL
             $instance['list'] = "'" . implode("', '", $instance['list']) . "'";
 
             if ($instance['exclude'] == 'denied')
-                $exclude_list = "AND NOT (t.gid IN ({$instance['list']}))";
+                @$query->where("galleryid NOT IN ({$instance['list']})");
 
             if ($instance['exclude'] == 'allow')
-                $exclude_list = "AND t.gid IN ({$instance['list']})";
+                @$query->where("galleryid IN ({$instance['list']})");
 
             // Limit the output to the current author, can be used on author template pages
             if ($instance['exclude'] == 'user_id')
-                $exclude_list = "AND t.author IN ({$instance['list']})";
+            {
+                @$tmp = $gallery_map->select($gallery_map->get_primary_key_column())->where("author IN ({$instance['list']})")->run_query();
+                $gallery_ids = array();
+                foreach ($tmp as $t) {
+                    $gallery_ids[] = $t->{$gallery_map->get_primary_key_column()};
+                }
+                $gallery_ids = implode(',', $gallery_ids);
+                @$query->where("galleryid IN ({$gallery_ids})");
+            }
         }
 
-        if ($instance['type'] == 'random')
-            $image_list = $wpdb->get_results("SELECT t.*, tt.* FROM {$wpdb->nggallery} AS t INNER JOIN {$wpdb->nggpictures} AS tt ON t.gid = tt.galleryid WHERE tt.exclude != 1 {$exclude_list} ORDER BY RAND() LIMIT {$instance['items']}");
-        else
-            $image_list = $wpdb->get_results("SELECT t.*, tt.* FROM {$wpdb->nggallery} AS t INNER JOIN {$wpdb->nggpictures} AS tt ON t.gid = tt.galleryid WHERE tt.exclude != 1 {$exclude_list} ORDER BY pid DESC LIMIT 0, {$instance['items']}");
+        $image_list = $query->run_query();
 
         // IE8 webslice support if needed
         if ($instance['webslice'])
         {
-            $before_widget .= "\n" . '<div class="hslice" id="ngg-webslice">' . "\n";
-            //the headline needs to have the class enty-title
+            $before_widget .= '<div class="hslice" id="ngg-webslice">';
             $before_title  = str_replace('class="' , 'class="entry-title ', $before_title);
-            $after_widget  =  '</div>'."\n" . $after_widget;
+            $after_widget  = '</div>' . $after_widget;
         }
 
-        echo $before_widget . $before_title . $title . $after_title;
-        echo "\n" . '<div class="ngg-widget entry-content">' . "\n";
-
-        if (is_array($image_list))
-        {
-            foreach ($image_list as $image) {
-                // get the URL constructor
-                $image = new nggImage($image);
-
-                // get the effect code
-                $thumbcode = $image->get_thumbcode($widget_id);
-
-                // enable i18n support for alttext and description
-                $alttext     = htmlspecialchars(stripslashes(nggGallery::i18n($image->alttext, 'pic_' . $image->pid . '_alttext')));
-                $description = htmlspecialchars(stripslashes(nggGallery::i18n($image->description, 'pic_' . $image->pid . '_description')));
-
-                // TODO: For mixed portrait/landscape it's better to use only the height setting, if width is 0 or vice versa
-                $out = '<a href="' . $image->imageURL . '" title="' . $description . '" ' . $thumbcode . '>';
-
-                // Typo fix for the next updates (happend until 1.0.2)
-                $instance['show'] = ($instance['show'] == 'orginal') ? 'original' : $instance['show'];
-
-                if ($instance['show'] == 'original')
-                    $out .= '<img src="' . trailingslashit(home_url()) . 'index.php?callback=image&amp;pid=' . $image->pid . '&amp;width=' . $instance['width'] . '&amp;height=' . $instance['height'] . '" title="' . $alttext . '" alt="' . $alttext . '"/>';
-                else
-                    $out .= '<img src="' . $image->thumbURL . '" width="' . $instance['width'] . '" height="' . $instance['height'] . '" title="' . $alttext . '" alt="' . $alttext . '"/>';
-
-                echo $out . '</a>' . "\n";
-            }
-        }
-
-        echo '</div>';
-        echo $after_widget;
+        $parent->render_partial(
+            'display_gallery',
+            array(
+                'self'       => $this,
+                'instance'   => $instance,
+                'title'      => $title,
+                'image_list' => $image_list,
+                'before_widget' => $before_widget,
+                'before_title'  => $before_title,
+                'after_widget'  => $after_widget,
+                'after_title'   => $after_title,
+                'widget_id'     => $widget_id
+            )
+        );
     }
-
 }
