@@ -14,19 +14,19 @@ class C_Widget_Gallery extends WP_Widget
         $instance = wp_parse_args(
             (array)$instance,
             array(
-                'title'    => 'Gallery',
-                'items'    => '4',
-                'type'     => 'random',
-                'show'     => 'thumbnail',
-                'height'   => '50',
-                'width'    => '75',
                 'exclude'  => 'all',
+                'height'   => '50',
+                'items'    => '4',
                 'list'     =>  '',
-                'webslice' => TRUE
+                'show'     => 'thumbnail',
+                'title'    => 'Gallery',
+                'type'     => 'random',
+                'webslice' => TRUE,
+                'width'    => '75'
             )
         );
         $title  = esc_attr($instance['title']);
-        $items  = intval  ($instance['items']);
+        $items  = intval($instance['items']);
         $height = esc_attr($instance['height']);
         $width  = esc_attr($instance['width']);
 
@@ -106,51 +106,53 @@ class C_Widget_Gallery extends WP_Widget
 
     function widget($args, $instance)
     {
+        // these are handled by extract() but I want to silence my IDE warnings that these vars don't exist
+        $before_widget = NULL;
+        $before_title = NULL;
+        $after_widget = NULL;
+        $after_title = NULL;
+        $widget_id = NULL;
+
         extract($args);
 
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
         global $wpdb;
 
-        $items    = $instance['items'];
-        $exclude  = $instance['exclude'];
-        $list     = $instance['list'];
-        $webslice = $instance['webslice'];
-
-        $count = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->nggpictures WHERE exclude != 1 ");
+        $count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->nggpictures} WHERE exclude != 1");
         if ($count < $instance['items'])
             $instance['items'] = $count;
 
         $exclude_list = '';
 
         // Thanks to Kay Germer for the idea & addon code
-        if ((!empty($list)) && ($exclude != 'all'))
+        if ((!empty($instance['list'])) && ($instance['exclude'] != 'all'))
         {
-            $list = explode(',', $list);
+            $instance['list'] = explode(',', $instance['list']);
 
             // Prepare for SQL
-            $list = "'" . implode("', '", $list) . "'";
+            $instance['list'] = "'" . implode("', '", $instance['list']) . "'";
 
-            if ($exclude == 'denied')
-                $exclude_list = "AND NOT (t.gid IN ($list))";
+            if ($instance['exclude'] == 'denied')
+                $exclude_list = "AND NOT (t.gid IN ({$instance['list']}))";
 
-            if ($exclude == 'allow')
-                $exclude_list = "AND t.gid IN ($list)";
+            if ($instance['exclude'] == 'allow')
+                $exclude_list = "AND t.gid IN ({$instance['list']})";
 
             // Limit the output to the current author, can be used on author template pages
-            if ($exclude == 'user_id')
-                $exclude_list = "AND t.author IN ($list)";
+            if ($instance['exclude'] == 'user_id')
+                $exclude_list = "AND t.author IN ({$instance['list']})";
         }
 
         if ($instance['type'] == 'random')
-            $imageList = $wpdb->get_results("SELECT t.*, tt.* FROM $wpdb->nggallery AS t INNER JOIN $wpdb->nggpictures AS tt ON t.gid = tt.galleryid WHERE tt.exclude != 1 $exclude_list ORDER by rand() limit {$items}");
+            $image_list = $wpdb->get_results("SELECT t.*, tt.* FROM {$wpdb->nggallery} AS t INNER JOIN {$wpdb->nggpictures} AS tt ON t.gid = tt.galleryid WHERE tt.exclude != 1 {$exclude_list} ORDER BY RAND() LIMIT {$instance['items']}");
         else
-            $imageList = $wpdb->get_results("SELECT t.*, tt.* FROM $wpdb->nggallery AS t INNER JOIN $wpdb->nggpictures AS tt ON t.gid = tt.galleryid WHERE tt.exclude != 1 $exclude_list ORDER by pid DESC limit 0,$items");
+            $image_list = $wpdb->get_results("SELECT t.*, tt.* FROM {$wpdb->nggallery} AS t INNER JOIN {$wpdb->nggpictures} AS tt ON t.gid = tt.galleryid WHERE tt.exclude != 1 {$exclude_list} ORDER BY pid DESC LIMIT 0, {$instance['items']}");
 
         // IE8 webslice support if needed
-        if ($webslice)
+        if ($instance['webslice'])
         {
-            $before_widget .= "\n" . '<div class="hslice" id="ngg-webslice" >' . "\n";
+            $before_widget .= "\n" . '<div class="hslice" id="ngg-webslice">' . "\n";
             //the headline needs to have the class enty-title
             $before_title  = str_replace('class="' , 'class="entry-title ', $before_title);
             $after_widget  =  '</div>'."\n" . $after_widget;
@@ -159,9 +161,9 @@ class C_Widget_Gallery extends WP_Widget
         echo $before_widget . $before_title . $title . $after_title;
         echo "\n" . '<div class="ngg-widget entry-content">' . "\n";
 
-        if (is_array($imageList))
+        if (is_array($image_list))
         {
-            foreach ($imageList as $image) {
+            foreach ($image_list as $image) {
                 // get the URL constructor
                 $image = new nggImage($image);
 
@@ -173,21 +175,21 @@ class C_Widget_Gallery extends WP_Widget
                 $description = htmlspecialchars(stripslashes(nggGallery::i18n($image->description, 'pic_' . $image->pid . '_description')));
 
                 // TODO: For mixed portrait/landscape it's better to use only the height setting, if width is 0 or vice versa
-                $out = '<a href="' . $image->imageURL . '" title="' . $description . '" ' . $thumbcode .'>';
+                $out = '<a href="' . $image->imageURL . '" title="' . $description . '" ' . $thumbcode . '>';
 
                 // Typo fix for the next updates (happend until 1.0.2)
                 $instance['show'] = ($instance['show'] == 'orginal') ? 'original' : $instance['show'];
 
                 if ($instance['show'] == 'original')
-                    $out .= '<img src="' . trailingslashit(home_url()) . 'index.php?callback=image&amp;pid=' . $image->pid . '&amp;width=' . $instance['width'] . '&amp;height=' . $instance['height'] . '" title="' . $alttext . '" alt="' . $alttext .'"/>';
+                    $out .= '<img src="' . trailingslashit(home_url()) . 'index.php?callback=image&amp;pid=' . $image->pid . '&amp;width=' . $instance['width'] . '&amp;height=' . $instance['height'] . '" title="' . $alttext . '" alt="' . $alttext . '"/>';
                 else
                     $out .= '<img src="' . $image->thumbURL . '" width="' . $instance['width'] . '" height="' . $instance['height'] . '" title="' . $alttext . '" alt="' . $alttext . '"/>';
 
-                echo $out . '</a>'."\n";
+                echo $out . '</a>' . "\n";
             }
         }
 
-        echo '</div>' . "\n";
+        echo '</div>';
         echo $after_widget;
     }
 

@@ -16,16 +16,16 @@ class C_Widget_Slideshow extends WP_Widget
         $instance = wp_parse_args(
             (array)$instance,
             array(
-                'title' => 'Slideshow',
                 'galleryid' => '0',
                 'height' => '120',
+                'title' => 'Slideshow',
                 'width' => '160'
             )
         );
         $title  = esc_attr($instance['title']);
         $height = esc_attr($instance['height']);
         $width  = esc_attr($instance['width']);
-        $tables = $wpdb->get_results("SELECT * FROM {$wpdb->nggallery} ORDER BY 'name' ASC ");
+        $tables = $wpdb->get_results("SELECT * FROM {$wpdb->nggallery} ORDER BY 'name' ASC");
         ?>
         <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label> <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" /></p>
         <p>
@@ -33,11 +33,13 @@ class C_Widget_Slideshow extends WP_Widget
             <select size="1" name="<?php echo $this->get_field_name('galleryid'); ?>" id="<?php echo $this->get_field_id('galleryid'); ?>" class="widefat">
                 <option value="0" <?php if (0 == $instance['galleryid']) echo "selected='selected' "; ?> ><?php _e('All images', 'nggallery'); ?></option>
                 <?php
-                if($tables) {
+                if ($tables)
+                {
                     foreach($tables as $table) {
-                        echo '<option value="'.$table->gid.'" ';
-                        if ($table->gid == $instance['galleryid']) echo "selected='selected' ";
-                        echo '>'.$table->name.'</option>'."\n\t";
+                        echo '<option value="' . $table->gid . '" ';
+                        if ($table->gid == $instance['galleryid'])
+                            echo "selected='selected' ";
+                        echo '>' . $table->name . '</option>' . "\n\t";
                     }
                 }
                 ?>
@@ -60,6 +62,13 @@ class C_Widget_Slideshow extends WP_Widget
 
     function widget($args, $instance)
     {
+        // these are handled by extract() but I want to silence my IDE warnings that these vars don't exist
+        $before_widget = NULL;
+        $before_title = NULL;
+        $after_widget = NULL;
+        $after_title = NULL;
+        $widget_id = NULL;
+
         extract($args);
 
         $title = apply_filters('widget_title', empty($instance['title']) ? __('Slideshow', 'nggallery') : $instance['title'], $instance, $this->id_base);

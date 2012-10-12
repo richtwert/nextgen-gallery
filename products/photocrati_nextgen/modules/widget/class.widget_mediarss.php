@@ -16,11 +16,11 @@ class C_Widget_MediaRSS extends WP_Widget
         $instance = wp_parse_args(
             (array)$instance,
             array(
-                'title' => 'Media RSS',
-                'show_global_mrss' => TRUE,
                 'mrss_text' => __('Media RSS', 'nggallery'),
                 'mrss_title' => __('Link to the main image feed', 'nggallery'),
-                'show_icon' => TRUE
+                'show_global_mrss' => TRUE,
+                'show_icon' => TRUE,
+                'title' => 'Media RSS'
             )
         );
 
@@ -76,6 +76,13 @@ class C_Widget_MediaRSS extends WP_Widget
 
     function widget($args, $instance)
     {
+        // these are handled by extract() but I want to silence my IDE warnings that these vars don't exist
+        $before_widget = NULL;
+        $before_title = NULL;
+        $after_widget = NULL;
+        $after_title = NULL;
+        $widget_id = NULL;
+        
         extract($args);
 
         $ngg_options = nggGallery::get_option('ngg_options');
@@ -113,8 +120,8 @@ class C_Widget_MediaRSS extends WP_Widget
         if ($show_icon)
         {
             $icon_url = NGGALLERY_URLPATH . 'images/mrss-icon.gif';
-            $out .= "<a href='$mrss_url' title='$title' class='ngg-media-rss-link'" . ($use_piclens ? ' onclick="PicLensLite.start({feedUrl:\'' . $mrss_url . '\'}); return false;"' : "") . " >";
-            $out .= "<img src='$icon_url' alt='MediaRSS Icon' title='" . (!$use_piclens ? $title : __('[View with PicLens]','nggallery')). "' class='ngg-media-rss-icon' />";
+            $out .= "<a href='{$mrss_url}' title='{$title}' class='ngg-media-rss-link'" . ($use_piclens ? ' onclick="PicLensLite.start({feedUrl:\'' . $mrss_url . '\'}); return false;"' : "") . " >";
+            $out .= "<img src='{$icon_url}' alt='MediaRSS Icon' title='" . (!$use_piclens ? $title : __('[View with PicLens]','nggallery')). "' class='ngg-media-rss-icon' />";
             $out .=  "</a> ";
         }
 
