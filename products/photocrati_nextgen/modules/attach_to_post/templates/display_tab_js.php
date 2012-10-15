@@ -518,7 +518,6 @@ jQuery(function($){
 					containment: 'parent',
 					opacity: 0.7,
 					revert: true,
-					items: 'li.entity',
 					start: function(e, ui){
 						ui.placeholder.css({
 							height: ui.item.height()
