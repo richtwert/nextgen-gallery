@@ -434,7 +434,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	function _get_field_names()
 	{
 		return array(
-			//'thumbnail_dimensions',
 			'nextgen_basic_slideshow_gallery_dimensions',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',

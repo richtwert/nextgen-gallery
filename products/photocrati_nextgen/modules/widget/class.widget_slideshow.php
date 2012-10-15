@@ -80,58 +80,21 @@ class C_Widget_Slideshow extends WP_Widget
 
     function render_slideshow($galleryID, $irWidth = '', $irHeight = '')
     {
-        include_once(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array('lib', 'swfobject.php'))));
+        $registry = C_Component_Registry::get_instance();
+        $renderer = $registry->get_utility('I_Display_Type_Renderer');
 
-        $ngg_options = get_option('ngg_options');
+        $params = array(
+            'gallery_ids'    => $galleryID,
+            'gallery_width'  => $irWidth,
+            'gallery_height' => $irHeight,
+            'display_type'   => 'photocrati-nextgen_basic_slideshow'
+        );
 
-        // redirect all calls to the JavaScript slideshow if wanted
-        if ($ngg_options['enableIR'] !== '1' || nggGallery::detect_mobile_phone() === TRUE || NGGALLERY_IREXIST == FALSE)
-            return nggShow_JS_Slideshow($galleryID, $irWidth, $irHeight, 'ngg-widget-slideshow');
-
-        if (empty($irWidth))
-            $irWidth = (int)$ngg_options['irWidth'];
-        if (empty($irHeight))
-            $irHeight = (int)$ngg_options['irHeight'];
-
-        // init the flash output
-        $swfobject = new swfobject($ngg_options['irURL'], 'sbsl' . $galleryID, $irWidth, $irHeight, '7.0.0', 'false');
-
-        $swfobject->classname = 'ngg-widget-slideshow';
-        $swfobject->message = __('<a href="http://www.macromedia.com/go/getflashplayer">Get the Flash Player</a> to see the slideshow.', 'nggallery');
-        $swfobject->add_params('wmode', 'opaque');
-        $swfobject->add_params('bgcolor', $ngg_options['irScreencolor'], 'FFFFFF', 'string', '#');
-        $swfobject->add_attributes('styleclass', 'slideshow-widget');
-
-        // adding the flash parameter
-        $swfobject->add_flashvars('file', urlencode(trailingslashit(home_url()) . 'index.php?callback=imagerotator&gid=' . $galleryID));
-        $swfobject->add_flashvars('shownavigation', 'false', 'true', 'bool');
-        $swfobject->add_flashvars('shuffle', $ngg_options['irShuffle'], 'true', 'bool');
-        $swfobject->add_flashvars('showicons', $ngg_options['irShowicons'], 'true', 'bool');
-        $swfobject->add_flashvars('overstretch', $ngg_options['irOverstretch'], 'false', 'string');
-        $swfobject->add_flashvars('rotatetime', $ngg_options['irRotatetime'], 5, 'int');
-        $swfobject->add_flashvars('transition', $ngg_options['irTransition'], 'random', 'string');
-        $swfobject->add_flashvars('backcolor', $ngg_options['irBackcolor'], 'FFFFFF', 'string', '0x');
-        $swfobject->add_flashvars('frontcolor', $ngg_options['irFrontcolor'], '000000', 'string', '0x');
-        $swfobject->add_flashvars('lightcolor', $ngg_options['irLightcolor'], '000000', 'string', '0x');
-        $swfobject->add_flashvars('screencolor', $ngg_options['irScreencolor'], '000000', 'string', '0x');
-        $swfobject->add_flashvars('width', $irWidth, '260');
-        $swfobject->add_flashvars('height', $irHeight, '320');
-
-        // create the output
-        $out  = $swfobject->output();
-
-        // add now the script code
-        $out .= "\n" . '<script type="text/javascript" defer="defer">';
-        $out .= "\n" . '<!--';
-        $out .= "\n" . '//<![CDATA[';
-        $out .= $swfobject->javascript();
-        $out .= "\n" . '//]]>';
-        $out .= "\n" . '-->';
-        $out .= "\n" . '</script>';
-
-        $out = apply_filters('ngg_show_slideshow_widget_content', $out, $galleryID, $irWidth, $irHeight);
-
-        return $out;
+        ob_start();
+        $renderer->display_images($params, NULL);
+        $retval = ob_get_clean();
+        $retval = apply_filters('ngg_show_slideshow_widget_content', $retval, $galleryID, $irWidth, $irHeight);
+        return $retval;
     }
 
 }
