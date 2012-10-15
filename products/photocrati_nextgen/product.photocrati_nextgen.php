@@ -89,6 +89,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
         // Provides cache clearing support
         $this->get_registry()->load_module('photocrati-cache');
+
+        // Provides sidebar widgets
+        $this->get_registry()->load_module('photocrati-widget');
 	}
 }
 
