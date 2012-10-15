@@ -62,31 +62,24 @@ class C_Widget_MediaRSS extends WP_Widget
         extract($args);
 
         $settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
+        $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
 
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
-        $show_global_mrss   = $instance['show_global_mrss'];
-        $show_icon          = $instance['show_icon'];
-        $mrss_text          = stripslashes($instance['mrss_text']);
-        $mrss_title         = strip_tags(stripslashes($instance['mrss_title']));
-
-        echo $before_widget;
-        echo $before_title . $title . $after_title;
-        echo "<ul class='ngg-media-rss-widget'>\n";
-        if ($show_global_mrss)
-        {
-            echo "  <li>";
-            echo $this->get_mrss_link(
-                nggMediaRss::get_mrss_url(),
-                $show_icon,
-                stripslashes($mrss_title),
-                stripslashes($mrss_text),
-                $settings->usePicLens
-            );
-            echo "</li>\n";
-        }
-        echo "</ul>\n";
-        echo $after_widget;
+        $parent->render_partial(
+            'display_mediarss',
+            array(
+                'self'       => $this,
+                'instance'   => $instance,
+                'title'      => $title,
+                'settings'   => $settings,
+                'before_widget' => $before_widget,
+                'before_title'  => $before_title,
+                'after_widget'  => $after_widget,
+                'after_title'   => $after_title,
+                'widget_id'     => $widget_id
+            )
+        );
     }
 
     function get_mrss_link($mrss_url, $show_icon = TRUE, $title, $text, $use_piclens)

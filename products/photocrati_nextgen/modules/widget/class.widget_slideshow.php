@@ -60,22 +60,26 @@ class C_Widget_Slideshow extends WP_Widget
 
         extract($args);
 
+        $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
+
         $title = apply_filters('widget_title', empty($instance['title']) ? __('Slideshow', 'nggallery') : $instance['title'], $instance, $this->id_base);
 
         $out = $this->render_slideshow($instance['galleryid'], $instance['width'], $instance['height']);
 
-        if (!empty($out))
-        {
-            echo $before_widget;
-            if ($title)
-                echo $before_title . $title . $after_title;
-            ?>
-            <div class="ngg_slideshow widget">
-                <?php echo $out; ?>
-            </div>
-            <?php
-            echo $after_widget;
-        }
+        $parent->render_partial(
+            'display_slideshow',
+            array(
+                'self'       => $this,
+                'instance'   => $instance,
+                'title'      => $title,
+                'out'        => $out,
+                'before_widget' => $before_widget,
+                'before_title'  => $before_title,
+                'after_widget'  => $after_widget,
+                'after_title'   => $after_title,
+                'widget_id'     => $widget_id
+            )
+        );
     }
 
     function render_slideshow($galleryID, $irWidth = '', $irHeight = '')
@@ -85,9 +89,11 @@ class C_Widget_Slideshow extends WP_Widget
 
         $params = array(
             'gallery_ids'    => $galleryID,
+            'display_type'   => 'photocrati-nextgen_basic_slideshow',
             'gallery_width'  => $irWidth,
             'gallery_height' => $irHeight,
-            'display_type'   => 'photocrati-nextgen_basic_slideshow'
+            'show_return_link' => FALSE,
+            'show_alternative_view_link' => FALSE
         );
 
         ob_start();
