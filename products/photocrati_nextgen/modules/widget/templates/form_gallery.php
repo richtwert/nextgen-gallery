@@ -66,16 +66,15 @@
 <!-- dimensions -->
 <p>
     <?php _e('Width x Height :', 'nggallery'); ?><br/>
-    <input style='width: 50px; padding:3px;'
-           id='<?php echo $self->get_field_id('width'); ?>'
-           name='<?php echo $self->get_field_name('width'); ?>'
-           type='text'
-           value='<?php echo $width; ?>'/> x
-    <input style='width: 50px; padding:3px;'
-           id='<?php echo $self->get_field_id('height'); ?>'
-           name='<?php echo $self->get_field_name('height'); ?>'
-           type='text'
-           value='<?php echo $height; ?>'/> (px)
+    <?php
+    $thumbnails_template_height_value = $height;
+    $thumbnails_template_width_value = $width;
+    $thumbnails_template_height_id = $self->get_field_id('height');
+    $thumbnails_template_width_id = $self->get_field_id('width');
+    $thumbnails_template_height_name = $self->get_field_name('height');
+    $thumbnails_template_width_name = $self->get_field_name('width');
+    include(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array('admin', 'thumbnails-template.php'))));
+    ?>
 </p>
 
 <!-- which galleries -->
