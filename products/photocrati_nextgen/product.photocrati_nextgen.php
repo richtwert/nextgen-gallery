@@ -87,6 +87,9 @@ class P_Photocrati_NextGen extends C_Base_Product
         $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');
         $this->get_registry()->load_module('photocrati-nextgen_basic_tagcloud');
         $this->get_registry()->load_module('photocrati-nextgen_basic_album');
+
+        // Provides cache clearing support
+        $this->get_registry()->load_module('photocrati-cache');
 	}
 }
 

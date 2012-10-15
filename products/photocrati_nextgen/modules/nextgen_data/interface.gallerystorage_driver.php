@@ -5,6 +5,7 @@ interface I_GalleryStorage_Driver
 	function get_image_sizes();
 	function get_image_abspath($image, $size=FALSE);
 	function get_full_abspath($image);
+    function get_cache_abspath($gallery = FALSE);
 	function get_original_abspath($image);
 	function get_upload_abspath($gallery=FALSE);
 	function get_upload_relpath($gallery=FALSE);

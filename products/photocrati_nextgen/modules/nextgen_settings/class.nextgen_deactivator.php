@@ -32,14 +32,18 @@ class C_NextGen_Deactivator extends C_Component
  */
 class Mixin_NextGen_Deactivator extends Mixin
 {
-    function uninstall()
-    {
-    }
-
     function deactivate()
     {
         deactivate_plugins(plugin_basename(__FILE__));
         delete_option('ngg_init_check');
         delete_option('ngg_update_exists');
+    }
+
+    function flush_cache()
+    {
+    }
+
+    function uninstall()
+    {
     }
 }
