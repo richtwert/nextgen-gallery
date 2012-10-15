@@ -11,6 +11,11 @@ define(
 	real_admin_url('/attach_to_post/preview')
 );
 
+define(
+	'PHOTOCRATI_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
+	real_admin_url('/attach_to_post/display_tab_js')
+);
+
 class M_Attach_To_Post extends C_Base_Module
 {
 	var $attach_to_post_route           = 'wp-admin/attach_to_post';

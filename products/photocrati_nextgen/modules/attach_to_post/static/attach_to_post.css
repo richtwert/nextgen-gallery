@@ -54,11 +54,6 @@ iframe {
 	vertical-align: top;
 }
 
-#source_configuration select {
-	position: relative;
-	bottom: 3px;
-}
-
 #source_configuration .chzn-choices input[type=text] {
 	height: auto !important;
 }
@@ -134,6 +129,26 @@ iframe {
 
 #preview_tab_content .image_container img {
 	border: 0px;
+}
+
+#preview_tab_content #entity_list  li{
+	float: left;
+	padding: 10px;
+}
+
+#preview_tab_content #entity_list .ui-state-default {
+	background: none;
+	border: none;
+}
+
+#preview_tab_content .placeholder{
+	background-color:#FEEFB3;
+	position: relative;
+}
+
+#preview_tab_content #entity_list li.clear {
+	float: none;
+	clear: both;
 }
 
 .clear {

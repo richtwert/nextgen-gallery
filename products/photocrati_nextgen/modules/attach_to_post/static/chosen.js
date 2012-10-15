@@ -54,7 +54,7 @@
             value: option.value,
             text: option.text,
             html: option.innerHTML,
-            selected: option.selected,
+            selected: option.hasAttribute('selected'), // LOCAL HACK BY MIKE
             disabled: group_disabled === true ? group_disabled : option.disabled,
             group_array_index: group_position,
             classes: option.className,
@@ -328,7 +328,9 @@ Copyright (c) 2011 by Harvest
         container_div.html('<a href="javascript:void(0)" class="chzn-single chzn-default"><span>' + this.default_text + '</span><div><b></b></div></a><div class="chzn-drop" style="left:-9000px;"><div class="chzn-search"><input type="text" autocomplete="off" /></div><ul class="chzn-results"></ul></div>');
       }
       this.form_field_jq.hide().after(container_div);
-      this.container = $('#' + this.container_id);
+	  // LOCAL HACK: See: https://github.com/harvesthq/chosen/issues/313
+//      this.container = $('#' + this.container_id);
+	  this.container = this.form_field_jq.parent().find('#' + this.container_id);
       this.container.addClass("chzn-container-" + (this.is_multiple ? "multi" : "single"));
       this.dropdown = this.container.find('div.chzn-drop').first();
       dd_top = this.container.height();

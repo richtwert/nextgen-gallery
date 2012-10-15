@@ -6,6 +6,59 @@
 class Mixin_Attach_To_Post_Display_Tab extends Mixin
 {
 	/**
+	 * Renders the JS required for the Backbone-based Display Tab
+	 */
+	function display_tab_js_action()
+	{
+		if ($this->object->_validate_request()){
+			$this->object->set_content_type('javascript');
+
+			$gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper');
+			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper');
+			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper');
+			$tags = array();
+			$display_types		= $display_type_mapper->find_all();
+
+
+			$this->object->render_view('display_tab_js', array(
+				'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),
+				'sources'				=>	json_encode($this->object->get_entity_sources()),
+				'gallery_primary_key'	=>	$gallery_mapper->get_primary_key_column(),
+				'galleries'				=>	json_encode($gallery_mapper->find_all()),
+				'albums'				=>	json_encode($album_mapper->find_all()),
+				'tags'					=>	json_encode($tags),
+				'display_types'			=>	json_encode($display_type_mapper->find_all())
+			));
+		}
+	}
+
+	/**
+	 * Returns a list of sources to select in the Display Tab
+	 */
+	function get_entity_sources()
+	{
+		$retval = array();
+
+		$sources = array(
+			'galleries'	=>	'Galleries',
+			'albums'	=>	'Albums',
+			'tags'		=>	'Tags'
+		);
+
+		foreach ($sources as $name => $title) {
+			$retval[] = array(
+				'id'		=>	$name,
+				'value'		=>	$name,
+				'title'		=>	$title,
+				'selected'	=>	$this->object->_displayed_gallery->source == $name
+			);
+		}
+
+		return $retval;
+	}
+
+
+	/**
 	 * Gets a list of tabs to render for the "Display" tab
 	 */
 	function _get_display_tabs()
@@ -38,10 +91,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_source_tab_contents()
 	{
-		return $this->object->render_partial('display_tab_source', array(
-			'source_label'		=>	_('Source:'),
-			'source_templates'	=>	$this->object->_get_source_templates()
-		),TRUE);
+		return $this->object->render_partial('display_tab_source', array(),TRUE);
 	}
 
 
@@ -64,9 +114,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_type_tab_contents()
 	{
-		return $this->object->render_partial('display_tab_type', array(
-			'display_types'	=>	$this->object->_get_display_types()
-		), TRUE);
+		return $this->object->render_partial('display_tab_type', array(), TRUE);
 	}
 
 
@@ -124,14 +172,8 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	function _render_display_settings_contents()
 	{
 		$retval = array();
-
-		// Retrieve all display types. I'm currently retrieving all as models,
-		// as set_defaults() is NOT called otherwise. If there are validation
-		// errors too, we need to display them.
-		// TODO: Figure out a better way to get validation errors. Models are
-		// too expensive to use with collections.
 		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-		foreach ($mapper->find_all(array(), TRUE) as $display_type) {
+		foreach ($mapper->find_all(array()) as $display_type) {
 
 			// Get the display type controller
 			$display_type_controller = $this->object->get_registry()->get_utility(
@@ -195,9 +237,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_preview_tab_contents()
 	{
-		return $this->object->render_partial('preview_tab', array(
-			'exclude_all_label'	=>	_('Exclude from displaying ?'),
-		), TRUE);
+		return $this->object->render_partial('preview_tab', array(), TRUE);
 	}
 
 
@@ -279,19 +319,5 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			'template_name'				=>	'image_tags_source_view',
 			'tags_label'				=>	_('Tags'),
 		), TRUE);
-	}
-
-
-	/**
-	 * Gets a list of display types available
-	 */
-	function _get_display_types()
-	{
-		// TODO: This is returning display type models. It doesn't need to, other
-		// than the fact that we need the set_defaults() method executed. When
-		// we move the operation of setting defaults to the datamapper, then
-		// we can return simple entities instead
-		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-		return $mapper->find_all(array(), TRUE);
 	}
 }

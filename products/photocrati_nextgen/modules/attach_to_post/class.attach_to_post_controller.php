@@ -77,34 +77,44 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			'ngg_attach_to_post', $this->static_url('attach_to_post.css')
 		);
 
-		// Enqueue our Ember.js application for the "Display Tab"
+		// Enqueue our JS templating library, Handlebars
 		wp_enqueue_script(
 			'handlebars',
-			$this->static_url('handlebars-1.0.0.beta.6.js')
+			$this->static_url('handlebars-1.0.0.beta.6.js'),
+			array(),
+			'1.0.0b6'
 		);
+
+		// Enqueue the underscore.js library, required by Backbone
 		wp_enqueue_script(
-			'ember',
-			$this->static_url('ember-1.0.pre.js'),
-			array('jquery', 'handlebars')
+			'underscore',
+			$this->static_url('underscore.js'),
+			array(),
+			'1.4.2'
+		);
+
+		// Enqueue backbone.js library, required by the Attach to Post display tab
+		wp_enqueue_script(
+			'backbone',
+			$this->static_url('backbone.js'),
+			array('jquery', 'underscore'),
+			'0.9.2'
 		);
 
 		wp_enqueue_script(
-			'ngg_attach_to_post_display_tab_app',
-			$this->static_url('display_tab_app.js'),
-			array('ember')
+			'underscore.string',
+			$this->static_url('underscore.string.js'),
+			array('underscore'),
+			'2.3.0'
 		);
-		wp_localize_script(
-			'ngg_attach_to_post_display_tab_app',
-			'ngg_displayed_gallery_preview_url',
-			PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
+
+		// Enqueue the backbone app for the display tab
+		wp_enqueue_script(
+			'ngg_display_tab',
+			PHOTOCRATI_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL,
+			array('backbone', 'underscore.string')
 		);
-		if ($this->object->_validate_request()) {
-			wp_localize_script(
-				'ngg_attach_to_post_display_tab_app',
-				'existing',
-				isset($this->object->_displayed_gallery) ? (array)$this->object->_displayed_gallery->get_entity() : null
-			);
-		}
+
 		wp_print_styles();
 		wp_print_scripts();
 
@@ -151,6 +161,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
                     'width'     =>  200,
                     'height'    =>  200,
                     'quality'   =>  90,
+					'type'		=>	'jpg'
                 ), TRUE));
 			}
 		}
@@ -177,6 +188,11 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			if (is_null($this->object->_displayed_gallery)) $valid_request = FALSE;
 			else $this->object->_displayed_gallery->id = $this->object->_displayed_gallery->id();
 		}
+		// No displayed gallery was specified
+		else {
+			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+			$this->object->_displayed_gallery = $factory->create('displayed_gallery');
+		}
 
 		return $valid_request;
 	}
@@ -199,10 +215,10 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		return array(
 			'displayed_tab'		=> $this->object->_render_display_tab(),
-			'create_tab'		=> $this->object->_render_create_tab(),
-			'galleries_tab'		=> $this->object->_render_galleries_tab(),
-			'albums_tab'		=> $this->object->_render_albums_tab(),
-			'tags_tab'			=> $this->object->_render_tags_tab()
+//			'create_tab'		=> $this->object->_render_create_tab(),
+//			'galleries_tab'		=> $this->object->_render_galleries_tab(),
+//			'albums_tab'		=> $this->object->_render_albums_tab(),
+//			'tags_tab'			=> $this->object->_render_tags_tab()
 		);
 	}
 
