@@ -146,6 +146,22 @@ iframe {
 	position: relative;
 }
 
+#preview_tab_content #entity_list .exclude_container {
+	text-align: center;
+	margin: 0 auto;
+	color: black;
+	font-weight: normal;
+	margin-top: 9px;
+}
+
+#preview_tab_content .header_row {
+	margin-bottom: 5px;
+}
+#preview_tab_content .header_row strong {
+	width: 60px;
+	display: inline-block;
+}
+
 #preview_tab_content #entity_list li.clear {
 	float: none;
 	clear: both;

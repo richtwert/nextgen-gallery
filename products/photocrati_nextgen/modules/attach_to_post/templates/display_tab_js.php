@@ -351,6 +351,9 @@ jQuery(function($){
 	 * Represents an entity to display on the front-end
 	**/
 	Ngg.DisplayTab.Models.Entity				= Backbone.Model.extend({
+		entity_id: function(){
+			return this.get(this.get('id_field'));
+		}
 	});
 	
 	/**
@@ -487,24 +490,29 @@ jQuery(function($){
 			this.albums		= Ngg.DisplayTab.instance.albums;
 			this.entities	= Ngg.DisplayTab.instance.entities;
 			
-			// We're currently re-rendering the entity preview area
-			// when an item is listed. That is wrong is so many ways.
-			// TODO: fix.
-			this.entities.on('add', this.render, this);
-			this.render();
+			// Create the entity list
+			this.entity_list = $('<ul/>').attr('id', 'entity_list').append('<li class="clear"/>');
+			
+			// When an entity is added to the collection, we'll add it to the DOM
+			this.entities.on('add', this.render_entity, this);
+			this.entities.on('remove', this.render_entity, this);
+			this.entities.on('reset', function(){this.entity_list.empty().append('<li class="clear"/>');}, this);
 		},
 		
-		render: function(){
-			this.$el.empty();
-			if (this.entities.length > 0) {
-				var sorting = '<div id="sorting">Sort By: <a href="#" rel="custom">Custom</a></div>';
+		render_entity: function(model){
+			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
+			if (this.entities.length == 1) {
+				// Render header rows
+				var sorting = '<div id="sorting" class="header_row"><strong>Sort By:</strong> <a href="#" rel="custom">Custom</a> | <a href="#">ID</a> | <a href="#">Name</a> | <a href="#">Date (Time)</a></div>';
+				var exclusions = '<div id="excluding" class="header_row"><strong>Exclude:</strong> <a href="#">All</a> | <a href="#">None</a></div>';
+				var ordering = '<div id="ordering" class="header_row"><strong>Order By:</strong> <a href="#">Ascending</a> | <a href="#">Descending</a></div>';
 				this.$el.append(sorting);
-				var entity_list = $('<ul/>').attr('id', 'entity_list');
-				this.entities.each(function(item){
-					entity_list.append(new this.EntityElement({model:item, className: 'entity'}).render().el);
-				}, this);
-				entity_list.append('<li class="clear"/>');
-				entity_list.sortable({
+				this.$el.append(ordering);
+				this.$el.append(exclusions);
+				this.$el.append(this.entity_list);				
+				
+				// Activate jQuery Sortable for the entity list
+				this.entity_list.sortable({
 					placeholder: 'placeholder',
 					forcePlaceholderSize: true,
 					containment: 'parent',
@@ -518,9 +526,23 @@ jQuery(function($){
 						return true;
 					}
 				});
-				entity_list.disableSelection();
-				this.$el.append(entity_list);
+				this.entity_list.disableSelection();
 			}
+			else if (this.entities.length > 1) {
+				this.entity_list.sortable('refresh');
+			}
+		},
+		
+		remove_entity: function(model){
+			this.entity_list.find('#'+model.get('id_field')+'_'+model.entity());
+			this.entity_list.sortable('refresh');
+			if (this.entities.length == 0) {
+				this.$el.empty();
+			}
+			
+		},
+		
+		render: function(){
 			return this;
 		},
 		
@@ -530,6 +552,7 @@ jQuery(function($){
 			
 			initialize: function(){
 				if (this.options.model) this.model = this.options.model;
+				this.id = this.model.get('id_field')+'_'+this.model.entity_id()
 			},
 			
 			render: function(){
@@ -542,8 +565,39 @@ jQuery(function($){
 				});
 				image_container.append(img);
 				this.$el.append(image_container).addClass('ui-state-default');
+				
+				// Add exclude checkbox
+				var exclude_container = $('<div/>').addClass('exclude_container');
+				exclude_container.append('Exclude?');
+				var exclude_checkbox = new this.ExcludeCheckbox({model: this.model});
+				exclude_container.append(exclude_checkbox.render().el);
+				image_container.append(exclude_container);
 				return this;
-			}
+			},
+			
+			ExcludeCheckbox: Backbone.View.extend({
+				tagName: 'input',
+				
+				events: {
+					'change': 'entity_excluded'
+				},
+				
+				entity_excluded: function(e){
+					this.model.set('exclude', e.srcElement.checked);
+				},
+				
+				initialize: function(){
+					if (this.options.model) this.model = this.options.model;
+				},
+				
+				render: function(){
+					this.$el.attr({
+						checked: this.model.get('checked'),
+						type: 'checkbox'
+					});
+					return this;
+				}
+			})
 		})
 	});
 
