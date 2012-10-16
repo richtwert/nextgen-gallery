@@ -27,7 +27,25 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'galleries'				=>	json_encode($gallery_mapper->find_all()),
 				'albums'				=>	json_encode($album_mapper->find_all()),
 				'tags'					=>	json_encode($tags),
-				'display_types'			=>	json_encode($display_type_mapper->find_all())
+				'display_types'			=>	json_encode($display_type_mapper->find_all()),
+				'sortorder_options'		=>	json_encode(array(
+					array(
+						'title'	=>	'Custom',
+						'value'	=>	'sortorder',
+					),
+					array(
+						'title'	=>	'ID',
+						'value'	=>	'id',
+					),
+					array(
+						'title'	=>	'Name',
+						'value'	=>	'name',
+					),
+					array(
+						'title'	=>	'Date/Time',
+						'value'	=>	'date'
+					)
+				))
 			));
 		}
 	}

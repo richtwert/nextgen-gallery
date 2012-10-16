@@ -161,6 +161,14 @@ iframe {
 	width: 60px;
 	display: inline-block;
 }
+#preview_tab_content .header_row .separator {
+	display: inline-block;
+	margin: 0px 5px;
+}
+
+#preview_tab_content .header_row .selected {
+	font-weight: bold;
+}
 
 #preview_tab_content #entity_list li.clear {
 	float: none;

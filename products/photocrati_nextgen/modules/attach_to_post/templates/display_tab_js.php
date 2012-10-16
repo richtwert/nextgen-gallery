@@ -369,6 +369,14 @@ jQuery(function($){
 			});
 		}
 	});
+	
+	
+	Ngg.DisplayTab.Models.SortOrder				= Backbone.Model.extend({
+	});
+	
+	Ngg.DisplayTab.Models.SortOrder_Options		= Ngg.Models.SelectableItems.extend({
+		model: Ngg.DisplayTab.Models.SortOrder
+	});
 
 
     /*****************************************************************************
@@ -488,34 +496,74 @@ jQuery(function($){
 	Ngg.DisplayTab.Views.Preview_Area = Backbone.View.extend({
 		el: '#preview_area',
 		
+ 		fetch_limit: 50,
+
+		fetch_url: photocrati_ajax_url,		
+		
 		initialize: function(){
-			this.galleries	= Ngg.DisplayTab.instance.galleries;
-			this.sources	= Ngg.DisplayTab.instance.sources;
-			this.albums		= Ngg.DisplayTab.instance.albums;
-			this.entities	= Ngg.DisplayTab.instance.entities;
+			this.sortorder_options	= Ngg.DisplayTab.instance.sortorder_options;
+			this.entities			= Ngg.DisplayTab.instance.entities;
+			this.displayed_gallery	= Ngg.DisplayTab.instance.displayed_gallery;
 			
 			// Create the entity list
-			this.entity_list = $('<ul/>').attr('id', 'entity_list').append('<li class="clear"/>');
+			this.entity_list		= $('<ul/>').attr('id', 'entity_list').append('<li class="clear"/>');
 			
-			// When an entity is added to the collection, we'll add it to the DOM
+			// When an entity is added/removed to the collection, we'll add/remove it on the DOM
 			this.entities.on('add', this.render_entity, this);
 			this.entities.on('remove', this.render_entity, this);
-			this.entities.on('reset', function(){this.entity_list.empty().append('<li class="clear"/>');}, this);
+			
+			// When the collection is reset, we add a list item to clear the float. This is important -
+			// jQuery sortable() will break without the cleared element.
+			this.entities.on('reset', this.entities_reset, this);
+			
+			// When jQuery sortable() is finished sorting, we need to adjust the order of models in the collection
 			this.entities.on('change:sortorder', function(model){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
-				console.log(this.entities.entity_ids());
 			}, this);
+		},
+		
+		entities_reset: function(e){
+			this.entity_list.empty().append('<li class="clear"/>');
+			this.fetch_entities();
+		},
+		
+		fetch_entities: function(limit, offset){
+			// Create the request
+			var request = {
+				action: 'get_displayed_gallery_entities',
+				displayed_gallery: this.displayed_gallery.toJSON(),
+				limit: limit ? limit : this.fetch_limit,
+				offset: offset ? offset : 0
+			};
+
+			// Request the entities from the server
+			var self = this;
+			$.post(this.fetch_url, request, function(response){
+				if (!_.isObject(response)) response = JSON.parse(response);
+				
+				_.each(response.entities, function(item){
+					self.entities.push(item);
+				});
+				
+				// Continue fetching ?
+				if (response.count >= response.limit+response.offset) {
+					self.fetch_entities(response.limit, response.offset+response.limit);
+				}
+			});
 		},
 		
 		render_entity: function(model){
 			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
 			if (this.entities.length == 1) {
+				
 				// Render header rows
-				var sorting = '<div id="sorting" class="header_row"><strong>Sort By:</strong> <a href="#" rel="custom">Custom</a> | <a href="#">ID</a> | <a href="#">Name</a> | <a href="#">Date (Time)</a></div>';
+				this.$el.append(new this.SortButtons({
+					sortorder_options: this.sortorder_options,
+					entities: this.entities
+				}).render().el);
 				var exclusions = '<div id="excluding" class="header_row"><strong>Exclude:</strong> <a href="#">All</a> | <a href="#">None</a></div>';
 				var ordering = '<div id="ordering" class="header_row"><strong>Order By:</strong> <a href="#">Ascending</a> | <a href="#">Descending</a></div>';
-				this.$el.append(sorting);
 				this.$el.append(ordering);
 				this.$el.append(exclusions);
 				this.$el.append(this.entity_list);				
@@ -527,6 +575,7 @@ jQuery(function($){
 					containment: 'parent',
 					opacity: 0.7,
 					revert: true,
+					dropOnEmpty: true,
 					start: function(e, ui){
 						ui.placeholder.css({
 							height: ui.item.height()
@@ -556,6 +605,70 @@ jQuery(function($){
 		render: function(){
 			return this;
 		},
+		
+		SortButtons: Backbone.View.extend({
+			id: 'sorting',
+			
+			className: 'header_row',
+			
+			sortorder_options: 	null,
+			
+			initialize: 		function(){
+				if (this.options.sortorder_options) this.sortorder_options = this.options.sortorder_options;
+				if (this.options.entities) this.entities = this.options.entities;
+				this.sortorder_options.on('change:selected', this.changed_selection, this);
+			},
+			
+			changed_selection: function(model){
+				this.entities.reset();
+				this.$el.find('a').each(function(){
+					var $item = $(this);
+					if ($item.attr('value') == model.get('value'))
+						$item.addClass('selected');
+					else
+						$item.removeClass('selected');
+				});
+			},
+			
+			render: function(){
+				this.$el.append('<strong>Sort By:</strong>');
+				this.sortorder_options.each(function(item, index){
+					var button = new this.Button({model: item});
+					this.$el.append(button.render().el);
+					if (this.sortorder_options.length-1 > index) {
+						this.$el.append('<span class="separator">|</span>');
+					}
+				}, this);
+				return this;
+			},
+			
+			Button: Backbone.View.extend({
+				tagName: 'a',
+				
+				initialize: function(){
+					if (this.options.model) this.model = this.options.model;
+				},
+				
+				events: {
+					click: 'clicked'
+				},
+				
+				clicked: function(e){
+					e.preventDefault();
+					this.model.set('selected', true);
+				},
+				
+				render: function(){
+					this.$el.attr({
+						value: this.model.get('value'),
+						href: '#'
+					});
+					this.$el.text(this.model.get('title'));
+					if (this.model.get('selected')) this.$el.addClass('selected');
+					return this;
+				}
+			})
+		}),
 		
 		// Individual entity in the preview area
 		EntityElement: Backbone.View.extend({
@@ -647,42 +760,14 @@ jQuery(function($){
      * APPLICATION
     **/
     Ngg.DisplayTab.App = Backbone.View.extend({
- 		fetch_limit: 50,
-
-		fetch_url: photocrati_ajax_url,
-
-		fetch_entities: function(limit, offset){
-			// Create the request
-			var request = {
-				action: 'get_displayed_gallery_entities',
-				displayed_gallery: this.displayed_gallery.toJSON(),
-				limit: limit ? limit : this.fetch_limit,
-				offset: offset ? offset : 0
-			};
-
-			// Request the entities from the server
-			var self = this;
-			$.post(this.fetch_url, request, function(response){
-				if (!_.isObject(response)) response = JSON.parse(response);
-				
-				self.entities.reset();
-				_.each(response.entities, function(item){
-					self.entities.push(item);
-				});
-				
-				// Continue fetching ?
-				if (response.count >= response.limit+response.offset) {
-					self.fetch_entities(response.limit, response.offset+response.limit);
-				}
-			});
-		},
-
         /**
          * Initializes the DisplayTab object
         **/
         initialize: function(){
-
-
+			this.sortorder_options = new Ngg.DisplayTab.Models.SortOrder_Options(
+				<?php echo $sortorder_options ?>
+			);
+	
 			// TODO: We're currently fetching ALL galleries, albums, and tags
 			// in one shot. Instead, we should display the displayed_gallery's
 			// containers, if there are any, otherwise get the first 25 or so.
@@ -736,7 +821,7 @@ jQuery(function($){
         // Updates the selected container_ids for the displayed gallery
         update_selected_containers: function(collection){
 			this.displayed_gallery.set('container_ids', this[collection].selected_ids());
-			this.fetch_entities();
+			this.entities.reset();
         },
 
         render: function(){

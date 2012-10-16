@@ -10,6 +10,8 @@
  * - display_settings	(settings for the display type)
  * - exclusions			(excluded entity ids)
  * - entity_ids			(specific images/galleries to include, sorted)
+ * - order_by
+ * - order_direction
  */
 class C_Displayed_Gallery extends C_DataMapper_Model
 {
