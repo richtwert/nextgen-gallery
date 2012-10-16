@@ -361,10 +361,14 @@ jQuery(function($){
 	 * Represents a collection of entities
 	**/
 	Ngg.DisplayTab.Models.Entity_Collection		= Ngg.Models.SelectableItems.extend({
-		model: Ngg.DisplayTab.Models.Entity
+		model: Ngg.DisplayTab.Models.Entity,
+		
+		entity_ids: function(){
+			return this.map(function(item){
+				return item.entity_id();
+			});
+		}
 	});
-	
-	
 
 
     /*****************************************************************************
@@ -497,6 +501,11 @@ jQuery(function($){
 			this.entities.on('add', this.render_entity, this);
 			this.entities.on('remove', this.render_entity, this);
 			this.entities.on('reset', function(){this.entity_list.empty().append('<li class="clear"/>');}, this);
+			this.entities.on('change:sortorder', function(model){
+				this.entities.remove(model, {silent: true});
+				this.entities.add(model, {at: model.changed.sortorder, silent: true});
+				console.log(this.entities.entity_ids());
+			}, this);
 		},
 		
 		render_entity: function(model){
@@ -523,6 +532,9 @@ jQuery(function($){
 							height: ui.item.height()
 						});
 						return true;
+					},
+					stop: function(e, ui) {
+						ui.item.trigger('drop', ui.item.index());
 					}
 				});
 				this.entity_list.disableSelection();
@@ -549,9 +561,17 @@ jQuery(function($){
 		EntityElement: Backbone.View.extend({
 			tagName: 'li',
 			
+			events: {
+				drop: 'item_dropped'
+			},
+			
 			initialize: function(){
 				if (this.options.model) this.model = this.options.model;
 				this.id = this.model.get('id_field')+'_'+this.model.entity_id()
+			},
+			
+			item_dropped: function(e, index){
+				this.model.set('sortorder', index);
 			},
 			
 			render: function(){
