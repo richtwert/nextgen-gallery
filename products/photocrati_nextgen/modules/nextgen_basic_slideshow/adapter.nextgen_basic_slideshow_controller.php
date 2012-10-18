@@ -21,7 +21,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		// Get the images to be displayed
 		$retval = '';
-    $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
     
 		if (($images = $displayed_gallery->get_included_images($displayed_gallery->get_image_count(), 0))) {
 
@@ -434,7 +434,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	function _get_field_names()
 	{
 		return array(
-			//'thumbnail_dimensions',
 			'nextgen_basic_slideshow_gallery_dimensions',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',

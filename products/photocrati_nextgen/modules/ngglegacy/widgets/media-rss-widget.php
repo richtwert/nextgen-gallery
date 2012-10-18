@@ -135,6 +135,4 @@ class nggMediaRssWidget extends WP_Widget {
 } // class nggMediaRssWidget
 
 // let's start it
-add_action('widgets_init', create_function('', 'return register_widget("nggMediaRssWidget");'));
-
-?>
+// add_action('widgets_init', create_function('', 'return register_widget("nggMediaRssWidget");'));

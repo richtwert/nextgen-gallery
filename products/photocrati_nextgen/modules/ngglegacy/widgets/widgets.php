@@ -142,7 +142,7 @@ class nggSlideshowWidget extends WP_Widget {
 }
 
 // register it
-add_action('widgets_init', create_function('', 'return register_widget("nggSlideshowWidget");'));
+// add_action('widgets_init', create_function('', 'return register_widget("nggSlideshowWidget");'));
 
 /**
  * nggWidget - The widget control for NextGEN Gallery ( require WP2.7 or higher)
@@ -342,7 +342,7 @@ class nggWidget extends WP_Widget {
 }// end widget class
 
 // register it
-add_action('widgets_init', create_function('', 'return register_widget("nggWidget");'));
+// add_action('widgets_init', create_function('', 'return register_widget("nggWidget");'));
 
 /**
  * nggSlideshowWidget($galleryID, $width, $height)
@@ -402,5 +402,3 @@ function nggDisplayRecentImages($number, $width = '75', $height = '50', $exclude
 	$ngg_widget = new nggWidget();
 	$ngg_widget->widget($args = array( 'widget_id'=> 'sidebar_1' ), $options);
 }
-
-?>
