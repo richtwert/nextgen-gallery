@@ -138,6 +138,9 @@ class A_Attach_To_Post_Ajax extends Mixin
                 }
                 $entity->thumb_url	=	$storage->get_thumb_url($image);
                 $entity->thumb_size	=	$storage->get_thumb_dimensions($image);
+				if (!$entity->thumb_size) $entity->thumb_size = array(
+					'width' => '', 'height' => ''
+				);
 			}
 		}
 		else {

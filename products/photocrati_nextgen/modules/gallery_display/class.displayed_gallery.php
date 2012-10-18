@@ -67,7 +67,9 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 		// Valid sources
 		$this->object->validates_presence_of('source');
 		if (in_array($this->object->source, array('galleries', 'albums', 'tags'))) {
-			$this->object->validates_presence_of('container_ids');
+			if (count($this->object->container_ids) == 0 && count($this->object->entity_ids) == 0) {
+				$this->object->add_error("Additional source criteria required", 'source');
+			}
 		}
 
 		return $this->object->is_valid();
@@ -168,6 +170,7 @@ class Mixin_Gallery_Source_Queries extends Mixin
                 $limit = $settings->gallery_display_limit;
             }
             $mapper->limit($limit, $offset);
+//			$mapper->debug = TRUE;
             $retval = $mapper->run_query();
         }
 
@@ -285,20 +288,17 @@ class Mixin_Gallery_Source_Queries extends Mixin
             // A user might want to sort the results by the order of
             // images that they specified to be included. For that,
             // we need some trickery by reversing the order direction
-            if ($this->object->order_by == 'sortorder') {
-                if ($this->object->order_direction == 'ASC')
-                    $this->object->order_direction = 'DESC';
-                else
-                    $this->object->order_direction = 'ASC';
-            }
-            $mapper->order_by($this->object->order_by, $this->object->order_direction);
+			$order_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
+            $mapper->order_by($this->object->order_by, $order_direction);
 
             // When using a custom order (sortorder), we should apply a
             // secondary sort order to maintain the default sort order
             // for galleries as much as possible
             if ($this->object->order_by == 'sortorder') {
                 $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-                $mapper->order_by($settings->galSort, $settings->galSortDir);
+				if ($settings->galSort != 'sortorder') {
+					$mapper->order_by($settings->galSort, $settings->galSortDir);
+				}
             }
         }
 

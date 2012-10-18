@@ -28,24 +28,6 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'albums'				=>	json_encode($album_mapper->find_all()),
 				'tags'					=>	json_encode($tags),
 				'display_types'			=>	json_encode($display_type_mapper->find_all()),
-				'sortorder_options'		=>	json_encode(array(
-					array(
-						'title'	=>	'Custom',
-						'value'	=>	'sortorder',
-					),
-					array(
-						'title'	=>	'ID',
-						'value'	=>	'id',
-					),
-					array(
-						'title'	=>	'Name',
-						'value'	=>	'name',
-					),
-					array(
-						'title'	=>	'Date/Time',
-						'value'	=>	'date'
-					)
-				))
 			));
 		}
 	}
@@ -58,21 +40,31 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 		$retval = array();
 
 		$sources = array(
-			'galleries'	=>	'Galleries',
-			'albums'	=>	'Albums',
-			'tags'		=>	'Tags'
+			array(
+				'name'			=>	'galleries',
+				'title'			=>	'Galleries',
+				'returns'		=>	array('images')
+			),
+
+			array(
+				'name'			=>	'albums',
+				'title'			=>	'Albums',
+				'returns'		=>	array('galleries', 'albums')
+			),
+
+			array(
+				'name'			=>	'tags',
+				'title'			=>	'Tags',
+				'returns'		=>	array('images')
+			)
 		);
 
-		foreach ($sources as $name => $title) {
-			$retval[] = array(
-				'id'		=>	$name,
-				'value'		=>	$name,
-				'title'		=>	$title,
-				'selected'	=>	$this->object->_displayed_gallery->source == $name
-			);
+		foreach ($sources as &$source) {
+			$source['value'] = $source['id'] = $source['name'];
+			$source['selected'] = $this->object->_displayed_gallery->source == $source['name'];
 		}
 
-		return $retval;
+		return $sources;
 	}
 
 

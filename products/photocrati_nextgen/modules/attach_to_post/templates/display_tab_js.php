@@ -28,6 +28,12 @@ jQuery(function($){
             });
         },
 
+		deselect_all: function(){
+			this.each(function(item){
+				item.set('selected', false);
+			});
+		},
+
         selected_ids: function(){
 			return _.pluck(this.selected(), 'id');
         },
@@ -36,7 +42,7 @@ jQuery(function($){
 			if (!_.isArray(ids)) ids = [ids];
 			this.each(function(item){
 				if (ids.indexOf(item.id) >= 0) {
-					item.selected = true;
+					item.set('selected', true);
 				}
 			});
 		}
@@ -57,10 +63,14 @@ jQuery(function($){
         collection: null,
 
 		multiple: false,
+		
+		value_field: 'id',
+		
+		text_field: 'title',
 
         initialize: function(){
 			_.each(this.options, function(value, key){
-				if (!this[key]) this[key] = value;
+				this[key] = value;
 			}, this);
         },
 
@@ -74,7 +84,7 @@ jQuery(function($){
          * @triggers 'selected'
         **/
         selection_changed: function(){
-	
+
             // Get selected options from DOM
             var selections = _.map(this.$el.find(':selected'), function(element){
                 return $(element).attr('value');
@@ -82,7 +92,7 @@ jQuery(function($){
 
             // Set the 'selected' attribute for each item in the collection
             this.collection.each(function(item){
-                if (selections.indexOf(item.id) >= 0)
+                if (selections.indexOf(item.id) >= 0 || selections.indexOf(item.id.toString()) >= 0)
                     item.set('selected', true);
                 else
                     item.set('selected', false);
@@ -92,8 +102,12 @@ jQuery(function($){
 
         render: function(){
             this.collection.each(function(item){
-                var option = new this.Option({model: item});
-                    this.$el.append(option.render().el);
+                var option = new this.Option({
+					model: item,
+					value_field: this.value_field,
+					text_field: this.text_field
+				});
+                this.$el.append(option.render().el);
             }, this);
 			if (this.multiple) this.$el.attr('multiple', 'multiple');
 			if (this.width) this.$el.width(this.width);
@@ -109,15 +123,17 @@ jQuery(function($){
             model: null,
 
             initialize: function(){
+				_.each(this.options, function(value, key){
+					this[key] = value;
+				}, this);
                 this.model.on('change', this.render, this);
             },
 
             render: function(){
                 var self = this;
-                if (!this.model) this.model = this.options.model;
-                this.$el.text(this.model.get('title'));
+                this.$el.text(this.model.get(this.text_field));
                 this.$el.attr({
-                    value:    self.model.id,
+                    value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
                     selected: self.model.get('selected') == true,
                 });
                 return this;
@@ -133,7 +149,7 @@ jQuery(function($){
 		
 		placeholder: false,
 		
-		selection_changed: function(e, data){			
+		selection_changed: function(e, data){
 			// Select/deselect item in collection
 			this.collection.each(function(item){
 				if (data.selected) {
@@ -155,9 +171,11 @@ jQuery(function($){
 			// Create the select tag. We override the selected_changed handler, as Chosen
 			// does things differently.
 			var self = this;
-			if (this.options['placeholder']) this.placeholder = this.options.placeholder;
+			_.each(this.options, function(value, key){
+				this[key] = value;
+			}, this);
 			this.select_tag = new Ngg.Views.SelectTag(this.options);
-			this.select_tag.__proto__.selection_changed = this.selection_changed;
+			this.select_tag.on('selected', this.selection_changed);
 			this.select_tag.on('width_needs_adjusting', this.adjust_width, this);
 			this.select_tag = this.select_tag.render().$el;
 			if (this.placeholder) this.select_tag.attr('data-placeholder', this.placeholder);
@@ -263,7 +281,12 @@ jQuery(function($){
         model: Ngg.DisplayTab.Models.Source,
 
 		selected_value: function(){
-			return this.selected()[0].get('value');
+			var retval = null;
+			var selected = this.selected();
+			if (selected.length > 0) {
+				retval = selected[0].get('value');
+			}
+			return retval;
 		}
     });
 
@@ -342,7 +365,12 @@ jQuery(function($){
 		model: Ngg.DisplayTab.Models.Display_Type,
 		
 		selected_value: function(){
-			return this.selected()[0].get('name');
+			var retval = null;
+			var selected = this.selected();
+			if (selected.length > 0) {
+				return selected[0].get('name');
+			}
+			return retval;
 		}
 	});
 	
@@ -367,6 +395,12 @@ jQuery(function($){
 			return this.map(function(item){
 				return item.entity_id();
 			});
+		},
+		
+		included_ids: function(){
+			return _.compact(this.map(function(item){
+				if (parseInt(item.get('exclude')) == 0) return item.entity_id();
+			}));
 		}
 	});
 	
@@ -376,6 +410,12 @@ jQuery(function($){
 	
 	Ngg.DisplayTab.Models.SortOrder_Options		= Ngg.Models.SelectableItems.extend({
 		model: Ngg.DisplayTab.Models.SortOrder
+	});
+	Ngg.DisplayTab.Models.SortDirection			= Backbone.Model.extend({
+		
+	});
+	Ngg.DisplayTab.Models.SortDirection_Options = Backbone.Collection.extend({
+		model: Ngg.DisplayTab.Models.SortDirection
 	});
 
 
@@ -475,6 +515,7 @@ jQuery(function($){
  					type: 'radio',
 					value: this.model.get('name'),
 					title: this.model.get('title'),
+					name: 'display_type',
 					checked: this.model.get('selected')
 				});
 				image_container.append(inner_div);
@@ -501,8 +542,8 @@ jQuery(function($){
 		fetch_url: photocrati_ajax_url,		
 		
 		initialize: function(){
-			this.sortorder_options	= Ngg.DisplayTab.instance.sortorder_options;
 			this.entities			= Ngg.DisplayTab.instance.entities;
+			this.sources			= Ngg.DisplayTab.instance.sources;
 			this.displayed_gallery	= Ngg.DisplayTab.instance.displayed_gallery;
 			
 			// Create the entity list
@@ -520,7 +561,16 @@ jQuery(function($){
 			this.entities.on('change:sortorder', function(model){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
+				this.displayed_gallery.set('entity_ids', this.entities.included_ids());
 			}, this);
+			
+			// Reset when the source changes
+			this.sources.on('selected', this.render, this);
+			
+			// Fetch the initial collection of entities
+			this.entities_reset();
+			
+			this.render();
 		},
 		
 		entities_reset: function(e){
@@ -543,6 +593,7 @@ jQuery(function($){
 				if (!_.isObject(response)) response = JSON.parse(response);
 				
 				_.each(response.entities, function(item){
+					item = new Ngg.DisplayTab.Models.Entity(item);
 					self.entities.push(item);
 				});
 				
@@ -555,18 +606,36 @@ jQuery(function($){
 		
 		render_entity: function(model){
 			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
-			if (this.entities.length == 1) {
-				
+			if (this.el.children.length == 0) {
+				this.render();
+			}
+			else if (this.entities.length > 1) {
+				this.entity_list.sortable('refresh');
+			}
+		},
+		
+		remove_entity: function(model){
+			this.entity_list.find('#'+model.get('id_field')+'_'+model.entity());
+			this.entity_list.sortable('refresh');
+			if (this.entities.length == 0) {
+				this.$el.empty();
+			}
+		},
+		
+		render: function(){
+			this.$el.empty();
+			if (this.entities.length > 0) {
 				// Render header rows
 				this.$el.append(new this.SortButtons({
-					sortorder_options: this.sortorder_options,
+					entities: this.entities,
+					displayed_gallery: this.displayed_gallery,
+					sources: this.sources
+				}).render().el);
+				this.$el.append(new this.ExcludeButtons({
 					entities: this.entities
 				}).render().el);
-				var exclusions = '<div id="excluding" class="header_row"><strong>Exclude:</strong> <a href="#">All</a> | <a href="#">None</a></div>';
-				var ordering = '<div id="ordering" class="header_row"><strong>Order By:</strong> <a href="#">Ascending</a> | <a href="#">Descending</a></div>';
-				this.$el.append(ordering);
-				this.$el.append(exclusions);
-				this.$el.append(this.entity_list);				
+
+				this.$el.append(this.entity_list);
 				
 				// Activate jQuery Sortable for the entity list
 				this.entity_list.sortable({
@@ -588,40 +657,153 @@ jQuery(function($){
 				});
 				this.entity_list.disableSelection();
 			}
-			else if (this.entities.length > 1) {
-				this.entity_list.sortable('refresh');
-			}
-		},
-		
-		remove_entity: function(model){
-			this.entity_list.find('#'+model.get('id_field')+'_'+model.entity());
-			this.entity_list.sortable('refresh');
-			if (this.entities.length == 0) {
+			else {
 				this.$el.empty();
 			}
-			
-		},
-		
-		render: function(){
 			return this;
 		},
 		
-		SortButtons: Backbone.View.extend({
-			id: 'sorting',
-			
+		ExcludeButtons: Backbone.View.extend({
 			className: 'header_row',
 			
-			sortorder_options: 	null,
-			
-			initialize: 		function(){
-				if (this.options.sortorder_options) this.sortorder_options = this.options.sortorder_options;
-				if (this.options.entities) this.entities = this.options.entities;
-				this.sortorder_options.on('change:selected', this.changed_selection, this);
+			initialize: function(){
+				_.each(this.options, function(value, key){
+					this[key] = value;
+				}, this);
 			},
 			
-			changed_selection: function(model){
+			render: function(){
+				this.$el.empty();
+				this.$el.append('<strong>Exclude:</strong>');
+				var all_button = new this.Button({
+					value: 1,
+					text: 'All',
+					entities: this.entities
+				});
+				this.$el.append(all_button.render().el);
+				this.$el.append('<span class="separator">|</span>');
+				var none_button = new this.Button({
+					value: 0,
+					text: 'None',
+					entities: this.entities
+				});
+				this.$el.append(none_button.render().el);
+				return this;
+			},
+			
+			Button: Backbone.View.extend({
+				tagName: 'a',
+				
+				value: 1,
+				
+				text: '',
+				
+				events: {
+					click: 'clicked'
+				},
+				
+				initialize: function(){
+					_.each(this.options, function(value, key){
+						this[key] = value;
+					}, this);
+				},
+				
+				clicked: function(e){
+					e.preventDefault();
+					this.entities.each(function(item){
+						item.set('exclude', this.value);
+					}, this);
+				},
+				
+				render: function(){
+					this.$el.text(this.text).attr('href', '#');
+					return this;
+				}
+			})
+		}),
+		
+		SortButtons: Backbone.View.extend({
+			className: 'header_row',
+			
+			initialize: 		function(){
+				_.each(this.options, function(value, key){
+					this[key] = value;
+				}, this);
+				this.sortorder_options = new Ngg.DisplayTab.Models.SortOrder_Options();
+				this.sortorder_options.on('change:selected', this.sortoption_changed, this);
+				
+				// Create sort directions and listen for selection changes
+				this.sortdirection_options = new Ngg.DisplayTab.Models.SortDirection_Options([
+					{
+						value: 'ASC',
+						title: 'Ascending',
+						selected: this.displayed_gallery.get('order_direction') == 'ASC'
+					},
+					{
+						value: 'DESC',
+						title: 'Descending',
+						selected: this.displayed_gallery.get('order_direction') == 'DESC'
+					}
+				]);
+				this.sortdirection_options.on('change:selected', this.sortdirection_changed, this);
+			},
+			
+			populate_sorting_fields: function(){
+				// We display difference sorting buttons depending on what type of entities we're dealing with.
+				var entity_types = this.sources.selected().pop().get('returns');
+				if (entity_types.indexOf('images') !== -1) {
+					this.fill_image_sortorder_options();
+				}
+				else {
+					this.fill_gallery_sortorder_options();
+				}
+			},
+			
+			create_sortorder_option: function(name, title){
+				return new Ngg.DisplayTab.Models.SortOrder({
+					name: name,
+					title: title,
+					value: name,
+					selected: this.displayed_gallery.get('order_by') == name
+				});
+			},
+			
+			fill_image_sortorder_options: function(){
+				this.sortorder_options.reset();
+				this.sortorder_options.push(this.create_sortorder_option('sortorder', 'Custom'));
+				this.sortorder_options.push(this.create_sortorder_option(Ngg.DisplayTab.instance.image_key, 'Image ID'));
+				this.sortorder_options.push(this.create_sortorder_option('filename', 'Filename'));
+				this.sortorder_options.push(this.create_sortorder_option('alttext', 'Alt/Title Text'));
+				this.sortorder_options.push(this.create_sortorder_option('imagedate', 'Date/Time'));
+			},
+			
+			fill_gallery_sortorder_options: function(){
+				this.sortorder_options.reset();
+				this.sortorder_options.push(this.create_sortorder_option('' ,'Custom'));			
+			},
+			
+			sortoption_changed: function(model){
+				this.sortorder_options.each(function(item){
+					item.set('selected', model.get('value') == item.get('value') ? true : false, {silent: true});
+				});
+				this.displayed_gallery.set('order_by', model.get('value'));
 				this.entities.reset();
-				this.$el.find('a').each(function(){
+				this.$el.find('a.sortorder').each(function(){
+					var $item = $(this);
+					if ($item.attr('value') == model.get('value'))
+						$item.addClass('selected');
+					else
+						$item.removeClass('selected');
+				});
+			},
+			
+			sortdirection_changed: function(model){
+				this.sortdirection_options.each(function(item){
+					item.set('selected', model.get('value') == item.get('value') ? true : false, {silent: true});
+				});
+				this.displayed_gallery.set('order_direction', model.get('value'));
+				this.entities.reset();
+				this.$el.find('a.sortdirection').each(function(){
 					var $item = $(this);
 					if ($item.attr('value') == model.get('value'))
 						$item.addClass('selected');
@@ -631,12 +813,22 @@ jQuery(function($){
 			},
 			
 			render: function(){
+				this.$el.empty();
+				this.populate_sorting_fields();
 				this.$el.append('<strong>Sort By:</strong>');
 				this.sortorder_options.each(function(item, index){
-					var button = new this.Button({model: item});
+					var button = new this.Button({model: item, className: 'sortorder'});
 					this.$el.append(button.render().el);
 					if (this.sortorder_options.length-1 > index) {
 						this.$el.append('<span class="separator">|</span>');
+					}
+				}, this);
+				this.$el.append('<strong style="margin-left: 30px;">Order By:</strong>');
+				this.sortdirection_options.each(function(item, index){
+					var button = new this.Button({model: item, className: 'sortdirection'});
+					this.$el.append(button.render().el);
+					if (this.sortdirection_options.length-1 > index) {
+						this.$el.append('<span class="separator">|</span>');						
 					}
 				}, this);
 				return this;
@@ -646,7 +838,9 @@ jQuery(function($){
 				tagName: 'a',
 				
 				initialize: function(){
-					if (this.options.model) this.model = this.options.model;
+					_.each(this.options, function(value, key){
+						this[key] = value;
+					}, this);
 				},
 				
 				events: {
@@ -679,7 +873,9 @@ jQuery(function($){
 			},
 			
 			initialize: function(){
-				if (this.options.model) this.model = this.options.model;
+				_.each(this.options, function(value, key){
+					this[key] = value;
+				}, this);
 				this.id = this.model.get('id_field')+'_'+this.model.entity_id()
 			},
 			
@@ -690,6 +886,7 @@ jQuery(function($){
 			render: function(){
 				var image_container = $('<div/>').addClass('image_container');
 				var img = $('<img/>').attr({
+					rel: this.model.id,
 					src: this.model.get('thumb_url'),
 					alt: this.model.get('title'),
 					width: this.model.get('thumb_size').width,
@@ -714,19 +911,25 @@ jQuery(function($){
 					'change': 'entity_excluded'
 				},
 				
+				type_set: false,
+				
 				entity_excluded: function(e){
 					this.model.set('exclude', e.srcElement.checked);
 				},
 				
 				initialize: function(){
-					if (this.options.model) this.model = this.options.model;
+					_.each(this.options, function(value, key){
+						this[key] = value;
+					}, this);
+					this.model.on('change:exclude', this.render, this);
 				},
 				
 				render: function(){
-					this.$el.attr({
-						checked: this.model.get('checked'),
-						type: 'checkbox'
-					});
+					if (!this.type_set) {
+						this.$el.attr('type', 'checkbox');
+						this.type_set = true;
+					}
+					this.$el.attr('checked', parseInt(this.model.get('exclude')) == 1);
 					return this;
 				}
 			})
@@ -755,6 +958,108 @@ jQuery(function($){
 			return this;
 		}
 	});
+	
+	Ngg.DisplayTab.Views.AlbumsSource = Backbone.View.extend({
+		tagName: 'tbody',
+		
+		initialize: function(){
+			this.albums 	= Ngg.DisplayTab.instance.albums;
+		},
+		
+		render: function(){
+			var album_select = new Ngg.Views.Chosen({
+				collection: this.albums,
+				multiple: true,
+				text_field: 'name'
+			});
+			this.$el.empty();
+			this.$el.append('<tr><td><label>Albums</label></td><td class="albums_column"></td></tr>');
+			this.$el.find('.albums_column').append(album_select.render().el);
+			return this;
+		}
+	});
+	
+	
+	Ngg.DisplayTab.Views.SaveButton = Backbone.View.extend({
+		el: '#save_displayed_gallery',
+		
+		errors_el: '#errors',
+		
+		displayed_gallery: null,
+		
+		events: {
+			click: 'clicked'
+		},
+		
+		initialize: function(){
+			this.displayed_gallery	= Ngg.DisplayTab.instance.displayed_gallery;
+			this.entities			= Ngg.DisplayTab.instance.entities;
+			this.render();
+		},
+		
+		clicked: function(){
+			this.set_display_settings();
+			var request = {
+				action: 'save_displayed_gallery',
+				displayed_gallery: this.displayed_gallery.toJSON()
+			};
+			
+			var self = this;
+			$.post(photocrati_ajax_url, request, function(response){
+				if (!_.isObject(response)) response = JSON.parse(response);
+				if (response['validation_errors'] != undefined) {
+					$(self.errors_el).empty().append(response.validation_errors);
+				}
+				else if (response['error'] != undefined) {
+					alert(response.error);
+				}
+				else {
+					var id_field = response.displayed_gallery.id_field;
+					var id = response.displayed_gallery[id_field];
+					self.displayed_gallery.set('id', id);
+					var editor = parent.tinyMCE.activeEditor;
+					var preview_url = ngg_displayed_gallery_preview_url + '?id='+id;
+					var snippet = "<img class='ngg_displayed_gallery' src='"+preview_url+"'/>";
+					if (editor.getContent().indexOf(preview_url) < 0)
+						editor.execCommand('mceInsertContent', false, snippet);
+					close_attach_to_post_window();
+				}
+			});
+		},
+		
+		set_display_settings: function(){
+			var display_type = this.displayed_gallery.get('display_type');
+			if (display_type) {
+				// Collect display settings
+				var form = $("form[rel='"+display_type+"']");
+				var display_settings	= (function(item){
+					var obj = {};
+					item.serializeArray().forEach(function(item){
+						var parts = item.name.split('[');
+						var current_obj = obj;
+						for (var i=0; i<parts.length; i++) {
+							var part = parts[i].replace(/\]$/, '');
+							if (!current_obj[part]) {
+								if (i == parts.length-1)
+									current_obj[part] = item.value;
+								else
+									current_obj[part] = {};
+							}
+							current_obj = current_obj[part];
+						}
+					});
+					return obj;
+				})(form);
+				
+				// Set display settings for displayed gallery
+				this.displayed_gallery.set('display_settings', display_settings[display_type]);
+			}
+		},
+		
+		render: function(){
+			return this;
+		}
+	});
 
     /*****************************************************************************
      * APPLICATION
@@ -763,11 +1068,7 @@ jQuery(function($){
         /**
          * Initializes the DisplayTab object
         **/
-        initialize: function(){
-			this.sortorder_options = new Ngg.DisplayTab.Models.SortOrder_Options(
-				<?php echo $sortorder_options ?>
-			);
-	
+        initialize: function(){	
 			// TODO: We're currently fetching ALL galleries, albums, and tags
 			// in one shot. Instead, we should display the displayed_gallery's
 			// containers, if there are any, otherwise get the first 25 or so.
@@ -791,13 +1092,28 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
-			
 
 			// Pre-select current displayed gallery values
-			if (this.displayed_gallery.source) {
-				this[this.displayed_gallery.source].select(
-					this.displayed_gallery.container_ids
-				);
+			if (this.displayed_gallery.get('source')) {
+				
+				// Pre-select containers
+				if (this.displayed_gallery.get('container_ids')) {
+					_.each(this.displayed_gallery.get('container_ids'), function(id){
+						var container = this[this.displayed_gallery.get('source')].find(function(item){
+							return item.id == id;
+						});
+						if (container) container.set('selected', true);
+					}, this);
+				}
+				
+				// Pre-select display type
+				if (this.displayed_gallery.get('display_type')) {
+					var display_type = this.display_types.find(function(item){
+						return item.get('name') == this.displayed_gallery.get('display_type');
+					}, this);
+					if (display_type) display_type.set('selected', true);
+					
+				}
 			}
 
             // Bind to the 'selected' event for each of the collections, and update the displayed
@@ -808,13 +1124,22 @@ jQuery(function($){
             }, this);
 
 			// Bind to the 'selected' event for the display types collection, updating the displayed gallery
-			this.display_types.on('selected', function(){
+			this.display_types.on('change:selected', function(){
 				this.displayed_gallery.set('display_type', this.display_types.selected_value());
 			}, this);
 			
 			// Bind to the 'selected' event for the source, updating the displayed gallery
 			this.sources.on('selected', function(){
 				this.displayed_gallery.set('source', this.sources.selected_value());
+				this.galleries.deselect_all();
+				this.albums.deselect_all();
+				this.tags.deselect_all();
+				this.preview_area.render();
+			}, this);
+			
+			// Synchronize changes made to entities with the displayed gallery
+			this.entities.on('reset add remove change:exclude', function(){
+				this.displayed_gallery.set('entity_ids', this.entities.included_ids());
 			}, this);
         },
 
@@ -827,7 +1152,8 @@ jQuery(function($){
         render: function(){
 			new Ngg.DisplayTab.Views.Source_Config();
 			new Ngg.DisplayTab.Views.Display_Type_Selector();
-			new Ngg.DisplayTab.Views.Preview_Area();
+			this.preview_area = new Ngg.DisplayTab.Views.Preview_Area();
+			new Ngg.DisplayTab.Views.SaveButton();
         }
     });
     Ngg.DisplayTab.instance = new Ngg.DisplayTab.App();

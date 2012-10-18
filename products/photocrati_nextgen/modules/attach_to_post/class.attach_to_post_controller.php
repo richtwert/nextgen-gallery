@@ -111,8 +111,17 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue the backbone app for the display tab
 		wp_enqueue_script(
 			'ngg_display_tab',
-			PHOTOCRATI_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL,
+			add_query_arg(
+				'id',
+				$this->_displayed_gallery->id(),
+				PHOTOCRATI_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL
+			),
 			array('backbone', 'underscore.string')
+		);
+		wp_localize_script(
+			'ngg_display_tab',
+			'ngg_displayed_gallery_preview_url',
+			PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
 		);
 
 		wp_print_styles();
@@ -125,11 +134,11 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function index_action()
 	{
-		// Enqueue resources
-		$this->enqueue_backend_resources();
-
 		// For a valid request, we'll display our tabbed interface
 		if ($this->object->_validate_request()) {
+
+			// Enqueue resources
+			$this->enqueue_backend_resources();
 			$this->object->render_view('attach_to_post', array(
 				'page_title'	=>	$this->object->_get_page_title(),
 				'tabs'			=>	$this->object->_get_main_tabs(),
@@ -243,7 +252,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		$frame_url = real_site_url("/wp-admin/admin.php?page={$page}&attach_to_post");
 		$frame_url = esc_url($frame_url);
-		
+
 		return "<iframe class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
 	}
 
