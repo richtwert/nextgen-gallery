@@ -25,10 +25,10 @@ class nggPostThumbnail {
 	 */	
 	function __construct() {
 		
-		add_filter( 'admin_post_thumbnail_html', array( &$this, 'admin_post_thumbnail') );
-		add_action( 'wp_ajax_ngg_set_post_thumbnail', array( &$this, 'ajax_set_post_thumbnail') );
+		add_filter( 'admin_post_thumbnail_html', array( $this, 'admin_post_thumbnail') );
+		add_action( 'wp_ajax_ngg_set_post_thumbnail', array( $this, 'ajax_set_post_thumbnail') );
 		// Adding filter for the new post_thumbnail
-		add_filter( 'post_thumbnail_html', array( &$this, 'ngg_post_thumbnail'), 10, 5 );
+		add_filter( 'post_thumbnail_html', array( $this, 'ngg_post_thumbnail'), 10, 5 );
 		return;		
 	}
 
@@ -106,13 +106,13 @@ class nggPostThumbnail {
 			} else {
 				$width = absint( $_wp_additional_image_sizes[$size]['width'] );
 				$height = absint( $_wp_additional_image_sizes[$size]['height'] );
-            	$mode = ($_wp_additional_image_sizes[$size]['crop']) ? 'crop' : '';
+        $mode = ($_wp_additional_image_sizes[$size]['crop']) ? 'crop' : '';
 			}
 
-            // check fo cached picture
-                if ( $post->post_status == 'publish' )
-                    $img_src = $image->cached_singlepic_file( $width, $height, $mode );                
-		    
+      // check fo cached picture
+          if ( $post->post_status == 'publish' )
+              $img_src = $image->cached_singlepic_file( $width, $height, $mode );                
+  
 			// if we didn't use a cached image then we take the on-the-fly mode 
 		        if ($img_src ==  false) 
 		        	$img_src = trailingslashit( home_url() ) . 'index.php?callback=image&amp;pid=' . $image->pid . '&amp;width=' . $width . '&amp;height=' . $height . '&amp;mode=crop';
@@ -134,35 +134,161 @@ class nggPostThumbnail {
 	 * 
 	 * @return void
 	 */
-	function ajax_set_post_thumbnail() {
-        
-        global $post_ID;
-        
+	function ajax_set_post_thumbnail() 
+	{
+		global $post_ID;
+
 		// check for correct capability
 		if ( !is_user_logged_in() )
 			die( '-1' );
-		
-        // get the post id as global variable, otherwise the ajax_nonce failed later
-        $post_ID = intval( $_POST['post_id'] );
-		
-        if ( !current_user_can( 'edit_post', $post_ID ) )
+
+		// get the post id as global variable, otherwise the ajax_nonce failed later
+		$post_ID = intval( $_POST['post_id'] );
+
+		if ( !current_user_can( 'edit_post', $post_ID ) )
 			die( '-1' );
-		
+
 		$thumbnail_id = intval( $_POST['thumbnail_id'] );
-		
+
 		// delete the image
 		if ( $thumbnail_id == '-1' ) {
 			delete_post_meta( $post_ID, '_thumbnail_id' );
-			die( $this->_wp_post_thumbnail_html() );
+			die('0');
+		}
+
+		if ($thumbnail_id != null)
+		{
+			$registry = C_Component_Registry::get_instance();
+		  $imap = $registry->get_utility('I_Image_Mapper');
+		  $storage  = $registry->get_utility('I_Gallery_Storage');
+		  
+		  $image = $imap->find($thumbnail_id);
+		
+			// for NGG we look for the image id
+			if ($image)
+			{
+				$image_id = $thumbnail_id;
+				
+				$args = array(
+					'post_type' => 'attachment',
+					'meta_key' => '_ngg_image_id',
+					'meta_compare' => '==',
+					'meta_value' => $image_id
+				);
+				
+				$upload_dir = wp_upload_dir();
+				$basedir = $upload_dir['basedir'];
+				$thumbs_dir = path_join($basedir, 'ngg_featured');
+				$gallery_abspath = $storage->get_gallery_abspath($image->galleryid);
+				$image_abspath = $storage->get_full_abspath($image);
+				$target_path = null;
+	
+				$posts = get_posts($args);
+				$attachment_id = null;
+				
+				if ($posts != null)
+				{
+					$attachment_id = $posts[0]->ID;
+				}
+				else
+				{
+					$url = $storage->get_full_url($image);
+					
+					$target_relpath = null;
+					$target_basename = basename($image_abspath);
+					
+					if (strpos($image_abspath, $gallery_abspath) === 0)
+					{
+						$target_relpath = substr($image_abspath, strlen($gallery_abspath));
+					}
+					else if ($image->galleryid)
+					{
+						$target_relpath = path_join(strval($image->galleryid), $target_basename);
+					}
+					else
+					{
+						$target_relpath = $target_basename;
+					}
+					
+					$target_relpath = trim($target_relpath, '\\/');
+					$target_path = path_join($thumbs_dir, $target_relpath);
+					$max_count = 100;
+					$count = 0;
+					
+					while (file_exists($target_path) && $count <= $max_count)
+					{
+						$count++;
+						
+						$pathinfo = pathinfo($target_path);
+						$dirname = $pathinfo['dirname'];
+						$filename = $pathinfo['filename'];
+						$extension = $pathinfo['extension'];
+						
+						$rand = mt_rand(1, 9999);
+						$basename = $filename . '_' . sprintf('%04d', $rand) . '.' . $extension;
+						
+						$target_path = path_join($dirname, $basename);
+					}
+					
+					if (file_exists($target_path))
+					{
+						// XXX handle very rare case in which $max_count wasn't enough?
+					}
+					
+					$target_dir = dirname($target_path);
+					
+					wp_mkdir_p($target_dir);
+					
+					if (@copy($image_abspath, $target_path))
+					{
+						$size = @getimagesize($target_path);
+						$image_type = ($size) ? $size['mime'] : 'image/jpeg';
+				
+						$title = sanitize_file_name($image->alttext);
+						$caption = sanitize_file_name($image->description);
+				
+						$attachment = array(
+							'post_title' => $title,
+							'post_content' => $caption,
+							'post_status' => 'attachment',
+							'post_parent' => 0,
+							'post_mime_type' => $image_type,
+							'guid' => $url
+						);
+
+						// Save the data
+						$attachment_id = wp_insert_attachment($attachment, $target_path);
+				
+						if ($attachment_id)
+						{
+							wp_update_attachment_metadata($attachment_id, wp_generate_attachment_metadata($attachment_id, $target_path));
+					
+							update_post_meta($attachment_id, '_ngg_image_id', $image_id);
+						}
+					}
+				}
+			
+				if ($attachment_id)
+				{
+					//$attachment = get_post($attachment_id);
+					//$attachment_meta = wp_get_attachment_metadata($attachment_id);
+					$attachment_file = get_attached_file($attachment_id);
+					$target_path = $attachment_file;
+					
+					if (filemtime($image_abspath) > filemtime($target_path))
+					{
+						if (@copy($image_abspath, $target_path))
+						{
+							wp_update_attachment_metadata($attachment_id, wp_generate_attachment_metadata($attachment_id, $target_path));
+						}
+					}
+					
+					die(strval($attachment_id));
+				}
+			}
 		}
 		
-		// for NGG we look for the image id
-		if ( $thumbnail_id && nggdb::find_image($thumbnail_id) ) {
-			// to know that we have a NGG image we add "ngg-" before the id
-			update_post_meta( $post_ID, '_thumbnail_id', 'ngg-' . $thumbnail_id );
-			die( $this->_wp_post_thumbnail_html( $thumbnail_id ) );
-		}
-		die( '0' );
+		die('0');
 	}
 
 	/**

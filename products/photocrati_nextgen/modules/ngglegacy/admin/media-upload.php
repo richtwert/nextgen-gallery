@@ -117,7 +117,7 @@ function media_upload_nextgen_form($errors) {
 
 <script type="text/javascript"> 
 <!--
-	function NGGSetAsThumbnail(id){
+	function NGGSetAsThumbnail(id, nonce){
 		var $link = jQuery('a#ngg-post-thumbnail-' + id);
 	
 		$link.text( setPostThumbnailL10n.saving );
@@ -128,14 +128,10 @@ function media_upload_nextgen_form($errors) {
 			$link.text( setPostThumbnailL10n.setThumbnail );
 			if ( str == '0' ) {
 				alert( setPostThumbnailL10n.error );
+			} else if (str == '-1') {
+				// image removed
 			} else {
-				jQuery('a.ngg-post-thumbnail').show();
-				$link.text( setPostThumbnailL10n.done );
-				$link.fadeOut( 2000 );
-				// set some id as meta input filed
-				win.WPSetThumbnailID('ngg-' + id);
-				// replace the meta box with the image
-				win.WPSetThumbnailHTML(str);
+				WPSetAsThumbnail(str, nonce);
 			}
 		}
 		);
@@ -258,7 +254,8 @@ function media_upload_nextgen_form($errors) {
 						<td class="savesend">
 							<?php
 							if ( $calling_post_id && current_theme_supports( 'post-thumbnails', get_post_type( $calling_post_id ) ) )
-								echo "<a class='ngg-post-thumbnail' id='ngg-post-thumbnail-" . $picid . "' href='#' onclick='NGGSetAsThumbnail(\"$picid\");return false;'>" . esc_html__( 'Use as featured image' ) . "</a>";
+								$ajax_nonce = wp_create_nonce( "set_post_thumbnail-$calling_post_id" );
+								echo "<a class='ngg-post-thumbnail' id='ngg-post-thumbnail-" . $picid . "' href='#' onclick='NGGSetAsThumbnail(\"$picid\", \"$ajax_nonce\");return false;'>" . esc_html__( 'Use as featured image' ) . "</a>";
 							?>
 							<button type="submit" class="button" value="1" name="send[<?php echo $picid ?>]"><?php esc_html_e( 'Insert into Post' ); ?></button>
 						</td>
