@@ -344,7 +344,13 @@ jQuery(function($){
      * Represents a collection of tag objects
     **/
     Ngg.DisplayTab.Models.Tag_Collection        = Ngg.Models.SelectableItems.extend({
-        model: Ngg.DisplayTab.Models.Album
+        model: Ngg.DisplayTab.Models.Tag,
+
+		selected_ids: function(){
+			return this.selected().map(function(item){ 
+				return item.get('name');
+			});
+		}
     });
 
 	/**
@@ -975,6 +981,26 @@ jQuery(function($){
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Albums</label></td><td class="albums_column"></td></tr>');
 			this.$el.find('.albums_column').append(album_select.render().el);
+			return this;
+		}
+	});
+	
+	Ngg.DisplayTab.Views.TagsSource = Backbone.View.extend({
+		tagName: 'tbody',
+		
+		initialize: function(){
+			this.tags	= Ngg.DisplayTab.instance.tags;
+		},
+		
+		render: function(){
+			var tag_select = new Ngg.Views.Chosen({
+				collection: this.tags,
+				multiple: true,
+				text_field: 'name',
+			});
+			this.$el.empty();
+			this.$el.append('<tr><td><label>Tags</label></td><td class="tags_column"></td></tr>');
+			this.$el.find('.tags_column').append(tag_select.render().el);
 			return this;
 		}
 	});

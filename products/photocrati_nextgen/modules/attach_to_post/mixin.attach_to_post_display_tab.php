@@ -13,12 +13,20 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 		if ($this->object->_validate_request()){
 			$this->object->set_content_type('javascript');
 
+			// Get all entities used by the display tab
 			$gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper');
 			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper');
 			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper');
-			$tags = array();
 			$display_types		= $display_type_mapper->find_all();
 
+			// Get the nextgen tags
+			global $wpdb;
+			$tags = $wpdb->get_results(
+					"SELECT DISTINCT name AS 'id', name FROM {$wpdb->terms}
+					WHERE term_id IN (
+						SELECT term_id FROM {$wpdb->term_taxonomy}
+						WHERE taxonomy = 'ngg_tag'
+					)");
 
 			$this->object->render_view('display_tab_js', array(
 				'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),

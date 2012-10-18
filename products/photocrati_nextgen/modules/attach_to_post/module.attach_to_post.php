@@ -48,6 +48,7 @@ class M_Attach_To_Post extends C_Base_Module
 	{
 		parent::initialize();
 		$this->_add_routes();
+		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 	}
 
 
