@@ -16,7 +16,24 @@ if (!class_exists('nggImage'))
 
         function __construct($image)
         {
-            $image->meta_data = @unserialize($image->meta_data);
+            $meta_data = @unserialize($image->meta_data);
+            
+            if ($meta_data == false)
+            {
+            	$meta_data = base64_decode($image->meta_data);
+            	
+            	if ($meta_data)
+            	{
+            		$meta_json = json_decode($meta_data, true);
+            		
+            		if ($meta_json)
+            		{
+            			$meta_data = $meta_json;
+            		}
+            	}
+            }
+            
+            $image->meta_data = $meta_data;
             C_Component_Registry::get_instance();
             $this->_ngiw = new C_Image_Wrapper($image, NULL, TRUE);
         }
