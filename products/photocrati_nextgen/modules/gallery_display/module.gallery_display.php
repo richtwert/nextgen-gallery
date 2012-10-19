@@ -107,7 +107,7 @@ class M_Gallery_Display extends C_Base_Module
 	function _register_hooks()
 	{
 		// Add the display settings page to wp-admin
-		add_action('admin_menu', array(&$this, 'add_display_settings_page'), 999);
+		add_action('admin_menu', array(&$this, 'add_display_settings_page'), 900);
 
 		// Enqueues static resources required
 		if (is_admin()) {
