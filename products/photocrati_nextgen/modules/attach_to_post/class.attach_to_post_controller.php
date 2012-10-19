@@ -158,15 +158,31 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function preview_action()
 	{
-		$filename = $this->static_file('invalid_image.png');
-		$this->set_content_type('jpeg');
+		$found_preview_pic = FALSE;
+
 		if ($this->object->_validate_request()) {
             $dyn_thumbs =   $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 			$storage    = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-			$images     = $this->object->_displayed_gallery->get_entities(1);
-			if ($images) {
-				$image = array_pop($images);
-                $filename = $storage->get_image_abspath($image, $dyn_thumbs->get_size_name(array(
+
+			// Get the first entity from the displayed gallery. We will use this
+			// for a preview pic
+			$entity = array_pop($this->object->_displayed_gallery->get_entities(1, FALSE, FALSE, TRUE));
+			$image = FALSE;
+			if ($entity) {
+
+				// Is this an image
+				if (isset($entity->galleryid)) {
+					$image = $entity;
+				}
+				elseif (isset($entity->previewpic)) {
+					$image = $entity->previewpic;
+				}
+			}
+
+			// Were we able to find a preview pic? If so, then render it
+			if ($image) {
+				$found_preview_pic = TRUE;
+				$storage->render_image($image, $dyn_thumbs->get_size_name(array(
                     'width'     =>  200,
                     'height'    =>  200,
                     'quality'   =>  90,
@@ -174,8 +190,14 @@ class Mixin_Attach_To_Post_Controller extends Mixin
                 ), TRUE));
 			}
 		}
-		readfile($filename);
-		$this->render();
+
+		// Render invalid image if no preview pic is found
+		if (!$found_preview_pic) {
+			$filename = $this->object->find_static_file('invalid_image.png');
+			$this->set_content_type('image/png');
+			readfile($filename);
+			$this->render();
+		}
 	}
 
 
