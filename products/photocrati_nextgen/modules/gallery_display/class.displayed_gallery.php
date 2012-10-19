@@ -482,6 +482,12 @@ class Mixin_Album_Source_Queries extends Mixin
                     if (!($skip_exclusions && $obj->exclude == 1)) $retval[] = $obj;
                 }
             }
+
+			// Are we to sort ?
+			if ($this->object->order_by == 'sortorder') $this->object->order_by = NULL;
+			if ($this->object->order_by) {
+				usort($retval, array(&$this, 'sort_album_result'));
+			}
         }
 
         // Return just the entity ids
@@ -493,6 +499,18 @@ class Mixin_Album_Source_Queries extends Mixin
         // Apply limit and offset
         return array_slice($retval, $offset, $limit);
     }
+
+
+	/**
+	 * Sorts the results of an album query
+	 * @param stdClass $a
+	 * @param stdClass $b
+	 */
+	function sort_album_result($a, $b)
+	{
+		$key = $this->object->order_by;
+		return strcmp($a->$key, $b->$key);
+	}
 
 
     /**
@@ -536,7 +554,7 @@ class Mixin_Album_Source_Queries extends Mixin
         if (in_array($this->object->source, $album_sources)) {
             $mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
             $album_key = $mapper->get_primary_key_column();
-            $mapper->select()->where(array("{$album_key} IN (%s)", $this->object->contianer_ids));
+            $mapper->select()->where(array("{$album_key} IN (%s)", $this->object->container_ids));
             $retval =  $mapper->run_query();
         }
         return $retval;

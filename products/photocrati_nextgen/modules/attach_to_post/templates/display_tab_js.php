@@ -613,7 +613,7 @@ jQuery(function($){
 		
 		render_entity: function(model){
 			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
-			if (this.el.children.length == 0) {
+			if (this.$el.find('.no_entities').length == 1) {
 				this.render();
 			}
 			else if (this.entities.length > 1) {
@@ -631,7 +631,7 @@ jQuery(function($){
 		
 		render: function(){
 			this.$el.empty();
-			if (this.entities.length > 0) {
+			if (this.entities.length > 0 && this.displayed_gallery.get('container_ids').length > 0) {
 				// Render header rows
 				this.$el.append(new this.SortButtons({
 					entities: this.entities,
@@ -666,6 +666,7 @@ jQuery(function($){
 			}
 			else {
 				this.$el.empty();
+				this.$el.append("<p class='no_entities'>No entities to display for this source.</p>");
 			}
 			return this;
 		},
@@ -786,7 +787,9 @@ jQuery(function($){
 			
 			fill_gallery_sortorder_options: function(){
 				this.sortorder_options.reset();
-				this.sortorder_options.push(this.create_sortorder_option('' ,'Custom'));			
+				this.sortorder_options.push(this.create_sortorder_option('' ,'Custom'));
+				this.sortorder_options.push(this.create_sortorder_option('name', 'Name'));
+				this.sortorder_options.push(this.create_sortorder_option('galdesc', 'Description'));
 			},
 			
 			sortoption_changed: function(model){
@@ -1006,7 +1009,6 @@ jQuery(function($){
 			return this;
 		}
 	});
-	
 	
 	Ngg.DisplayTab.Views.SaveButton = Backbone.View.extend({
 		el: '#save_displayed_gallery',

@@ -64,6 +64,18 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'name'			=>	'tags',
 				'title'			=>	'Tags',
 				'returns'		=>	array('images')
+			),
+
+			array(
+				'name'			=>	'random_images',
+				'title'			=>	'Random Images',
+				'returns'		=>	array('images')
+			),
+
+			array(
+				'name'			=>	'recent_images',
+				'title'			=>	'Recent Images',
+				'returns'		=>	array('images')
 			)
 		);
 
