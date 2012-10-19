@@ -122,7 +122,8 @@ class C_NextGen_Settings_Defaults
 
         return array(
             'gallerypath' => 'wp-content/blogs.dir/%BLOG_ID%/files/',
-            'wpmuCSSfile' => 'nggallery.css'
+            'wpmuCSSfile' => 'nggallery.css',
+            'wpmuStyle' => 1
         );
     }
 }
@@ -147,7 +148,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
         {
             $this->object->restore_missing_options();
         } else {
-            $tmp = $this->get_registry()->get_utility('I_NextGen_Settings');
+            $tmp = $this->object->get_registry()->get_utility('I_NextGen_Settings');
             $tmp->restore_missing_options();
             unset($tmp);
         }
@@ -159,7 +160,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
             {
                 $this->object->restore_missing_multisite_options();
             } else {
-                $tmp = $this->get_registry()->get_utility('I_NextGen_Settings', array('multisite'));
+                $tmp = $this->object->get_registry()->get_utility('I_NextGen_Settings', 'multisite');
                 $tmp->restore_missing_multisite_options();
                 unset($tmp);
             }
@@ -526,11 +527,12 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
         $this->implement('I_NextGen_Settings');
 	}
 
-	function initialize()
-	{
-		parent::initialize();
-		$this->object->reload();
-	}
+    function initialize()
+    {
+        parent::initialize();
+        if ('all' == $this->context)
+            $this->object->reload();
+    }
 
     function &__get($option_name)
     {
