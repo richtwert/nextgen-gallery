@@ -44,8 +44,12 @@ class Mixin_NextGen_Activator extends Mixin
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 		$settings->save();
 
-        // Install multisite options. The settings handler will take care of checking if the site is multisite enabled
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings', 'multisite');
-		$settings->save();
+        if ($settings->is_multisite())
+        {
+            $this->object
+                 ->get_registry()
+                 ->get_utility('I_NextGen_Settings', 'multisite')
+                 ->save();
+        }
 	}
 }
