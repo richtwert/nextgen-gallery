@@ -51,31 +51,36 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			array(
 				'name'			=>	'galleries',
 				'title'			=>	'Galleries',
-				'returns'		=>	array('images')
+				'returns'		=>	array('images'),
+				'display_type'	=>	'gallery'
 			),
 
 			array(
 				'name'			=>	'albums',
 				'title'			=>	'Albums',
-				'returns'		=>	array('galleries', 'albums')
+				'returns'		=>	array('galleries', 'albums'),
+				'display_type'	=>	'album'
 			),
 
 			array(
 				'name'			=>	'tags',
 				'title'			=>	'Tags',
-				'returns'		=>	array('images')
+				'returns'		=>	array('images'),
+				'display_type'	=>	'gallery'
 			),
 
 			array(
 				'name'			=>	'random_images',
 				'title'			=>	'Random Images',
-				'returns'		=>	array('images')
+				'returns'		=>	array('images'),
+				'display_type'	=>	'gallery'
 			),
 
 			array(
 				'name'			=>	'recent_images',
 				'title'			=>	'Recent Images',
-				'returns'		=>	array('images')
+				'returns'		=>	array('images'),
+				'display_type'	=>	'gallery'
 			)
 		);
 
@@ -268,86 +273,5 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	function _render_preview_tab_contents()
 	{
 		return $this->object->render_partial('preview_tab', array(), TRUE);
-	}
-
-
-	/**
-	 * Retrieves a list of sources for images/galleries
-	 */
-	function get_sources()
-	{
-		return array(
-			array(
-                'id'	        =>	'galleries',
-                'title'	        =>	'Galleries',
-                'display_type'  =>  'gallery'
-            ),
-			array(
-                'id'	        =>	'albums',
-                'title'	        =>	'Albums',
-                'display_type'  =>  'album'
-            ),
-			array(
-                'id'	        =>	'image_tags',
-                'title'	        =>	'Image Tags',
-                'display_type'  =>  'gallery'
-            ),
-			array(
-                'id'	        =>	'recent_images',
-                'title'         =>	'Recent Images',
-                'display_type'  =>  'gallery'
-            ),
-			array(
-                'id'	        =>	'random_images',
-                'title'	        =>	'Random Images',
-                'display_type'  =>  'gallery'
-            )
-		);
-	}
-
-	/**
-	 * Gets the Handlebar templates for each source
-	 */
-	function _get_source_templates()
-	{
-		$retval = array();
-		foreach ($this->object->get_sources() as $source) {
-			$retval[] = $this->object->call_method('_render_'.$source['id'].'_source_template');
-		}
-		return $retval;
-	}
-
-
-	/**
-	 * Renders the Handlebars template for the "Galleries" source
-	 */
-	function _render_galleries_source_template()
-	{
-		return $this->object->render_partial('galleries_source', array(
-			'template_name'				=>	'galleries_source_view',
-			'existing_galleries_label'	=>	_('Galleries:'),
-		), TRUE);
-	}
-
-
-    function _render_albums_source_template()
-    {
-        return $this->object->render_partial('albums_source', array(
-            'template_name'             =>  'albums_source_view',
-            'existing_albums_label'     =>  _('Albums:'),
-        ), TRUE);
-    }
-
-
-	/**
-	 * Renders the Handlebars template for the image tags source
-	 * @return string
-	 */
-	function _render_image_tags_source_template()
-	{
-		return $this->object->render_partial('image_tags_source', array(
-			'template_name'				=>	'image_tags_source_view',
-			'tags_label'				=>	_('Tags'),
-		), TRUE);
 	}
 }

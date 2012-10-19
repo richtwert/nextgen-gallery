@@ -475,7 +475,8 @@ jQuery(function($){
 		el: '#display_type_selector',
 
 		initialize: function(){
-			this.display_types = Ngg.DisplayTab.instance.display_types;
+			this.display_types	= Ngg.DisplayTab.instance.display_types;
+			this.sources		= Ngg.DisplayTab.instance.sources;
 			this.render();
 		},
 		
@@ -494,13 +495,16 @@ jQuery(function($){
 		},
 
 		render: function(){
+			this.$el.empty();
 			this.display_types.each(function(item){
-				var display_type = new this.DisplayType;
-				display_type.on('selected', function(value){
-					this.selection_changed(value);
-				}, this);
-				display_type.model = item;
-				this.$el.append(display_type.render().el);
+				if (this.sources.selected().length == 0 || item.get('entity_type') == this.sources.selected().pop().get('display_type')) {
+					var display_type = new this.DisplayType;
+					display_type.on('selected', function(value){
+						this.selection_changed(value);
+					}, this);
+					display_type.model = item;
+					this.$el.append(display_type.render().el);					
+				}
 			}, this);
 			return this;
 		},
@@ -1164,6 +1168,7 @@ jQuery(function($){
 				this.galleries.deselect_all();
 				this.albums.deselect_all();
 				this.tags.deselect_all();
+				this.display_type_selector.render();
 				this.preview_area.render();
 			}, this);
 			
@@ -1181,7 +1186,7 @@ jQuery(function($){
 
         render: function(){
 			new Ngg.DisplayTab.Views.Source_Config();
-			new Ngg.DisplayTab.Views.Display_Type_Selector();
+			this.display_type_selector = new Ngg.DisplayTab.Views.Display_Type_Selector();
 			this.preview_area = new Ngg.DisplayTab.Views.Preview_Area();
 			new Ngg.DisplayTab.Views.SaveButton();
         }
