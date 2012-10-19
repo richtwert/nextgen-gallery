@@ -207,16 +207,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_piclens_link_text_field($display_type)
     {
-        if (!empty($display_type->settings['show_piclens_link']))
-            return $this->render_partial(
-                'nextgen_basic_thumbnails_settings_piclens_link_text',
-                array(
-                    'display_type_name' => $display_type->name,
-                    'piclens_link_text_label' => _('Piclens link text'),
-                    'piclens_link_text' => $display_type->settings['piclens_link_text']
-                ),
-                TRUE
-            );
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_piclens_link_text',
+            array(
+                'display_type_name' => $display_type->name,
+                'piclens_link_text_label' => _('Piclens link text'),
+                'piclens_link_text' => $display_type->settings['piclens_link_text']
+            ),
+            TRUE
+        );
     }
 
     /**
@@ -246,16 +245,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
      */
     function _render_nextgen_basic_thumbnails_show_piclens_link_field($display_type)
     {
-        if (!empty($display_type->settings['show_piclens_link']))
-            return $this->render_partial(
-                'nextgen_basic_thumbnails_settings_show_piclens_link',
-                array(
-                    'display_type_name' => $display_type->name,
-                    'show_piclens_link_label' => _('Show piclens link'),
-                    'show_piclens_link' => $display_type->settings['show_piclens_link']
-                ),
-                TRUE
-            );
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_show_piclens_link',
+            array(
+                'display_type_name' => $display_type->name,
+                'show_piclens_link_label' => _('Show piclens link'),
+                'show_piclens_link' => $display_type->settings['show_piclens_link']
+            ),
+            TRUE
+        );
     }
 
 	/**
