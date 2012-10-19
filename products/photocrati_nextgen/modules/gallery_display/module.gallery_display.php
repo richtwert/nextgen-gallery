@@ -132,6 +132,7 @@ class M_Gallery_Display extends C_Base_Module
         add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
         add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
         add_shortcode('album',        array(&$this, 'wrap_shortcode_album'));
+        add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
 
         add_action('init', array(&$this, 'serve_alternative_view_request'));
 	}
@@ -332,7 +333,12 @@ class M_Gallery_Display extends C_Base_Module
      */
     function wrap_shortcode_slideshow($params, $inner_content=NULL)
     {
-        // not yet implemented
+        $params['gallery_ids']    = $this->_get_param('id', NULL, $params);
+        $params['display_type']   = $this->_get_param('display_type', 'photocrati-nextgen_basic_slideshow', $params);
+        $params['gallery_width']  = $this->_get_param('w', NULL, $params);
+        $params['gallery_height'] = $this->_get_param('h', NULL, $params);
+        unset($params['id'], $params['w'], $params['h']);
+        $this->renderer->display_images($params, $inner_content);
     }
 
 
