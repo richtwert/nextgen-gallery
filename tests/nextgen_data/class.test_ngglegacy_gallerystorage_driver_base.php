@@ -711,7 +711,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
         $old_image = $this->image_mapper->find($this->image);
         $this->assertEqual(
-            $image->fileName,
+            basename($image->fileName),
             $old_image->meta_data['thumbnail']['filename'],
             'Thumbnail filename was not saved to the parent image attributes'
         );

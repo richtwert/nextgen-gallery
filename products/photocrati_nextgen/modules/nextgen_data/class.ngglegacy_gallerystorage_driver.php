@@ -259,11 +259,12 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$image_basename = basename($image_path, $image_extension_str);
 			$clone_basename = basename($clone_path, $clone_extension_str);
 			// We use a default suffix as passing in null as the suffix will make WordPress use a default
-			$clone_suffix = 'clone';
+			$clone_suffix = null;
 			$format_list = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png');
 			$clone_format = null; // format is determined below and based on $type otherwise left to null
 			
-			if (strpos($clone_basename, $image_basename) !== false)
+			// suffix is only used to reconstruct paths for image_resize function
+			if (strpos($clone_basename, $image_basename) === 0)
 			{
 				$clone_suffix = substr($clone_basename, strlen($image_basename));
 			}
@@ -329,9 +330,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 			}
 
-            // wp' image_resize() fails if the dimensions are unchanged
-            if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height))
-            {
+			// image_resize() has limitations:
+			// - no easy crop frame support
+			// - fails if the dimensions are unchanged
+			// - doesn't support filename prefix, only suffix so names like thumbs_original_name.jpg for $clone_path are not supported
+			//   also suffix cannot be null as that will make WordPress use a default suffix...we could use an object that returns empty string from __toString() but for now just fallback to ngg generator
+			if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height) && $clone_suffix != null)
+			{
 				$destpath = image_resize(
 						$image_path,
 						$width, $height, $crop,
@@ -339,9 +344,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$clone_dir,
 						$quality
 				);
-            }
-            else
-            {
+			}
+			else
+			{
 				$destpath = $clone_path;
 				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
 				
@@ -384,7 +389,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				list($width, $height) = wp_constrain_dimensions($dimensions[0], $dimensions[1], $width, $height);
 				
 				$thumbnail->resize($width, $height);
-            }
+			}
 
 			// We successfully generated the thumbnail
 			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null)) 
@@ -601,7 +606,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			
 			$clone_path = $existing_image_abpath;
 			$thumbnail = $this->object->generate_image_clone($filename, $clone_path, $params);
-
+			
 			// We successfully generated the thumbnail
 			if ($thumbnail != null)
 			{
@@ -622,9 +627,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 				
 				$size_meta = array(
-					'width'		=>	$dimensions[0],
-					'height'	=>	$dimensions[1],
-					'filename'	=>	$clone_path,
+					'width'		=> $dimensions[0],
+					'height'	=> $dimensions[1],
+					'filename'	=> basename($clone_path),
 					'generated'	=> microtime()
 				);
 				
