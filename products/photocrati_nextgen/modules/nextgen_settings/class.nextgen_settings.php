@@ -122,7 +122,8 @@ class C_NextGen_Settings_Defaults
 
         return array(
             'gallerypath' => 'wp-content/blogs.dir/%BLOG_ID%/files/',
-            'wpmuCSSfile' => 'nggallery.css'
+            'wpmuCSSfile' => 'nggallery.css',
+            'wpmuStyle' => 1
         );
     }
 }
@@ -147,9 +148,7 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
         {
             $this->object->restore_missing_options();
         } else {
-            $tmp = $this->get_registry()->get_utility('I_NextGen_Settings');
-            $tmp->restore_missing_options();
-            unset($tmp);
+            $this->object->get_registry()->get_utility('I_NextGen_Settings')->restore_missing_options();
         }
 
         // multisite options are only considered when multisite is turned on
@@ -157,11 +156,13 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
         {
             if ($this->object->has_method('restore_missing_multisite_options'))
             {
-                $this->object->restore_missing_multisite_options();
+                $this->object
+                     ->restore_missing_multisite_options();
             } else {
-                $tmp = $this->get_registry()->get_utility('I_NextGen_Settings', array('multisite'));
-                $tmp->restore_missing_multisite_options();
-                unset($tmp);
+                $this->object
+                     ->get_registry()
+                     ->get_utility('I_NextGen_Settings', 'multisite')
+                     ->restore_missing_multisite_options();
             }
         }
     }
@@ -175,13 +176,15 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
         $this->object->restore_all_missing_options();
 
 		// Save settings
-		if ($this->object->validate()) {
+		if ($this->object->validate())
+        {
 			$valid = update_option(
 				$this->object->_get_wordpress_option_name(),
 				$this->object->_options
 			);
 
-			if ($valid && $this->object->is_multisite()) {
+			if ($valid && $this->object->is_multisite())
+            {
 				update_site_option(
 					$this->object->_get_wordpress_option_name(TRUE),
 					$this->object->_global_options
@@ -237,19 +240,13 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
 	 */
 	function is_multisite()
 	{
-        $retval = False;
-
-		if (isset($GLOBALS['NGG_MULTISITE']))
+		if (isset($GLOBALS['NGG_MULTISITE']) && $GLOBALS['NGG_MULTISITE'])
         {
-			if ($GLOBALS['NGG_MULTISITE'])
-            {
-                $retval = True;
-            }
-		} else {
-            $retval = is_multisite();
+            return True;
+		}
+        else {
+            return is_multisite();
         }
-
-		return $retval;
 	}
 }
 
@@ -499,7 +496,8 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
     /** @var array Array of multisite option names */
     public $_global_option_names = array(
         'wpmuCSSfile',
-        'gallerypath'
+        'gallerypath',
+        'wpmuCSSfile'
     );
 
     /** @var Internal multisite options array*/
@@ -526,11 +524,12 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
         $this->implement('I_NextGen_Settings');
 	}
 
-	function initialize()
-	{
-		parent::initialize();
-		$this->object->reload();
-	}
+    function initialize()
+    {
+        parent::initialize();
+        if ('all' == $this->context)
+            $this->object->reload();
+    }
 
     function &__get($option_name)
     {
