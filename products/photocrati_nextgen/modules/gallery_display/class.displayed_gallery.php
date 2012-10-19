@@ -129,7 +129,7 @@ class Mixin_Gallery_Source_Queries extends Mixin
                 // Continue if we have container ids
                 if (($container_ids = $this->object->container_ids)) {
 
-                    // Convert container ids to a string suitable for WHERE IN
+					// Convert container ids to a string suitable for WHERE IN
                     // clause
                     foreach ($container_ids as &$container) {
                         $container = "'{$container}'";
@@ -146,12 +146,55 @@ class Mixin_Gallery_Source_Queries extends Mixin
 
                     // Get all images using the provided image tags
                     $image_ids = get_objects_in_term($term_ids, 'ngg_tag');
-                    if (empty($image_ids)) $run_image_query = FALSE;
-                    else {
-                        $mapper->where(
+					if (!$image_ids) $run_image_query = FALSE;
+
+					// If entities have been provided, and we're to skip exclusions
+					if ($this->object->entity_ids && $skip_exclusions) {
+						$mapper->where(
+                            array("{$image_key} IN (%s)", $this->object->entity_ids)
+                        );
+					}
+
+					// If both container_ids and entity_ids are specified, then
+					// we need to calculate exclusions...
+					elseif ($this->object->entity_ids) {
+						// We're going to return entities from all of the tags
+						// specified, but mark which images will be excluded. To do
+						// so, we have to create a dynamic column
+						$select = $id_only ? $image_key : '*';
+						$set = implode(',', array_reverse($this->object->entity_ids));
+						$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
+						$select .= ", IF(@row = 0, 1, 0) AS exclude";
+						$mapper->select($select);
+
+						// Limit to the images using the appropriate tags
+						$mapper->where(
                             array("{$image_key} IN (%s)", $image_ids)
                         );
-                    }
+
+						// A user might want to sort the results by the order of
+						// images that they specified to be included. For that,
+						// we need some trickery by reversing the order direction
+						$order_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
+						$mapper->order_by($this->object->order_by, $order_direction);
+
+						// When using a custom order (sortorder), we should apply a
+						// secondary sort order to maintain the default sort order
+						// for galleries as much as possible
+						if ($this->object->order_by == 'sortorder') {
+							$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+							if ($settings->galSort != 'sortorder') {
+								$mapper->order_by($settings->galSort, $settings->galSortDir);
+							}
+						}
+					}
+
+					// Only containers were specified. Simply where clause
+					else {
+						$mapper->where(
+                            array("{$image_key} IN (%s)", $image_ids)
+                        );
+					}
                 }
                 break;
             case 'albums':
@@ -170,7 +213,6 @@ class Mixin_Gallery_Source_Queries extends Mixin
                 $limit = $settings->gallery_display_limit;
             }
             $mapper->limit($limit, $offset);
-//			$mapper->debug = TRUE;
             $retval = $mapper->run_query();
         }
 

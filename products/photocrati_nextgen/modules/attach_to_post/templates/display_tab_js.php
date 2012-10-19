@@ -405,7 +405,7 @@ jQuery(function($){
 		
 		included_ids: function(){
 			return _.compact(this.map(function(item){
-				if (parseInt(item.get('exclude')) == 0) return item.entity_id();
+				if (!item.get('exclude')) return item.entity_id();
 			}));
 		}
 	});
@@ -599,6 +599,7 @@ jQuery(function($){
 				if (!_.isObject(response)) response = JSON.parse(response);
 				
 				_.each(response.entities, function(item){
+					item.exclude = parseInt(item.exclude) == 1 ? true : false;
 					item = new Ngg.DisplayTab.Models.Entity(item);
 					self.entities.push(item);
 				});
@@ -682,14 +683,14 @@ jQuery(function($){
 				this.$el.empty();
 				this.$el.append('<strong>Exclude:</strong>');
 				var all_button = new this.Button({
-					value: 1,
+					value: true,
 					text: 'All',
 					entities: this.entities
 				});
 				this.$el.append(all_button.render().el);
 				this.$el.append('<span class="separator">|</span>');
 				var none_button = new this.Button({
-					value: 0,
+					value: false,
 					text: 'None',
 					entities: this.entities
 				});
@@ -935,7 +936,8 @@ jQuery(function($){
 						this.$el.attr('type', 'checkbox');
 						this.type_set = true;
 					}
-					this.$el.attr('checked', parseInt(this.model.get('exclude')) == 1);
+					if (this.model.get('exclude')) this.$el.attr('checked', 'checked');
+					else this.$el.removeAttr('checked');
 					return this;
 				}
 			})
