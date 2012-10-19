@@ -87,5 +87,9 @@ class Mixin_Displayed_Gallery_Defaults extends Mixin
 
         // Ensure we have an exclusions array
         $this->object->_set_default_value($entity, 'exclusions', array());
+
+		// Ensure other properties exist
+		$this->object->_set_default_value($entity, 'container_ids', array());
+		$this->object->_set_default_value($entity, 'entity_ids', array());
 	}
 }

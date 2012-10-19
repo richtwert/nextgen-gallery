@@ -415,7 +415,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 			// Create the database record
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-			$retval = $image = $factory->create('gallery_image');
+			$retval = $image = $factory->create('image');
 			$image->alttext		= sanitize_title($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;

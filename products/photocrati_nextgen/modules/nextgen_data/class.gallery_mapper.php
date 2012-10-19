@@ -74,7 +74,7 @@ class Mixin_Gallery_Mapper extends Mixin
 
 		// Get the first gallery image
 		$factory = $this->get_registry()->get_utility('I_Component_Factory');
-		$image_mapper = $factory->create('gallery_image_mapper');
+		$image_mapper = $factory->create('image_mapper');
 		$image = $image_mapper->find_first(array('galleryid = %s', $gallery));
 
 		// Set preview image for the gallery
@@ -95,12 +95,5 @@ class Mixin_Gallery_Mapper extends Mixin
 		// If author is missing, then set to the current user id
         // TODO: Using wordpress function. Should use abstraction
 		$this->object->_set_default_value($entity, 'author', get_current_user_id());
-
-		// Generate name and slug based off of the title
-		if (isset($entity->title)) {
-			$entity->name = sanitize_file_name( sanitize_title($entity->title));
-			$entity->name = apply_filters('ngg_gallery_name', $entity->name);
-			$entity->slug = nggdb::get_unique_slug( sanitize_title($entity->title), 'gallery' );
-		}
 	}
 }

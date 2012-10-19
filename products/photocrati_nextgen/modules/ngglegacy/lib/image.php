@@ -2,7 +2,7 @@
 if (!class_exists('nggImage'))
 {
     /**
-     * This is a wrapper class to the C_NextGen_Gallery_Image_Wrapper which provides all of the necessary logic for
+     * This is a wrapper class to the C_Image_Wrapper which provides all of the necessary logic for
      * retrieving attributes as needed.
      *
      * NOTE: it isn't possible yet (as of PHP 5.4) to use overloaded properties in any language constructs other than
@@ -14,6 +14,8 @@ if (!class_exists('nggImage'))
         public $_ngiw;
         public $_propogate = TRUE;
 
+
+        // TODO: Make nggImage a subclass of C_Component and use the wrapper functionality
         function __construct($image)
         {
             $image->meta_data = @unserialize($image->meta_data);

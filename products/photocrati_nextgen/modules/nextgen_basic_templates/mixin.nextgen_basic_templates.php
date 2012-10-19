@@ -32,45 +32,23 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
     function legacy_render($template_name, $vars = array(), $return=FALSE)
     {
         $retval             = "[Not a valid template]";
-        $template_abspath   = FALSE;
+        $template_locator   = $this->object->get_registry()->get_utility('I_Legacy_Template_Locator');
+        if (($template_abspath = $template_locator->find($template_name))) {
 
-        // hook into the render feature to allow other plugins to include templates
-        $custom_template = apply_filters('ngg_render_template', $template_name);
-
-        // Ensure we have a PHP extension
-        if (strpos($custom_template, '.php') === FALSE) $custom_template .= '.php';
-
-        // Find the abspath of the template to render
-        if (!file_exists($custom_template)) {
-            foreach ($this->object->get_template_directories() as $dir) {
-                if ($template_abspath) break;
-                $filename = path_join($dir, $custom_template);
-                if (file_exists($filename))     $template_abspath = $filename;
-                elseif (strpos($custom_template, '-template') === FALSE) {
-                    $filename = path_join($dir, str_replace('.php', '', $custom_template).'-template.php');
-                    if (file_exists($filename)) $template_abspath = $filename;
+            // Render/render the template
+            extract($vars);
+            if ($return) {
+                if ($template_abspath) {
+                    ob_start();
+                    include($template_abspath);
+                    $retval = ob_get_contents();
+                    ob_end_clean();
                 }
             }
-        }
-
-        // An absoluate path was already given
-        else {
-            $template_abspath = $custom_template;
-        }
-
-        // Render/render the template
-        extract($vars);
-        if ($return) {
-            if ($template_abspath) {
-                ob_start();
-                include($template_abspath);
-                $retval = ob_get_contents();
-                ob_end_clean();
+            else {
+                if ($template_abspath) include ($template_abspath);
+                else echo $retval;
             }
-        }
-        else {
-            if ($template_abspath) include ($template_abspath);
-            else echo $retval;
         }
 
         return $retval;

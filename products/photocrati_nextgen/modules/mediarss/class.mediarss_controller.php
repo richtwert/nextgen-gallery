@@ -47,12 +47,9 @@ class Mixin_MediaRSS_Controller extends Mixin
         elseif ($transient_id = $this->object->param('transient_id'))
         {
             // retrieve by transient id
-            $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
             $factory           = $this->object->get_registry()->get_utility('I_Component_Factory');
-            $transient = $transient_handler->get_value('displayed_gallery_' . $transient_id);
-            $displayed_gallery = $factory->create(
-                'displayed_gallery', $mapper, $transient
-            );
+            $displayed_gallery = $factory->create('displayed_gallery', $mapper);
+            $displayed_gallery->apply_transient($transient_id);
         }
         elseif (($params = $this->object->param('params')))
 		{
@@ -68,7 +65,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$this->render_view($template, array(
 				'storage'			=>	$storage,
-				'images'			=>	$displayed_gallery->get_included_images(),
+				'images'			=>	$displayed_gallery->get_included_entities(),
 				'feed_title'		=>	$this->object->_get_feed_title($displayed_gallery),
 				'feed_description'	=>	$this->object->_get_feed_description($displayed_gallery),
 				'feed_link'			=>	$this->object->_get_feed_link($displayed_gallery),

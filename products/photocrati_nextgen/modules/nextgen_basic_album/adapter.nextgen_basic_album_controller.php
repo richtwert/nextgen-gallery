@@ -6,6 +6,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     function initialize()
     {
         $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
+        $this->object->add_mixin('Mixin_NextGen_Basic_Album_Settings');
+        $this->object->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
     }
 
     /**
@@ -26,7 +28,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
         // Are we to display a gallery ?
         elseif ($gallery  = get_query_var('gallery')) {
-            $renderer = $this->object->get_registry()->get_utility('I_Display_Type_Renderer');
+            $renderer = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
             $renderer->display_images(array(
                 'source'        => 'galleries',
                 'container_ids' => array($gallery),
@@ -39,8 +41,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             // Get all settings required for displaying this album
             $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
             $offset = $display_settings['galleries_per_page'] * ($current_page - 1);
-            $total = $displayed_gallery->get_album_entity_count();
-            $entities = $displayed_gallery->get_album_entities($display_settings['galleries_per_page'], $offset);
+            $total = $displayed_gallery->get_entity_count();
+            $entities = $displayed_gallery->get_included_entities($display_settings['galleries_per_page'], $offset);
 
             // If there are entities to be displayed
             if ($entities) {
@@ -62,10 +64,11 @@ class A_NextGen_Basic_Album_Controller extends Mixin
                 $display_settings['storage']                = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
 
                 // Render legacy template
-                if ($display_settings['template']) {
-                    $display_settings = $this->prepare_legacy_album_params($display_settings);
-                    return $this->legacy_render($display_settings['template'], $display_settings, $return);
-                }
+                $display_settings = $this->prepare_legacy_album_params($display_settings);
+                $template = strpos($display_settings['template'], 'album') === 0 ? $display_settings['template'] :
+                    'album-'.$display_settings['template'];
+                return $this->legacy_render($template, $display_settings, $return);
+
             }
 
             // Display "no entities found" message
@@ -81,9 +84,12 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         $image_mapper           = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $storage                = $params['storage'];
         $image_gen              = $params['image_gen'];
+
+        // legacy templates expect these dimensions
         $image_gen_params       = array(
-            'width'             => $params['thumbnail_width'],
-            'height'            => $params['thumbnail_height']
+            'width'             => 91,
+            'height'            => 68,
+            'crop'              => TRUE
         );
 
         // If pagination is not set, then set it to FALSE

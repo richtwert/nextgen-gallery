@@ -22,7 +22,7 @@ class C_Image_Mapper extends C_DataMapper
 			'unserialize_metadata'
 		);
 		$this->implement('I_Image_Mapper');
-		$this->set_model_factory_method('gallery_image');
+		$this->set_model_factory_method('image');
 	}
 
     static function get_instance($context = False)

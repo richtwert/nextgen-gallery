@@ -75,8 +75,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_image_abspath($image, $size='full', $check_existance=FALSE)
 	{
 		$retval = NULL;
-		
-		if ($size == false) {
+
+        // Ensure that we have a size
+		if (!$size) {
 			$size = 'full';
 		}
 
@@ -502,10 +503,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			if (!$skip_defaults)
 			{
 				// Get default settings
-				//
 				if (!isset($params['crop'])) {
 					$params['crop'] = $settings->thumbfix;
-		    }
+		        }
 
 				if (!isset($params['quality'])) {
 					$params['quality'] = $settings->thumbquality;
@@ -557,7 +557,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 
 			// Get the image filename
-			$filename = $this->object->get_original_abspath($image);
+			$filename = $this->object->get_original_abspath($image, 'original');
 			$thumbnail = null;
 			
 			if ($size == 'full' && $settings->imgBackup == 1) {
