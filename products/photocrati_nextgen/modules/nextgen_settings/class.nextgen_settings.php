@@ -500,7 +500,8 @@ class C_NextGen_Settings extends C_Component implements ArrayAccess
     /** @var array Array of multisite option names */
     public $_global_option_names = array(
         'wpmuCSSfile',
-        'gallerypath'
+        'gallerypath',
+        'wpmuCSSfile'
     );
 
     /** @var Internal multisite options array*/
