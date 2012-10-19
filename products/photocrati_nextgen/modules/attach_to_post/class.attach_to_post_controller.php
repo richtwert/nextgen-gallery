@@ -224,10 +224,10 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		return array(
 			'displayed_tab'		=> $this->object->_render_display_tab(),
-//			'create_tab'		=> $this->object->_render_create_tab(),
-//			'galleries_tab'		=> $this->object->_render_galleries_tab(),
-//			'albums_tab'		=> $this->object->_render_albums_tab(),
-//			'tags_tab'			=> $this->object->_render_tags_tab()
+			'create_tab'		=> $this->object->_render_create_tab(),
+			'galleries_tab'		=> $this->object->_render_galleries_tab(),
+			'albums_tab'		=> $this->object->_render_albums_tab(),
+			'tags_tab'			=> $this->object->_render_tags_tab()
 		);
 	}
 
