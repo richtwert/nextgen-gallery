@@ -6,6 +6,10 @@ if (empty($thumbnails_template_width_name))
     $thumbnails_template_width_name = 'thumbwidth';
 if (empty($thumbnails_template_height_name))
     $thumbnails_template_height_name = 'thumbheight';
+if (empty($thumbnails_template_width_id))
+    $thumbnails_template_width_id = '';
+if (empty($thumbnails_template_height_id))
+    $thumbnails_template_height_id = '';
 
 if (class_exists('C_Component_Registry'))
 {
@@ -77,7 +81,7 @@ if (class_exists('C_Component_Registry'))
 if (!is_null($nextgen_thumb_size_custom_style))
 	$nextgen_thumb_size_custom_style = ' style="' . $nextgen_thumb_size_custom_style . '"';
 
-?><span class="nextgen-thumb-size-custom" <?php // echo $nextgen_thumb_size_custom_style; ?>>
+?><span class="nextgen-thumb-size-custom" <?php echo $nextgen_thumb_size_custom_style; ?>>
     <input type="text"
            size="5"
            maxlength="5"
