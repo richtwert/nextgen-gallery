@@ -351,43 +351,70 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				$destpath = $clone_path;
 				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
 				
+				$original_width = $dimensions[0];
+				$original_height = $dimensions[1];
+				$original_ratio = $original_width / $original_height;
+				
+				// Just constraint dimensions to ensure there's no stretching or deformations
+				list($width, $height) = wp_constrain_dimensions($original_width, $original_height, $width, $height);
+				$aspect_ratio = $width / $height;
+				
+				$width_ratio = $original_width / $width;
+				$height_ratio = $original_height / $height;
+				
 				if ($crop)
 				{
 					$algo = 'shrink'; // either 'adapt' or 'shrink'
-
-					$crop_x = (int) round($crop_frame['x']);
-					$crop_y = (int) round($crop_frame['y']);
-					$crop_width = (int) round($crop_frame['width']);
-					$crop_height = (int) round($crop_frame['height']);
-					$crop_final_width = (int) round($crop_frame['final_width']);
-					$crop_final_height = (int) round($crop_frame['final_height']);
-
-					$crop_factor_x = $crop_width / $crop_final_width;
-					$crop_factor_y = $crop_height / $crop_final_height;
-
-					if ($algo == 'adapt')
+					
+					if ($crop_frame != null)
 					{
-						$crop_width = (int) round($width * $crop_factor_x);
-						$crop_height = (int) round($height * $crop_factor_y);
+						$crop_x = (int) round($crop_frame['x']);
+						$crop_y = (int) round($crop_frame['y']);
+						$crop_width = (int) round($crop_frame['width']);
+						$crop_height = (int) round($crop_frame['height']);
+						$crop_final_width = (int) round($crop_frame['final_width']);
+						$crop_final_height = (int) round($crop_frame['final_height']);
+
+						$crop_factor_x = $crop_width / $crop_final_width;
+						$crop_factor_y = $crop_height / $crop_final_height;
+
+						if ($algo == 'adapt')
+						{
+							$crop_width = (int) round($width * $crop_factor_x);
+							$crop_height = (int) round($height * $crop_factor_y);
+						}
+
+						$crop_diff_x = (int) round(($crop_width - $width) / 2);
+						$crop_diff_y = (int) round(($crop_height - $height) / 2);
+
+						$crop_x += $crop_diff_x;
+						$crop_y += $crop_diff_y;
+
+						if ($algo == 'shrink')
+						{
+							$crop_width = $width;
+							$crop_height = $height;
+						}
 					}
-
-					$crop_diff_x = (int) round(($crop_width - $width) / 2);
-					$crop_diff_y = (int) round(($crop_height - $height) / 2);
-
-					$crop_x += $crop_diff_x;
-					$crop_y += $crop_diff_y;
-
-					if ($algo == 'shrink')
+					else
 					{
-						$crop_width = $width;
-						$crop_height = $height;
+						if ($width_ratio < $height_ratio)
+						{
+							$crop_width = $original_width;
+							$crop_height = (int) round($height * $width_ratio);
+						}
+						else
+						{
+							$crop_height = $original_height;
+							$crop_width = (int) round($width * $height_ratio);
+						}
+						
+						$crop_x = (int) round(($original_width - $crop_width) / 2);
+						$crop_y = (int) round(($original_height - $crop_height) / 2);
 					}
 
 					$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
 				}
-			
-				// Just constraint dimensions to ensure there's no stretching or deformations
-				list($width, $height) = wp_constrain_dimensions($dimensions[0], $dimensions[1], $width, $height);
 				
 				$thumbnail->resize($width, $height);
 			}
@@ -436,7 +463,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 				else
 				{
-					$thumbnail->filename = $destpath;
+					$thumbnail->fileName = $destpath;
 				}
 
 				if ($watermark == 1 || $watermark === true)
