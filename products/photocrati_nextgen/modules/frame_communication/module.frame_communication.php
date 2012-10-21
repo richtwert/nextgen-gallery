@@ -26,10 +26,6 @@ class M_Frame_Communication extends C_Base_Module
 	function initialize()
 	{
 		$publisher = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
-		$publisher->add_event(array(
-			'event'	=>	'test',
-			'text'	=>	'foo bar'
-		));
 	}
 
 	function _register_utilities()
@@ -50,7 +46,7 @@ class M_Frame_Communication extends C_Base_Module
 		wp_register_script(
 			'frame_event_publisher',
 			$this->static_url('frame_event_publisher.js'),
-			array('jquery', 'lza')
+			array('jquery')
 		);
 		wp_enqueue_script('frame_event_publisher');
 	}

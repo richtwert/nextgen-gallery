@@ -59,9 +59,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the Lazy Resource Loader
 		$this->get_registry()->load_module('photocrati-lazy_resources');
 
-		// Load the LZA compression library
-		$this->get_registry()->load_module('photocrati-lza');
-
 		// Provides a mechanism for Frame Communication
 		$this->get_registry()->load_module('photocrati-frame_communication');
 
