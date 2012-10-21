@@ -25,6 +25,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;
 		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;
 		
+		$router = $this->get_registry()->get_utility('I_Router');
+		
 		$uri = null;
 		
 		$uri .= '/';
@@ -60,6 +62,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 			$uri .= 'reflection/';
 		}
 		
+		$uri = $router->routing_uri($uri, true);
+		
 		return $uri;
 	}
 	
@@ -82,6 +86,9 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	{
 		$regex = '/^\\/' . $this->object->get_route_name() . '\\/(\\d+)(?:\\/(.*))?/';
 		$match = null;
+		
+		// XXX move this URL clean up to I_Router?
+    $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
 		
 		if (preg_match($regex, $uri, $match) > 0)
 		{
