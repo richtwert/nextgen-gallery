@@ -97,9 +97,12 @@ class nggdb {
         
         if ( !$this->albums )
             return array();
+            
+        // XXX nggdb is used statically, cannot inherit from Ngg_Serializable
+        $serializer = new Ngg_Serializable();
         
         foreach ($this->albums as $key => $value) {
-            $this->albums[$key]->galleries = empty ($this->albums[$key]->sortorder) ? array() : (array) unserialize($this->albums[$key]->sortorder)  ;
+            $this->albums[$key]->galleries = empty ($this->albums[$key]->sortorder) ? array() : (array) $serializer->unserialize($this->albums[$key]->sortorder)  ;
             $this->albums[$key]->name = stripslashes( $this->albums[$key]->name ); 
             $this->albums[$key]->albumdesc = stripslashes( $this->albums[$key]->albumdesc );
             wp_cache_add($key, $this->albums[$key], 'ngg_album'); 
@@ -339,8 +342,11 @@ class nggdb {
         
         // Unserialize the galleries inside the album
         if ( $album ) {
+				    // XXX nggdb is used statically, cannot inherit from Ngg_Serializable
+				    $serializer = new Ngg_Serializable();
+				    
             if ( !empty( $album->sortorder ) ) 
-                $album->gallery_ids = unserialize( $album->sortorder );
+                $album->gallery_ids = $serializer->unserialize( $album->sortorder );
             
             // it was a bad idea to use a object, stripslashes_deep() could not used here, learn from it
             $album->albumdesc  = stripslashes($album->albumdesc);
@@ -1035,10 +1041,13 @@ class nggdb {
     function update_image_meta( $id, $new_values ) {
         global $wpdb;
         
+        // XXX nggdb is used statically, cannot inherit from Ngg_Serializable
+        $serializer = new Ngg_Serializable();
+        
         // Query database for existing values
         // Use cache object
         $old_values = $wpdb->get_var( $wpdb->prepare( "SELECT meta_data FROM $wpdb->nggpictures WHERE pid = %d ", $id ) );
-        $old_values = unserialize( $old_values );
+        $old_values = $serializer->unserialize( $old_values );
 
         $meta = array_merge( (array)$old_values, (array)$new_values );
 		

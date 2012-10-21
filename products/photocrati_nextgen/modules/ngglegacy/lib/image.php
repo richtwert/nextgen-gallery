@@ -9,31 +9,14 @@ if (!class_exists('nggImage'))
      * isset(). To work around this with the wrapper class (which uses overloaded properties) we make a copy of any
      * attributes set to this object.
      */
-    class nggImage
+    class nggImage extends Ngg_Serializable
     {
         public $_ngiw;
         public $_propogate = TRUE;
 
         function __construct($image)
         {
-            $meta_data = @unserialize($image->meta_data);
-            
-            if ($meta_data == false)
-            {
-            	$meta_data = base64_decode($image->meta_data);
-            	
-            	if ($meta_data)
-            	{
-            		$meta_json = json_decode($meta_data, true);
-            		
-            		if ($meta_json)
-            		{
-            			$meta_data = $meta_json;
-            		}
-            	}
-            }
-            
-            $image->meta_data = $meta_data;
+            $image->meta_data = $this->unserialize($image->meta_data);
             C_Component_Registry::get_instance();
             $this->_ngiw = new C_Image_Wrapper($image, NULL, TRUE);
         }
