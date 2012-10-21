@@ -2,6 +2,10 @@
 <html>
     <head>
         <title><?php echo_h($page_title)?></title>
+		<?php
+			wp_print_styles();
+			wp_print_scripts();
+		?>
     </head>
 	<body>
 		<div id="attach_to_post_tabs">

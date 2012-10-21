@@ -56,6 +56,10 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 	function enqueue_attach_to_post_resources()
 	{
+		// Enqueue frame event publishing
+		do_action('admin_enqueue_scripts');
+		wp_enqueue_script('frame_event_publisher');
+
 		// Enqueue JQuery UI libraries
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
@@ -123,10 +127,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			'ngg_displayed_gallery_preview_url',
 			PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
 		);
-
-		wp_print_styles();
-		wp_print_scripts();
-
 	}
 
 	/**
@@ -151,7 +151,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			$this->object->show_error("Displayed Gallery could not found.", 404);
 		}
 	}
-
 
 	/**
 	 * Displays a preview image for the displayed gallery
