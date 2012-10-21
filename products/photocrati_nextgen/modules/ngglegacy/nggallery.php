@@ -62,7 +62,7 @@ if (!class_exists('nggLoader')) {
 				return;
 
 			// Set error handler
-			set_exception_handler(array(&$this, 'exception_handler'));
+//			set_exception_handler(array(&$this, 'exception_handler'));
 
 			// Determine plugin basename based on whether NGG is being used in
 			// it's legacy form, or as a Photocrati Gallery
@@ -328,6 +328,7 @@ if (!class_exists('nggLoader')) {
 
 			// Load global libraries												// average memory usage (in bytes)
 			require_once (dirname (__FILE__) . '/lib/core.php');					//  94.840
+			require_once (dirname (__FILE__) . '/lib/class.ngg_serializable.php');					//  94.840
 			require_once (dirname (__FILE__) . '/lib/ngg-db.php');					// 132.400
 			require_once (dirname (__FILE__) . '/lib/image.php');					//  59.424
 			require_once (dirname (__FILE__) . '/lib/tags.php');				    // 117.136

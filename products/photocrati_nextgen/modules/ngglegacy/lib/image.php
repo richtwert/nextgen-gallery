@@ -9,7 +9,7 @@ if (!class_exists('nggImage'))
      * isset(). To work around this with the wrapper class (which uses overloaded properties) we make a copy of any
      * attributes set to this object.
      */
-    class nggImage
+    class nggImage extends Ngg_Serializable
     {
         public $_ngiw;
         public $_propogate = TRUE;
@@ -18,7 +18,7 @@ if (!class_exists('nggImage'))
         // TODO: Make nggImage a subclass of C_Component and use the wrapper functionality
         function __construct($image)
         {
-            $image->meta_data = @unserialize($image->meta_data);
+            $image->meta_data = $this->unserialize($image->meta_data);
             C_Component_Registry::get_instance();
             $this->_ngiw = new C_Image_Wrapper($image, NULL, TRUE);
         }

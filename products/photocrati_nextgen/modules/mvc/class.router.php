@@ -18,7 +18,13 @@ class Mixin_Route_Patterns extends Mixin
 	{
 		if ($use_pathinfo === null) {
 			$permalink_struct = get_option('permalink_structure');
-			$use_pathinfo = preg_match('/^\\/?index\\.php\\//i', $permalink_struct);
+			
+			if ($permalink_struct == null) {
+				$use_pathinfo = true;
+			}
+			else {
+				$use_pathinfo = preg_match('/^\\/?index\\.php\\//i', $permalink_struct);
+			}
 		}
 
 		$uri = '/' . $route;

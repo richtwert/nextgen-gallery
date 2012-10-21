@@ -26,6 +26,7 @@ class Hook_NextGen_Basic_SinglePic_Defaults extends Hook
 			$this->object->_set_default_value($entity, 'settings', 'link', '');
 			$this->object->_set_default_value($entity, 'settings', 'quality', 100);
 			$this->object->_set_default_value($entity, 'settings', 'crop', 0);
+            $this->object->_set_default_value($entity, 'settings', 'template', '');
 		}
 	}
 }
