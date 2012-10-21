@@ -63,18 +63,21 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	 */
 	function unserialize($value)
 	{
-		$retval = stripcslashes($value);
-
-		if (strlen($value) > 1)
+		if (is_string($value))
 		{
-			//Using json_decode here because PHP's unserialize is not Unicode safe
-			$retval = json_decode(base64_decode($retval), TRUE);
+			$retval = stripcslashes($value);
 
-			// JSON Decoding failed. Perhaps it's PHP serialized data?
-			if ($retval == NULL) {
-				$er = error_reporting(0);
-				$retval = unserialize($value);
-				error_reporting($er);
+			if (strlen($value) > 1)
+			{
+				//Using json_decode here because PHP's unserialize is not Unicode safe
+				$retval = json_decode(base64_decode($retval), TRUE);
+
+				// JSON Decoding failed. Perhaps it's PHP serialized data?
+				if ($retval == NULL) {
+					$er = error_reporting(0);
+					$retval = unserialize($value);
+					error_reporting($er);
+				}
 			}
 		}
 
