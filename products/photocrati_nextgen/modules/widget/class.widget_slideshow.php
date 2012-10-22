@@ -95,10 +95,7 @@ class C_Widget_Slideshow extends WP_Widget
             'show_return_link' => FALSE,
             'show_alternative_view_link' => FALSE
         );
-
-        ob_start();
-        $renderer->display_images($params, NULL);
-        $retval = ob_get_clean();
+        $retval = $renderer->display_images($params, NULL);
         $retval = apply_filters('ngg_show_slideshow_widget_content', $retval, $galleryID, $irWidth, $irHeight);
         return $retval;
     }

@@ -202,7 +202,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['container_ids']    = $this->_get_param('id', NULL, $params);
         $params['display_type']     = $this->_get_param('display_type', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_ALBUM, $params);
         unset($params['id']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -218,7 +218,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
         unset($params['id']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -238,7 +238,7 @@ class M_Gallery_Display extends C_Base_Module
         }
         unset($params['id']);
         unset($params['images']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -254,7 +254,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
         unset($params['gallery']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -281,7 +281,7 @@ class M_Gallery_Display extends C_Base_Module
         unset($params['max']);
         unset($params['id']);
 
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -306,7 +306,7 @@ class M_Gallery_Display extends C_Base_Module
         unset($params['max']);
         unset($params['id']);
 
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -322,7 +322,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['image_id'] = $this->_get_param('id', NULL, $params);
         $params['source'] = $this->_get_param('source', 'image', $params);
         unset($params['id']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -339,7 +339,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['gallery_width']  = $this->_get_param('w', NULL, $params);
         $params['gallery_height'] = $this->_get_param('h', NULL, $params);
         unset($params['id'], $params['w'], $params['h']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -354,7 +354,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
 
@@ -370,7 +370,7 @@ class M_Gallery_Display extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
         unset($params['id']);
-        $this->renderer->display_images($params, $inner_content);
+        return $this->renderer->display_images($params, $inner_content);
     }
 
     /**
