@@ -84,11 +84,12 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	
 	function get_params_from_uri($uri)
 	{
-		$regex = '/^\\/' . $this->object->get_route_name() . '\\/(\\d+)(?:\\/(.*))?/';
+		$regex = '/^\\/?' . $this->object->get_route_name() . '\\/(\\d+)(?:\\/(.*))?/';
 		$match = null;
 		
 		// XXX move this URL clean up to I_Router?
     $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
+    $uri = trim($uri, '/');
 		
 		if (preg_match($regex, $uri, $match) > 0)
 		{

@@ -27,8 +27,11 @@ class Mixin_Route_Patterns extends Mixin
 			}
 		}
 
-		$uri = '/' . $route;
-		if ($add_trailing_slash) $uri .= '/';
+		$uri = '/' . ltrim($route, '/');
+		
+		if ($add_trailing_slash) {
+			$uri .= '/';
+		}
 
 		if ($use_pathinfo) {
 			$uri = '/index.php' . $uri;
