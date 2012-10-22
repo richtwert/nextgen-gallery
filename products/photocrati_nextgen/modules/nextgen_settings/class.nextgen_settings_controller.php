@@ -197,7 +197,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
             'cache_tab',
             array(
                 'flush_cache_label' => _('Clear cache'),
-                'flush_cache_value' => _('Clear all NextGEN cache folders')
+                'flush_cache_value' => _('Clear all NextGEN cache folders'),
+                'flush_cache_tooltip' => _('Purge the disk of all cached image files')
             ),
             TRUE
         );
@@ -264,21 +265,15 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
     function _render_reset_tab($settings)
     {
-        global $wpdb;
         return $this->object->render_partial(
             'reset_tab',
             array(
-                'reset_label'   => _('Reset all settings to defaults'),
-                'reset_value'   => _('Reset settings'),
-                'reset_warning' => _('Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.'),
-
+                'reset_value'   => _('Reset all options to default settings'),
+                'reset_warning' => _('Replace all existing options and gallery options with their default settings'),
+                'reset_label'   => _('Reset settings'),
+                'reset_confirmation' => _('Reset all options to default settings?\n\nChoose [Cancel] to Stop, [OK] to proceed.'),
                 'show_uninstall'      => (!is_multisite() || wpmu_site_admin()),
-                'uninstall_label'     => _('Uninstall plugin'),
-                'uninstall_warning'   => _('You are about to uninstall this plugin.\nThis is not reversible.\n\nChoose [Cancel] to Stop, [OK] to Uninstall.\n'),
-                'uninstall_desc'      => _('Before deactivating NextGen press the "Uninstall plugin" button. This will remove the data that Wordpress does not remove when deactivating plugins. You should first make a database backup of the following tables:'),
-                'uninstall_warning_2' => _('WARNING:'),
-                'uninstall_warning_3' => _('This cannot be undone.'),
-                'uninstall_tables'    => array($wpdb->nggpictures, $wpdb->nggalbum, $wpdb->nggallery),
+                'uninstall_label'     => _('Deactivate / Uninstall NextGEN'),
                 'check_uninstall_url' => menu_page_url('ngg_deactivator_check_uninstall', FALSE)
             ),
             TRUE

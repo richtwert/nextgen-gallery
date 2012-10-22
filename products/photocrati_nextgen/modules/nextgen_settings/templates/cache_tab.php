@@ -1,7 +1,10 @@
 <table>
     <tr>
         <td class='column1'>
-            <?php echo $flush_cache_label; ?>
+            <span class='tooltip'>
+                <?php echo $flush_cache_label; ?>
+                <span><?php echo $flush_cache_tooltip; ?></span>
+            </span>
         </td>
         <td>
             <input type="submit"
