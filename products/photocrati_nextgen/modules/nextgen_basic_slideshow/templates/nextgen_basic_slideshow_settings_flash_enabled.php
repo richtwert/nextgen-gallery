@@ -29,8 +29,18 @@
 
         <script type="text/javascript">
             jQuery(document).ready(function($) {
-                $("input[name='<?php print $display_type_name . '[' . $name . ']'; ?>']").click(function() {
-                    $("tr.nextgen-settings-slideshow-flash").toggle('slow');
+                $("input[name='<?php print $display_type_name . '[' . $name . ']'; ?>']").change(function() {
+                	var jthis = jQuery(this);
+                	if (jthis.val() == '1') {
+                    var rows = $("tr.nextgen-settings-slideshow-flash").detach();
+                    rows.show('slow');
+                    rows.appendTo(jthis.parents('table'));
+                	}
+                  else {
+                    var rows = $("tr.nextgen-settings-slideshow-flash").detach();
+                    rows.appendTo(jthis.parents('table'));
+                    rows.hide('slow');
+                  }
                 });
             });
         </script>
