@@ -255,8 +255,10 @@ class Mixin_NextGen_Settings_Controller extends Mixin
                 'permalinks_activated_yes'   => _('Yes'),
                 'permalinks_slug'            => $settings->permalinkSlug,
                 'permalinks_slug_label'      => _('Gallery slug name'),
+                'permalinks_slug_tooltip'    => _('Separates the current page from the NextGEN url parameters; for example /2012/10/sample-post/nggallery/page-1/ if your slug is "nggallery"'),
                 'process_label'              => _('Create new URL friendly image slugs'),
                 'process_value'              => _('Proceed now'),
+                'process_tooltip'            => _('Slugs are stored in the image meta information. If you change the slug name you must also update the image meta information with the new name'),
                 'hidden'                     => !(bool)$settings->usePermalinks
             ),
             TRUE

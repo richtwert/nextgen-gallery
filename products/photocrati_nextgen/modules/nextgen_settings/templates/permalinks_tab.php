@@ -24,8 +24,11 @@
     </tr>
     <tr class='nextgen-settings-permalinks-activated <?php print ($hidden) ? 'hidden' : ''; ?>'>
         <td class='column1'>
-            <label for='permalinks_slug'>
+            <label for='permalinks_slug' class='tooltip'>
                 <?php echo_h($permalinks_slug_label); ?>
+                <span>
+                    <?php echo_h($permalinks_slug_tooltip); ?>
+                </span>
             </label>
         </td>
         <td>
@@ -37,7 +40,10 @@
     </tr>
     <tr class='nextgen-settings-permalinks-activated <?php print ($hidden) ? 'hidden' : ''; ?>'>
         <td class='column1'>
-            <?php echo_h($process_label); ?>
+            <span class='tooltip'>
+                <?php echo_h($process_label); ?>
+                <span><?php echo_h($process_tooltip); ?></span>
+            </span>
         </td>
         <td>
             <input type='submit'
