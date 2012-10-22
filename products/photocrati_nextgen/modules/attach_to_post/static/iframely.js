@@ -1,12 +1,10 @@
-jQuery(function($){
+jQuery(function($) {
 
 	// Is this page within an iframe?
 	if (window.frameElement) {
 
 		// For CSS purposes, we identify this page as being iframely
 		$('html').attr('id', 'iframely');
-
-        $('#wpwrap').css('display', 'none');
 
 		// Concentrate only on the content of the page
 		$('#wpwrap').html($('#wpbody').html($('#wpbody-content').html($('#ngg_page_content'))));
@@ -19,6 +17,6 @@ jQuery(function($){
 
 		parent.resize_attach_to_post_tab(window.frameElement, true);
 
-        $('#wpwrap').fadeIn();
+        $('#wpwrap').css({'position': 'relative', 'visibility': 'visible'}).fadeIn();
 	}
 });

@@ -11,3 +11,8 @@ html#iframely{
 #iframely, #iframely body {
 	height: auto;
 }
+
+#wpwrap {
+    position: absolute;
+    visibility: hidden;
+}
