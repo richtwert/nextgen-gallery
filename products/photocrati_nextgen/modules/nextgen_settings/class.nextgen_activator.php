@@ -51,5 +51,9 @@ class Mixin_NextGen_Activator extends Mixin
                  ->get_utility('I_NextGen_Settings', 'multisite')
                  ->save();
         }
+
+        // install rewrite rules into wordpress' persistent options
+        $nggRewrite = new nggRewrite();
+        $nggRewrite->flush();
 	}
 }
