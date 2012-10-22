@@ -57,11 +57,12 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         // legacy assumed no width/height meant full size unlike generate_thumbnail: force a full resolution
         if (empty($display_settings['width']))
             $display_settings['width'] = $image->meta_data['width'];
-        if (empty($display_settings['height']))
-            $display_settings['height'] = $image->meta_data['height'];
+        // XXX setting both width and height can cause distortions for themes that have set max-width on images 
+        //if (empty($display_settings['height']))
+        //    $display_settings['height'] = $image->meta_data['height'];
 
-        $params['width'] = $display_settings['width'];
-        $params['height'] = $display_settings['height'];;
+        $params['width'] = isset($display_settings['width']) ? $display_settings['width'] : $image->meta_data['width'];
+        $params['height'] = isset($display_settings['height']) ? $display_settings['height'] : $image->meta_data['height'];
         $params['quality'] = $display_settings['quality'];
         $params['crop'] = $display_settings['crop'];
         $params['watermark'] = $display_settings['display_watermark'];
