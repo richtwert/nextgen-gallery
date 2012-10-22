@@ -85,7 +85,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	 */
 	function _process_post_request($settings)
 	{
-		$retval = array();
+		$retval	= array();
+		$multi	= FALSE;
 
         // WARNING: this will reset all options in I_NextGen_Settings to their defaults
         if (!empty($_POST['resetdefault']))
