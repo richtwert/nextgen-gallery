@@ -24,9 +24,10 @@ class Hook_NextGen_Basic_Album_Validation extends Hook
 {
     function validation()
     {
-        $this->validates_presence_of('template');
-        $this->validates_presence_of('gallery_display_type');
-        $this->validates_presence_of('galleries_per_page');
-        $this->validates_numericality_of('galleries_per_page');
+    	// XXX commenting 'template' as it's causing albums to not be registered
+      //$this->object->validates_presence_of('template');
+      $this->object->validates_presence_of('gallery_display_type');
+      $this->object->validates_presence_of('galleries_per_page');
+      $this->object->validates_numericality_of('galleries_per_page');
     }
 }
