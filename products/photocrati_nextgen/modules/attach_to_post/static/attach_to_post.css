@@ -233,3 +233,10 @@ table {
 	position: absolute;
 	top: -5000px;
 }
+
+/**
+ * Make the active tab still clickable
+ **/
+.ui-tabs-nav li a.ui-state-active, .ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+	cursor: pointer;
+}

@@ -63,20 +63,34 @@ jQuery(function($){
         collection: null,
 
 		multiple: false,
-		
+
 		value_field: 'id',
-		
+
 		text_field: 'title',
 
         initialize: function(){
 			_.each(this.options, function(value, key){
 				this[key] = value;
 			}, this);
+			this.collection.on('add', this.render_new_option, this);
+			this.collection.on('remove', this.remove_existing_option, this);
         },
 
         events: {
             'change': 'selection_changed'
         },
+
+		render_new_option: function(item){
+			this.$el.append(new this.Option({
+				model: item,
+				value_field: this.value_field,
+				text_field: this.text_field
+			}).render().el);
+		},
+
+		remove_existing_option: function(item){
+			this.$el.find("option[value='"+item.get('value')+"']").remove();
+		},
 
         /**
          * After a selection has changed, set the 'selected' property for each item in the
@@ -146,9 +160,9 @@ jQuery(function($){
 		tagName: 'span',
 
 		fuzzy_search: true,
-		
+
 		placeholder: false,
-		
+
 		selection_changed: function(e, data){
 			// Select/deselect item in collection
 			this.collection.each(function(item){
@@ -162,7 +176,7 @@ jQuery(function($){
 
 			// Adjust the width of the text input field
 			this.trigger('width_needs_adjusting');
-			
+
 			// Trigger a change to the collection
 			this.collection.trigger('selected');
 		},
@@ -180,9 +194,14 @@ jQuery(function($){
 			this.select_tag = this.select_tag.render().$el;
 			if (this.placeholder) this.select_tag.attr('data-placeholder', this.placeholder);
 			this.$el.empty().append(this.select_tag);
+			this.collection.on('add remove change', this.options_updated, this);
 		},
-		
-		
+
+		options_updated: function(){
+			this.select_tag.trigger('liszt:updated');
+		},
+
+
 		adjust_width: function(){
 			var chzn_container = this.$el.find('#'+this.select_tag.attr('id')+'_chzn');
 			if (!this.options.width) chzn_container.width('auto');
@@ -191,7 +210,7 @@ jQuery(function($){
 				text_input.css('width', '25');
 			else
 				text_input.css('width', 'auto');
-			
+
 		},
 
 		render: function(){
@@ -206,7 +225,7 @@ jQuery(function($){
 				top:		-1000
 			});
 			$('body').append(this.$el);
-			
+
 			// In some browsers, the selectedIndex of a select tag is always the first element,
 			// even when no particular option has explicitly been selected. We compensate for
 			// that behavior.
@@ -347,7 +366,7 @@ jQuery(function($){
         model: Ngg.DisplayTab.Models.Tag,
 
 		selected_ids: function(){
-			return this.selected().map(function(item){ 
+			return this.selected().map(function(item){
 				return item.get('name');
 			});
 		}
@@ -369,7 +388,7 @@ jQuery(function($){
 	**/
 	Ngg.DisplayTab.Models.Display_Type_Collection = Ngg.Models.SelectableItems.extend({
 		model: Ngg.DisplayTab.Models.Display_Type,
-		
+
 		selected_value: function(){
 			var retval = null;
 			var selected = this.selected();
@@ -379,7 +398,7 @@ jQuery(function($){
 			return retval;
 		}
 	});
-	
+
 	/**
 	 * Ngg.DisplayTab.Models.Entity
 	 * Represents an entity to display on the front-end
@@ -389,36 +408,36 @@ jQuery(function($){
 			return this.get(this.get('id_field'));
 		}
 	});
-	
+
 	/**
 	 * Ngg.DisplayTab.Models.Entity_Collection
 	 * Represents a collection of entities
 	**/
 	Ngg.DisplayTab.Models.Entity_Collection		= Ngg.Models.SelectableItems.extend({
 		model: Ngg.DisplayTab.Models.Entity,
-		
+
 		entity_ids: function(){
 			return this.map(function(item){
 				return item.entity_id();
 			});
 		},
-		
+
 		included_ids: function(){
 			return _.compact(this.map(function(item){
 				if (!item.get('exclude')) return item.entity_id();
 			}));
 		}
 	});
-	
-	
+
+
 	Ngg.DisplayTab.Models.SortOrder				= Backbone.Model.extend({
 	});
-	
+
 	Ngg.DisplayTab.Models.SortOrder_Options		= Ngg.Models.SelectableItems.extend({
 		model: Ngg.DisplayTab.Models.SortOrder
 	});
 	Ngg.DisplayTab.Models.SortDirection			= Backbone.Model.extend({
-		
+
 	});
 	Ngg.DisplayTab.Models.SortDirection_Options = Backbone.Collection.extend({
 		model: Ngg.DisplayTab.Models.SortDirection
@@ -479,7 +498,7 @@ jQuery(function($){
 			this.sources		= Ngg.DisplayTab.instance.sources;
 			this.render();
 		},
-		
+
 		selection_changed: function(value){
 			this.display_types.each(function(item){
 				if (item.get('name') == value)
@@ -503,7 +522,7 @@ jQuery(function($){
 						this.selection_changed(value);
 					}, this);
 					display_type.model = item;
-					this.$el.append(display_type.render().el);					
+					this.$el.append(display_type.render().el);
 				}
 			}, this);
 			return this;
@@ -511,7 +530,7 @@ jQuery(function($){
 
 		DisplayType: Backbone.View.extend({
 			className: 'display_type_preview',
-			
+
 			render: function() {
 				// Create all elements
 				var image_container = $('<div/>').addClass('image_container');
@@ -533,7 +552,7 @@ jQuery(function($){
 				inner_div.append(radio_button);
 				inner_div.append(this.model.get('title'));
 				this.$el.append(image_container);
-			
+
 				// Notify that the display type has been selected
 				var self = this;
 				radio_button.bind('change', function(e){
@@ -543,51 +562,51 @@ jQuery(function($){
 			}
 		})
 	});
-	
+
 	Ngg.DisplayTab.Views.Preview_Area = Backbone.View.extend({
 		el: '#preview_area',
-		
+
  		fetch_limit: 50,
 
-		fetch_url: photocrati_ajax_url,		
-		
+		fetch_url: photocrati_ajax_url,
+
 		initialize: function(){
 			this.entities			= Ngg.DisplayTab.instance.entities;
 			this.sources			= Ngg.DisplayTab.instance.sources;
 			this.displayed_gallery	= Ngg.DisplayTab.instance.displayed_gallery;
-			
+
 			// Create the entity list
 			this.entity_list		= $('<ul/>').attr('id', 'entity_list').append('<li class="clear"/>');
-			
+
 			// When an entity is added/removed to the collection, we'll add/remove it on the DOM
 			this.entities.on('add', this.render_entity, this);
 			this.entities.on('remove', this.render_entity, this);
-			
+
 			// When the collection is reset, we add a list item to clear the float. This is important -
 			// jQuery sortable() will break without the cleared element.
 			this.entities.on('reset', this.entities_reset, this);
-			
+
 			// When jQuery sortable() is finished sorting, we need to adjust the order of models in the collection
 			this.entities.on('change:sortorder', function(model){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
 				this.displayed_gallery.set('entity_ids', this.entities.included_ids());
 			}, this);
-			
+
 			// Reset when the source changes
 			this.sources.on('selected', this.render, this);
-			
+
 			// Fetch the initial collection of entities
 			this.entities_reset();
-			
+
 			this.render();
 		},
-		
+
 		entities_reset: function(e){
 			this.entity_list.empty().append('<li class="clear"/>');
 			this.fetch_entities();
 		},
-		
+
 		fetch_entities: function(limit, offset){
 			// Create the request
 			var request = {
@@ -601,20 +620,20 @@ jQuery(function($){
 			var self = this;
 			$.post(this.fetch_url, request, function(response){
 				if (!_.isObject(response)) response = JSON.parse(response);
-				
+
 				_.each(response.entities, function(item){
 					item.exclude = parseInt(item.exclude) == 1 ? true : false;
 					item = new Ngg.DisplayTab.Models.Entity(item);
 					self.entities.push(item);
 				});
-				
+
 				// Continue fetching ?
 				if (response.count >= response.limit+response.offset) {
 					self.fetch_entities(response.limit, response.offset+response.limit);
 				}
 			});
 		},
-		
+
 		render_entity: function(model){
 			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
 			if (this.$el.find('.no_entities').length == 1) {
@@ -624,7 +643,7 @@ jQuery(function($){
 				this.entity_list.sortable('refresh');
 			}
 		},
-		
+
 		remove_entity: function(model){
 			this.entity_list.find('#'+model.get('id_field')+'_'+model.entity());
 			this.entity_list.sortable('refresh');
@@ -632,7 +651,7 @@ jQuery(function($){
 				this.$el.empty();
 			}
 		},
-		
+
 		render: function(){
 			this.$el.empty();
 			if (this.entities.length > 0 && this.displayed_gallery.get('container_ids').length > 0) {
@@ -647,7 +666,7 @@ jQuery(function($){
 				}).render().el);
 
 				this.$el.append(this.entity_list);
-				
+
 				// Activate jQuery Sortable for the entity list
 				this.entity_list.sortable({
 					placeholder: 'placeholder',
@@ -674,16 +693,16 @@ jQuery(function($){
 			}
 			return this;
 		},
-		
+
 		ExcludeButtons: Backbone.View.extend({
 			className: 'header_row',
-			
+
 			initialize: function(){
 				_.each(this.options, function(value, key){
 					this[key] = value;
 				}, this);
 			},
-			
+
 			render: function(){
 				this.$el.empty();
 				this.$el.append('<strong>Exclude:</strong>');
@@ -702,48 +721,48 @@ jQuery(function($){
 				this.$el.append(none_button.render().el);
 				return this;
 			},
-			
+
 			Button: Backbone.View.extend({
 				tagName: 'a',
-				
+
 				value: 1,
-				
+
 				text: '',
-				
+
 				events: {
 					click: 'clicked'
 				},
-				
+
 				initialize: function(){
 					_.each(this.options, function(value, key){
 						this[key] = value;
 					}, this);
 				},
-				
+
 				clicked: function(e){
 					e.preventDefault();
 					this.entities.each(function(item){
 						item.set('exclude', this.value);
 					}, this);
 				},
-				
+
 				render: function(){
 					this.$el.text(this.text).attr('href', '#');
 					return this;
 				}
 			})
 		}),
-		
+
 		SortButtons: Backbone.View.extend({
 			className: 'header_row',
-			
+
 			initialize: 		function(){
 				_.each(this.options, function(value, key){
 					this[key] = value;
 				}, this);
 				this.sortorder_options = new Ngg.DisplayTab.Models.SortOrder_Options();
 				this.sortorder_options.on('change:selected', this.sortoption_changed, this);
-				
+
 				// Create sort directions and listen for selection changes
 				this.sortdirection_options = new Ngg.DisplayTab.Models.SortDirection_Options([
 					{
@@ -759,7 +778,7 @@ jQuery(function($){
 				]);
 				this.sortdirection_options.on('change:selected', this.sortdirection_changed, this);
 			},
-			
+
 			populate_sorting_fields: function(){
 				// We display difference sorting buttons depending on what type of entities we're dealing with.
 				var entity_types = this.sources.selected().pop().get('returns');
@@ -770,7 +789,7 @@ jQuery(function($){
 					this.fill_gallery_sortorder_options();
 				}
 			},
-			
+
 			create_sortorder_option: function(name, title){
 				return new Ngg.DisplayTab.Models.SortOrder({
 					name: name,
@@ -779,7 +798,7 @@ jQuery(function($){
 					selected: this.displayed_gallery.get('order_by') == name
 				});
 			},
-			
+
 			fill_image_sortorder_options: function(){
 				this.sortorder_options.reset();
 				this.sortorder_options.push(this.create_sortorder_option('sortorder', 'Custom'));
@@ -788,14 +807,14 @@ jQuery(function($){
 				this.sortorder_options.push(this.create_sortorder_option('alttext', 'Alt/Title Text'));
 				this.sortorder_options.push(this.create_sortorder_option('imagedate', 'Date/Time'));
 			},
-			
+
 			fill_gallery_sortorder_options: function(){
 				this.sortorder_options.reset();
 				this.sortorder_options.push(this.create_sortorder_option('' ,'Custom'));
 				this.sortorder_options.push(this.create_sortorder_option('name', 'Name'));
 				this.sortorder_options.push(this.create_sortorder_option('galdesc', 'Description'));
 			},
-			
+
 			sortoption_changed: function(model){
 				this.sortorder_options.each(function(item){
 					item.set('selected', model.get('value') == item.get('value') ? true : false, {silent: true});
@@ -810,7 +829,7 @@ jQuery(function($){
 						$item.removeClass('selected');
 				});
 			},
-			
+
 			sortdirection_changed: function(model){
 				this.sortdirection_options.each(function(item){
 					item.set('selected', model.get('value') == item.get('value') ? true : false, {silent: true});
@@ -825,7 +844,7 @@ jQuery(function($){
 						$item.removeClass('selected');
 				});
 			},
-			
+
 			render: function(){
 				this.$el.empty();
 				this.populate_sorting_fields();
@@ -842,30 +861,30 @@ jQuery(function($){
 					var button = new this.Button({model: item, className: 'sortdirection'});
 					this.$el.append(button.render().el);
 					if (this.sortdirection_options.length-1 > index) {
-						this.$el.append('<span class="separator">|</span>');						
+						this.$el.append('<span class="separator">|</span>');
 					}
 				}, this);
 				return this;
 			},
-			
+
 			Button: Backbone.View.extend({
 				tagName: 'a',
-				
+
 				initialize: function(){
 					_.each(this.options, function(value, key){
 						this[key] = value;
 					}, this);
 				},
-				
+
 				events: {
 					click: 'clicked'
 				},
-				
+
 				clicked: function(e){
 					e.preventDefault();
 					this.model.set('selected', true);
 				},
-				
+
 				render: function(){
 					this.$el.attr({
 						value: this.model.get('value'),
@@ -877,26 +896,26 @@ jQuery(function($){
 				}
 			})
 		}),
-		
+
 		// Individual entity in the preview area
 		EntityElement: Backbone.View.extend({
 			tagName: 'li',
-			
+
 			events: {
 				drop: 'item_dropped'
 			},
-			
+
 			initialize: function(){
 				_.each(this.options, function(value, key){
 					this[key] = value;
 				}, this);
 				this.id = this.model.get('id_field')+'_'+this.model.entity_id()
 			},
-			
+
 			item_dropped: function(e, index){
 				this.model.set('sortorder', index);
 			},
-			
+
 			render: function(){
 				var image_container = $('<div/>').addClass('image_container');
 				var img = $('<img/>').attr({
@@ -908,7 +927,7 @@ jQuery(function($){
 				});
 				image_container.append(img);
 				this.$el.append(image_container).addClass('ui-state-default');
-				
+
 				// Add exclude checkbox
 				var exclude_container = $('<div/>').addClass('exclude_container');
 				exclude_container.append('Exclude?');
@@ -917,27 +936,27 @@ jQuery(function($){
 				image_container.append(exclude_container);
 				return this;
 			},
-			
+
 			ExcludeCheckbox: Backbone.View.extend({
 				tagName: 'input',
-				
+
 				events: {
 					'change': 'entity_excluded'
 				},
-				
+
 				type_set: false,
-				
+
 				entity_excluded: function(e){
 					this.model.set('exclude', e.srcElement.checked);
 				},
-				
+
 				initialize: function(){
 					_.each(this.options, function(value, key){
 						this[key] = value;
 					}, this);
 					this.model.on('change:exclude', this.render, this);
 				},
-				
+
 				render: function(){
 					if (!this.type_set) {
 						this.$el.attr('type', 'checkbox');
@@ -973,14 +992,14 @@ jQuery(function($){
 			return this;
 		}
 	});
-	
+
 	Ngg.DisplayTab.Views.AlbumsSource = Backbone.View.extend({
 		tagName: 'tbody',
-		
+
 		initialize: function(){
 			this.albums 	= Ngg.DisplayTab.instance.albums;
 		},
-		
+
 		render: function(){
 			var album_select = new Ngg.Views.Chosen({
 				collection: this.albums,
@@ -993,14 +1012,14 @@ jQuery(function($){
 			return this;
 		}
 	});
-	
+
 	Ngg.DisplayTab.Views.TagsSource = Backbone.View.extend({
 		tagName: 'tbody',
-		
+
 		initialize: function(){
 			this.tags	= Ngg.DisplayTab.instance.tags;
 		},
-		
+
 		render: function(){
 			var tag_select = new Ngg.Views.Chosen({
 				collection: this.tags,
@@ -1013,31 +1032,31 @@ jQuery(function($){
 			return this;
 		}
 	});
-	
+
 	Ngg.DisplayTab.Views.SaveButton = Backbone.View.extend({
 		el: '#save_displayed_gallery',
-		
+
 		errors_el: '#errors',
-		
+
 		displayed_gallery: null,
-		
+
 		events: {
 			click: 'clicked'
 		},
-		
+
 		initialize: function(){
 			this.displayed_gallery	= Ngg.DisplayTab.instance.displayed_gallery;
 			this.entities			= Ngg.DisplayTab.instance.entities;
 			this.render();
 		},
-		
+
 		clicked: function(){
 			this.set_display_settings();
 			var request = {
 				action: 'save_displayed_gallery',
 				displayed_gallery: this.displayed_gallery.toJSON()
 			};
-			
+
 			var self = this;
 			$.post(photocrati_ajax_url, request, function(response){
 				if (!_.isObject(response)) response = JSON.parse(response);
@@ -1060,7 +1079,7 @@ jQuery(function($){
 				}
 			});
 		},
-		
+
 		set_display_settings: function(){
 			var display_type = this.displayed_gallery.get('display_type');
 			if (display_type) {
@@ -1084,12 +1103,12 @@ jQuery(function($){
 					});
 					return obj;
 				})(form);
-				
+
 				// Set display settings for displayed gallery
 				this.displayed_gallery.set('display_settings', display_settings[display_type]);
 			}
 		},
-		
+
 		render: function(){
 			return this;
 		}
@@ -1102,7 +1121,7 @@ jQuery(function($){
         /**
          * Initializes the DisplayTab object
         **/
-        initialize: function(){	
+        initialize: function(){
 			// TODO: We're currently fetching ALL galleries, albums, and tags
 			// in one shot. Instead, we should display the displayed_gallery's
 			// containers, if there are any, otherwise get the first 25 or so.
@@ -1129,7 +1148,7 @@ jQuery(function($){
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
-				
+
 				// Pre-select containers
 				if (this.displayed_gallery.get('container_ids')) {
 					_.each(this.displayed_gallery.get('container_ids'), function(id){
@@ -1139,14 +1158,14 @@ jQuery(function($){
 						if (container) container.set('selected', true);
 					}, this);
 				}
-				
+
 				// Pre-select display type
 				if (this.displayed_gallery.get('display_type')) {
 					var display_type = this.display_types.find(function(item){
 						return item.get('name') == this.displayed_gallery.get('display_type');
 					}, this);
 					if (display_type) display_type.set('selected', true);
-					
+
 				}
 			}
 
@@ -1161,7 +1180,7 @@ jQuery(function($){
 			this.display_types.on('change:selected', function(){
 				this.displayed_gallery.set('display_type', this.display_types.selected_value());
 			}, this);
-			
+
 			// Bind to the 'selected' event for the source, updating the displayed gallery
 			this.sources.on('selected', function(){
 				this.displayed_gallery.set('source', this.sources.selected_value());
@@ -1171,11 +1190,71 @@ jQuery(function($){
 				this.display_type_selector.render();
 				this.preview_area.render();
 			}, this);
-			
+
 			// Synchronize changes made to entities with the displayed gallery
 			this.entities.on('reset add remove change:exclude', function(){
 				this.displayed_gallery.set('entity_ids', this.entities.included_ids());
 			}, this);
+
+			// Monitor events in other tabs and respond as appropriate
+			var app = this;
+			$(window).bind('attach_to_post:new_gallery', function(e, data){
+				app.galleries.push(data.gallery);
+			});
+			$(window).bind('attach_to_post:new_image', function(e, data){
+				if (app.sources.selected_value() == 'galleries') {
+					var gallery_id = parseInt(data.image.galleryid);
+					if (app.galleries.selected_ids().indexOf(gallery_id) >= 0) {
+						app.entities.push(data.image);
+					}
+				}
+			});
+			$(window).bind('attach_to_post:new_album', function(e, data){
+				app.albums.push(data.album);
+			});
+			$(window).bind('attach_to_post:album_modified', function(e, data){
+				var album_id = parseInt(data.album[data.album.id_field]);
+				var album = app.albums.find(function(item){
+					return parseInt(item.id) == album_id;
+				});
+				album.set(data.album);
+
+				if (app.sources.selected_value() == 'albums'){
+					if (app.albums.selected_ids().indexOf(album_id) >= 0) {
+						app.entities.reset();
+					}
+				}
+			});
+			$(window).bind('attach_to_post:album_deleted', function(e, data){
+				var album_id = parseInt(data.album_id);
+				var album = app.albums.find(function(item){
+					return parseInt(item.id) == album_id;
+				});
+				var selected_album_ids = app.sources.selected_ids();
+				if (album) app.albums.remove(album);
+				if (app.sources.selected_value() == 'albums') {
+					if (selected_album_ids.indexOf(album_id) >= 0) {
+						app.entities.reset();
+					}
+				}
+			});
+			$(window).bind('attach_to_post:image_deleted', function(e, data){
+				var selected_source = app.source.selected().pop();
+				if (selected_source.get('returns').indexOf('images') >= 0) {
+					var image_id = parseInt(data.image_id);
+					var image = app.entities.find(function(item){
+						return parseInt(item.id) == image_id;
+					});
+					if (image) app.entities.remove(image);
+				}
+			});
+			$(window).bind('attach_to_post:gallery_deleted', function(e, data){
+				var gallery_id = parseInt(data.gallery_id);
+				var gallery = app.galleries.find(function(item){
+					return parseInt(item.id) == gallery_id;
+				});
+				if (gallery) app.galleries.remove(gallery);
+			});
         },
 
         // Updates the selected container_ids for the displayed gallery

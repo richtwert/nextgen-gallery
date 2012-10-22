@@ -49,6 +49,7 @@ class M_Attach_To_Post extends C_Base_Module
 		parent::initialize();
 		$this->_add_routes();
 		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
 	}
 
 
@@ -110,6 +111,15 @@ class M_Attach_To_Post extends C_Base_Module
 
 		// Add hook to subsitute displayed gallery placeholders
 		add_filter('the_content', array(&$this, 'substitute_placeholder_imgs'), 1000, 1);
+
+		// Emit frame communication events
+		add_action('ngg_created_new_gallery',	array(&$this, 'new_gallery_event'));
+		add_action('ngg_added_new_image',		array(&$this, 'new_image_event'));
+		add_action('ngg_add_album',				array(&$this, 'new_album_event'));
+		add_action('ngg_update_album',			array(&$this, 'album_modified_event'));
+		add_action('ngg_delete_album',			array(&$this, 'album_deleted_event'));
+		add_action('ngg_delete_picture',		array(&$this, 'image_deleted_event'));
+		add_action('ngg_delete_gallery',		array(&$this, 'gallery_deleted_event'));
 	}
 
 	/**
@@ -274,6 +284,98 @@ class M_Attach_To_Post extends C_Base_Module
 		global $displayed_galleries_to_cleanup;
 		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 		foreach ($displayed_galleries_to_cleanup as $id) $mapper->destroy($id);
+	}
+
+
+	/**
+	 * Notify frames that a new gallery has been created
+	 * @param int $gallery_id
+	 */
+	function new_gallery_event($gallery_id)
+	{
+		$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->events->add_event(array(
+			'event'		=>	'new_gallery',
+			'gallery'	=>	$mapper->find($gallery_id)
+		));
+	}
+
+	/**
+	 * Notify frames that a new image has been added
+	 * @param mixed $image
+	 */
+	function new_image_event($image)
+	{
+		if (isset($image['id'])) {
+			$mapper = $this->get_registry()->get_utility('I_Image_Mapper');
+			$this->events->add_event(array(
+				'event'	=>	'new_image',
+				'image'	=>	$mapper->find($image['id']),
+			));
+		}
+	}
+
+	/**
+	 * Notifies frames that a new album has been added
+	 * @param int $album_id
+	 */
+	function new_album_event($album_id)
+	{
+		$mapper = $this->get_registry()->get_utility('I_Album_Mapper');
+		$this->events->add_event(array(
+			'event'		=>	'new_album',
+			'album'		=>	$mapper->find($album_id)
+		));
+	}
+
+	/**
+	 * Notifies frames that an album has been modified
+	 * @param int $album_id
+	 * @param array $new_data
+	 */
+	function album_modified_event($album_id, $new_data)
+	{
+		$mapper = $this->get_registry()->get_utility('I_Album_Mapper');
+		$this->events->add_event(array(
+			'event'		=>	'album_modified',
+			'album'		=>	$mapper->find($album_id)
+		));
+	}
+
+	/**
+	 * Notifies frames that an album has been deleted
+	 * @param int $album_id
+	 */
+	function album_deleted_event($album_id)
+	{
+		$this->events->add_event(array(
+			'event'		=>	'album_deleted',
+			'album_id'	=>	$album_id
+		));
+	}
+
+	/**
+	 * Notifies frames that an image has been deleted
+	 * @param int $image_id
+	 */
+	function image_deleted_event($image_id)
+	{
+		$this->events->add_event(array(
+			'event'		=>	'image_deleted',
+			'image_id'	=>	$image_id
+		));
+	}
+
+	/**
+	 * Notifies frames that a gallery has been deleted
+	 * @param int $gallery_id
+	 */
+	function gallery_deleted_event($gallery_id)
+	{
+		$this->events->add_event(array(
+			'event'		=>	'gallery_deleted',
+			'gallery_id'=>	$gallery_id
+		));
 	}
 }
 

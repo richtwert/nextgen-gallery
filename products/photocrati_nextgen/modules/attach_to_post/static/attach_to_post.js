@@ -67,6 +67,16 @@ jQuery(function($){
 
 	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
+	$('.ui-tabs-nav a').click(function(e){
+		if ($(e.srcElement).parent().hasClass('ui-state-active')) {
+			var iframe = $(e.srcElement.hash+' iframe');
+			if (iframe.length > 0) {
+				if (iframe[0].contentDocument.location != iframe.attr('src')) {
+					iframe[0].contentDocument.location = iframe.attr('src');
+				}
+			}
+		}
+	});
 
 	// Close the window when the escape key is pressed
 	$(this).keydown(function(e){

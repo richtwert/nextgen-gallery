@@ -12,6 +12,9 @@ class nggAdminPanel{
 	// constructor
 	function __construct() {
 
+		// Buffer the output
+		add_action('admin_init', array(&$this, 'start_buffer'));
+
 		// Add the admin menu
 		add_action( 'admin_menu', array (&$this, 'add_menu') );
         add_action( 'admin_bar_menu', array(&$this, 'admin_bar_menu'), 99 );
@@ -28,6 +31,11 @@ class nggAdminPanel{
         // Add WPML hook to register description / alt text for translation
         add_action('ngg_image_updated', array('nggGallery', 'RegisterString') );
 
+	}
+
+	function start_buffer()
+	{
+		ob_start();
 	}
 
 	// integrate the menu
@@ -94,7 +102,6 @@ class nggAdminPanel{
 
 	// load the script for the defined page and load only this code
 	function show_menu() {
-
 		global $ngg;
 
 		// check for upgrade and show upgrade screen

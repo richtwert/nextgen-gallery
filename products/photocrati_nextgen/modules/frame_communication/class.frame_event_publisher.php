@@ -12,11 +12,6 @@ class C_Frame_Event_Publisher extends C_Component
 		$this->implement('I_Frame_Event_Publisher');
 	}
 
-	function initialize()
-	{
-		$this->lza = $this->get_registry()->get_utility('I_Lza');
-	}
-
 	/**
 	 * Gets an instance of the publisher
 	 * @param string $context
@@ -41,7 +36,7 @@ class Mixin_Frame_Event_Publisher extends Mixin
 	 */
 	function _encode($data)
 	{
-		return json_encode($data);
+		return rawurlencode(json_encode($data));
 	}
 
 	/**
@@ -51,7 +46,7 @@ class Mixin_Frame_Event_Publisher extends Mixin
 	 */
 	function _decode($data)
 	{
-		return (array)json_decode($data);
+		return (array)json_decode(rawurldecode($data));
 	}
 
 	/**
@@ -76,7 +71,7 @@ class Mixin_Frame_Event_Publisher extends Mixin
 	 */
 	function _set_cookie($name, $value)
 	{
-		setcookie($name, $this->object->_encode($value));
+		setrawcookie($name, $this->object->_encode($value));
 	}
 
 

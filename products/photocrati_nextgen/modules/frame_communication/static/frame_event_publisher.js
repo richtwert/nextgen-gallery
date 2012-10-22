@@ -76,7 +76,11 @@ window.Frame_Event_Publisher = {
 			for (var event_id in events[context]) {
 				var event = events[context][event_id];
 				if (forced || !this.has_received_event(context, event_id)) {
-					this.trigger_event(context, event_id, event);
+					var publisher = this;
+					setTimeout(function(){
+						publisher.trigger_event(context, event_id, event);
+					}, 0);
+
 				}
 			}
 		}
@@ -101,13 +105,23 @@ window.Frame_Event_Publisher = {
 	 * Parses the events found in the cookie
 	 */
 	get_events: function(cookie){
-		var frame_events = JSON.parse(unescape(cookie.match(/frame_events=([^ ]*)/).pop().slice(0,-1)));
+		var frame_events = [];
+		try {
+			frame_events = JSON.parse(unescape(cookie.match(/frame_events=([^ ]*)/).pop().slice(0,-1)));
+			this.delete_cookie(cookie);
+		}
+		catch (Exception) {}
 		return frame_events;
+	},
+
+	delete_cookie: function(cookie){
+		var matched = cookie.match(/frame_events=[^ ]*/).pop();
+		document.cookie = document.cookie.replace(matched, this.cookie_name+'=;');
 	}
 }
 
 jQuery(function($){
-	$(window).bind('attach_to_post:test', function(e, data){
+	$(window).bind('attach_to_post:new_gallery', function(e, data){
 		console.log(data);
 	});
 	Frame_Event_Publisher.broadcast();

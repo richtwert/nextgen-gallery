@@ -528,11 +528,15 @@ class Mixin_Album_Source_Queries extends Mixin
         $album_mapper->select($ids_only ? $album_key.', sortorder' : '*')->where(array("{$album_key} IN (%s)", $album_ids));
         $albums = $album_mapper->run_query();
         $entities = array();
-        foreach ($albums as $album) foreach ($album->sortorder as $entity_id) $entities[] = $entity_id;
-        if ($skip_subalbums) foreach ($entities as $entity_id) {
-            if (strpos($entity_id, 'a') === FALSE) $retval[] = $entity_id;
-        }
-        else $retval = $entities;
+        foreach ($albums as $album) {
+			if (is_array($album->sortorder)) {
+				foreach ($album->sortorder as $entity_id) $entities[] = $entity_id;
+				if ($skip_subalbums) foreach ($entities as $entity_id) {
+					if (strpos($entity_id, 'a') === FALSE) $retval[] = $entity_id;
+				}
+				else $retval = $entities;
+			}
+		}
         return $retval;
     }
 
