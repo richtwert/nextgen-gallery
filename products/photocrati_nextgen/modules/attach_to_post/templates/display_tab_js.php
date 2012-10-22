@@ -518,10 +518,8 @@ jQuery(function($){
 			this.display_types.each(function(item){
 				if (this.sources.selected().length == 0 || item.get('entity_type') == this.sources.selected().pop().get('display_type')) {
 					var display_type = new this.DisplayType;
-					display_type.on('selected', function(value){
-						this.selection_changed(value);
-					}, this);
 					display_type.model = item;
+					display_type.on('selected', this.selection_changed, this);
 					this.$el.append(display_type.render().el);
 				}
 			}, this);
@@ -530,6 +528,14 @@ jQuery(function($){
 
 		DisplayType: Backbone.View.extend({
 			className: 'display_type_preview',
+
+			events: {
+				click: 'clicked'
+			},
+
+			clicked: function(e){
+				this.trigger('selected', this.model.get('name'));
+			},
 
 			render: function() {
 				// Create all elements
@@ -552,12 +558,6 @@ jQuery(function($){
 				inner_div.append(radio_button);
 				inner_div.append(this.model.get('title'));
 				this.$el.append(image_container);
-
-				// Notify that the display type has been selected
-				var self = this;
-				radio_button.bind('change', function(e){
-					self.trigger('selected', $(e.srcElement).val());
-				});
 				return this;
 			}
 		})
