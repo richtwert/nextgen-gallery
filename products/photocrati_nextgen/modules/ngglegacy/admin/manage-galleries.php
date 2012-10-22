@@ -105,7 +105,12 @@ function nggallery_manage_gallery_main() {
     		width: 640,
             resizable : false,
     		modal: true,
-            title: title
+            title: title,
+			position: {
+				my:		'center',
+				at:		'center',
+				of:		window.parent
+			}
     	});
         jQuery("#" + windowId + ' .dialog-cancel').click(function() { jQuery( "#" + windowId ).dialog("close"); });
 	}
@@ -115,7 +120,12 @@ function nggallery_manage_gallery_main() {
     		width: 640,
             resizable : false,
     		modal: true,
-            title: '<?php echo esc_js(__('Add new gallery','nggallery')); ?>'
+            title: '<?php echo esc_js(__('Add new gallery','nggallery')); ?>',
+			position: {
+				my:		'center',
+				at:		'center',
+				of:		window.parent
+			}
     	});
         jQuery("#addGallery .dialog-cancel").click(function() { jQuery( "#addGallery" ).dialog("close"); });
 	}

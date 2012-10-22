@@ -87,7 +87,12 @@ function showDialog( windowId, title ) {
 		width: 640,
         resizable : false,
 		modal: true,
-        title: title
+        title: title,
+		position: {
+			my:		'center',
+			at:		'center',
+			of:		window.parent
+		}
 	});
     jQuery("#" + windowId + ' .dialog-cancel').click(function() { jQuery( "#" + windowId ).dialog("close"); });
 }

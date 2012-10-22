@@ -28,7 +28,12 @@
             		width: 640,
                     resizable : true,
             		modal: true,
-                    title: s.header
+                    title: s.header,
+					position: {
+						my:		'center',
+						at:		'center',
+						of:		window.parent
+					}
             	});
 			}
             // get the pointer to the dialog

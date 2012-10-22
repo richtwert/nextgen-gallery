@@ -277,7 +277,12 @@ function showDialog() {
 		width: 640,
         resizable : false,
 		modal: true,
-        title: '<?php echo esc_js( __('Edit Album', 'nggallery') ); ?>'
+        title: '<?php echo esc_js( __('Edit Album', 'nggallery') ); ?>',
+		position: {
+			my:		'center',
+			at:		'center',
+			of:		window.parent
+		}
 	});
     jQuery('#editalbum .dialog-cancel').click(function() { jQuery( "#editalbum" ).dialog("close"); });
 }
