@@ -12,7 +12,7 @@ html#iframely{
 	height: auto;
 }
 
-#wpwrap {
+#iframely #wpwrap {
     position: absolute;
     visibility: hidden;
 }

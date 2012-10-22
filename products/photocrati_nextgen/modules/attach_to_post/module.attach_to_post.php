@@ -214,6 +214,7 @@ class M_Attach_To_Post extends C_Base_Module
         }
 	}
 
+
 	/**
 	 * Adds a TinyMCE button for the Attach To Post plugin
 	 * @param array $buttons

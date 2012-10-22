@@ -353,7 +353,6 @@ if (!class_exists('nggLoader')) {
 				require_once (dirname (__FILE__) . '/lib/meta.php');				// 131.856
 				require_once (dirname (__FILE__) . '/lib/media-rss.php');			//  82.768
 				require_once (dirname (__FILE__) . '/lib/rewrite.php');				//  71.936
-				include_once (dirname (__FILE__) . '/admin/tinymce/tinymce.php'); 	//  22.408
 
 				// Load backend libraries
 				if ( is_admin() ) {
