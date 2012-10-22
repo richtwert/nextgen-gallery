@@ -16,7 +16,8 @@ class A_NextGen_Data_Deactivation extends Mixin
     {
         $mappers = array(
             'I_Image_Mapper',
-            'I_Gallery_Mapper'
+            'I_Gallery_Mapper',
+			'I_Album_Mapper'
         );
         foreach ($mappers as $map_name) {
             $mapper = $this->object->get_registry()->get_utility($map_name);
@@ -25,5 +26,9 @@ class A_NextGen_Data_Deactivation extends Mixin
                 $mapper->destroy($entity);
             }
         }
+
+		global $wpdb;
+		$wpdb->query("DELETE FROM {$wpdb->terms} WHERE term_id IN (SELECT term_id FROM {$wpdb->term_taxonomy} WHERE taxonomy='ngg_tag')");
+		$wpdb->query("DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy='ngg_tag'");
     }
 }
