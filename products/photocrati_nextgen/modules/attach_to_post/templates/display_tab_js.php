@@ -89,7 +89,7 @@ jQuery(function($){
 		},
 
 		remove_existing_option: function(item){
-			this.$el.find("option[value='"+item.get('value')+"']").remove();
+			this.$el.find("option[value='"+item.id+"']").remove();
 		},
 
         /**
