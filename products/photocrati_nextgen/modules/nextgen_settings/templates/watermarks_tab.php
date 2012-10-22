@@ -66,14 +66,16 @@
         </td>
     </tr>
 
-    <tr>
-        <td>
-            <?php echo $preview_label; ?>
-        </td>
-        <td>
-            <img src='<?php echo $thumbnail_url; ?>'/>
-        </td>
-    </tr>
+    <?php if (!is_null($thumbnail_url)) { ?>
+        <tr>
+            <td>
+                <?php echo $preview_label; ?>
+            </td>
+            <td>
+                <img src='<?php echo $thumbnail_url; ?>'/>
+            </td>
+        </tr>
+    <?php } ?>
 
 	<tr>
 		<td colspan="2">
