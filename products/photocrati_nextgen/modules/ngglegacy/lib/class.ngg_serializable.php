@@ -15,12 +15,13 @@ class Ngg_Serializable
 
 
 	/**
-	 * Unserializes data using our propriotory format
+	 * Unserializes data using our proprietary format
 	 * @param string $value
 	 * @return mixed
 	 */
 	function unserialize($value)
 	{
+		$retval = NULL;
 		if (is_string($value))
 		{
 			$retval = stripcslashes($value);

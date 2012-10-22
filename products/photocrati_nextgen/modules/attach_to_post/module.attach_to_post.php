@@ -334,7 +334,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 * @param int $album_id
 	 * @param array $new_data
 	 */
-	function album_modified_event($album_id, $new_data)
+	function album_modified_event($album_id)
 	{
 		$mapper = $this->get_registry()->get_utility('I_Album_Mapper');
 		$this->events->add_event(array(
