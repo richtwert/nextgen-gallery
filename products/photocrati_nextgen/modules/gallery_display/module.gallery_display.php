@@ -320,6 +320,7 @@ class M_Gallery_Display extends C_Base_Module
     {
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
         $params['image_id'] = $this->_get_param('id', NULL, $params);
+        $params['source'] = $this->_get_param('source', 'image', $params);
         unset($params['id']);
         $this->renderer->display_images($params, $inner_content);
     }

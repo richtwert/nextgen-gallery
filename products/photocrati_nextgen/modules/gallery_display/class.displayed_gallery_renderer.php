@@ -155,7 +155,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
 
             // Tagcloud support
             elseif ($args['tagcloud']) {
-                $args['source'] = 'galleries';
+                $args['source'] = 'image';
             }
 
             // Convert strings to arrays
