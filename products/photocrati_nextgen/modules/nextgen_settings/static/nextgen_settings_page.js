@@ -22,7 +22,11 @@ jQuery(function($){
 
 	// Configure the button to switch from watermark text to image
 	$('#watermark_source').change(function(){
-		$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source');
+		$('#'+$('#watermark_customization').attr('rel')).css('display', '').addClass('hidden');
+		if (!$('#'+$(this).val()).hasClass('hidden')) {
+			$('#'+$(this).val()).removeClass('hidden');
+		}
+		$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source').click();
 	});
 
 	/**** STYLES TAB ****/
