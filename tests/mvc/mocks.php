@@ -19,21 +19,25 @@ class C_Test_MVC_Mock_Controller extends C_MVC_Controller
 		$this->implement('I_Test_MVC_Controller');
 	}
 
-	function foobar()
+	function foobar_action()
 	{
 		$view = implode(
 			DIRECTORY_SEPARATOR,
 			array(dirname(__FILE__), 'templates', 'foobar_template.tmpl')
 		);
-		$this->render_view($view, array(
-			'foobar' => 'Foo Bar'
-		));
-	}
+
+        $this->render_view(
+            $view,
+            array(
+                'foobar' => 'Foo Bar'
+            )
+        );
+    }
 }
 
 class Mixin_Override_Mock_Index extends Mixin
 {
-	function index()
+	function index_action()
 	{
 		echo "Hello";
 		return;

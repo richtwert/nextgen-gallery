@@ -213,7 +213,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$width      = isset($params['width'])      ? $params['width']      : NULL;
 		$height     = isset($params['height'])     ? $params['height']     : NULL;
 		$quality    = isset($params['quality'])    ? $params['quality']    : NULL;
-		$type = isset($params['type']) ? $params['type'] : NULL;
+		$type       = isset($params['type'])       ? $params['type']       : NULL;
 		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
 		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
 		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
@@ -625,10 +625,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$existing_image_dir = dirname($existing_image_abpath);
 
 			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it, leaving commented in as reminder in case there are issues in the future
-      if (file_exists($existing_image_abpath)) {
-          //unlink($existing_image_abpath);
-      }
-      
+            if (file_exists($existing_image_abpath)) {
+                //  unlink($existing_image_abpath);
+            }
+
 			wp_mkdir_p($existing_image_dir);
 			
 			$clone_path = $existing_image_abpath;
@@ -737,31 +737,45 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$retval = FALSE;
 
 		// Ensure that we have the image entity
-		if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
+		if (is_numeric($image))
+            $image = $this->object->_image_mapper->find($image);
 
-		if ($image) {
-
+		if ($image)
+        {
 			// Delete only a particular image size
-			if ($size) {
+			if ($size)
+            {
 				$abspath = $this->object->get_image_abspath($image, $size);
-				if ($abspath && file_exists($abspath)) unlink($abspath);
-				if (isset($image->meta_data) && isset($image->meta_data[$size])) {
+				if ($abspath && file_exists($abspath))
+                    unlink($abspath);
+				if (isset($image->meta_data) && isset($image->meta_data[$size]))
+                {
 					unset($image->meta_data[$size]);
 					$this->object->_image_mapper->save($image);
 				}
 			}
-
 			// Delete all sizes of the image
 			else {
-				// Get the paths to all images
-				$abspaths = array($this->get_full_abspath($image));
-				if (isset($image->meta_data)) foreach (array_keys($image->meta_data) as $size) {
-					$abspaths[] = $this->object->get_image_abspath($image, $size);
-				}
+				// Get the paths to fullsize and thumbnail files
+				$abspaths = array(
+                    $this->object->get_full_abspath($image),
+                    $this->object->get_thumb_abspath($image)
+                );
+
+				if (isset($image->meta_data))
+                {
+                    foreach (array_keys($image->meta_data) as $size) {
+                        $abspaths[] = $this->object->get_image_abspath($image, $size);
+                    }
+                }
 
 				// Delete each image
-				foreach ($abspaths as $abspath)
-					if ($abspath && file_exists($abspath)) unlink($abspath);
+				foreach ($abspaths as $abspath) {
+					if ($abspath && file_exists($abspath))
+                    {
+                        unlink($abspath);
+                    }
+                }
 
 				// Delete the entity
 				$this->object->_image_mapper->destroy($image);

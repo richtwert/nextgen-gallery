@@ -307,7 +307,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function new_image_event($image)
 	{
-		if (isset($image['id'])) {
+		if (is_array($image) && !empty($image['id'])) {
 			$mapper = $this->get_registry()->get_utility('I_Image_Mapper');
 			$this->events->add_event(array(
 				'event'	=>	'new_image',

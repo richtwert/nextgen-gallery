@@ -148,7 +148,7 @@ class C_NextGEN_Bootstrap
 	 */
 	function add_testsuite($suites=array())
 	{
-//        // To avoid autoloading issues we feed Pope's tests one at a time
+        // To avoid autoloading issues we feed Pope's tests one at a time
 //        $suites['pope'] = array(
 //            'core',
 //            'pre_hooks',
@@ -179,13 +179,13 @@ class C_NextGEN_Bootstrap
 			require_once(path_join($tests_dir, 'mocks.php'));
 
 			// Define the NextGEN Test Suite
-			$suites['nextgen'] = array(
-				path_join($tests_dir, 'mvc'),
-				path_join($tests_dir, 'datamapper'),
-				path_join($tests_dir, 'nextgen_data'),
- 				path_join($tests_dir, 'gallery_display')
-			);
-		}
+            $suites['nextgen'] = array(
+                path_join($tests_dir, 'mvc'),
+                path_join($tests_dir, 'datamapper'),
+                path_join($tests_dir, 'nextgen_data'),
+                path_join($tests_dir, 'gallery_display')
+            );
+        }
 
 		return $suites;
 	}

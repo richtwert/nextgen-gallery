@@ -62,7 +62,7 @@ if (!class_exists('nggLoader')) {
 				return;
 
 			// Set error handler
-//			set_exception_handler(array(&$this, 'exception_handler'));
+			set_exception_handler(array(&$this, 'exception_handler'));
 
 			// Determine plugin basename based on whether NGG is being used in
 			// it's legacy form, or as a Photocrati Gallery
