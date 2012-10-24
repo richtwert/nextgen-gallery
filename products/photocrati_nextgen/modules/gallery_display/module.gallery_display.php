@@ -185,7 +185,7 @@ class M_Gallery_Display extends C_Base_Module
         // for tooltip styling
         if (isset($_GET['page']) && $_GET['page'] == 'nggallery-manage-gallery')
         {
-            wp_enqueue_style('nggadmin', $this->static_url('nextgen_display_settings_page.css'));
+            wp_enqueue_style('nextgen_display_settings_page', $this->static_url('nextgen_display_settings_page.css'));
         }
 	}
 
