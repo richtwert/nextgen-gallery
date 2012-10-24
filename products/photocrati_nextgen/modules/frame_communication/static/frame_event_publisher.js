@@ -77,10 +77,17 @@ window.Frame_Event_Publisher = {
 				var event = events[context][event_id];
 				if (forced || !this.has_received_event(context, event_id)) {
 					var publisher = this;
-					setTimeout(function(){
-						publisher.trigger_event(context, event_id, event);
-					}, 0);
-
+					
+					try {
+						if (window != null) {
+							window.setTimeout(function(){
+								publisher.trigger_event(context, event_id, event);
+							}, 0);
+						}
+					}
+					catch (ex) {
+						// XXX window object might be referring to an iframe that was destroyed?
+					}
 				}
 			}
 		}
