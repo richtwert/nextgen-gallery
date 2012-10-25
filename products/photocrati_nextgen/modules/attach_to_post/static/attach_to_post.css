@@ -119,12 +119,16 @@ iframe {
 #preview_tab_content .image_container {
 	width: 100px;
 	height: 100px;
+	max-width: 100px;
+	max-height: 100px;
 	background-color: white;
 	padding: 20px;
 	margin: 20px;
 	border: solid 1px black;
 	display: table-cell;
 	vertical-align: middle;
+	text-align: center;
+	position: relative;
 }
 
 #preview_tab_content .image_container img {
@@ -147,11 +151,15 @@ iframe {
 }
 
 #preview_tab_content #entity_list .exclude_container {
+	display: block;
 	text-align: center;
 	margin: 0 auto;
 	color: black;
 	font-weight: normal;
-	margin-top: 9px;
+	position: absolute;
+	bottom: 2px;
+	left: 0px;
+	width: 100%;
 }
 
 #preview_tab_content .header_row {

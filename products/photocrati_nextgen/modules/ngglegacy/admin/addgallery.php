@@ -207,7 +207,7 @@ class nggAddGallery {
     		up.refresh();
 			var accordion_content = $('#uploadimage').next('div');
 			accordion_content[0].scrollTop = accordion_content.height();
-			
+
 				// when loaded into an iframe ensure we update iframe height accordingly
 				if (top != window) {
 					if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {

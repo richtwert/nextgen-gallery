@@ -51,7 +51,12 @@ window.Frame_Event_Publisher = {
 		this.emit(events);
 		for (var index in this.children) {
 			var child = this.children[index];
-			child.emit(events);
+			try {
+				child.emit(events);
+			}
+			catch (Exception) {
+				this.children.splice(index, 1);
+			}
 		}
 	},
 
@@ -77,7 +82,7 @@ window.Frame_Event_Publisher = {
 				var event = events[context][event_id];
 				if (forced || !this.has_received_event(context, event_id)) {
 					var publisher = this;
-					
+
 					try {
 						if (window != null) {
 							window.setTimeout(function(){

@@ -82,7 +82,9 @@ function uploadStart(fileObj) {
 
 // called during the upload progress
 function uploadProgress(fileObj, bytesDone, bytesTotal) {
-    var percent = Math.ceil((bytesDone / bytesTotal) * 100);
+	var percent = 100;
+	if (bytesTotal != undefined)
+		percent = Math.ceil((bytesDone / bytesTotal) * 100);
     debug('[uploadProgress]', fileObj.name + ' : ' + percent + "%");
     nggProgressBar.increase( percent );
 	jQuery("#progressbar span").text(percent + "% - " + fileObj.name);
@@ -105,7 +107,7 @@ function uploadComplete(fileObj) {
 function uploadSuccess(fileObj, serverData) {
     debug('[uploadSuccess]', serverData);
 
-    if (serverData.response != 0)
+    if (serverData.response != 0 && serverData.response != '<pre>0</pre>')
         nggProgressBar.addNote("<strong>ERROR</strong>: " + fileObj.name + " : " + serverData.response);
 
 	jQuery("#" + fileObj.id).hide("slow");

@@ -152,6 +152,17 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		}
 	}
 
+	function preview_tab_css($return=FALSE)
+	{
+		$settings = $this->object->get_registry()->get_utlity('I_NextGen_Settings');
+		$this->object->set_content_type('css');
+		$this->object->do_not_cache();
+		return $this->object->render_view('preview_tab_css', array(
+			// Need to determine what parameters to include
+		));
+	}
+
+
 	/**
 	 * Displays a preview image for the displayed gallery
 	 */

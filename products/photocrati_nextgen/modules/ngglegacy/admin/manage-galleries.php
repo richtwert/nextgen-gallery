@@ -132,7 +132,7 @@ function nggallery_manage_gallery_main() {
 	//-->
 	</script>
 	<div class="wrap">
-		<?php include('templates/social_media_buttons.php'); ?>
+		<?php //include('templates/social_media_buttons.php'); ?>
 		<?php screen_icon( 'nextgen-gallery' ); ?>
 		<h2><?php echo _n( 'Galleries', 'Galleries', 2, 'nggallery'); ?></h2>
 		<form class="search-form" action="" method="get">

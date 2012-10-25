@@ -80,6 +80,7 @@
 			$("#" + s.id + " div").width( '100%' );
 			$("#" + s.id + " span").html( '100%' );
 			// in the case we add a note , we should wait for a click
+			var div = this.div;
 			if (s.wait) {
                 $("#" + s.id).delay(1000).hide("slow");
 				div.click(function () {
