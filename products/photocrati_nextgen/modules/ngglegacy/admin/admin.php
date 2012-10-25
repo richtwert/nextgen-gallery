@@ -314,7 +314,6 @@ class nggAdminPanel{
 					array(),
 					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
 				);
-//				wp_enqueue_style( 'ngg-jqueryui' );
 				wp_enqueue_style( 'jqueryFileTree', NGGALLERY_URLPATH .'admin/js/jqueryFileTree/jqueryFileTree.css', false, '1.0.1', 'screen' );
 			case "nggallery-options" :
 				wp_enqueue_style( 'nggtabs', NGGALLERY_URLPATH .'admin/css/jquery.ui.tabs.css', false, '2.5.0', 'screen' );
