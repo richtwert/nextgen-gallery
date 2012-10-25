@@ -199,6 +199,7 @@ jQuery(function($){
 
 		options_updated: function(){
 			this.select_tag.trigger('liszt:updated');
+			this.adjust_width();
 		},
 
 
@@ -208,9 +209,10 @@ jQuery(function($){
 			var text_input = chzn_container.find('.search-field input[type=text]');
 			if (this.collection.selected().length > 0)
 				text_input.css('width', '25');
-			else
+			else {
 				text_input.css('width', 'auto');
-
+				chzn_container.find('.chzn-drop').css('width', 'auto');
+			}
 		},
 
 		render: function(){

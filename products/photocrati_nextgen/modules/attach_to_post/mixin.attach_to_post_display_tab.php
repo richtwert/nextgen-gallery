@@ -11,6 +11,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	function display_tab_js_action()
 	{
 		if ($this->object->_validate_request()){
+			$this->object->do_not_cache();
 			$this->object->set_content_type('javascript');
 
 			// Get all entities used by the display tab

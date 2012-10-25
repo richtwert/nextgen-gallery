@@ -32,6 +32,7 @@ abstract class C_MVC_Controller extends C_Component
 		parent::define($context);
         $this->add_mixin('Mixin_MVC_Controller_Defaults');
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
+		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
         $this->implement('I_MVC_Controller');
     }
 
@@ -169,5 +170,19 @@ abstract class C_MVC_Controller extends C_Component
 	{
 		$url = $this->object->get_relative_url($segment);
 		return $url ? real_site_url($url) : '';
+	}
+}
+
+/**
+ * Adds methods for MVC Controller
+ */
+class Mixin_MVC_Controller_Instance_Methods extends Mixin
+{
+	function do_not_cache()
+	{
+		if (!headers_sent()) {
+			header('Cache-Control: no-cache');
+			header('Pragma: no-cache');
+		}
 	}
 }
