@@ -288,6 +288,11 @@ class nggAddGallery {
     		        jQuery("#galleryfolder").val( folder );
     		    });
 		    	jQuery("#file_browser").show('slide');
+				if (top != window) {
+					if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {
+						parent.resize_attach_to_post_tab(window.frameElement, true);
+					}
+				}
 		    });
 		});
 	/* ]]> */
