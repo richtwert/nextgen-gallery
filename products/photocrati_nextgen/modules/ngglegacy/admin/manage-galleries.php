@@ -23,6 +23,40 @@ function nggallery_manage_gallery_main() {
 	?>
 	<script type="text/javascript">
 	<!--
+
+	// Listen for frame events
+	jQuery(function($){
+		if (window.Frame_Event_Publisher) {
+
+			// If a new gallery is added, refresh the page
+			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery',function(){
+				window.location.reload(true);
+			});
+
+			// If a new image is added, then refresh the page if viewing
+			// a particular gallery - otherwise increment the image count
+			// if the gallery is included in the list
+			Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
+				var image_id = data.image[data.image.id_field];
+				var gallery_id = data.image.galleryid;
+				var gallery = jQuery('#gallery-'+gallery_id);
+
+				// Are we on the "Manage Galleries" page ?
+				if (gallery.length > 0) {
+					var quantity = gallery.find('.quantity');
+					var number_of_images = parseInt(quantity.text());
+					quantity.text(number_of_images+1);
+				}
+
+				// Are we editing a particular gallery?
+				else if (location.search.indexOf("gid="+gallery_id) >= 0) {
+					window.location.reload(true);
+				}
+			});
+		}
+	});
+
+
 	function checkAll(form)
 	{
 		for (i = 0, n = form.elements.length; i < n; i++) {

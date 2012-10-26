@@ -1199,64 +1199,80 @@ jQuery(function($){
 			}, this);
 
 			// Monitor events in other tabs and respond as appropriate
-			var app = this;
-			$(window).bind('attach_to_post:new_gallery', function(e, data){
-				app.galleries.push(data.gallery);
-			});
-			$(window).bind('attach_to_post:new_image', function(e, data){
-				if (app.sources.selected_value() == 'galleries') {
-					var gallery_id = parseInt(data.image.galleryid);
-					if (app.galleries.selected_ids().indexOf(gallery_id) >= 0) {
-						app.entities.push(data.image);
-					}
-				}
-			});
-			$(window).bind('attach_to_post:new_album', function(e, data){
-				app.albums.push(data.album);
-			});
-			$(window).bind('attach_to_post:album_modified', function(e, data){
-				var album_id = parseInt(data.album[data.album.id_field]);
-				var album = app.albums.find(function(item){
-					return parseInt(item.id) == album_id;
-				});
-				album.set(data.album);
+			if (window.Frame_Event_Publisher) {
+				var app = this;
 
-				if (app.sources.selected_value() == 'albums'){
-					if (app.albums.selected_ids().indexOf(album_id) >= 0) {
-						app.entities.reset();
-					}
-				}
-			});
-			$(window).bind('attach_to_post:album_deleted', function(e, data){
-				var album_id = parseInt(data.album_id);
-				var album = app.albums.find(function(item){
-					return parseInt(item.id) == album_id;
+				// New gallery event
+				Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
+					app.galleries.push(data.gallery);
 				});
-				var selected_album_ids = app.sources.selected_ids();
-				if (album) app.albums.remove(album);
-				if (app.sources.selected_value() == 'albums') {
-					if (selected_album_ids.indexOf(album_id) >= 0) {
-						app.entities.reset();
+
+				// New image event
+				Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
+					if (app.sources.selected_value() == 'galleries') {
+						var gallery_id = parseInt(data.image.galleryid);
+						if (app.galleries.selected_ids().indexOf(gallery_id) >= 0) {
+							app.entities.push(data.image);
+						}
 					}
-				}
-			});
-			$(window).bind('attach_to_post:image_deleted', function(e, data){
-				var selected_source = app.source.selected().pop();
-				if (selected_source.get('returns').indexOf('images') >= 0) {
-					var image_id = parseInt(data.image_id);
-					var image = app.entities.find(function(item){
-						return parseInt(item.id) == image_id;
+				});
+
+				// New album event
+				Frame_Event_Publisher.listen_for('attach_to_post:new_album', function(data){
+					app.albums.push(data.album);
+				});
+
+				// Album modified event
+				Frame_Event_Publisher.listen_for('attach_to_post:album_modified', function(data){
+					var album_id = parseInt(data.album[data.album.id_field]);
+					var album = app.albums.find(function(item){
+						return parseInt(item.id) == album_id;
 					});
-					if (image) app.entities.remove(image);
-				}
-			});
-			$(window).bind('attach_to_post:gallery_deleted', function(e, data){
-				var gallery_id = parseInt(data.gallery_id);
-				var gallery = app.galleries.find(function(item){
-					return parseInt(item.id) == gallery_id;
+					album.set(data.album);
+
+					if (app.sources.selected_value() == 'albums'){
+						if (app.albums.selected_ids().indexOf(album_id) >= 0) {
+							app.entities.reset();
+						}
+					}
 				});
-				if (gallery) app.galleries.remove(gallery);
-			});
+
+				// Album deleted event
+				Frame_Event_Publisher.listen_for('attach_to_post:album_deleted', function(data){
+					var album_id = parseInt(data.album_id);
+					var album = app.albums.find(function(item){
+						return parseInt(item.id) == album_id;
+					});
+					var selected_album_ids = app.sources.selected_ids();
+					if (album) app.albums.remove(album);
+					if (app.sources.selected_value() == 'albums') {
+						if (selected_album_ids.indexOf(album_id) >= 0) {
+							app.entities.reset();
+						}
+					}
+				});
+
+				// Image deleted event
+				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
+					var selected_source = app.source.selected().pop();
+					if (selected_source.get('returns').indexOf('images') >= 0) {
+						var image_id = parseInt(data.image_id);
+						var image = app.entities.find(function(item){
+							return parseInt(item.id) == image_id;
+						});
+						if (image) app.entities.remove(image);
+					}
+				});
+
+				// Gallery deleted event
+				Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
+					var gallery_id = parseInt(data.gallery_id);
+					var gallery = app.galleries.find(function(item){
+						return parseInt(item.id) == gallery_id;
+					});
+					if (gallery) app.galleries.remove(gallery);
+				});
+			}
         },
 
         // Updates the selected container_ids for the displayed gallery

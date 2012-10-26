@@ -77,12 +77,12 @@ window.Frame_Event_Publisher = {
 	 * Emits all known events to all children
 	 */
 	emit: function(events, forced){
+		if (forced == undefined) forced = false;
 		for (var context in events) {
 			for (var event_id in events[context]) {
 				var event = events[context][event_id];
-				if (forced || !this.has_received_event(context, event_id)) {
+				if (!forced && !this.has_received_event(context, event_id)) {
 					var publisher = this;
-
 					try {
 						if (window != null) {
 							window.setTimeout(function(){
@@ -107,10 +107,11 @@ window.Frame_Event_Publisher = {
 
 	trigger_event: function(context, id, event){
 		var signal = context+':'+event.event;
-		if (this.received[context] == undefined) this.received[context] = {};
-		this.received[context][id] = event;
-		jQuery(window).trigger(signal, event);
-
+		event.id = id;
+		event.context = context;
+		if (window) jQuery(window).trigger(signal, event);
+		if (publisher.received[context] == undefined) publisher.received[context] = {};
+		publisher.received[context][id] = event;
 	},
 
 	/**
@@ -129,13 +130,23 @@ window.Frame_Event_Publisher = {
 	delete_cookie: function(cookie){
 		var matched = cookie.match(/frame_events=[^ ]*/).pop();
 		document.cookie = document.cookie.replace(matched, this.cookie_name+'=;');
+	},
+
+	listen_for: function(signal, callback){
+		var publisher = this;
+		jQuery(window).bind(signal, function(e, event){
+			var context = event.context;
+			var event_id = event.id;
+			if (!publisher.has_received_event(context, event_id)) {
+				callback.call(publisher, event);
+				if (publisher.received[context] == undefined) publisher.received[context] = {};
+				publisher.received[context][event_id] = event;
+			}
+		});
 	}
 }
 
 jQuery(function($){
-	$(window).bind('attach_to_post:new_gallery', function(e, data){
-		console.log(data);
-	});
 	Frame_Event_Publisher.broadcast();
 });
 
