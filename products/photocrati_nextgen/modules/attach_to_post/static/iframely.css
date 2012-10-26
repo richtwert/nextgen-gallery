@@ -1,18 +1,17 @@
-html#iframely{
+#iframely, #iframely body{
 	padding: 0px;
-	overflow: visible;
+	width: 100%;
+	height: auto;
+}
+
+#iframely {
+    position: absolute;
+    opacity: 0.0;
+	background-position: center center;
+	background-repeat: no-repeat;
 }
 
 #iframely #wpbody-content {
 	float: none;
 	padding: 0px;
-}
-
-#iframely, #iframely body {
-	height: auto;
-}
-
-#iframely #wpwrap {
-    position: absolute;
-    visibility: hidden;
 }
