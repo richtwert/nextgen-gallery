@@ -97,6 +97,10 @@ class Mixin_Gallery_Source_Queries extends Mixin
 
         // Create query
         switch ($this->object->source) {
+            case 'all':
+            case 'all_images':
+                // it's alright, we want everything
+                break;
             case 'gallery':
             case 'galleries':
                 $mapper = $this->object->_create_image_query_for_galleries(

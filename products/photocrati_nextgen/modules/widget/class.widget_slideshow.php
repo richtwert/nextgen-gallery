@@ -85,16 +85,24 @@ class C_Widget_Slideshow extends WP_Widget
     function render_slideshow($galleryID, $irWidth = '', $irHeight = '')
     {
         $registry = C_Component_Registry::get_instance();
-        $renderer = $registry->get_utility('I_Display_Type_Renderer');
+        $renderer = $registry->get_utility('I_Displayed_Gallery_Renderer');
 
         $params = array(
-            'gallery_ids'    => $galleryID,
+            'container_ids'  => $galleryID,
             'display_type'   => 'photocrati-nextgen_basic_slideshow',
             'gallery_width'  => $irWidth,
             'gallery_height' => $irHeight,
+            'source'         => 'galleries',
             'show_return_link' => FALSE,
             'show_alternative_view_link' => FALSE
         );
+
+        if (0 === $galleryID)
+        {
+            $params['source'] = 'all';
+            unset($params['container_ids']);
+        }
+
         $retval = $renderer->display_images($params, NULL);
         $retval = apply_filters('ngg_show_slideshow_widget_content', $retval, $galleryID, $irWidth, $irHeight);
         return $retval;
