@@ -355,8 +355,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				$original_height = $dimensions[1];
 				$original_ratio = $original_width / $original_height;
 				
-				// Just constraint dimensions to ensure there's no stretching or deformations
-				list($width, $height) = wp_constrain_dimensions($original_width, $original_height, $width, $height);
 				$aspect_ratio = $width / $height;
 				
 				$width_ratio = $original_width / $width;
@@ -414,6 +412,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					}
 
 					$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
+				}
+				else {
+					// Just constraint dimensions to ensure there's no stretching or deformations
+					list($width, $height) = wp_constrain_dimensions($original_width, $original_height, $width, $height);
 				}
 				
 				$thumbnail->resize($width, $height);
@@ -545,20 +547,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			
 			// width and height when omitted make generate_image_clone create a clone with original size, so try find defaults regardless of $skip_defaults
 			if (!isset($params['width']) || !isset($params['height'])) {
-				// First try to search if this size was already created
-				if (isset($image->meta_data) && isset($image->meta_data[$size])) {
-					$dimensions = $image->meta_data[$size];
-					
-					if (!isset($params['width'])) {
-						$params['width'] = $dimensions['width'];
-					}
-			
-					if (!isset($params['height'])) {
-						$params['height'] = $dimensions['height'];
-					}
-				}
-				// if search fails try the 2 default built-in sizes, first thumbnail...
-				else if ($size == 'thumbnail') {
+				// First test if this is a "known" image size, i.e. if we store these sizes somewhere when users re-generate these sizes from the UI...this is required to be compatible with legacy
+				// try the 2 default built-in sizes, first thumbnail...
+				if ($size == 'thumbnail') {
 					if (!isset($params['width'])) {
 						$params['width'] = $settings->thumbwidth;
 					}
@@ -579,6 +570,18 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						if ($settings->imgAutoResize) {
 							$params['height'] = $settings->imgHeight;
 						}
+					}
+				}
+				// Only re-use old sizes as last resort
+				else if (isset($image->meta_data) && isset($image->meta_data[$size])) {
+					$dimensions = $image->meta_data[$size];
+					
+					if (!isset($params['width'])) {
+						$params['width'] = $dimensions['width'];
+					}
+			
+					if (!isset($params['height'])) {
+						$params['height'] = $dimensions['height'];
 					}
 				}
 			}
