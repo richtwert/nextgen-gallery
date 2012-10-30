@@ -119,8 +119,14 @@ abstract class C_MVC_Controller extends C_Component
     {
         $retval = $default;
 
-        if (isset($this->_params[$key])) {
+        if (isset($this->_params[$key]))
+        {
             $val = &$this->_params[$key];
+
+            // wordpress strips magic quotes but it also then adds them right back again
+            if (get_magic_quotes_gpc())
+                $val = stripslashes_deep($val);
+
             if (is_array($val))
                 $retval = &$val;
             elseif (is_string($val) && !in_array(strtolower($val), array('null','false')))
