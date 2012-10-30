@@ -11,9 +11,8 @@ class A_Ajax_Pagination_Actions extends Mixin
         {
             // retrieve by transient id
             $factory           = $this->object->get_registry()->get_utility('I_Component_Factory');
-            $transient_key     = 'dg_'.$id;
             $displayed_gallery = $factory->create('displayed_gallery', $mapper);
-            $displayed_gallery->apply_transient($transient_key);
+            $displayed_gallery->apply_transient($id);
 
             // render the displayed gallery
             $this->renderer                 = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');

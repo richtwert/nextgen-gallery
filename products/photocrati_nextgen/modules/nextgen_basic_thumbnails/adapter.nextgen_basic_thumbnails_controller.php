@@ -23,6 +23,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $total = $displayed_gallery->get_entity_count();
+        $gallery_id = $displayed_gallery->id();
 
         // Get the images to be displayed
         if ($display_settings['images_per_page'] > 0 && $display_settings['show_all_in_lightbox'])
@@ -68,10 +69,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $pagination = NULL;
             }
 
+            if ($display_settings['show_piclens_link'] || $display_settings['ajax_pagination'])
+                $gallery_id = $displayed_gallery->to_transient();
+
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
-                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $displayed_gallery->to_transient());
+                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
 				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
 			}
 
@@ -93,7 +97,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params = $display_settings;
                 $params['storage']				= &$storage;
                 $params['images']				= &$images;
-                $params['displayed_gallery_id'] = $displayed_gallery->id();
+                $params['displayed_gallery_id'] = $gallery_id;
                 $params['current_page']			= $current_page;
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
