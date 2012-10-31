@@ -436,8 +436,9 @@ class nggGallery {
 		// required until PHP 5.2.0
 		if ( empty($filepart['filename']) )
 			$filepart['filename'] = substr($filepart['basename'],0 ,strlen($filepart['basename']) - (strlen($filepart['extension']) + 1) );
-
-		$filepart['filename'] = sanitize_title_with_dashes( $filepart['filename'] );
+			
+		// XXX this sanitation seems unneeded, not sure why it's here...it forces all non-ASCII chars to be URL-encoded
+		//$filepart['filename'] = sanitize_title_with_dashes( $filepart['filename'] );
 
 		//extension jpeg will not be recognized by the slideshow, so we rename it
 		$filepart['extension'] = ($filepart['extension'] == 'jpeg') ? 'jpg' : $filepart['extension'];
