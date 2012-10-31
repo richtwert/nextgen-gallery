@@ -696,14 +696,13 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
             'File md5sum unchanged'
         );
 
-        // 2012-10-23/bowens: known issue
         $this->assertEqual(
             $image->currentDimensions,
             array(
                 'width'  => $settings->thumbwidth,
                 'height' => $settings->thumbheight
             ),
-            'KNOWN ISSUE: Thumbnail generation did not use default thumbnail dimensions'
+            'Thumbnail generation did not use default thumbnail dimensions'
         );
 
         $old_image = $this->image_mapper->find($this->image);
@@ -733,7 +732,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
                 'width'  => $settings->imgWidth,
                 'height' => $settings->imgHeight
             ),
-            'KNOWN ISSUE: generate_image_size(full) did not use correct dimensions'
+            'generate_image_size(full) did not use correct dimensions'
         );
 
         $size = getimagesize($image->fileName);
