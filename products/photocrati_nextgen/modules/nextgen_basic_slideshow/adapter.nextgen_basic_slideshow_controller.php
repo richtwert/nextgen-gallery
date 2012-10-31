@@ -193,7 +193,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             case 'flash_watermark_logo':
                 $type = 'radio';
                 $label = __('Use watermark logo', 'nggallery');
-                $text = __('You can change the logo at the watermark settings', 'nggallery');
+                $text = __('Use the watermark image in the Flash object. Note: this does not watermark the image itself, and cannot be applied with text watermarks', 'nggallery');
                 break;
             case 'flash_stretch_image':
                 $label = __('Stretch image', 'nggallery');
