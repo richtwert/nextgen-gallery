@@ -34,9 +34,11 @@ label.tooltip {
     position: relative;
     cursor: help;
     display: inline-block;
-    text-decoration: underline;
     outline: none;
-    color: #21759B;
+    border-bottom: 1px dotted;
+    background-image: url('information.png');
+    background-repeat: no-repeat;
+    padding-left: 18px;
 }
 
 span.tooltip span,
