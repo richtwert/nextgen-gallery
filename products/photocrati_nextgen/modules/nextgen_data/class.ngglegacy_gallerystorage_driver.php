@@ -400,11 +400,21 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						{
 							$crop_width = $original_width;
 							$crop_height = (int) round($height * $width_ratio);
+							
+							if ($crop_height == ($height - 1))
+							{
+								$crop_height = $height;
+							}
 						}
 						else
 						{
 							$crop_height = $original_height;
 							$crop_width = (int) round($width * $height_ratio);
+							
+							if ($crop_width == ($width - 1))
+							{
+								$crop_width = $width;
+							}
 						}
 						
 						$crop_x = (int) round(($original_width - $crop_width) / 2);

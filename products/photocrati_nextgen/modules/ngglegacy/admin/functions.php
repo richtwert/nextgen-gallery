@@ -238,10 +238,17 @@ class nggAdmin{
 			while( false !== ( $file = readdir( $handle ) ) ) {
 				$info = pathinfo( $file );
 				// just look for images with the correct extension
-                if ( isset($info['extension']) )
-				    if ( in_array( strtolower($info['extension']), $ext) )
-					   $files[] = utf8_encode( $file );
+				if ( isset($info['extension']) ) {
+					if ( in_array( strtolower($info['extension']), $ext) ) {
+						if (!seems_utf8($file)) {
+							$file = utf8_encode( $file );
+						}
+
+						$files[] = $file;
+					}
+				}
 			}
+			
 			closedir( $handle );
 		}
 		sort( $files );
