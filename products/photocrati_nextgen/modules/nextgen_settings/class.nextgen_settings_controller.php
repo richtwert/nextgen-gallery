@@ -314,7 +314,6 @@ class Mixin_NextGen_Settings_Controller extends Mixin
                 $imap->find_first(),
                 $thumbs->get_size_name(
                     array(
-                        'width' => 300,
                         'height' => 250,
                         'crop' => FALSE,
                         'watermark' => TRUE
