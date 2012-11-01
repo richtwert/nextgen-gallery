@@ -5,11 +5,15 @@
         </label>
     </td>
     <td>
-        <input type='text'
-               id='<?php echo esc_attr($display_type_name); ?>_template'
-               name='<?php echo esc_attr($display_type_name); ?>[template]'
-               class='ngg_thumbnail_template ngg_settings_template'
-               placeholder='<?php _e('filename'); ?>'
-               value='<?php echo esc_attr($template); ?>'>
+        <select name='<?php echo esc_attr($display_type_name); ?>[template]'
+                id='<?php echo esc_attr($display_type_name); ?>_template>'
+                class='ngg_thumbnail_template ngg_settings_template'>
+            <option value=''></option>
+            <?php foreach ($templates as $file => $label) { ?>
+                <option value="<?php echo $file; ?>" <?php selected($chosen_template, $file, TRUE); ?>>
+                    <?php echo_h($label); ?>
+                </option>
+            <?php } ?>
+        </select>
     </td>
 </tr>

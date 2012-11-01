@@ -14,11 +14,34 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             'nextgen_basic_templates_settings_template',
             array(
                 'display_type_name' => $display_type->name,
-                'template_label' => _('Template'),
-                'template' => $display_type->settings['template'],
+                'template_label'    => _('Template'),
+                'chosen_template'   => $display_type->settings['template'],
+                'templates'         => $this->object->_get_available_templates()
             ),
             True
         );
+    }
+
+    /**
+     * Retrieves listing of available templates
+     *
+     * Override this function to modify or add to the available templates listing, array format
+     * is array(file_abspath => label)
+     * @return array
+     */
+    function _get_available_templates()
+    {
+        $templates = array();
+        foreach ($this->object
+                      ->get_registry()
+                      ->get_utility('I_Legacy_Template_Locator')
+                      ->find_all() as $label => $files) {
+            foreach ($files as $file) {
+                $tmp = explode(DIRECTORY_SEPARATOR, $file);
+                $templates[$file] = "{$label}: " . end($tmp);
+            }
+        }
+        return $templates;
     }
 
     /**

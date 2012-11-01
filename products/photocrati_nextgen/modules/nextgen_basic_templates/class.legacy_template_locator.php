@@ -39,7 +39,7 @@ class Mixin_Legacy_Template_Locator extends Mixin
     {
         return array(
             'Overrides' => STYLESHEETPATH . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR,
-            'NextGen' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR
+            'NextGEN' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR
         );
     }
 
