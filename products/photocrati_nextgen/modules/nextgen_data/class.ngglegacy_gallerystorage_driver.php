@@ -357,8 +357,8 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				
 				$aspect_ratio = $width / $height;
 				
-				$width_ratio = $original_width / $width;
-				$height_ratio = $original_height / $height;
+				$orig_ratio_x = $original_width / $width;
+				$orig_ratio_y = $original_height / $height;
 				
 				if ($crop)
 				{
@@ -372,34 +372,81 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						$crop_height = (int) round($crop_frame['height']);
 						$crop_final_width = (int) round($crop_frame['final_width']);
 						$crop_final_height = (int) round($crop_frame['final_height']);
+						
+						$crop_width_orig = $crop_width;
+						$crop_height_orig = $crop_height;
 
 						$crop_factor_x = $crop_width / $crop_final_width;
 						$crop_factor_y = $crop_height / $crop_final_height;
-
+						
+						$crop_ratio_x = $crop_width / $width;
+						$crop_ratio_y = $crop_height / $height;
+						
 						if ($algo == 'adapt')
 						{
-							$crop_width = (int) round($width * $crop_factor_x);
-							$crop_height = (int) round($height * $crop_factor_y);
+							// XXX not sure about this...don't use for now
+#							$crop_width = (int) round($width * $crop_factor_x);
+#							$crop_height = (int) round($height * $crop_factor_y);
+						}
+						else if ($algo == 'shrink')
+						{
+							if ($crop_ratio_x < $crop_ratio_y)
+							{
+								$crop_width = max($crop_width, $width);
+								$crop_height = (int) round($crop_width / $aspect_ratio);
+							}
+							else
+							{
+								$crop_height = max($crop_height, $height);
+								$crop_width = (int) round($crop_height * $aspect_ratio);
+							}
+						
+							if ($crop_width == ($crop_width_orig - 1))
+							{
+								$crop_width = $crop_width_orig;
+							}
+						
+							if ($crop_height == ($crop_height_orig - 1))
+							{
+								$crop_height = $crop_height_orig;
+							}
 						}
 
-						$crop_diff_x = (int) round(($crop_width - $width) / 2);
-						$crop_diff_y = (int) round(($crop_height - $height) / 2);
+						$crop_diff_x = (int) round(($crop_width_orig - $crop_width) / 2);
+						$crop_diff_y = (int) round(($crop_height_orig - $crop_height) / 2);
 
 						$crop_x += $crop_diff_x;
 						$crop_y += $crop_diff_y;
-
-						if ($algo == 'shrink')
+						
+						$crop_max_x = ($crop_x + $crop_width);
+						$crop_max_y = ($crop_y + $crop_height);
+						
+						// Check if we're overflowing borders
+						//
+						if ($crop_x < 0)
 						{
-							$crop_width = $width;
-							$crop_height = $height;
+							$crop_x = 0;
+						}
+						else if ($crop_max_x > $original_width)
+						{
+							$crop_x -= ($crop_max_x - $original_width);
+						}
+						
+						if ($crop_y < 0)
+						{
+							$crop_y = 0;
+						}
+						else if ($crop_max_y > $original_height)
+						{
+							$crop_y -= ($crop_max_y - $original_height);
 						}
 					}
 					else
 					{
-						if ($width_ratio < $height_ratio)
+						if ($orig_ratio_x < $orig_ratio_y)
 						{
 							$crop_width = $original_width;
-							$crop_height = (int) round($height * $width_ratio);
+							$crop_height = (int) round($height * $orig_ratio_x);
 							
 							if ($crop_height == ($height - 1))
 							{
@@ -409,7 +456,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						else
 						{
 							$crop_height = $original_height;
-							$crop_width = (int) round($width * $height_ratio);
+							$crop_width = (int) round($width * $orig_ratio_y);
 							
 							if ($crop_width == ($width - 1))
 							{
