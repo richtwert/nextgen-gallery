@@ -100,33 +100,51 @@ function showDialog( windowId, title ) {
 jQuery(function (){
     // load a content via ajax
     jQuery('a.ngg-dialog').click(function() {
-        if ( jQuery( "#spinner" ).length == 0)
-            jQuery("body").append('<div id="spinner"></div>');
-        var $this = jQuery(this);
-        var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
-	    var width  = ( results ) ? results[1] : 600;
-        var results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
+    	var dialogs = jQuery('.ngg-overlay-dialog:visible');
+    	if (dialogs.size() > 0) {
+    		return false;
+    	}
+  	
+      if ( jQuery( "#spinner" ).length == 0) {
+      	jQuery("body").append('<div id="spinner"></div>');
+      }
+      
+    	var $this = jQuery(this);
+      var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
+    	var width  = ( results ) ? results[1] : 600;
+      var results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
 	    var height = ( results ) ? results[1] : 440;
-        jQuery('#spinner').fadeIn();
-        var dialog = jQuery('<div style="display:hidden"></div>').appendTo('body');
-        // load the remote content
-        dialog.load(
-            this.href,
-            {},
-            function () {
-                jQuery('#spinner').hide();
-                dialog.dialog({
-                    title: ($this.attr('title')) ? $this.attr('title') : '',
-                    width: width,
-                    height: height,
-                    modal: true,
-                    resizable: false,
-                    close: function() { dialog.remove(); }
-                }).width(width - 30).height(height - 30);
-            }
-        );
-        //prevent the browser to follow the link
-        return false;
+      var container = window;
+      
+      if (window.parent) {
+      	container = window.parent;
+      }
+      
+      jQuery('#spinner').fadeIn();
+      jQuery('#spinner').position({ my: "center", at: "center", of: container });
+      
+      var dialog = jQuery('<div class="ngg-overlay-dialog" style="display:hidden"></div>').appendTo('body');
+      // load the remote content
+      dialog.load(
+          this.href,
+          {},
+          function () {
+              jQuery('#spinner').hide();
+              
+              dialog.dialog({
+                  title: ($this.attr('title')) ? $this.attr('title') : '',
+                  position: { my: "center", at: "center", of: container },
+                  width: width,
+                  height: height,
+                  modal: true,
+                  resizable: false,
+                  close: function() { dialog.remove(); }
+              }).width(width - 30).height(height - 30);
+          }
+      );
+      
+      //prevent the browser to follow the link
+      return false;
     });
 });
 
