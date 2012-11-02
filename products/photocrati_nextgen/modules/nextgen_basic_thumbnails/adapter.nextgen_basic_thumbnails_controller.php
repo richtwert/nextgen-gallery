@@ -59,8 +59,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 			// Create pagination
 			if ($display_settings['images_per_page'] && !$display_settings['disable_pagination']) {
-				$pagination = new nggNavigation;
-				$pagination = $pagination->create_navigation(
+				$nggNav = new nggNavigation;
+				$pagination = $nggNav->create_navigation(
                     $current_page,
                     $total,
                     $display_settings['images_per_page']
@@ -86,6 +86,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $images,
                     $displayed_gallery,
                     array(
+                        'next' => (empty($nggNav->next)) ? FALSE : $nggNav->next,
+                        'prev' => (empty($nggNav->prev)) ? FALSE : $nggNav->prev,
                         'pagination' => $pagination,
                         'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
                         'piclens_link' => $piclens_link
@@ -117,11 +119,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function enqueue_frontend_resources($displayed_gallery)
 	{
 		if ($displayed_gallery->display_settings['show_piclens_link'])
-        {
 			wp_enqueue_script('piclens', $this->static_url('piclens/lite/piclens.js'));
-		}
 
-        wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->static_url('ajax_pagination.js'));
+        if ($displayed_gallery->display_settings['ajax_pagination'])
+            wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->static_url('ajax_pagination.js'));
+
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 

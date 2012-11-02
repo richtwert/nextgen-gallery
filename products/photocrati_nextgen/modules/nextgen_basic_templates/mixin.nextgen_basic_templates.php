@@ -206,10 +206,8 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             $return['pagination'] = NULL;
         }
 
-        if (!empty($params['pagination']->next))
-            $return['next'] = $params['pagination']->next;
-        if (!empty($params['pagination']->prev))
-            $return['prev'] = $params['pagination']->prev;
+        $return['next'] = $params['next'];
+        $return['prev'] = $params['prev'];
 
         return $return;
     }
