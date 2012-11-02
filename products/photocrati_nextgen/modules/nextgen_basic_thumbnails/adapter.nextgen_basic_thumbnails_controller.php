@@ -91,7 +91,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                         'piclens_link' => $piclens_link
                     )
                 );
-                return $this->object->legacy_render($display_settings['template'], $params, $return);
+                return $this->object->legacy_render($display_settings['template'], $params, $return, 'gallery');
             }
             else {
                 $params = $display_settings;

@@ -89,7 +89,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $params['image']->container[0]->_cache_overrides['imageURL']     = $display_settings['link'];
             $params['image']->container[0]->_cache_overrides['thumbnailURL'] = $thumbnail_url;
 
-            return $this->object->legacy_render($display_settings['template'], $params, $return);
+            return $this->object->legacy_render($display_settings['template'], $params, $return, 'singlepic');
         }
         else {
             $params = $display_settings;

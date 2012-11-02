@@ -157,7 +157,8 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
                     'xmp'   => $meta_results['xmp'],
                     'db'    => $meta_results['db']
                 ),
-                TRUE
+                TRUE,
+                'imagebrowser'
             );
         }
         else {

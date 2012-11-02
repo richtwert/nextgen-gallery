@@ -39,7 +39,7 @@ class Mixin_Legacy_Template_Locator extends Mixin
     {
         return array(
             'Overrides' => STYLESHEETPATH . DIRECTORY_SEPARATOR . 'nggallery' . DIRECTORY_SEPARATOR,
-            'NextGen' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR
+            'NextGEN' => NGGALLERY_ABSPATH . 'view' . DIRECTORY_SEPARATOR
         );
     }
 
@@ -53,7 +53,8 @@ class Mixin_Legacy_Template_Locator extends Mixin
         $files = array();
         foreach ($this->object->get_template_directories() as $label => $dir) {
             $tmp = $this->object->get_templates_from_dir($dir, $prefix);
-            if (!$tmp) { continue; }
+            if (!$tmp)
+                continue;
             $files[$label] = $tmp;
         }
         return $files;
@@ -110,29 +111,35 @@ class Mixin_Legacy_Template_Locator extends Mixin
      */
     function find($template_name)
     {
-        $template_abspath   = FALSE;
+        $template_abspath = FALSE;
 
         // hook into the render feature to allow other plugins to include templates
         $custom_template = apply_filters('ngg_render_template', $template_name);
 
         // Ensure we have a PHP extension
-        if (strpos($custom_template, '.php') === FALSE) $custom_template .= '.php';
+        if (strpos($custom_template, '.php') === FALSE)
+            $custom_template .= '.php';
 
         // Find the abspath of the template to render
-        if (!file_exists($custom_template)) {
+        if (!file_exists($custom_template))
+        {
             foreach ($this->object->get_template_directories() as $dir) {
-                if ($template_abspath) break;
+                if ($template_abspath)
+                    break;
                 $filename = path_join($dir, $custom_template);
-                if (file_exists($filename))     $template_abspath = $filename;
+                if (file_exists($filename))
+                {
+                    $template_abspath = $filename;
+                }
                 elseif (strpos($custom_template, '-template') === FALSE) {
-                    $filename = path_join($dir, str_replace('.php', '', $custom_template).'-template.php');
-                    if (file_exists($filename)) $template_abspath = $filename;
+                    $filename = path_join($dir, str_replace('.php', '', $custom_template) . '-template.php');
+                    if (file_exists($filename))
+                        $template_abspath = $filename;
                 }
             }
         }
-
-        // An absolute path was already given
         else {
+            // An absolute path was already given
             $template_abspath = $custom_template;
         }
 
