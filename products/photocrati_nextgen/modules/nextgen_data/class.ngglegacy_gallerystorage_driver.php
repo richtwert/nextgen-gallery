@@ -282,7 +282,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				$dimensions = getimagesize($image_path);
 			}
 			
-			if ($width == null || $height == null) {
+			if ($width == null && $height == null) {
 				if ($dimensions != null) {
 					
 					if ($width == null) {
@@ -300,6 +300,25 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 			
 			if ($dimensions != null) {
+				$dimensions_ratio = $dimensions[0] / $dimensions[1];
+				
+				if ($width == null) {
+					$width = (int) round($height * $dimensions_ratio);
+			
+					if ($width == ($dimensions[0] - 1))
+					{
+						$width = $dimensions[0];
+					}
+				}
+				else if ($height == null) {
+					$height = (int) round($width / $dimensions_ratio);
+			
+					if ($height == ($dimensions[1] - 1))
+					{
+						$height = $dimensions[1];
+					}
+				}
+				
 				if ($width > $dimensions[0]) {
 					$width = $dimensions[0];
 				}
@@ -329,6 +348,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 						}
 					}
 				}
+			}
+			
+			if ($width == null || $height == null) {
+				// Something went wrong...
+				return null;
 			}
 
 			// image_resize() has limitations:
@@ -523,6 +547,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				else
 				{
 					$thumbnail->fileName = $destpath;
+				}
+				
+				// This is quite odd, when watermark equals int(0) it seems all statements below ($watermark == 'image') and ($watermark == 'text') both evaluate as true
+				// so we set it at null if it evaluates to any null-like value
+				if ($watermark == null)
+				{
+					$watermark = null;
 				}
 
 				if ($watermark == 1 || $watermark === true)
