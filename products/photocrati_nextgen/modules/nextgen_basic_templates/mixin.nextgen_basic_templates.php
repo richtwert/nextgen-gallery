@@ -15,6 +15,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             array(
                 'display_type_name' => $display_type->name,
                 'template_label'    => _('Template'),
+                'template_text'     => _('Use a legacy template when rendering (not recommended).'),
                 'chosen_template'   => $display_type->settings['template'],
                 'templates'         => $this->object->_get_available_templates()
             ),
@@ -52,16 +53,24 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      * @param bool $callback
 	 * @param bool $return
      */
-    function legacy_render($template_name, $vars = array(), $return=FALSE)
+    function legacy_render($template_name, $vars = array(), $return = FALSE, $prefix = NULL)
     {
-        $retval             = "[Not a valid template]";
-        $template_locator   = $this->object->get_registry()->get_utility('I_Legacy_Template_Locator');
-        if (($template_abspath = $template_locator->find($template_name))) {
+        $retval = "[Not a valid template]";
+        $template_locator = $this->object->get_registry()->get_utility('I_Legacy_Template_Locator');
 
-            // Render/render the template
+        // search first for files with their prefix
+        $template_abspath = $template_locator->find($prefix . '-' . $template_name);
+        if (!$template_abspath)
+            $template_abspath = $template_locator->find($template_name);
+
+        if ($template_abspath)
+        {
+            // render the template
             extract($vars);
-            if ($return) {
-                if ($template_abspath) {
+            if ($return)
+            {
+                if ($template_abspath)
+                {
                     ob_start();
                     include($template_abspath);
                     $retval = ob_get_contents();
@@ -69,8 +78,13 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
                 }
             }
             else {
-                if ($template_abspath) include ($template_abspath);
-                else echo $retval;
+                if ($template_abspath)
+                {
+                    include ($template_abspath);
+                }
+                else {
+                    echo $retval;
+                }
             }
         }
 

@@ -1,7 +1,8 @@
 <tr>
     <td>
-        <label for='<?php echo esc_attr($display_type_name); ?>_template'>
+        <label for='<?php echo esc_attr($display_type_name); ?>_template' class='tooltip'>
             <?php echo_h($template_label); ?>
+            <span><?php echo_h($template_text); ?></span>
         </label>
     </td>
     <td>
