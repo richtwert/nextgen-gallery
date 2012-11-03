@@ -10,6 +10,11 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      */
     function _render_nextgen_basic_templates_template_field($display_type)
     {
+        // ensure the current file is in the list
+        $templates = $this->object->_get_available_templates();
+        if (!isset($templates[$display_type->settings['template']]))
+            $templates[$display_type->settings['template']] = $display_type->settings['template'];
+
         return $this->object->render_partial(
             'nextgen_basic_templates_settings_template',
             array(
@@ -17,7 +22,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
                 'template_label'    => _('Template'),
                 'template_text'     => _('Use a legacy template when rendering (not recommended).'),
                 'chosen_template'   => $display_type->settings['template'],
-                'templates'         => $this->object->_get_available_templates()
+                'templates'         => $templates
             ),
             True
         );
