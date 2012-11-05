@@ -3,12 +3,10 @@
     display: inline-block;
 }
 .ngg_settings_template_wrapper .ui-combobox-toggle {
-    height: 25px;
     position: absolute;
     top: 0;
     bottom: 0;
     margin-left: -1px;
-    padding: 0;
 }
 .ngg_settings_template_wrapper .ui-combobox-input {
     margin: 0;
