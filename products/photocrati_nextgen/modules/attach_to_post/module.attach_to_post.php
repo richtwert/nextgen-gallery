@@ -120,6 +120,8 @@ class M_Attach_To_Post extends C_Base_Module
 		add_action('ngg_delete_album',			array(&$this, 'album_deleted_event'));
 		add_action('ngg_delete_picture',		array(&$this, 'image_deleted_event'));
 		add_action('ngg_delete_gallery',		array(&$this, 'gallery_deleted_event'));
+		add_action('ngg_image_updated',			array(&$this, 'image_modified_event'));
+		add_action('ngg_update_gallery',		array(&$this, 'gallery_modified_event'));
 	}
 
 	/**
@@ -376,6 +378,34 @@ class M_Attach_To_Post extends C_Base_Module
 		$this->events->add_event(array(
 			'event'		=>	'gallery_deleted',
 			'gallery_id'=>	$gallery_id
+		));
+	}
+
+	/**
+	 * Notifies frames that an image has been modified
+	 * @param nggImage $image
+	 */
+	function image_modified_event($image)
+	{
+		$mapper = $this->get_registry()->get_utility('I_Image_Mapper');
+		$image_id = $image->{$mapper->get_primary_key_column()};
+		$this->events->add_event(array(
+			'event'	=>	'image_modified',
+			'image'	=>	$mapper->find($image_id)
+		));
+	}
+
+	/**
+	 * Notifies a frame that a gallery has been modified
+	 * @param int $gallery_id
+	 * @param array $data
+	 */
+	function gallery_modified_event($gallery_id, $data)
+	{
+		$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->events->add_event(array(
+			'event'		=>	'gallery_modified',
+			'gallery'	=>	$mapper->find($gallery_id)
 		));
 	}
 }

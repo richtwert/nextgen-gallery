@@ -104,25 +104,25 @@ jQuery(function (){
     	if (dialogs.size() > 0) {
     		return false;
     	}
-  	
+
       if ( jQuery( "#spinner" ).length == 0) {
       	jQuery("body").append('<div id="spinner"></div>');
       }
-      
+
     	var $this = jQuery(this);
       var results = new RegExp('[\\?&]w=([^&#]*)').exec(this.href);
     	var width  = ( results ) ? results[1] : 600;
       var results = new RegExp('[\\?&]h=([^&#]*)').exec(this.href);
 	    var height = ( results ) ? results[1] : 440;
       var container = window;
-      
+
       if (window.parent) {
       	container = window.parent;
       }
-      
+
       jQuery('#spinner').fadeIn();
       jQuery('#spinner').position({ my: "center", at: "center", of: container });
-      
+
       var dialog = jQuery('<div class="ngg-overlay-dialog" style="display:hidden"></div>').appendTo('body');
       // load the remote content
       dialog.load(
@@ -130,7 +130,7 @@ jQuery(function (){
           {},
           function () {
               jQuery('#spinner').hide();
-              
+
               dialog.dialog({
                   title: ($this.attr('title')) ? $this.attr('title') : '',
                   position: { my: "center", at: "center", of: container },
@@ -142,7 +142,7 @@ jQuery(function (){
               }).width(width - 30).height(height - 30);
           }
       );
-      
+
       //prevent the browser to follow the link
       return false;
     });
@@ -231,9 +231,63 @@ function checkSelected() {
 }
 
 jQuery(document).ready( function() {
+	if ($(this).data('ready')) return;
+
+	if (window.Frame_Event_Publisher) {
+
+		// If an image has been added to a gallery, and we're viewing that
+		// gallery, refresh the page to get the latest information
+		Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
+			var gallery_id = data.image.galleryid;
+			if (location.search.indexOf("gid="+gallery_id) >= 0) {
+					window.location.reload(true);
+			}
+		});
+
+		// If an image has been deleted, and we're viewing that particular
+		// gallery, refresh the page to get the latest information
+		Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
+			var gallery_id = data.image.galleryid;
+			if (location.search.indexOf("gid="+gallery_id) >= 0) {
+					window.location.reload(true);
+			}
+		});
+
+		// If a gallery has been deleted, and we're viewing that particular
+		// gallery, then we need to go back to the "Manage Galleries" page
+		Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(){
+			if (window.frameElement) {
+				window.location = window.frameElement.src;
+			}
+		});
+
+		// If an image has been modified and we're currently displaying
+		// the gallery (with the list of images contained), then refresh
+		// the page
+		Frame_Event_Publisher.listen_for('image_modified', function(data){
+			var gallery_id = data.image.galleryid;
+			if (location.search.indexOf("gid="+gallery_id) >= 0) {
+				window.location.reload(true);
+			}
+		});
+
+		// If a gallery has been modified, we'll refresh the page to display
+		// the most recent information
+		Frame_Event_Publisher.listen_for('gallery_modified', function(data){
+			var gallery_id = data.image.galleryid;
+
+			// If we're viewing the gallery, then we need to refresh the page
+			if (location.search.indexOf("gid="+gallery_id) >= 0) {
+				window.location.reload(true);
+			}
+		});
+	}
+
 	// close postboxes that should be closed
 	jQuery('.if-js-closed').removeClass('if-js-closed').addClass('closed');
 	postboxes.add_postbox_toggles('ngg-manage-gallery');
+
+	$(this).data('ready', true);
 });
 
 //-->
