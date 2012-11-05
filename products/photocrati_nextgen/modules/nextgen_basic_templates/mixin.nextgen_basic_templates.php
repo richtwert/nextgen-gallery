@@ -47,6 +47,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
                 $templates[$file] = "{$label}: " . end($tmp);
             }
         }
+        asort($templates);
         return $templates;
     }
 
