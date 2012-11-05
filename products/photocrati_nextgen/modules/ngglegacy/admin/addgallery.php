@@ -176,9 +176,9 @@ class nggAddGallery {
 			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
 				var gallery_id = data.gallery[data.gallery.id_field];
 				var option = $('<option/>').attr({
-					value:	gallery_id,
-					text:	gallery_id+' - '+data.gallery.title
+					value:	gallery_id
 				});
+				option.text(gallery_id+' - '+data.gallery.title);
 				$('#galleryselect').append(option);
 				$('select[name="zipgalselect"]').append(option);
 			});
@@ -200,7 +200,7 @@ class nggAddGallery {
 				$('select[name="zipgalselect"] option[value="'+gallery_id+'"]').text(gallery_title);
 			});
 		}
-		
+
 		window.uploader = new plupload.Uploader({
     		runtimes: '<?php echo apply_filters('plupload_runtimes', 'html5,flash,silverlight,html4,'); ?>',
     		browse_button: 'plupload-browse-button',

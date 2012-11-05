@@ -183,6 +183,98 @@ class nggManageAlbum {
 jQuery(document).ready(
 	function()
 	{
+		if ($(this).data('ready')) return;
+
+		if (window.Frame_Event_Publisher) {
+
+			// When a new album is added, add it to the drop-down as well as
+			// create a selectable album used for drag n'drop
+			Frame_Event_Publisher.listen_for('attach_to_post:new_album', function(data){
+				var album_id = data.album[data.album.id_field];
+				var album_name = data.album.name;
+				var option = $('<option/>').attr({
+					value: album_id
+				});
+				option.text(album_name);
+				$('#act_album').append(option);
+
+				var album_div		= $('<div/>').attr({
+					id:			'gid-a'+album_id,
+					'class':	'groupItem'
+				});
+				var album_handle	= $('<div/>').attr({
+					'class':	'innerhandle'
+				});
+				var album_top		= $('<div/>').attr({
+					'class':	'item_top album_top'
+				});
+				var album_btn		= $('<a/>').attr({
+					href:		'#',
+					'class':	'min',
+					title:		'close'
+				}).text('[+]');
+				var album_content	= $('<div/>').attr({
+					'class':	'itemContent',
+					style:		'display: block'
+				});
+
+				album_div.append(album_handle);
+				album_handle.append(album_top);
+				album_handle.append(album_content);
+				album_top.append(album_btn);
+				album_top.append("ID: "+album_id+" | "+album_name);
+				album_content.append("<p><strong>Name:</strong>"+album_name+"</p>");
+				$('#albumContainer').append(album_div);
+			});
+
+			// When an album is deleted, remove it from the drop-down
+			Frame_Event_Publisher.listen_for('attach_to_post:album_deleted', function(data){
+				var album_id = data.album[data.album.id_field];
+				$('#act_album option[name="'+album_id+'"]').remove();
+				$('#gid-a'+album_id).remove();
+			});
+
+			// When an album is modified, ensure the correct name is displayed
+			Frame_Event_Publisher.listen_for('attach_to_post:album_modified', function(data){
+				$('#act_album option[name="'+album_id+'"]').text(data.album.name);
+				$('#gid-a'+album_id+' .itemContent p:first').html("<strong>Name:</strong>"+data.album.name);
+			});
+
+			// When a gallery is added, then add a container box to the album
+			// page
+			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
+				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_div = $('<div/>').attr({
+					id:			'gid-'+gallery_id,
+					'class':	'groupItem'
+				});
+				var gallery_handle = $('<div/>').attr({
+					'class':	'innerhandle'
+				});
+				var gallery_top = $('<div/>').attr({
+					'class':	'item_top'
+				});
+				var expand_btn = $('<a/>').attr({
+					href:		'#',
+					'class':	'min',
+					title:		'close'
+				}).text('[+]');
+				var content_div = $('<div/>').attr({
+					"class":	'itemContent',
+					'style':	'display: block'
+				});
+
+				gallery_top.append(expand_btn);
+				gallery_top.append("ID: "+gallery_id+" | "+data.gallery.title);
+				gallery_handle.append(gallery_top);
+				gallery_handle.append(content_div);
+				gallery_div.append(gallery_handle);
+				content_div.append("<p><strong>Name:</strong>"+data.gallery.name+"</p>");
+				content_div.append("<p><strong>Title:</strong>"+data.gallery.title+"</p>");
+				$('#selectContainer').append(gallery_div);
+			});
+		}
+
         jQuery("#previewpic").nggAutocomplete( {
             type: 'image',domain: "<?php echo home_url('index.php', is_ssl() ? 'https' : 'http'); ?>",width: "95%"
         });
@@ -249,6 +341,8 @@ jQuery(document).ready(
 	   		jQuery('div.itemContent:visible').hide();
 	   		jQuery('#selectContainer div.inUse').toggle();
 	   };
+
+	   $(this).data('ready', true);
 	}
 );
 
