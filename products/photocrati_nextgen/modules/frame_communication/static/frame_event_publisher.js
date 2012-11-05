@@ -110,8 +110,8 @@ window.Frame_Event_Publisher = {
 		event.id = id;
 		event.context = context;
 		if (window) jQuery(window).trigger(signal, event);
-		if (publisher.received[context] == undefined) publisher.received[context] = {};
-		publisher.received[context][id] = event;
+		if (this.received[context] == undefined) this.received[context] = {};
+		this.received[context][id] = event;
 	},
 
 	/**

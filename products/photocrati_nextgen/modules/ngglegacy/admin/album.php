@@ -181,7 +181,7 @@ class nggManageAlbum {
 <script type="text/javascript">
 
 jQuery(document).ready(
-	function()
+	function($)
 	{
 		if ($(this).data('ready')) return;
 
