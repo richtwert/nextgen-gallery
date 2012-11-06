@@ -45,8 +45,19 @@
 			editor.settings.extended_valid_elements += ",shortcode";
 			editor.settings.custom_elements = "shortcode";
 			var self = this;
-			editor.onMouseDown.addToTop(function(editor, e){
-				if (e.target.tagName == 'IMG' && e.target.className == 'ngg_displayed_gallery') {
+            var drag_in_progress = false;
+            var click_timer;
+
+            editor.onMouseDown.addToTop(function(editor, e) {
+                if (e.target.tagName == 'IMG' && e.target.className == 'ngg_displayed_gallery') {
+                    click_timer = setTimeout(function() {
+                        drag_in_progress = true;
+                    }, 250);
+                }
+            });
+
+            editor.onMouseUp.addToTop(function(editor, e) {
+				if (!drag_in_progress && e.target.tagName == 'IMG' && e.target.className == 'ngg_displayed_gallery') {
 					editor.dom.events.cancel(e);
 					editor.dom.events.stop(e);
 					var id = e.target.src.match(/\d+$/);
@@ -58,6 +69,8 @@
 					});
 					self.render_attach_to_post_interface.call(obj);
 				}
+                clearTimeout(click_timer);
+                drag_in_progress = false;
 				return false;
 			});
 		},
