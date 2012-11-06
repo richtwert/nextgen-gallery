@@ -65,6 +65,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
+		wp_enqueue_style('nextgen-basic-slideshow-style', $this->static_url('nextgen-basic-slideshow.css'));
+
 		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
