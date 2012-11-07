@@ -424,14 +424,20 @@ class nggGallery {
 	 */
 	function fileinfo( $name ) {
 
+		$name_old = $name;
 		//Sanitizes a filename replacing whitespace with dashes
 		$name = sanitize_file_name($name);
 
 		//get the parts of the name
 		$filepart = pathinfo ( strtolower($name) );
+		$filepart_old = pathinfo ( strtolower($name_old) );
 
 		if ( empty($filepart) )
 			return false;
+			
+		if ( empty($filepart['extension']) && !empty($filepart_old['extension'])) {
+			$filepart = pathinfo ( strtolower($name . '.' . $filepart_old['extension']) );
+		}
 
 		// required until PHP 5.2.0
 		if ( empty($filepart['filename']) )
