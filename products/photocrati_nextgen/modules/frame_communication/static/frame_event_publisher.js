@@ -1,8 +1,9 @@
 window.Frame_Event_Publisher = {
+	id: window.name,
 	cookie_name: 'frame_events',
 	received: [],
 	initialized: false,
-	children: [],
+	children: {},
 
 	is_parent: function(){
 		return self.parent.document === self.document;
@@ -20,7 +21,9 @@ window.Frame_Event_Publisher = {
 	},
 
 	register_child: function(child) {
-		if (this.children.indexOf(child) < 0) this.children.push(child);
+		if (this.children[child.id] == undefined) {
+			this.children[child.id] = child;
+		}
 	},
 
 	broadcast: function(events, child){
@@ -55,7 +58,7 @@ window.Frame_Event_Publisher = {
 				child.emit(events);
 			}
 			catch (Exception) {
-				this.children.splice(index, 1);
+				delete this.children.index;
 			}
 		}
 	},

@@ -191,7 +191,7 @@ jQuery(document).ready(
 			// create a selectable album used for drag n'drop
 			Frame_Event_Publisher.listen_for('attach_to_post:new_album', function(data){
 				var album_id = data.album[data.album.id_field];
-				var album_name = data.album.name;
+				var album_name = data.album.name.replace(/\\&/, '&');
 				var option = $('<option/>').attr({
 					value: album_id
 				});
@@ -230,20 +230,24 @@ jQuery(document).ready(
 			// When an album is deleted, remove it from the drop-down
 			Frame_Event_Publisher.listen_for('attach_to_post:album_deleted', function(data){
 				var album_id = data.album[data.album.id_field];
-				$('#act_album option[name="'+album_id+'"]').remove();
+				$('#act_album option[value="'+album_id+'"]').remove();
 				$('#gid-a'+album_id).remove();
 			});
 
 			// When an album is modified, ensure the correct name is displayed
 			Frame_Event_Publisher.listen_for('attach_to_post:album_modified', function(data){
-				$('#act_album option[name="'+album_id+'"]').text(data.album.name);
-				$('#gid-a'+album_id+' .itemContent p:first').html("<strong>Name:</strong>"+data.album.name);
+				var album_id = data.album[data.album.id_field];
+				var album_name = data.album.name.replace(/\\&/, '&');
+				$('#act_album option[value="'+album_id+'"]').html(album_name);
+				$('#gid-a'+album_id+' .itemContent p:first').html("<strong>Name: </strong>"+album_name);
 			});
 
 			// When a gallery is added, then add a container box to the album
 			// page
 			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
 				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_name = data.gallery.name.replace(/\\&/, '&');
+				var gallery_title = data.gallery.title.replace(/\\&/, '&');
 				var gallery_div = $('<div/>').attr({
 					id:			'gid-'+gallery_id,
 					'class':	'groupItem'
@@ -269,9 +273,51 @@ jQuery(document).ready(
 				gallery_handle.append(gallery_top);
 				gallery_handle.append(content_div);
 				gallery_div.append(gallery_handle);
-				content_div.append("<p><strong>Name:</strong>"+data.gallery.name+"</p>");
-				content_div.append("<p><strong>Title:</strong>"+data.gallery.title+"</p>");
+				content_div.append("<p><strong/>Name: <strong>"+gallery_name+"</p>");
+				content_div.append("<p><strong/>Title: <strong>"+gallery_title+"</p>");
 				$('#selectContainer').append(gallery_div);
+			});
+
+			// When a gallery is modified, when we're displaying the correct title
+			Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
+				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_name = data.gallery.name.replace(/\\&/, '&');
+				var gallery_title = data.gallery.title.replace(/\\&/, '&');
+				var gallery_div = $('<div/>').attr({
+					id:			'gid-'+gallery_id,
+					'class':	'groupItem'
+				});
+				var gallery_handle = $('<div/>').attr({
+					'class':	'innerhandle'
+				});
+				var gallery_top = $('<div/>').attr({
+					'class':	'item_top'
+				});
+				var expand_btn = $('<a/>').attr({
+					href:		'#',
+					'class':	'min',
+					title:		'close'
+				}).text('[+]');
+				var content_div = $('<div/>').attr({
+					"class":	'itemContent',
+					'style':	'display: block'
+				});
+
+				gallery_top.append(expand_btn);
+				gallery_top.append("ID: "+gallery_id+" | "+gallery_title);
+				gallery_handle.append(gallery_top);
+				gallery_handle.append(content_div);
+				gallery_div.append(gallery_handle);
+				content_div.append("<p><strong/>Name: <strong>"+gallery_name+"</p>");
+				content_div.append("<p><strong/>Title: <strong>"+gallery_title+"</p>");
+				$('#gid-'+gallery_id).remove();
+				$('#selectContainer').append(gallery_div);
+			});
+
+			// Removes the gallery selectable object when a gallery is deleted
+			Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
+				var gallery_id = data.gallery_id;
+				$('#gid-'+gallery_id).remove();
 			});
 		}
 
@@ -309,7 +355,7 @@ jQuery(document).ready(
 			connectWith: ['#galleryContainer']
 		} );
 
-		jQuery('a.min').bind('click', toggleContent);
+		jQuery('a.min').live('click', toggleContent);
 
 		// Hide used galleries
 		jQuery('a#toggle_used').click(function()

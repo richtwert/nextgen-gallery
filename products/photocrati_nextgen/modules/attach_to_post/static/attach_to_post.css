@@ -117,15 +117,13 @@ iframe {
 }
 
 #preview_tab_content .image_container {
-	width: 100px;
-	height: 100px;
-	max-width: 100px;
-	max-height: 100px;
 	background-color: white;
+	background-repeat: no-repeat;
+	background-position: center center;
 	padding: 20px;
-	margin: 20px;
+	margin: 7px;
 	border: solid 1px black;
-	display: table-cell;
+	display: block;
 	vertical-align: middle;
 	text-align: center;
 	position: relative;
@@ -137,7 +135,6 @@ iframe {
 
 #preview_tab_content #entity_list  li{
 	float: left;
-	padding: 10px;
 }
 
 #preview_tab_content #entity_list .ui-state-default {

@@ -87,6 +87,8 @@ class Mixin_Frame_Event_Publisher extends Mixin
 		// Set the cookie
 		$cookie[$this->object->context][md5(serialize($data))] = $data;
 		$this->object->_set_cookie($this->object->cookie_name, $cookie);
+		ob_flush();
+		flush();
 
 		return $cookie;
 	}

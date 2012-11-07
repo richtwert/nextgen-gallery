@@ -230,7 +230,7 @@ function checkSelected() {
 	return confirm('<?php echo sprintf(esc_js(__("You are about to start the bulk edit for %s images \n \n 'Cancel' to stop, 'OK' to proceed.",'nggallery')), "' + numchecked + '") ; ?>');
 }
 
-jQuery(document).ready( function() {
+jQuery(document).ready( function($) {
 	if ($(this).data('ready')) return;
 
 	if (window.Frame_Event_Publisher) {

@@ -137,7 +137,7 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME', 'jquery-ui-south-street');
 		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/south-street/jquery-ui.css');
 		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
-		define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
+		//define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
 

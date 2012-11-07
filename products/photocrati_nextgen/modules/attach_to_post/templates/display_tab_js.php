@@ -145,7 +145,7 @@ jQuery(function($){
 
             render: function(){
                 var self = this;
-                this.$el.text(this.model.get(this.text_field));
+                this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&'));
                 this.$el.attr({
                     value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
                     selected: self.model.get('selected') == true,
@@ -911,6 +911,7 @@ jQuery(function($){
 				_.each(this.options, function(value, key){
 					this[key] = value;
 				}, this);
+				this.model.on('change', this.render, this);
 				this.id = this.model.get('id_field')+'_'+this.model.entity_id()
 			},
 
@@ -919,15 +920,20 @@ jQuery(function($){
 			},
 
 			render: function(){
+				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
-				var img = $('<img/>').attr({
-					rel: this.model.id,
-					src: this.model.get('thumb_url'),
-					alt: this.model.get('title'),
-					width: this.model.get('thumb_size').width,
-					height: this.model.get('thumb_size').height
+				var alt_text = this.model.get('alttext') ? this.model.get('alttext') : this.model.get('title');
+				alt_text = alt_text.replace(/\\&/g, '');
+				//image_container.append(this.model.get('thumb_html').replace(/\\&/g, '&'));
+				image_container.attr({
+					title: alt_text,
+				}).css({
+					'background-image': 'url('+this.model.get('thumb_url')+')',
+					width:			this.model.get('max_width'),
+					height:			this.model.get('max_height'),
+					'max-width':	this.model.get('max_width'),
+					'max-height':	this.model.get('max_height')
 				});
-				image_container.append(img);
 				this.$el.append(image_container).addClass('ui-state-default');
 
 				// Add exclude checkbox
@@ -1254,13 +1260,27 @@ jQuery(function($){
 
 				// Image deleted event
 				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-					var selected_source = app.source.selected().pop();
-					if (selected_source.get('returns').indexOf('images') >= 0) {
+					var selected_source = app.sources.selected().pop();
+					if (selected_source && selected_source.get('returns').indexOf('images') >= 0) {
 						var image_id = parseInt(data.image_id);
 						var image = app.entities.find(function(item){
-							return parseInt(item.id) == image_id;
+							return parseInt(item.entity_id()) == image_id;
 						});
 						if (image) app.entities.remove(image);
+					}
+				});
+
+				// Image was modified
+				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
+					var selected_source = app.sources.selected().pop();
+					if (selected_source && selected_source.get('returns').indexOf('images') >= 0) {
+						var image_id = parseInt(data.image[data.image.id_field]);
+						var image = app.entities.find(function(item){
+							return parseInt(item.entity_id()) == image_id;
+						});
+						if (image) {
+							image.set(data.image);
+						}
 					}
 				});
 
@@ -1271,6 +1291,24 @@ jQuery(function($){
 						return parseInt(item.id) == gallery_id;
 					});
 					if (gallery) app.galleries.remove(gallery);
+				});
+
+				// Gallery modified event
+				Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
+					var selected_source = app.sources.selected().pop();
+					var gallery_id = parseInt(data.gallery_id);
+					var gallery = app.galleries.find(function(item){
+						return parseInt(item.id) == gallery_id;
+					});
+
+					// Update the gallery
+					gallery.set(data.gallery);
+
+					// If we're viewing an album, refresh it's entities
+					// should this gallery be included
+					if (selected_source && selected_source.get('returns').indexOf('galleries') >= 0) {
+						app.entities.reset();
+					}
 				});
 			}
         },

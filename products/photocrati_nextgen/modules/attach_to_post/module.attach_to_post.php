@@ -387,11 +387,21 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function image_modified_event($image)
 	{
-		$mapper = $this->get_registry()->get_utility('I_Image_Mapper');
-		$image_id = $image->{$mapper->get_primary_key_column()};
+		$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
+		$storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
+		$settings	= $this->get_registry()->get_utility('I_Image_Mapper');
+		$image_id	= $image->{$mapper->get_primary_key_column()};
+		$image		= $mapper->find($image_id);
+		if ($image) {
+			$image->thumb_html	= $storage->get_thumb_html($image, 'thumb');
+			$image->thumb_url  = $storage->get_image_url($image, 'thumb');
+			$image->max_width  = $settings->thumbwidth;
+			$image->max_height = $settings->thumbheight;
+		}
 		$this->events->add_event(array(
-			'event'	=>	'image_modified',
-			'image'	=>	$mapper->find($image_id)
+			'event'		=>	'image_modified',
+			'image'		=>	$image,
+			'image_id'	=>	$image_id
 		));
 	}
 
@@ -400,12 +410,13 @@ class M_Attach_To_Post extends C_Base_Module
 	 * @param int $gallery_id
 	 * @param array $data
 	 */
-	function gallery_modified_event($gallery_id, $data)
+	function gallery_modified_event($gallery_id, $data=array())
 	{
 		$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$this->events->add_event(array(
 			'event'		=>	'gallery_modified',
-			'gallery'	=>	$mapper->find($gallery_id)
+			'gallery'	=>	$mapper->find($gallery_id),
+			'gallery_id'=>	intval($gallery_id)
 		));
 	}
 }

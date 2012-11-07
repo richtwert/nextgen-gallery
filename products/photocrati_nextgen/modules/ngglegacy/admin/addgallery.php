@@ -175,29 +175,31 @@ class nggAddGallery {
 			// available galleries
 			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
 				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_title = data.gallery.title.replace(/\\&/, '&');
 				var option = $('<option/>').attr({
 					value:	gallery_id
 				});
-				option.text(gallery_id+' - '+data.gallery.title);
+				debugger;
+				option.html(gallery_id+' - '+gallery_title);
 				$('#galleryselect').append(option);
-				$('select[name="zipgalselect"]').append(option);
+				$('select[name="zipgalselect"]').append(option.clone());
 			});
 
 			// If a gallery has been deleted, remove it from the drop-downs of
 			// available galleries
 			Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
-				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_id = data.gallery_id;
 				$('#galleryselect option[value="'+gallery_id+'"]').remove();
 				$('select[name="zipgalselect"] option[value="'+gallery_id+'"]').remove();
 			});
 
 			// If a gallery has been modified, ensure that we're displaying
 			// the correct gallery title
-			Frame_Event_Publisher.listen_for('attach_topost_gallery_modified', function(data){
+			Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
 				var gallery_id		= data.gallery[data.gallery.id_field];
 				var gallery_title	= data.gallery.title;
-				$('#galleryselect option[value="'+gallery_id+'"]').text(gallery_title);
-				$('select[name="zipgalselect"] option[value="'+gallery_id+'"]').text(gallery_title);
+				$('#galleryselect option[value="'+gallery_id+'"]').html(gallery_title.replace(/\\&/g, "&"));
+				$('select[name="zipgalselect"] option[value="'+gallery_id+'"]').html(gallery_title.replace(/\\&/g, "&"));
 			});
 		}
 

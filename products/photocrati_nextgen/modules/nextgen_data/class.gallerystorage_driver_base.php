@@ -286,7 +286,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
      * @param string $size
      * @return string
      */
-    function get_image_html($image, $size='full')
+    function get_image_html($image, $size='full', $attributes=array())
     {
         $retval = "";
 
@@ -294,25 +294,39 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
         if ($image) {
 
-            // Get the image properties
-            $alttext = esc_attr($image->alttext);
-            $title	 = $alttext;
+			// Set alt text if not already specified
+			if (!isset($attributes['alttext'])) {
+				$attributes['alt'] = esc_attr($image->alttext);
+			}
 
-            // Get the dimensions
-            $dimensions = $this->object->get_image_dimensions($image, $size);
+			// Set the title if not already set
+			if (!isset($attributes['title'])) {
+				$attributes['title'] = esc_attr($image->alttext);
+			}
 
-            // Get the image url
-            $image_url = $this->object->get_image_url($image, $size);
+			// Set the dimensions if not set already
+			if (!isset($attributes['width']) OR !isset($attributes['height'])) {
+				$dimensions = $this->object->get_image_dimensions($image, $size);
+				if (!isset($attributes['width'])) {
+					$attributes['width'] = $dimensions['width'];
+				}
+				if (!isset($attributes['height'])) {
+					$attributes['height'] = $dimensions['height'];
+				}
+			}
 
-            $retval = implode(' ', array(
-                '<img',
-                "alt=\"{$alttext}\"",
-                "title=\"{$title}\"",
-                "src=\"{$image_url}\"",
-                "width=\"{$dimensions['width']}\"",
-                "height=\"{$dimensions['height']}\"",
-                '/>'
-            ));
+			// Set the url if not already specified
+			if (!isset($attributes['src'])) {
+				$attributes['src'] = $this->object->get_image_url($image, $size);
+			}
+
+			// Format attributes
+			$attribs = array();
+			foreach ($attributes as $attrib => $value) $attribs[] = "{$attrib}=\"{$value}\"";
+			$attribs = implode(" ", $attribs);
+
+			// Return HTML string
+			$retval = "<img {$attribs} />";
         }
 
         return $retval;
