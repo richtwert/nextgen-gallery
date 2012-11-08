@@ -98,7 +98,6 @@ jQuery(function($){
          * @triggers 'selected'
         **/
         selection_changed: function(){
-
             // Get selected options from DOM
             var selections = _.map(this.$el.find(':selected'), function(element){
                 return $(element).attr('value');
@@ -115,6 +114,7 @@ jQuery(function($){
         },
 
         render: function(){
+			this.$el.empty();
             this.collection.each(function(item){
                 var option = new this.Option({
 					model: item,
@@ -163,24 +163,6 @@ jQuery(function($){
 
 		placeholder: false,
 
-		selection_changed: function(e, data){
-			// Select/deselect item in collection
-			this.collection.each(function(item){
-				if (data.selected) {
-					if (item.id == parseInt(data.selected)) item.set('selected', true);
-				}
-				else {
-					if (item.id == parseInt(data.deselected)) item.set('selected', false);
-				}
-			});
-
-			// Adjust the width of the text input field
-			this.trigger('width_needs_adjusting');
-
-			// Trigger a change to the collection
-			this.collection.trigger('selected');
-		},
-
 		initialize: function() {
 			// Create the select tag. We override the selected_changed handler, as Chosen
 			// does things differently.
@@ -189,22 +171,17 @@ jQuery(function($){
 				this[key] = value;
 			}, this);
 			this.select_tag = new Ngg.Views.SelectTag(this.options);
-			this.select_tag.on('selected', this.selection_changed);
-			this.select_tag.on('width_needs_adjusting', this.adjust_width, this);
-			this.select_tag = this.select_tag.render().$el;
-			if (this.placeholder) this.select_tag.attr('data-placeholder', this.placeholder);
-			this.$el.empty().append(this.select_tag);
-			this.collection.on('add remove change', this.options_updated, this);
+			this.collection.on('add remove', this.items_changed, this);
+			this.collection.on('selected', this.render, this);
 		},
 
-		options_updated: function(){
-			this.select_tag.trigger('liszt:updated');
+		items_changed: function(){
+			this.select_tag.$el.trigger('liszt:updated');
 			this.adjust_width();
 		},
 
-
 		adjust_width: function(){
-			var chzn_container = this.$el.find('#'+this.select_tag.attr('id')+'_chzn');
+			var chzn_container = this.$el.find('#'+this.select_tag.$el.attr('id')+'_chzn');
 			if (!this.options.width) chzn_container.width('auto');
 			var text_input = chzn_container.find('.search-field input[type=text]');
 			if (this.collection.selected().length > 0)
@@ -216,33 +193,35 @@ jQuery(function($){
 		},
 
 		render: function(){
+			this.$el.empty();
+			this.$el.append(this.select_tag.render().$el);
+			this.select_tag.$el.removeClass('chzn-done');
+
 			// Chosen needs to calculate the width of the drop-down. But, before
 			// it can do this, we need to append it to the DOM. To ensure that
 			// the drop-down isn't visible, we'll deploy two tricks:
 			// 1) Use absolute positioning, and move the element off the screen
 			// 2) Make the element invisible
-			this.$el.css({
-				position:	'absolute',
-				visibility: 'hidden',
-				top:		-1000
-			});
-			$('body').append(this.$el);
-
-			// In some browsers, the selectedIndex of a select tag is always the first element,
-			// even when no particular option has explicitly been selected. We compensate for
-			// that behavior.
-			if (this.collection.selected().length == 0) {
-				this.select_tag[0].selectedIndex = -1;
+			var attached = this.$el.parent().length > 0;
+			if (!attached) {
+				this.$el.css({
+					position:	'absolute',
+					visibility: 'hidden',
+					top:		-1000
+				});
+				$('body').append(this.$el);
 			}
 
 			// Create the Chosen widget
 			chosen_options = {};
 			if (this.fuzzy_search) chosen_options.search_contains = true;
-			this.select_tag.chosen(chosen_options);
+			this.select_tag.$el.chosen(chosen_options);
 
 			// Now that we've calculated the width, we can undo our hacks
-			this.$el.detach();
-			this.$el.removeAttr('style');
+			if (!attached) {
+				this.$el.detach();
+				this.$el.removeAttr('style');
+			}
 
 			// Chosen doesn't generate the width 'just right'.
 			this.adjust_width();

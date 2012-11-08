@@ -285,7 +285,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$frame_url = real_site_url("/wp-admin/admin.php?page={$page}&attach_to_post");
 		$frame_url = esc_url($frame_url);
 
-		return "<iframe name='{$page}' class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
+		return "<iframe name='{$page}' frameBorder='0' class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
 	}
 
 	/**
