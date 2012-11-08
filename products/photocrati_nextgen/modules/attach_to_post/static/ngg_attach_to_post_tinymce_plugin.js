@@ -93,8 +93,8 @@
 			// Open a window, occupying 90% of the screen real estate
 			this.editor.windowManager.open({
 				file:	attach_to_post_url,
-				width:	window.innerWidth * .95,
-				height:	(window.innerHeight * .90),
+				width:	1200,
+				height:	600,
 				inline: true,
 				title:	"NextGEN Gallery - Attach To Post"
 			});

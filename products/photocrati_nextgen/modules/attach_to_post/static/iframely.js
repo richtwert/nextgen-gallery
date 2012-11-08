@@ -11,11 +11,10 @@ if (window.frameElement) {
 		});
 
 		// Adjust the height of the frame
-		parent.adjust_height_for_frame(window.frameElement, function(){
-			$('#iframely').animate({
-				opacity: 1.0,
-				position: 'relative'
+			parent.adjust_height_for_frame(window.frameElement, function(){
+				$('#iframely').animate({
+					opacity: 1.0
+				});
 			});
-		});
 	});
 }

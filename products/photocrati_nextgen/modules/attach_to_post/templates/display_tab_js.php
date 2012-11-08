@@ -41,7 +41,7 @@ jQuery(function($){
 		select: function(ids){
 			if (!_.isArray(ids)) ids = [ids];
 			this.each(function(item){
-				if (ids.indexOf(item.id) >= 0) {
+				if (_.indexOf(ids, item.id) >= 0) {
 					item.set('selected', true);
 				}
 			});
@@ -106,7 +106,7 @@ jQuery(function($){
 
             // Set the 'selected' attribute for each item in the collection
             this.collection.each(function(item){
-                if (selections.indexOf(item.id) >= 0 || selections.indexOf(item.id.toString()) >= 0)
+                if (_.indexOf(selections, item.id) >= 0 || _.indexOf(selections, item.id.toString()) >= 0)
                     item.set('selected', true);
                 else
                     item.set('selected', false);
@@ -784,7 +784,7 @@ jQuery(function($){
 			populate_sorting_fields: function(){
 				// We display difference sorting buttons depending on what type of entities we're dealing with.
 				var entity_types = this.sources.selected().pop().get('returns');
-				if (entity_types.indexOf('images') !== -1) {
+				if (_.indexOf(entity_types, 'images') !== -1) {
 					this.fill_image_sortorder_options();
 				}
 				else {
@@ -1217,7 +1217,7 @@ jQuery(function($){
 				Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
 					if (app.sources.selected_value() == 'galleries') {
 						var gallery_id = parseInt(data.image.galleryid);
-						if (app.galleries.selected_ids().indexOf(gallery_id) >= 0) {
+						if (_.indexOf(app.galleries.selected_ids(), gallery_id) >= 0) {
 							app.entities.push(data.image);
 						}
 					}
@@ -1252,7 +1252,7 @@ jQuery(function($){
 					var selected_album_ids = app.sources.selected_ids();
 					if (album) app.albums.remove(album);
 					if (app.sources.selected_value() == 'albums') {
-						if (selected_album_ids.indexOf(album_id) >= 0) {
+						if (_.indexOf(selected_album_ids, album_id) >= 0) {
 							app.entities.reset();
 						}
 					}
@@ -1261,7 +1261,7 @@ jQuery(function($){
 				// Image deleted event
 				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
 					var selected_source = app.sources.selected().pop();
-					if (selected_source && selected_source.get('returns').indexOf('images') >= 0) {
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'images') >= 0) {
 						var image_id = parseInt(data.image_id);
 						var image = app.entities.find(function(item){
 							return parseInt(item.entity_id()) == image_id;
@@ -1273,7 +1273,7 @@ jQuery(function($){
 				// Image was modified
 				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
 					var selected_source = app.sources.selected().pop();
-					if (selected_source && selected_source.get('returns').indexOf('images') >= 0) {
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'images') >= 0) {
 						var image_id = parseInt(data.image[data.image.id_field]);
 						var image = app.entities.find(function(item){
 							return parseInt(item.entity_id()) == image_id;
@@ -1306,7 +1306,7 @@ jQuery(function($){
 
 					// If we're viewing an album, refresh it's entities
 					// should this gallery be included
-					if (selected_source && selected_source.get('returns').indexOf('galleries') >= 0) {
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'galleries') >= 0) {
 						app.entities.reset();
 					}
 				});
