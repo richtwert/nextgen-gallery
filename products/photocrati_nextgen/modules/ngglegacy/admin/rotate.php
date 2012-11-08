@@ -41,6 +41,8 @@ $preview_image		= trailingslashit( home_url() ) . 'index.php?callback=image&amp;
 ?>
 
 <script type='text/javascript'>
+	var selectedImage = "thumb<?php echo $id ?>";
+	
 	function rotateImage() {
 		
 		var rotate_angle = jQuery('input[name=ra]:checked').val();
@@ -50,7 +52,13 @@ $preview_image		= trailingslashit( home_url() ) . 'index.php?callback=image&amp;
 		  type : "POST",
 		  data:  {action: 'rotateImage', id: <?php echo $id ?>, ra: rotate_angle},
 		  cache: false,
-		  success: function (msg) { showMessage('<?php _e('Image rotated', 'nggallery'); ?>') },
+		  success: function (msg) { 
+				var d = new Date();
+				newUrl = jQuery("#"+selectedImage).attr("src") + "?" + d.getTime();
+				jQuery("#"+selectedImage).attr("src" , newUrl);
+					
+		  	showMessage('<?php _e('Image rotated', 'nggallery'); ?>') 
+		  },
 		  error: function (msg, status, errorThrown) { showMessage('<?php _e('Error rotating thumbnail', 'nggallery'); ?>') }
 		});
 
