@@ -891,7 +891,7 @@ jQuery(function($){
 				image_container.attr({
 					title: alt_text,
 				}).css({
-					'background-image': 'url('+this.model.get('thumb_url')+')',
+					'background-image': 'url("'+this.model.get('thumb_url')+'")',
 					width:			this.model.get('max_width'),
 					height:			this.model.get('max_height'),
 					'max-width':	this.model.get('max_width'),

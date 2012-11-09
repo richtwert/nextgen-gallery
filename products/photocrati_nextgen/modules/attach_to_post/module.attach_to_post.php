@@ -310,9 +310,10 @@ class M_Attach_To_Post extends C_Base_Module
 	function new_image_event($image)
 	{
 		if (is_array($image) && !empty($image['id'])) {
-			$storage = $this->get_registry()->get_utility('I_Gallery_Storage');
-			$mapper	 = $this->get_registry()->get_utility('I_Image_Mapper');
-			$mapper->find($image['id']);
+			$settings	= $this->get_registry()->get_utility('I_NextGen_Settings');
+			$storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
+			$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
+			$image		= $mapper->find($image['id']);
 			if ($image) {
 				$image->thumb_url  = $storage->get_image_url($image, 'thumb');
 				$image->max_width  = $settings->thumbwidth;
