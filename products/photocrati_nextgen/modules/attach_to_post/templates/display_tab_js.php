@@ -115,6 +115,9 @@ jQuery(function($){
 
         render: function(){
 			this.$el.empty();
+			if (this.options.include_blank) {
+				this.$el.append("<option></option>");
+			}
             this.collection.each(function(item){
                 var option = new this.Option({
 					model: item,
@@ -159,72 +162,40 @@ jQuery(function($){
 	Ngg.Views.Chosen								= Backbone.View.extend({
 		tagName: 'span',
 
-		fuzzy_search: true,
-
-		placeholder: false,
-
-		initialize: function() {
-			// Create the select tag. We override the selected_changed handler, as Chosen
-			// does things differently.
-			var self = this;
-			_.each(this.options, function(value, key){
-				this[key] = value;
-			}, this);
+		initialize: function(){
+			this.collection = this.options.collection;
+			if (!this.options.multiple) this.options.include_blank = true;
 			this.select_tag = new Ngg.Views.SelectTag(this.options);
-			this.collection.on('add remove', this.items_changed, this);
-			this.collection.on('selected', this.render, this);
-		},
-
-		items_changed: function(){
-			this.select_tag.$el.trigger('liszt:updated');
-			this.adjust_width();
-		},
-
-		adjust_width: function(){
-			var chzn_container = this.$el.find('#'+this.select_tag.$el.attr('id')+'_chzn');
-			if (!this.options.width) chzn_container.width('auto');
-			var text_input = chzn_container.find('.search-field input[type=text]');
-			if (this.collection.selected().length > 0)
-				text_input.css('width', '25');
-			else {
-				text_input.css('width', 'auto');
-				chzn_container.find('.chzn-drop').css('width', 'auto');
-			}
 		},
 
 		render: function(){
-			this.$el.empty();
+
 			this.$el.append(this.select_tag.render().$el);
-			this.select_tag.$el.removeClass('chzn-done');
+			if (this.options.width)
+				this.select_tag.$el.width(this.options.width);
 
-			// Chosen needs to calculate the width of the drop-down. But, before
-			// it can do this, we need to append it to the DOM. To ensure that
-			// the drop-down isn't visible, we'll deploy two tricks:
-			// 1) Use absolute positioning, and move the element off the screen
-			// 2) Make the element invisible
-			var attached = this.$el.parent().length > 0;
-			if (!attached) {
-				this.$el.css({
-					position:	'absolute',
-					visibility: 'hidden',
-					top:		-1000
-				});
+			// Configure select2 options
+			this.select2_opts = {
+				placeholder: this.options.placeholder
+			};
+
+			// Create the select2 drop-down
+			if (this.$el.parent().length == 0) {
 				$('body').append(this.$el);
-			}
-
-			// Create the Chosen widget
-			chosen_options = {};
-			if (this.fuzzy_search) chosen_options.search_contains = true;
-			this.select_tag.$el.chosen(chosen_options);
-
-			// Now that we've calculated the width, we can undo our hacks
-			if (!attached) {
+				this.select_tag.$el.select2(this.select2_opts);
+				var container = this.select_tag.$el.select2('container').detach();
+				this.$el.append(container);
 				this.$el.detach();
-				this.$el.removeAttr('style');
-			}
 
-			// Chosen doesn't generate the width 'just right'.
-			this.adjust_width();
+			}
+			else this.select_tag.$el.select2(this.select2_opts);
+
+			// Hack for multi-select elements
+			if (this.options.multiple && this.collection.selected().length == 0)
+				this.select_tag.$el.select2('val', '');
+
+			// For IE, ensure that the text field has a width
+			this.$el.find('.select2-input').width(this.options.width-20);
 
 			return this;
 		}
@@ -453,7 +424,7 @@ jQuery(function($){
 			var chosen = new Ngg.Views.Chosen({
 				id: 'source_select',
 				collection: this.sources,
-				width: 150
+				placeholder: 'Select a source'
 			});
             this.$el.html('<tr><td><label>Sources:</label></td><td id="source_column"></td></tr>');
             this.$el.find('#source_column').append(chosen.render().el);
@@ -970,7 +941,9 @@ jQuery(function($){
 		render: function(){
 			var select = new Ngg.Views.Chosen({
 				collection: this.galleries,
-				multiple: true
+				placeholder: 'Select a gallery',
+				multiple: true,
+				width: 500
 			});
 			var html = $('<tr><td><label>Galleries</label></td><td class="galleries_column"></td></tr>');
 			this.$el.empty();
@@ -991,7 +964,9 @@ jQuery(function($){
 			var album_select = new Ngg.Views.Chosen({
 				collection: this.albums,
 				multiple: true,
-				text_field: 'name'
+				placeholder: 'Select an album',
+				text_field: 'name',
+				width: 500
 			});
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Albums</label></td><td class="albums_column"></td></tr>');
@@ -1011,7 +986,9 @@ jQuery(function($){
 			var tag_select = new Ngg.Views.Chosen({
 				collection: this.tags,
 				multiple: true,
+				placeholder: 'Select a tag',
 				text_field: 'name',
+				width: 500
 			});
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Tags</label></td><td class="tags_column"></td></tr>');

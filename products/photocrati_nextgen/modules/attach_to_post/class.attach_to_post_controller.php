@@ -65,10 +65,12 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_enqueue_script('jquery-ui-sortable');
 
 		// Enqueue chosen, a library to make our drop-downs look pretty
-		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
-		wp_enqueue_script(
-			'chosen', $this->static_url('chosen.js'), array('jquery')
-		);
+//		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
+//		wp_enqueue_script(
+//			'chosen', $this->static_url('chosen.js'), array('jquery')
+//		);
+		wp_enqueue_style('select2', $this->static_url('select2.css'));
+		wp_enqueue_script('select2', $this->static_url('select2.js'));
 
 		// Ensure we have the AJAX module ready
 		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');

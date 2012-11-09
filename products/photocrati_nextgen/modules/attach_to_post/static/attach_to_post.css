@@ -245,3 +245,11 @@ table {
 .ui-tabs-nav li a.ui-state-active, .ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
 	cursor: pointer;
 }
+
+.select2-result-label {
+	white-space: nowrap;
+}
+.select2-results {
+	font-family: 'segoe ui', Arial, sans-serif;
+	font-size: 13px;
+}
