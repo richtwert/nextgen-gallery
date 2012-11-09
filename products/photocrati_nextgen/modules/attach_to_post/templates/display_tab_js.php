@@ -596,7 +596,12 @@ jQuery(function($){
 		},
 
 		render_entity: function(model){
-			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
+			var entity_element = new this.EntityElement({model: model});
+			this.entity_list.find('.clear').before(entity_element.render().$el);
+			entity_element.$el.css('visibility', 'hidden');
+			setTimeout(function(){
+				entity_element.$el.css('visibility', 'visible');
+			}, 0);
 			if (this.$el.find('.no_entities').length == 1) {
 				this.render();
 			}
