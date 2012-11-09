@@ -890,13 +890,14 @@ jQuery(function($){
 				alt_text = alt_text.replace(/\\&/g, '&').replace(/\\'/, "'");
 				image_container.attr({
 					title: alt_text,
+					style: "background-image: url('"+this.model.get('thumb_url')+"')"
 				}).css({
-					'background-image': 'url("'+this.model.get('thumb_url')+'")',
 					width:			this.model.get('max_width'),
 					height:			this.model.get('max_height'),
 					'max-width':	this.model.get('max_width'),
 					'max-height':	this.model.get('max_height')
 				});
+
 				this.$el.append(image_container).addClass('ui-state-default');
 
 				// Add exclude checkbox
