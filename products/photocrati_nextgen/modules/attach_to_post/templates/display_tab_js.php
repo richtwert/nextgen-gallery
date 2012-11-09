@@ -358,6 +358,15 @@ jQuery(function($){
 	Ngg.DisplayTab.Models.Entity				= Backbone.Model.extend({
 		entity_id: function(){
 			return this.get(this.get('id_field'));
+		},
+		is_excluded: function() {
+			current_value = this.get('exclude');
+			if (_.isUndefined(current_value)) return false;
+			else if (_.isBoolean(current_value)) return current_value;
+			else return parseInt(current_value) == 0 ? false : true;
+		},
+		is_included: function(){
+			return !this.is_excluded();
 		}
 	});
 
@@ -376,7 +385,7 @@ jQuery(function($){
 
 		included_ids: function(){
 			return _.compact(this.map(function(item){
-				if (!item.get('exclude')) return item.entity_id();
+				if (item.is_included()) return item.entity_id();
 			}));
 		}
 	});
@@ -532,7 +541,7 @@ jQuery(function($){
 
 			// When an entity is added/removed to the collection, we'll add/remove it on the DOM
 			this.entities.on('add', this.render_entity, this);
-			this.entities.on('remove', this.render_entity, this);
+			this.entities.on('remove', this.remove_entity, this);
 
 			// When the collection is reset, we add a list item to clear the float. This is important -
 			// jQuery sortable() will break without the cleared element.
@@ -597,11 +606,17 @@ jQuery(function($){
 		},
 
 		remove_entity: function(model){
-			this.entity_list.find('#'+model.get('id_field')+'_'+model.entity());
+			var id = this.id = model.get('id_field')+'_'+model.entity_id();
+			var entity = this.entity_list.find('#'+id).remove();
 			this.entity_list.sortable('refresh');
 			if (this.entities.length == 0) {
-				this.$el.empty();
+				this.render_no_images_notice();
 			}
+		},
+
+		render_no_images_notice: function(){
+			this.$el.empty();
+			this.$el.append("<p class='no_entities'>No entities to display for this source.</p>");
 		},
 
 		render: function(){
@@ -640,8 +655,7 @@ jQuery(function($){
 				this.entity_list.disableSelection();
 			}
 			else {
-				this.$el.empty();
-				this.$el.append("<p class='no_entities'>No entities to display for this source.</p>");
+				this.render_no_images_notice();
 			}
 			return this;
 		},
@@ -919,7 +933,7 @@ jQuery(function($){
 						this.$el.attr('type', 'checkbox');
 						this.type_set = true;
 					}
-					if (this.model.get('exclude')) this.$el.attr('checked', 'checked');
+					if (this.model.is_excluded()) this.$el.attr('checked', 'checked');
 					else this.$el.removeAttr('checked');
 					return this;
 				}
@@ -1215,6 +1229,7 @@ jQuery(function($){
 
 				// Image deleted event
 				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
+					debugger;
 					var selected_source = app.sources.selected().pop();
 					if (selected_source && _.indexOf(selected_source.get('returns'), 'images') >= 0) {
 						var image_id = parseInt(data.image_id);
@@ -1227,6 +1242,7 @@ jQuery(function($){
 
 				// Image was modified
 				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
+					debugger;
 					var selected_source = app.sources.selected().pop();
 					if (selected_source && _.indexOf(selected_source.get('returns'), 'images') >= 0) {
 						var image_id = parseInt(data.image[data.image.id_field]);

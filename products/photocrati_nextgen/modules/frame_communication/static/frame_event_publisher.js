@@ -14,6 +14,7 @@ window.Frame_Event_Publisher = {
 	},
 
 	initialize: function(){
+		if (this.id.length == 0) this.id = "Unknown";
 		this.received = this.get_events(document.cookie);
 		this.initialized = true;
 		if (this.is_parent()) this.emit(this.received, true);
@@ -80,13 +81,10 @@ window.Frame_Event_Publisher = {
 	 * Emits all known events to all children
 	 */
 	emit: function(events, forced){
-		var is_display_tab = this.id.match(/^mce/) ? true : false;
-		if (is_display_tab) {
-			debugger;
-		}
 		if (forced == undefined) forced = false;
 		for (var event_id in events) {
 			if (!forced && !this.has_received_event(event_id)) {
+				console.log("Emitting "+event_id+" to "+this.id);
 				this.trigger_event(event_id, events[event_id]);
 			}
 		}
