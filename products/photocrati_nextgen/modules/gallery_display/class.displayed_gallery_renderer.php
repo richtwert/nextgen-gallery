@@ -104,7 +104,8 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
             'image_id'          =>  NULL,
             'entity_ids'		=>	array(),
             'tagcloud'          => FALSE,
-            'inner_content'     => $inner_content
+            'inner_content'     => $inner_content,
+            'returns'           => 'included'
         );
         $args = shortcode_atts($defaults, $params);
 
@@ -159,19 +160,21 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
             }
 
             // Convert strings to arrays
-            if (!is_array($args['container_ids'])) {
-                $args['container_ids']	= preg_split("/,|\|/", $args['container_ids']);
-            }
-            if (!is_array($args['exclusions'])) {
-                $args['exclusions']		= preg_split("/,|\|/", $args['exclusions']);
-            }
-            if (!is_array($args['entity_ids'])) {
-                $args['entity_ids']		= preg_split("/,|\|/", $args['entity_ids']);
-            }
+            if (!is_array($args['container_ids']))
+                $args['container_ids'] = preg_split("/,|\|/", $args['container_ids']);
+
+            if (!is_array($args['exclusions']))
+                $args['exclusions'] = preg_split("/,|\|/", $args['exclusions']);
+
+            if (!is_array($args['entity_ids']))
+                $args['entity_ids'] = preg_split("/,|\|/", $args['entity_ids']);
 
             // Get the display settings
-            foreach (array_keys($defaults) as $key) unset($params[$key]);
-            $args['display_settings']	= $params;
+            foreach (array_keys($defaults) as $key) {
+                unset($params[$key]);
+            }
+
+            $args['display_settings'] = $params;
 
             // Create the displayed gallery
             $factory = $this->get_registry()->get_utility('I_Component_Factory');
