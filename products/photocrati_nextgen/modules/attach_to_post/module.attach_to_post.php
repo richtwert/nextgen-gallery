@@ -310,10 +310,18 @@ class M_Attach_To_Post extends C_Base_Module
 	function new_image_event($image)
 	{
 		if (is_array($image) && !empty($image['id'])) {
-			$mapper = $this->get_registry()->get_utility('I_Image_Mapper');
+			$storage = $this->get_registry()->get_utility('I_Gallery_Storage');
+			$mapper	 = $this->get_registry()->get_utility('I_Image_Mapper');
+			$mapper->find($image['id']);
+			if ($image) {
+				$image->thumb_url  = $storage->get_image_url($image, 'thumb');
+				$image->max_width  = $settings->thumbwidth;
+				$image->max_height = $settings->thumbheight;
+			}
+
 			$this->events->add_event(array(
 				'event'	=>	'new_image',
-				'image'	=>	$mapper->find($image['id']),
+				'image'	=>	$image,
 			));
 		}
 	}
@@ -389,11 +397,10 @@ class M_Attach_To_Post extends C_Base_Module
 	{
 		$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
 		$storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
-		$settings	= $this->get_registry()->get_utility('I_Image_Mapper');
+		$settings	= $this->get_registry()->get_utility('I_NextGen_Settings');
 		$image_id	= $image->{$mapper->get_primary_key_column()};
 		$image		= $mapper->find($image_id);
 		if ($image) {
-			$image->thumb_html	= $storage->get_thumb_html($image, 'thumb');
 			$image->thumb_url  = $storage->get_image_url($image, 'thumb');
 			$image->max_width  = $settings->thumbwidth;
 			$image->max_height = $settings->thumbheight;

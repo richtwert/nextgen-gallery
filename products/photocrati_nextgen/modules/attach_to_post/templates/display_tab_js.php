@@ -873,8 +873,7 @@ jQuery(function($){
 				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
 				var alt_text = this.model.get('alttext') ? this.model.get('alttext') : this.model.get('title');
-				alt_text = alt_text.replace(/\\&/g, '');
-				//image_container.append(this.model.get('thumb_html').replace(/\\&/g, '&'));
+				alt_text = alt_text.replace(/\\&/g, '&').replace(/\\'/, "'");
 				image_container.attr({
 					title: alt_text,
 				}).css({
