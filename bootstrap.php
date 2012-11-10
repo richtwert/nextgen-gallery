@@ -61,9 +61,6 @@ class C_NextGEN_Bootstrap
 
 		// Initializes all loaded modules
 		$registry->initialize_all_modules();
-
-        // we include a customized jquery-ui theme made to look like wordpress
-        $settings = $registry->get_utility('I_NextGen_Settings_Controller');
 	}
 
 
@@ -137,9 +134,6 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'module.photocrati_gallery_plugin.php'));
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.9');
-		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME', 'jquery-ui-nextgen');
-        define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL', $settings->static_url('jquery-ui/jquery-ui-1.9.1.custom.css'));
-        define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
 		//define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 

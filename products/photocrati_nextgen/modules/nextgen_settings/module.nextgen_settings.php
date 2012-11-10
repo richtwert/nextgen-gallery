@@ -25,6 +25,11 @@ class M_NextGen_Settings extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
+		$this->add_mixin('Mixin_MVC_Controller_Rendering');
+
+		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME', 'jquery-ui-nextgen');
+        define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL', $this->static_url('jquery-ui/jquery-ui-1.9.1.custom.css'));
+        define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
 	}
 
 

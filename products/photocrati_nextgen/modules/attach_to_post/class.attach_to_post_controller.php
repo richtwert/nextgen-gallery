@@ -173,27 +173,30 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$found_preview_pic = FALSE;
 
 		if ($this->object->_validate_request()) {
-            $dyn_thumbs =   $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-			$storage    = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+            $dyn_thumbs		= $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+			$storage		= $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			$image_mapper	= $this->object->get_registry()->get_utility('I_Image_Mapper');
 
 			// Get the first entity from the displayed gallery. We will use this
 			// for a preview pic
 			$entity = array_pop($this->object->_displayed_gallery->get_entities(1, FALSE, FALSE, TRUE));
 			$image = FALSE;
 			if ($entity) {
+				// This is an album or gallery
+				if (isset($entity->previewpic)) {
+					$image = (int)$entity->previewpic;
+				}
 
 				// Is this an image
-				if (isset($entity->galleryid)) {
-					$image = $entity;
-				}
-				elseif (isset($entity->previewpic)) {
-					$image = $entity->previewpic;
+				else if (isset($entity->galleryid)) {
+					$image = (int)$entity;
 				}
 			}
 
 			// Were we able to find a preview pic? If so, then render it
-			if ($image) {
+			if (($image = $image_mapper->find($image))) {
 				$found_preview_pic = TRUE;
+				var_dump($storage->get_image_abspath($image));
 				$storage->render_image($image, $dyn_thumbs->get_size_name(array(
                     'width'     =>  200,
                     'height'    =>  200,
