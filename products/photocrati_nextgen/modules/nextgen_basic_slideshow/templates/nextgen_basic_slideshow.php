@@ -116,6 +116,7 @@
 					src="<?php echo esc_attr($storage->get_image_url($image))?>"
 					width="<?php echo esc_attr($image_size['width'])?>"
 					height="<?php echo esc_attr($image_size['height'])?>"
+					style="max-width:none;"
 				/>
 			</div>
 		<?php endfor ?>
@@ -134,16 +135,19 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+	//<![CDATA[
 	jQuery('#<?php echo_h($anchor)?>-image-list').hide().removeClass('ngg-slideshow-nojs');
+	
 	jQuery(document).ready(function(){
 		jQuery('#<?php echo_h($anchor)?>').nggShowSlideshow({
 			id: '<?php echo_h($displayed_gallery_id)?>',
 			fx: '<?php echo_h($cycle_effect)?>',
 			width: <?php echo_h($gallery_width)?>,
 			height: <?php echo_h($gallery_height)?>,
-			domain: '<?php echo_h(trailingslashit ( home_url() ))?>',
+			domain: '<?php echo_h(trailingslashit(home_url()))?>',
 			timeout: <?php echo_h(intval($cycle_interval)*1000)?>
 		});
 	});
+	//]]>
 	</script>
 <?php endif ?>

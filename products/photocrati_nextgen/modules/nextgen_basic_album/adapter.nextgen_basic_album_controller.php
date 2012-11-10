@@ -65,9 +65,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
                 // Render legacy template
                 $display_settings = $this->prepare_legacy_album_params($display_settings);
-                $template = strpos($display_settings['template'], 'album') === 0 ? $display_settings['template'] :
-                    'album-'.$display_settings['template'];
-                return $this->legacy_render($template, $display_settings, $return, 'album');
+                return $this->legacy_render($display_settings['template'], $display_settings, $return, 'album');
 
             }
 

@@ -48,6 +48,7 @@
                         src="<?php echo esc_attr($storage->get_thumb_url($image))?>"
                         width="<?php echo esc_attr($thumb_size['width'])?>"
                         height="<?php echo esc_attr($thumb_size['height'])?>"
+                        style="max-width:none;"
                     />
 
                 </a>
