@@ -185,25 +185,25 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 				// This is an album or gallery
 				if (isset($entity->previewpic)) {
 					$image = (int)$entity->previewpic;
+					if (($image = $image_mapper->find($image))) {
+							$found_preview_pic = TRUE;
+					}
 				}
 
 				// Is this an image
 				else if (isset($entity->galleryid)) {
-					$image = (int)$entity;
+					$image = $entity;
+					$found_preview_pic = TRUE;
 				}
 			}
 
 			// Were we able to find a preview pic? If so, then render it
-			if (($image = $image_mapper->find($image))) {
-				$found_preview_pic = TRUE;
-				var_dump($storage->get_image_abspath($image));
-				$storage->render_image($image, $dyn_thumbs->get_size_name(array(
-                    'width'     =>  200,
-                    'height'    =>  200,
-                    'quality'   =>  90,
-					'type'		=>	'jpg'
-                ), TRUE));
-			}
+			$found_preview_pic = $storage->render_image($image, $dyn_thumbs->get_size_name(array(
+				'width'     =>  200,
+				'height'    =>  200,
+				'quality'   =>  90,
+				'type'		=>	'jpg'
+			), TRUE));
 		}
 
 		// Render invalid image if no preview pic is found
