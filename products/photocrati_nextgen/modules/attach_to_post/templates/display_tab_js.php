@@ -238,8 +238,10 @@ jQuery(function($){
      * Represents an individual source used to collect displayable entities from
     **/
     Ngg.DisplayTab.Models.Source                = Backbone.Model.extend({
+		idAttribute: 'name',
         defaults: {
             title: '',
+			name: '',
             selected: false
         }
     });
@@ -255,7 +257,7 @@ jQuery(function($){
 			var retval = null;
 			var selected = this.selected();
 			if (selected.length > 0) {
-				retval = selected[0].get('value');
+				retval = selected[0].get('name');
 			}
 			return retval;
 		}
@@ -331,6 +333,18 @@ jQuery(function($){
 	Ngg.DisplayTab.Models.Display_Type			= Backbone.Model.extend({
 		defaults: {
 			title: ''
+		},
+
+		is_compatible_with_source: function(source){
+			var success = true;
+			for (index in source.get('returns')) {
+				var returned_entity_type = source.get('returns')[index];
+				if (_.indexOf(this.get('entity_types'), returned_entity_type) < 0) {
+					success = false;
+					break;
+				}
+			}
+			return success;
 		}
 	});
 
@@ -477,7 +491,14 @@ jQuery(function($){
 		render: function(){
 			this.$el.empty();
 			this.display_types.each(function(item){
-				if (this.sources.selected().length == 0 || item.get('entity_type') == this.sources.selected().pop().get('display_type')) {
+				var display = false;
+
+				if (this.sources.selected().length == 0)
+					display = true;
+				else if (item.is_compatible_with_source(this.sources.selected().pop()))
+					display = true;
+
+				if (display) {
 					var display_type = new this.DisplayType;
 					display_type.model = item;
 					display_type.on('selected', this.selection_changed, this);
@@ -753,7 +774,7 @@ jQuery(function($){
 			populate_sorting_fields: function(){
 				// We display difference sorting buttons depending on what type of entities we're dealing with.
 				var entity_types = this.sources.selected().pop().get('returns');
-				if (_.indexOf(entity_types, 'images') !== -1) {
+				if (_.indexOf(entity_types, 'image') !== -1) {
 					this.fill_image_sortorder_options();
 				}
 				else {
@@ -1039,6 +1060,8 @@ jQuery(function($){
 				action: 'save_displayed_gallery',
 				displayed_gallery: this.displayed_gallery.toJSON()
 			};
+			console.log(request);
+			return;
 
 			var self = this;
 			$.post(photocrati_ajax_url, request, function(response){
@@ -1148,7 +1171,14 @@ jQuery(function($){
 						return item.get('name') == this.displayed_gallery.get('display_type');
 					}, this);
 					if (display_type) display_type.set('selected', true);
+				}
 
+				// Pre-select source
+				if (this.displayed_gallery.get('source')) {
+					var source = this.sources.find(function(item){
+						return item.get('name') == this.displayed_gallery.get('source');
+					});
+					if (source) source.set('selected', true);
 				}
 			}
 
@@ -1235,9 +1265,8 @@ jQuery(function($){
 
 				// Image deleted event
 				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-					debugger;
 					var selected_source = app.sources.selected().pop();
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'images') >= 0) {
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
 						var image_id = parseInt(data.image_id);
 						var image = app.entities.find(function(item){
 							return parseInt(item.entity_id()) == image_id;
@@ -1248,9 +1277,8 @@ jQuery(function($){
 
 				// Image was modified
 				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
-					debugger;
 					var selected_source = app.sources.selected().pop();
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'images') >= 0) {
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
 						var image_id = parseInt(data.image[data.image.id_field]);
 						var image = app.entities.find(function(item){
 							return parseInt(item.entity_id()) == image_id;
@@ -1283,7 +1311,7 @@ jQuery(function($){
 
 					// If we're viewing an album, refresh it's entities
 					// should this gallery be included
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'galleries') >= 0) {
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'gallery') >= 0) {
 						app.entities.reset();
 					}
 				});

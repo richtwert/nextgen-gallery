@@ -48,6 +48,9 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 {
 	function validation()
 	{
+		// Valid sources
+		$this->object->validates_presence_of('source');
+
 		// Valid display type?
 		$this->object->validates_presence_of('display_type');
 		if (($display_type = $this->object->get_display_type())) {
@@ -59,17 +62,22 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 					}
 				}
 			}
+
+			// Is the display type compatible with the source? E.g., if we're
+			// using a display type that expects images, we can't be feeding it
+			// galleries and albums
+			if (($source = $this->get_source())) {
+				if (!$display_type->is_compatible_with_source($source)) {
+					$this->object->add_error(
+						_('Source not compatible with selected display type'),
+						'display_type'
+					);
+				}
+			}
+
 		}
 		else {
 			$this->object->add_error('Invalid display type', 'display_type');
-		}
-
-		// Valid sources
-		$this->object->validates_presence_of('source');
-		if (in_array($this->object->source, array('galleries', 'albums', 'tags'))) {
-			if (count($this->object->container_ids) == 0 && count($this->object->entity_ids) == 0) {
-				$this->object->add_error("Additional source criteria required", 'source');
-			}
 		}
 
 		return $this->object->is_valid();
@@ -588,6 +596,16 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	{
 		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
 		return  $mapper->find_by_name($this->object->display_type, TRUE);
+	}
+
+	/**
+	 * Gets an instance of the Displayed Gallery Source object
+	 * @return C_Displayed_Gallery_Source
+	 */
+	function get_source()
+	{
+		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper');
+		return $mapper->find_by_name($this->object->source, TRUE);
 	}
 
 

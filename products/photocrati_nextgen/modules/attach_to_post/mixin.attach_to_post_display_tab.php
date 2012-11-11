@@ -18,6 +18,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			$gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper');
 			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper');
 			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper');
+			$source_mapper		= $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper');
 			$display_types		= $display_type_mapper->find_all();
 
 			// Get the nextgen tags
@@ -31,7 +32,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 
 			$this->object->render_view('display_tab_js', array(
 				'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),
-				'sources'				=>	json_encode($this->object->get_entity_sources()),
+				'sources'				=>	json_encode($source_mapper->find_all()),
 				'gallery_primary_key'	=>	$gallery_mapper->get_primary_key_column(),
 				'galleries'				=>	json_encode($gallery_mapper->find_all()),
 				'albums'				=>	json_encode($album_mapper->find_all()),
@@ -39,58 +40,6 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'display_types'			=>	json_encode($display_type_mapper->find_all()),
 			));
 		}
-	}
-
-	/**
-	 * Returns a list of sources to select in the Display Tab
-	 */
-	function get_entity_sources()
-	{
-		$retval = array();
-
-		$sources = array(
-			array(
-				'name'			=>	'galleries',
-				'title'			=>	'Galleries',
-				'returns'		=>	array('images'),
-				'display_type'	=>	'gallery'
-			),
-
-			array(
-				'name'			=>	'albums',
-				'title'			=>	'Albums',
-				'returns'		=>	array('galleries', 'albums'),
-				'display_type'	=>	'album'
-			),
-
-			array(
-				'name'			=>	'tags',
-				'title'			=>	'Tags',
-				'returns'		=>	array('images'),
-				'display_type'	=>	'gallery'
-			),
-
-			array(
-				'name'			=>	'random_images',
-				'title'			=>	'Random Images',
-				'returns'		=>	array('images'),
-				'display_type'	=>	'gallery'
-			),
-
-			array(
-				'name'			=>	'recent_images',
-				'title'			=>	'Recent Images',
-				'returns'		=>	array('images'),
-				'display_type'	=>	'gallery'
-			)
-		);
-
-		foreach ($sources as &$source) {
-			$source['value'] = $source['id'] = $source['name'];
-			$source['selected'] = $this->object->_displayed_gallery->source == $source['name'];
-		}
-
-		return $sources;
 	}
 
 

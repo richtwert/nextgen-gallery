@@ -5,7 +5,7 @@
  * in a "gallery".
  *
  * Properties:
- * - entity_type (gallery, album)
+ * - entity_types (gallery, album)
  * - name		 (nextgen_basic-thumbnails)
  * - title		 (NextGEN Basic Thumbnails)
  */
@@ -17,6 +17,7 @@ class C_Display_Type extends C_DataMapper_Model
 	{
 		parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_Display_Type_Validation');
+		$this->add_mixin('Mixin_Display_Type_Instance_Methods');
 		$this->implement('I_Display_Type');
 	}
 
@@ -26,13 +27,13 @@ class C_Display_Type extends C_DataMapper_Model
 	 * @param array|stdClass|C_Display_Type $properties
 	 * @param FALSE|string|array $context
 	 */
-	function initialize($mapper=FALSE, $properties=array(), $context=FALSE)
+	function initialize($mapper=FALSE, $properties=array())
 	{
 		// If no mapper was specified, then get the mapper
 		if (!$mapper) $mapper = $this->get_registry()->get_utility($this->_mapper_interface);
 
 		// Construct the model
-		parent::initialize($mapper, $properties, $context);
+		parent::initialize($mapper, $properties);
 	}
 
 
@@ -56,10 +57,35 @@ class Mixin_Display_Type_Validation extends Mixin
 {
 	function validation()
 	{
-		$this->object->validates_presence_of('entity_type');
+		$this->object->validates_presence_of('entity_types');
 		$this->object->validates_presence_of('name');
 		$this->object->validates_presence_of('title');
 
 		return $this->object->is_valid();
+	}
+}
+
+/**
+ * Provides methods available for class instances
+ */
+class Mixin_Display_Type_Instance_Methods extends Mixin
+{
+	/**
+	 * Determines if this display type is compatible with a displayed gallery
+	 * source
+	 * @param stdClass|C_DataMapper_Model|C_Displayed_Gallery_Source $source
+	 * @return bool
+	 */
+	function is_compatible_with_source($source)
+	{
+		$success = TRUE;
+		foreach ($source->returns as $returned_entity_type) {
+			if (!in_array($returned_entity_type, $this->object->entity_types)) {
+				$success = FALSE;
+				break;
+			}
+		}
+
+		return $success;
 	}
 }
