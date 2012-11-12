@@ -10,6 +10,11 @@ global $wpdb, $nggdb;
 // Get WordPress scripts and styles
 wp_enqueue_script('jquery-ui-core');
 wp_enqueue_script('jquery-ui-widget');
+wp_enqueue_script('jquery-ui-position');
+global $wp_scripts;
+if (!isset($wp_scripts->registered['jquery-ui-autocomplete'])) {
+	wp_register_script( 'jquery-ui-autocomplete', NGGALLERY_URLPATH .'admin/js/jquery.ui.autocomplete.min.js', array('jquery-ui-core'), '1.8.15');
+}
 wp_enqueue_script('jquery-ui-autocomplete');
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
