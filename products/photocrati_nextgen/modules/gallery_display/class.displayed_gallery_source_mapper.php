@@ -64,7 +64,7 @@ class Mixin_Displayed_Gallery_Source_Mapper extends Mixin
 	 */
 	function find_by_name($name, $return_models=FALSE)
 	{
-		return $this->object->find_all(array("name = %s", $name), $return_models);
+		return array_pop($this->object->find_all(array("name = %s", $name), $return_models));
 	}
 
 	/**
