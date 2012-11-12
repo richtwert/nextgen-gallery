@@ -186,7 +186,7 @@ class nggAdminPanel{
 		// no need to go on if it's not a plugin page
 		if( !isset($_GET['page']) )
 			return;
-			
+
 		// If we're on a NextGen Page
 		if (preg_match("/ngg|nextgen-gallery/", $_GET['page'])) {
 			wp_register_script('ngg_social_media', path_join(
