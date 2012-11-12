@@ -176,7 +176,7 @@ jQuery(function($){
 
 			// Configure select2 options
 			this.select2_opts = {
-				placeholder: this.options.placeholder
+				placeholder: this.options.placeholder,
 			};
 
 			// Create the select2 drop-down
@@ -447,7 +447,8 @@ jQuery(function($){
 			var chosen = new Ngg.Views.Chosen({
 				id: 'source_select',
 				collection: this.sources,
-				placeholder: 'Select a source'
+				placeholder: 'Select a source',
+				width: 500
 			});
             this.$el.html('<tr><td><label>Sources:</label></td><td id="source_column"></td></tr>');
             this.$el.find('#source_column').append(chosen.render().el);
