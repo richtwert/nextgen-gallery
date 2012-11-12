@@ -253,3 +253,6 @@ table {
 	font-family: 'segoe ui', Arial, sans-serif;
 	font-size: 13px;
 }
+.select2-result-selectable {
+	white-space: nowrap;
+}
