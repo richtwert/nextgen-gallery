@@ -5,7 +5,7 @@ by Photocrati Media
 * Secured: Removed bundled version of swfupload; using WordPress-bundled version instead for WordPress 3.2 instances
 * Changed: Using JQuery UI for the image sorting interface (thanks Tomás Soler)
 * Bugfix:  Image uploads work in WP 3.2 when using Safari
-* Bugfix:  Adjusted TinyMCE window to use built-in Javascript libraries
+* Bugfix:  Adjusted TinyMCE window to use built-in JavaScript libraries
 * Bugfix:  Removed Photocrati acquisition announcement
 * Bugfix:  Fixed incorrect usage of ImageJpeg() function
 * Bugfix:  Switched from "template_redirect" to "wp_enqueue_script" hook to load scripts and styles
