@@ -1062,7 +1062,6 @@ jQuery(function($){
 				displayed_gallery: this.displayed_gallery.toJSON()
 			};
 			console.log(request);
-			return;
 
 			var self = this;
 			$.post(photocrati_ajax_url, request, function(response){
@@ -1082,6 +1081,9 @@ jQuery(function($){
 					var snippet = "<img class='ngg_displayed_gallery' src='"+preview_url+"'/>";
 					if (editor.getContent().indexOf(preview_url) < 0)
 						editor.execCommand('mceInsertContent', false, snippet);
+					else {
+						$(editor.contentDocument).find(".ngg_displayed_gallery[src='"+preview_url+"']").attr('src', preview_url);
+					}
 					close_attach_to_post_window();
 				}
 			});
@@ -1161,7 +1163,7 @@ jQuery(function($){
 					_.each(this.displayed_gallery.get('container_ids'), function(id){
 						var container = this[this.displayed_gallery.get('source')].find(function(item){
 							return item.id == id;
-						});
+						}, this);
 						if (container) container.set('selected', true);
 					}, this);
 				}
@@ -1178,7 +1180,7 @@ jQuery(function($){
 				if (this.displayed_gallery.get('source')) {
 					var source = this.sources.find(function(item){
 						return item.get('name') == this.displayed_gallery.get('source');
-					});
+					}, this);
 					if (source) source.set('selected', true);
 				}
 			}
