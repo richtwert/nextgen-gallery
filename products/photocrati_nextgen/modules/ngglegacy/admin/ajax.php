@@ -264,7 +264,6 @@ function ngg_ajax_file_browser() {
 			echo "</ul>";
 		}
 	}
-
     die();
 }
 

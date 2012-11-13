@@ -5,7 +5,7 @@ Plugin URI: http://www.nextgen-gallery.com/
 Description: A NextGENeration Photo Gallery for WordPress
 Author: Photocrati
 Author URI: http://www.photocrati.com/
-Version: 1.9.6
+Version: 1.9.7
 
 Copyright (c) 2007-2011 by Alex Rabe & NextGEN DEV-Team
 Copyright (c) 2012 Photocrati Media
@@ -45,9 +45,9 @@ if (!class_exists('E_Clean_Exit')) {
 if (!class_exists('nggLoader')) {
 	class nggLoader {
 
-		var $version     = '1.9.6';
-		var $dbversion   = '1.8.0';
-		var $minimum_WP  = '3.2';
+		var $version     = '1.9.7';
+		var $dbversion   = '1.8.1';
+		var $minimum_WP  = '3.4';
 		var $donators    = 'http://www.nextgen-gallery.com/donators.php';
 		var $options     = '';
 		var $manage_page;
@@ -369,30 +369,6 @@ if (!class_exists('nggLoader')) {
 			if ( defined('NGG_SKIP_LOAD_SCRIPTS') )
 				return;
 
-//			//	activate Thickbox
-//			if ($this->options['thumbEffect'] == 'thickbox') {
-////				wp_enqueue_script( 'thickbox' );
-//				// Load the thickbox images after all other scripts
-//				add_action( 'wp_footer', array(&$this, 'load_thickbox_images'), 11 );
-//
-//			}
-//
-//			// activate jquery.lightbox
-//			if ($this->options['thumbEffect'] == 'lightbox') {
-//				wp_enqueue_script('jquery');
-//			}
-//
-//			// activate modified Shutter reloaded if not use the Shutter plugin
-//			if ( ($this->options['thumbEffect'] == "shutter") && !function_exists('srel_makeshutter') ) {
-//				wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.js', false ,'1.3.3');
-//				wp_localize_script('shutter', 'shutterSettings', array(
-//							'msgLoading' => __('L O A D I N G', 'nggallery'),
-//							'msgClose' => __('Click to Close', 'nggallery'),
-//							'imageCount' => '1'
-//				) );
-//				wp_enqueue_script( 'shutter' );
-//			}
-
 			// required for the slideshow
 			if ( NGGALLERY_IREXIST == true && $this->options['enableIR'] == '1' && nggGallery::detect_mobile_phone() === false )
 				wp_enqueue_script('swfobject');
@@ -412,11 +388,6 @@ if (!class_exists('nggLoader')) {
 					) );
 				}
 			}
-//
-//			// If activated, add PicLens/Cooliris javascript to footer
-//			if ( $this->options['usePicLens'] )
-//				nggMediaRss::add_piclens_javascript();
-
 		}
 
 		function load_thickbox_images() {
@@ -572,7 +543,6 @@ if (!class_exists('nggLoader')) {
 			if ( isset( $_GET['test-footer'] ) )
 				add_action( 'wp_footer', create_function('', 'echo \'<!--wp_footer-->\';'), 99999 );
 		}
-
 
 		/**
 		* Handles upload requests
