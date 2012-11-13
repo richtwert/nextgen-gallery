@@ -52,7 +52,6 @@ if (!class_exists('nggLoader')) {
 		var $options     = '';
 		var $manage_page;
 		var $add_PHP5_notice = false;
-		var $update_notice_setting = 'ngg_show_update_notice';
 
 		function nggLoader() {
 
