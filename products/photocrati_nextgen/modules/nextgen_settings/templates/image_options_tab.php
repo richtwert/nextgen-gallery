@@ -129,23 +129,6 @@
 			/>
 		</td>
 	</tr>
-	<tr>
-		<td>
-			<label for="thumbnail_quality">
-				<?php echo_h($thumbnail_quality_label) ?>
-			</label>
-		</td>
-		<td colspan="2">
-			<select name="settings[thumbquality]" id="thumbnail_quality">
-			<?php for($i=100; $i>50; $i--): ?>
-				<option
-					<?php selected($i, $thumbnail_quality) ?>
-					value="<?php echo_h($i)?>"><?php echo_h($i) ?>%</option>
-			<?php endfor ?>
-			</select>
-			<p class="description"><?php echo_h($thumbnail_quality_help)?></p>
-		</td>
-	</tr>
 	<tr id="sorting_options_row">
 		<td class="column1">
 			<label for="image_sorting_order">
