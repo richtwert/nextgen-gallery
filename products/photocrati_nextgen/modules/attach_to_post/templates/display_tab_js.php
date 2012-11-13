@@ -1321,7 +1321,6 @@ jQuery(function($){
 
 				// Thumbnail modified event
 				Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data){
-					debugger;
 					var selected_source = app.sources.selected().pop();
 					var image_id = data.image[data.image.id_field];
 
