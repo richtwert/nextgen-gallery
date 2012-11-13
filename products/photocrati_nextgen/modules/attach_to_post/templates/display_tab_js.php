@@ -1321,6 +1321,7 @@ jQuery(function($){
 
 				// Thumbnail modified event
 				Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data){
+					debugger;
 					var selected_source = app.sources.selected().pop();
 					var image_id = data.image[data.image.id_field];
 
@@ -1329,15 +1330,15 @@ jQuery(function($){
 						// Does the currently selected source return images? If so,
 						// check refresh the modified image's thumbnail
 						if(_.indexOf(selected_source.get('returns'), 'image') >= 0) {
-							var image = this.entities.find(function(item){
-								return parseInt(item.id) == parseInt(image_id);
+							var image = app.entities.find(function(item){
+								return parseInt(item.entity_id()) == parseInt(image_id);
 							}, this);
 							if (image) image.set('thumb_url', data.image.thumb_url);
 						}
 
 						// It must be an album or gallery
 						else {
-							var entity = this.entities.find(function(item){
+							var entity = app.entities.find(function(item){
 								return parseInt(item.get('previewpic')) == image_id;
 							}, this);
 							if (entity) entity.trigger('change');

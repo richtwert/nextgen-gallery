@@ -15,9 +15,10 @@ window.Frame_Event_Publisher = {
 
 	setup_ajax_handlers: function(){
 		var publisher = this;
-		jQuery(window).ajaxComplete(function(e, xhr, settings){
-			debugger;
-			console.log(e);
+		jQuery(document).ajaxComplete(function(e, xhr, settings){
+			setTimeout(function(){
+				publisher.broadcast(publisher.get_events(document.cookie));
+			}, 0);
 		});
 	},
 
