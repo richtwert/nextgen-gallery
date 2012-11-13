@@ -402,39 +402,65 @@ class Mixin_Album_Source_Queries extends Mixin
     function _create_album_query($limit=FALSE, $offset=FALSE, $ids_only=FALSE, $skip_exclusions=FALSE)
     {
         $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
-        $gallery_key    = $gallery_mapper->get_primary_key_column();
         $album_mapper   = $this->object->get_registry()->get_utility('I_Album_Mapper');
-        $album_key      = $album_mapper->get_primary_key_column();
         $settings       = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-        $retval         = array();
 
-        // Apply default limit
+        $gallery_key = $gallery_mapper->get_primary_key_column();
+        $album_key   = $album_mapper->get_primary_key_column();
+
+        $retval = array();
+
         if (!$limit)
             $limit = $settings->gallery_display_limit;
 
         if (!$offset)
             $offset = 0;
 
-        // Assume where the entities are coming from
+        // assume where the entities are coming from
         $entity_ids = $this->object->entity_ids;
 
-        // If container ids have been specified, then get their entity ids
+        // but use the container_id results when possible
         if ($this->object->container_ids)
-            $entity_ids = $this->object->_get_album_entities(
+        {
+            $all_entity_ids = $this->object->_get_album_entities(
                 $album_mapper, $album_key, $this->object->container_ids, $ids_only
             );
+            foreach ($entity_ids as $id) {
+                if (!in_array($id, $all_entity_ids))
+                    $all_entity_ids[] = $id;
+            }
+            $entity_ids = $all_entity_ids;
+        }
 
-        // Collect gallery ids and sub-album ids
+        // collect gallery and sub-album id into relevant arrays
         $gallery_ids  = array();
         $subalbum_ids = array();
-
         $excluded_gallery_ids  = array();
         $excluded_subalbum_ids = array();
 
+        // array of results; default to empty
         $galleries = array();
         $subalbums = array();
 
+        // the main entity inclusion check is here
         foreach ($entity_ids as $id) {
+            if (!empty($this->object->entity_ids))
+            {
+                if ('included' == $this->object->returns && !in_array($id, $this->object->entity_ids))
+                    continue;
+                if ('excluded' == $this->object->returns
+                &&  in_array($id, $this->object->entity_ids)
+                &&  !in_array($id, $this->object->exclusions))
+                    continue;
+            }
+
+            // in case a container_id is set without any entity_ids
+            if (empty($this->object->entity_ids) && 'excluded' == $this->object->returns)
+            {
+                if (!in_array($id, $this->object->exclusions))
+                    continue;
+            }
+
             if (strpos($id, 'a') === 0)
                 $subalbum_ids[] = intval(str_replace('a', '', $id));
             else
@@ -453,60 +479,31 @@ class Mixin_Album_Source_Queries extends Mixin
         {
             if ($gallery_ids)
             {
-                switch ($this->object->returns) {
-                    case 'included':
-                        $query = $gallery_mapper->select('*')->where(array("{$gallery_key} IN (%s)", $gallery_ids));
-                        break;
-                    case 'excluded':
-                        $query = $gallery_mapper->select('*')->where(array("{$gallery_key} NOT IN (%s)", $gallery_ids));
-                        break;
-                    case 'both':
-                        $query = $gallery_mapper->select('*');
-                        break;
-                }
-
-                $query->where(array("{$gallery_key} NOT IN (%s)", $excluded_gallery_ids));
+                $query = $gallery_mapper->select('*')->where(array("{$gallery_key} IN (%s)", $gallery_ids));
+                if ('included' == $this->object->returns)
+                    $query->where(array("{$gallery_key} NOT IN (%s)", $excluded_gallery_ids));
                 $galleries = $query->run_query();
-
-                // adjust our entities lists
-                $gallery_ids = array();
-                $entity_ids  = array();
-                foreach ($subalbum_ids as $sid) {
-                    $entity_ids[] = 'a' . $sid;
-                }
-                foreach ($galleries as $tmp) {
-                    $gallery_ids[] = $tmp->$gallery_key;
-                    $entity_ids[]  = $tmp->$gallery_key;
-                }
             }
 
             if ($subalbum_ids)
             {
-                switch ($this->object->returns) {
-                    case 'included':
-                        $query = $album_mapper->select('*')->where(array("{$album_key} IN (%s)", $subalbum_ids));
-                        break;
-                    case 'excluded':
-                        $query = $album_mapper->select('*')->where(array("{$album_key} NOT IN (%s)", $subalbum_ids));
-                        break;
-                    case 'both':
-                        $query = $album_mapper->select('*');
-                        break;
-                }
-
-                $query->where(array("{$album_key} NOT IN (%s)", $excluded_subalbum_ids));
+                $query = $album_mapper->select('*')->where(array("{$album_key} IN (%s)", $subalbum_ids));
+                if ('included' == $this->object->returns)
+                    $query->where(array("{$album_key} NOT IN (%s)", $excluded_subalbum_ids));
                 $subalbums = $query->run_query();
+            }
 
-                // adjust our entities lists
-                $subalbum_ids = array();
-                $entity_ids   = array();
-                foreach ($subalbums as $tmp) {
-                    $subalbum_ids[] = $tmp->$album_key;
-                    $entity_ids[] = 'a' . $tmp->$album_key;
-                }
-                foreach ($galleries as $tmp) {
-                    $entity_ids[]  = $tmp->$gallery_key;
-                }
+            // adjust our entities lists to match our results
+            $subalbum_ids = array();
+            $gallery_ids  = array();
+            $entity_ids   = array();
+            foreach ($subalbums as $tmp) {
+                $subalbum_ids[] = $tmp->$album_key;
+                $entity_ids[] = 'a' . $tmp->$album_key;
+            }
+            foreach ($galleries as $tmp) {
+                $gallery_ids[] = $tmp->$gallery_key;
+                $entity_ids[]  = $tmp->$gallery_key;
             }
 
             // Get image totals for galleries
@@ -548,14 +545,16 @@ class Mixin_Album_Source_Queries extends Mixin
                     {
                         $obj->exclude = 1;
                     }
-                    elseif ($this->object->entity_ids) {
-                        if (in_array($id, $this->object->entity_ids) && in_array($this->object->returns, array('included', 'both')))
-                            $obj->exclude = 1;
+                    elseif('excluded' == $this->object->returns) {
+                        $obj->exclude = 1;
+                    }
+                    elseif('both' == $this->object->returns && !in_array($id, $this->object->entity_ids)) {
+                        $obj->exclude = 1;
                     }
 
                     // Return the object, if it's not to be excluded and we're to skip exclusions
-                    // if (!($skip_exclusions && $obj->exclude == 1))
-                    $retval[] = $obj;
+                    if (!($skip_exclusions && $obj->exclude == 1))
+                        $retval[] = $obj;
                 }
             }
 
