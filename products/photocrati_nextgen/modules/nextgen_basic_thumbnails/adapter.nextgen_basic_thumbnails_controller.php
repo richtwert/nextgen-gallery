@@ -72,6 +72,30 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             if ($display_settings['show_piclens_link'] || $display_settings['ajax_pagination'])
                 $gallery_id = $displayed_gallery->to_transient();
 
+			$thumbnail_size_name = 'thumbnail';
+			
+			if ($display_settings['override_thumbnail_settings']) {
+        $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+        
+        if ($dynthumbs != null)
+        {
+        	$dyn_params = array(
+        		'width' => $display_settings['thumbnail_width'],
+        		'height' => $display_settings['thumbnail_height'],
+        	);
+        	
+        	if ($display_settings['thumbnail_crop']) {
+        		$dyn_params['crop'] = true;
+        	}
+        	
+        	if ($display_settings['thumbnail_watermark']) {
+        		$dyn_params['watermark'] = true;
+        	}
+        	
+          $thumbnail_size_name = $dynthumbs->get_size_name($dyn_params);
+        }
+			}
+
 			// Determine what the piclens link would be
 			$piclens_link = '';
 			if ($display_settings['show_piclens_link']) {
@@ -104,6 +128,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
+                $params['thumbnail_size_name']			= $thumbnail_size_name;
                 return $this->object->render_partial('nextgen_basic_thumbnails', $params, $return);
             }
 		}
@@ -127,7 +152,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
-
 	/**
 	 * Provides the url of the JavaScript library required for
 	 * NextGEN Basic Thumbnails to display
@@ -147,6 +171,34 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	{
         return $this->object->static_url('nextgen_basic_thumbnails_init.js');
 	}
+
+    /**
+     * Renders the thumbnail generation settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_thumbnails_thumbnail_settings_field($display_type)
+    {
+        return $this->render_partial(
+            'nextgen_basic_thumbnails_settings_thumbnail_settings',
+            array(
+                'display_type_name' => $display_type->name,
+                'override_thumbnail_settings_label' => _('Override Thumbnail Settings'),
+                'override_thumbnail_settings' => $display_type->settings['override_thumbnail_settings'],
+								'thumbnail_dimensions_label'=>	_('Thumbnail dimensions'),
+								'thumbnail_width'		=>	$display_type->settings['thumbnail_width'],
+								'thumbnail_height'		=>	$display_type->settings['thumbnail_height'],
+								'thumbnail_quality_label'=>	_('Thumbnail Quality'),
+								'thumbnail_quality'=>	$display_type->settings['thumbnail_quality'],
+								'thumbnail_crop_label'=>	_('Thumbnail Crop'),
+								'thumbnail_crop'=>	$display_type->settings['thumbnail_crop'],
+								'thumbnail_watermark_label'=>	_('Thumbnail Watermark'),
+								'thumbnail_watermark'=>	$display_type->settings['thumbnail_watermark'],
+            ),
+            TRUE
+        );
+    }
 
     /**
      * Renders the images_per_page settings field
@@ -347,7 +399,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function _get_field_names()
 	{
 		return array(
-			'thumbnail_dimensions',
+			'nextgen_basic_thumbnails_thumbnail_settings',
             'nextgen_basic_thumbnails_images_per_page',
             'nextgen_basic_thumbnails_number_of_columns',
             'nextgen_basic_thumbnails_slideshow_link_text',

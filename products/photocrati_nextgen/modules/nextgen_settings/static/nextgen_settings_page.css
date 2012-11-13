@@ -47,6 +47,14 @@
 	width: 40px;
 }
 
+#thumbnail_dimensions_width,
+#thumbnail_dimensions_height{
+	width: 100px;
+}
+.nextgen-thumb-size-custom br {
+display:none;
+}
+
 .description_row{
 	position: relative;
 }

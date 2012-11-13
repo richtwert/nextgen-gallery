@@ -2,10 +2,14 @@
 $nextgen_thumb_size_custom_style = null;
 
 // defaults for the later form input
+if (empty($thumbnails_template_name))
+    $thumbnails_template_name = 'thumbsize_select';
 if (empty($thumbnails_template_width_name))
     $thumbnails_template_width_name = 'thumbwidth';
 if (empty($thumbnails_template_height_name))
     $thumbnails_template_height_name = 'thumbheight';
+if (empty($thumbnails_template_id))
+    $thumbnails_template_id = 'thumbsize_select';
 if (empty($thumbnails_template_width_id))
     $thumbnails_template_width_id = '';
 if (empty($thumbnails_template_height_id))
@@ -28,7 +32,7 @@ if (class_exists('C_Component_Registry'))
 		if (!is_null($thumb_sizes))
 		{
 			$size_selected = NULL;
-			$size_select_html = "<select name='thumbsize_select' id='thumbsize_select' onchange='"
+			$size_select_html = "<select name='{$thumbnails_template_name}' id='{$thumbnails_template_id}' onchange='"
                 . "var jt = jQuery(this);"
                 . " var szcust = jt.next(\".nextgen-thumb-size-custom\");"
                 . " if (jt.val() == \"custom\") {"

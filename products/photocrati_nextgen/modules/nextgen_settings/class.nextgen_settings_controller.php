@@ -168,6 +168,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		$tabs = array(
 			_('Image Options')			=> $this->object->_render_image_options_tab($settings),
+			_('Thumbnail Options')			=> $this->object->_render_thumbnail_options_tab($settings),
 			_('Lightbox Effect')		=> $this->object->_render_lightbox_library_tab($settings),
 			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
 			_('Styles')					=> $this->object->_render_styling_tab($settings),
@@ -383,7 +384,23 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'backup_images_label'			=>	_('Backup the original images?'),
 			'backup_images_yes_label'		=>	_('Yes'),
 			'backup_images_no_label'		=>	_('No'),
-			'backup_images'					=>	$settings->imgBackup,
+			'backup_images'					=>	$settings->imgBackup
+		), TRUE);
+	}
+
+
+	/**
+	 * Renders the thumbnai options tab
+	 * @param C_NextGen_Settings $settings
+	 * @return string
+	 */
+	function _render_thumbnail_options_tab($settings)
+	{
+		return $this->render_partial('thumbnail_options_tab', array(
+			'thumbnail_dimensions_label'		=>	_('Default thumbnail dimensions:'),
+			'thumbnail_dimensions_help'		=>	_('When generating thumbnails, what image dimensions do you desire?'),
+			'thumbnail_dimensions_width'		=>	$settings->thumbwidth,
+			'thumbnail_dimensions_height'		=>	$settings->thumbheight,
 			'thumbnail_quality_label'		=>	_('Adjust Thumbnail Quality?'),
 			'thumbnail_quality_help'		=>	_('When generating thumbnails, what image quality do you desire?'),
 			'thumbnail_quality'				=>	$settings->thumbquality

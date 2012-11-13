@@ -28,7 +28,7 @@
 	<!-- Thumbnails -->
 	<?php for ($i=0; $i<count($images); $i++): ?>
         <?php $image = $images[$i]; ?>
-        <?php $thumb_size = $storage->get_thumb_dimensions($image); ?>
+        <?php $thumb_size = $storage->get_image_dimensions($image, $thumbnail_size_name); ?>
 
         <?php if (isset($image->hidden) && $image->hidden): ?>
             <?php $image->style = 'style="display: none;"'?>
@@ -45,7 +45,7 @@
                     <img
                         title="<?php echo esc_attr($image->alttext)?>"
                         alt="<?php echo esc_attr($image->alttext)?>"
-                        src="<?php echo esc_attr($storage->get_thumb_url($image))?>"
+                        src="<?php echo esc_attr($storage->get_image_url($image, $thumbnail_size_name))?>"
                         width="<?php echo esc_attr($thumb_size['width'])?>"
                         height="<?php echo esc_attr($thumb_size['height'])?>"
                         style="max-width:none;"
