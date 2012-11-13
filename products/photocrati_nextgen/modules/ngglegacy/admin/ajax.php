@@ -97,7 +97,7 @@ function createNewThumb() {
 	$crop_frame = array('x' => $x, 'y' => $y, 'width' => $w, 'height' => $h);
 
 	$registry = C_Component_Registry::get_instance();
-  $storage  = $registry->get_utility('I_Gallery_Storage');
+	$storage  = $registry->get_utility('I_Gallery_Storage');
 
 	// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
 	$params = array('watermark' => false, 'reflection' => false, 'crop' => true, 'crop_frame' => $crop_frame);

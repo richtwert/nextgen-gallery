@@ -1318,6 +1318,32 @@ jQuery(function($){
 						app.entities.reset();
 					}
 				});
+
+				// Thumbnail modified event
+				Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data){
+					var selected_source = app.sources.selected().pop();
+					var image_id = data.image[data.image.id_field];
+
+					if (selected_source) {
+
+						// Does the currently selected source return images? If so,
+						// check refresh the modified image's thumbnail
+						if(_.indexOf(selected_source.get('returns'), 'image') >= 0) {
+							var image = this.entities.find(function(item){
+								return parseInt(item.id) == parseInt(image_id);
+							}, this);
+							if (image) image.set('thumb_url', data.image.thumb_url);
+						}
+
+						// It must be an album or gallery
+						else {
+							var entity = this.entities.find(function(item){
+								return parseInt(item.get('previewpic')) == image_id;
+							}, this);
+							if (entity) entity.trigger('change');
+						}
+					}
+				});
 			}
         },
 

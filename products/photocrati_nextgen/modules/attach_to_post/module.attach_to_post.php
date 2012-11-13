@@ -90,6 +90,12 @@ class M_Attach_To_Post extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Ajax_Controller',   'A_Attach_To_Post_Ajax'
 		);
+
+		// Applies a post hook to the generate_thumbnail method of the
+		// gallery storage component
+		$this->get_registry()->add_adapter(
+			'I_Gallery_Storage', 'A_Gallery_Storage_Frame_Event'
+		);
 	}
 
 

@@ -13,7 +13,16 @@ window.Frame_Event_Publisher = {
 		return !this.is_parent();
 	},
 
+	setup_ajax_handlers: function(){
+		var publisher = this;
+		jQuery(window).ajaxComplete(function(e, xhr, settings){
+			debugger;
+			console.log(e);
+		});
+	},
+
 	initialize: function(){
+		this.setup_ajax_handlers();
 		if (this.id.length == 0) this.id = "Unknown";
 		this.received = this.get_events(document.cookie);
 		this.initialized = true;
@@ -145,4 +154,3 @@ window.Frame_Event_Publisher = {
 jQuery(function($){
 	Frame_Event_Publisher.broadcast();
 });
-
