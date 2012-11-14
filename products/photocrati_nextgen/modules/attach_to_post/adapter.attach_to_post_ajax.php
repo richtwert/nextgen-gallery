@@ -126,21 +126,37 @@ class A_Attach_To_Post_Ajax extends Mixin
 			$response['offset'] = $offset = $offset ? $offset : 0;
 			$response['count']	= $displayed_gallery->get_entity_count();
 			$response['entities'] = $displayed_gallery->get_entities($limit,$offset);
-			$storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			$storage	  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			$image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
+			$settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 			foreach ( $response['entities'] as &$entity) {
                 $image = $entity;
                 if (in_array($displayed_gallery->source, array('album','albums'))) {
-                    $image = $entity->previewpic;
+                    // Set the alttext of the preview image to the
+					// name of the gallery or album
+					if (($image = $image_mapper->find($entity->previewpic))) {
+						if ($entity->is_album)
+							$image->alttext = _('Album: ').$entity->name;
+						else
+							$image->alttext = _('Gallery: ').$entity->title;
+					}
+
+					// Prefix the id of an album with 'a'
                     if ($entity->is_album) {
                         $id = $entity->{$entity->id_field};
                         $entity->{$entity->id_field} = 'a'.$id;
                     }
                 }
-                $entity->thumb_url	=	$storage->get_thumb_url($image);
-                $entity->thumb_size	=	$storage->get_thumb_dimensions($image);
-				if (!$entity->thumb_size) $entity->thumb_size = array(
-					'width' => '', 'height' => ''
+
+				// Get the thumbnail
+				$entity->thumb_html	= $storage->get_image_html($image, 'thumb');
+				$entity->thumb_url  = add_query_arg(
+					'timestamp',
+					time(),
+					$storage->get_image_url($image, 'thumb')
 				);
+				$entity->max_width  = $settings->thumbwidth;
+				$entity->max_height = $settings->thumbheight;
 			}
 		}
 		else {

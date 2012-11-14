@@ -181,8 +181,155 @@ class nggManageAlbum {
 <script type="text/javascript">
 
 jQuery(document).ready(
-	function()
+	function($)
 	{
+		if ($(this).data('ready')) return;
+
+		if (window.Frame_Event_Publisher) {
+
+			// When a new album is added, add it to the drop-down as well as
+			// create a selectable album used for drag n'drop
+			Frame_Event_Publisher.listen_for('attach_to_post:new_album', function(data){
+				var album_id = data.album[data.album.id_field];
+				var album_name = data.album.name.replace(/\\&/, '&');
+				var option = $('<option/>').attr({
+					value: album_id
+				});
+				option.text(album_name);
+				$('#act_album').append(option);
+
+				var album_div		= $('<div/>').attr({
+					id:			'gid-a'+album_id,
+					'class':	'groupItem'
+				});
+				var album_handle	= $('<div/>').attr({
+					'class':	'innerhandle'
+				});
+				var album_top		= $('<div/>').attr({
+					'class':	'item_top album_top'
+				});
+				var album_btn		= $('<a/>').attr({
+					href:		'#',
+					'class':	'min',
+					title:		'close'
+				}).text('[+]');
+				var album_content	= $('<div/>').attr({
+					'class':	'itemContent',
+					style:		'display: block'
+				});
+
+				album_div.append(album_handle);
+				album_handle.append(album_top);
+				album_handle.append(album_content);
+				album_top.append(album_btn);
+				album_top.append("ID: "+album_id+" | "+album_name);
+				album_content.append("<p><strong>Name:</strong>"+album_name+"</p>");
+				$('#albumContainer').append(album_div);
+			});
+
+			// When an album is deleted, remove it from the drop-down
+			Frame_Event_Publisher.listen_for('attach_to_post:album_deleted', function(data){
+				var album_id = data.album[data.album.id_field];
+				$('#act_album option[value="'+album_id+'"]').remove();
+				$('#gid-a'+album_id).remove();
+			});
+
+			// When an album is modified, ensure the correct name is displayed
+			Frame_Event_Publisher.listen_for('attach_to_post:album_modified', function(data){
+				var album_id = data.album[data.album.id_field];
+				var album_name = data.album.name.replace(/\\&/, '&');
+				$('#act_album option[value="'+album_id+'"]').html(album_name);
+				$('#gid-a'+album_id+' .itemContent p:first').html("<strong>Name: </strong>"+album_name);
+			});
+
+			// When a gallery is added, then add a container box to the album
+			// page
+			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
+				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_name = data.gallery.name.replace(/\\&/, '&');
+				var gallery_title = data.gallery.title.replace(/\\&/, '&');
+				var gallery_div = $('<div/>').attr({
+					id:			'gid-'+gallery_id,
+					'class':	'groupItem'
+				});
+				var gallery_handle = $('<div/>').attr({
+					'class':	'innerhandle'
+				});
+				var gallery_top = $('<div/>').attr({
+					'class':	'item_top'
+				});
+				var expand_btn = $('<a/>').attr({
+					href:		'#',
+					'class':	'min',
+					title:		'close'
+				}).text('[+]');
+				var content_div = $('<div/>').attr({
+					"class":	'itemContent',
+					'style':	'display: block'
+				});
+
+				gallery_top.append(expand_btn);
+				gallery_top.append("ID: "+gallery_id+" | "+data.gallery.title);
+				gallery_handle.append(gallery_top);
+				gallery_handle.append(content_div);
+				gallery_div.append(gallery_handle);
+				content_div.append("<p><strong/>Name: <strong>"+gallery_name+"</p>");
+				content_div.append("<p><strong/>Title: <strong>"+gallery_title+"</p>");
+				$('#selectContainer').append(gallery_div);
+			});
+
+			// When a gallery is modified, when we're displaying the correct title
+			Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
+				var gallery_id = data.gallery[data.gallery.id_field];
+				var gallery_name = data.gallery.name.replace(/\\&/, '&');
+				var gallery_title = data.gallery.title.replace(/\\&/, '&');
+				var gallery_div = $('<div/>').attr({
+					id:			'gid-'+gallery_id,
+					'class':	'groupItem'
+				});
+				var gallery_handle = $('<div/>').attr({
+					'class':	'innerhandle'
+				});
+				var gallery_top = $('<div/>').attr({
+					'class':	'item_top'
+				});
+				var expand_btn = $('<a/>').attr({
+					href:		'#',
+					'class':	'min',
+					title:		'close'
+				}).text('[+]');
+				var content_div = $('<div/>').attr({
+					"class":	'itemContent',
+					'style':	'display: block'
+				});
+
+				gallery_top.append(expand_btn);
+				gallery_top.append("ID: "+gallery_id+" | "+gallery_title);
+				gallery_handle.append(gallery_top);
+				gallery_handle.append(content_div);
+				gallery_div.append(gallery_handle);
+				content_div.append("<p><strong/>Name: <strong>"+gallery_name+"</p>");
+				content_div.append("<p><strong/>Title: <strong>"+gallery_title+"</p>");
+				$('#gid-'+gallery_id).remove();
+				$('#selectContainer').append(gallery_div);
+			});
+
+			// Removes the gallery selectable object when a gallery is deleted
+			Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
+				var gallery_id = data.gallery_id;
+				$('#gid-'+gallery_id).remove();
+			});
+
+			// Updates the thumbnail image when a previewpic has been modified
+			Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data){
+				var image_id = data.image[data.image.id_field];
+				var $image = $('img[rel="'+image_id+'"]');
+				if ($image.length > 0) {
+					$image.attr('src', data.image.thumb_url);
+				}
+			});
+		}
+
         jQuery("#previewpic").nggAutocomplete( {
             type: 'image',domain: "<?php echo home_url('index.php', is_ssl() ? 'https' : 'http'); ?>",width: "95%"
         });
@@ -217,7 +364,7 @@ jQuery(document).ready(
 			connectWith: ['#galleryContainer']
 		} );
 
-		jQuery('a.min').bind('click', toggleContent);
+		jQuery('a.min').live('click', toggleContent);
 
 		// Hide used galleries
 		jQuery('a#toggle_used').click(function()
@@ -249,6 +396,8 @@ jQuery(document).ready(
 	   		jQuery('div.itemContent:visible').hide();
 	   		jQuery('#selectContainer div.inUse').toggle();
 	   };
+
+	   $(this).data('ready', true);
 	}
 );
 
@@ -518,7 +667,8 @@ function showDialog() {
 			if ( $this->num_albums < 50 ) {
 				if ($album->previewpic != 0) {
 					$image = $nggdb->find_image( $album->previewpic );
-    				$preview_image = ( !is_null($image->thumbURL) )  ? '<div class="inlinepicture"><img src="' . esc_url( $image->thumbURL ). '" /></div>' : '';
+					$image->thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
+    				$preview_image = ( !is_null($image->thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$image->pid.'" src="' . esc_url( $image->thumbURL ). '" /></div>' : '';
                 }
 			}
 
@@ -542,7 +692,8 @@ function showDialog() {
 			if ( $this->num_galleries < 50 ) {
 				// set image url
 				$image = $nggdb->find_image( $gallery->previewpic );
-				$preview_image = isset($image->thumbURL) ? '<div class="inlinepicture"><img src="' . esc_url( $image->thumbURL ) . '" /></div>' : '';
+				$image->thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
+				$preview_image = ( !is_null($image->thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$image->pid.'" src="' . esc_url( $image->thumbURL ). '" /></div>' : '';
 			}
 
 			$prefix = '';

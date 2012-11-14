@@ -72,6 +72,14 @@ class M_Gallery_Display extends C_Base_Module
 			'C_Displayed_Gallery_Mapper'
 		);
 
+		// This utility provides a datamapper for Displayed Gallery Sources. A
+		// source instructs a displayed gallery where the entities are to be
+		// fetched from - e.g. galleries, albums, etc.
+		$this->get_registry()->add_utility(
+			'I_Displayed_Gallery_Source_Mapper',
+			'C_Displayed_Gallery_Source_Mapper'
+		);
+
         // This utility provides the capabilities of rendering a display type
         $this->get_registry()->add_utility(
             'I_Displayed_Gallery_Renderer',
@@ -99,6 +107,9 @@ class M_Gallery_Display extends C_Base_Module
 
         // plugin deactivation routine
         $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_Gallery_Display_Deactivation');
+
+		// Plugin activation routine
+		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Gallery_Display_Activation');
 	}
 
 	/**

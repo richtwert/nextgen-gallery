@@ -41,7 +41,7 @@ jQuery(function($){
 		select: function(ids){
 			if (!_.isArray(ids)) ids = [ids];
 			this.each(function(item){
-				if (ids.indexOf(item.id) >= 0) {
+				if (_.indexOf(ids, item.id) >= 0) {
 					item.set('selected', true);
 				}
 			});
@@ -98,7 +98,6 @@ jQuery(function($){
          * @triggers 'selected'
         **/
         selection_changed: function(){
-
             // Get selected options from DOM
             var selections = _.map(this.$el.find(':selected'), function(element){
                 return $(element).attr('value');
@@ -106,7 +105,7 @@ jQuery(function($){
 
             // Set the 'selected' attribute for each item in the collection
             this.collection.each(function(item){
-                if (selections.indexOf(item.id) >= 0 || selections.indexOf(item.id.toString()) >= 0)
+                if (_.indexOf(selections, item.id) >= 0 || _.indexOf(selections, item.id.toString()) >= 0)
                     item.set('selected', true);
                 else
                     item.set('selected', false);
@@ -115,6 +114,10 @@ jQuery(function($){
         },
 
         render: function(){
+			this.$el.empty();
+			if (this.options.include_blank) {
+				this.$el.append("<option></option>");
+			}
             this.collection.each(function(item){
                 var option = new this.Option({
 					model: item,
@@ -145,7 +148,7 @@ jQuery(function($){
 
             render: function(){
                 var self = this;
-                this.$el.text(this.model.get(this.text_field));
+                this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&'));
                 this.$el.attr({
                     value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
                     selected: self.model.get('selected') == true,
@@ -159,93 +162,40 @@ jQuery(function($){
 	Ngg.Views.Chosen								= Backbone.View.extend({
 		tagName: 'span',
 
-		fuzzy_search: true,
-
-		placeholder: false,
-
-		selection_changed: function(e, data){
-			// Select/deselect item in collection
-			this.collection.each(function(item){
-				if (data.selected) {
-					if (item.id == parseInt(data.selected)) item.set('selected', true);
-				}
-				else {
-					if (item.id == parseInt(data.deselected)) item.set('selected', false);
-				}
-			});
-
-			// Adjust the width of the text input field
-			this.trigger('width_needs_adjusting');
-
-			// Trigger a change to the collection
-			this.collection.trigger('selected');
-		},
-
-		initialize: function() {
-			// Create the select tag. We override the selected_changed handler, as Chosen
-			// does things differently.
-			var self = this;
-			_.each(this.options, function(value, key){
-				this[key] = value;
-			}, this);
+		initialize: function(){
+			this.collection = this.options.collection;
+			if (!this.options.multiple) this.options.include_blank = true;
 			this.select_tag = new Ngg.Views.SelectTag(this.options);
-			this.select_tag.on('selected', this.selection_changed);
-			this.select_tag.on('width_needs_adjusting', this.adjust_width, this);
-			this.select_tag = this.select_tag.render().$el;
-			if (this.placeholder) this.select_tag.attr('data-placeholder', this.placeholder);
-			this.$el.empty().append(this.select_tag);
-			this.collection.on('add remove change', this.options_updated, this);
-		},
-
-		options_updated: function(){
-			this.select_tag.trigger('liszt:updated');
-			this.adjust_width();
-		},
-
-
-		adjust_width: function(){
-			var chzn_container = this.$el.find('#'+this.select_tag.attr('id')+'_chzn');
-			if (!this.options.width) chzn_container.width('auto');
-			var text_input = chzn_container.find('.search-field input[type=text]');
-			if (this.collection.selected().length > 0)
-				text_input.css('width', '25');
-			else {
-				text_input.css('width', 'auto');
-				chzn_container.find('.chzn-drop').css('width', 'auto');
-			}
 		},
 
 		render: function(){
-			// Chosen needs to calculate the width of the drop-down. But, before
-			// it can do this, we need to append it to the DOM. To ensure that
-			// the drop-down isn't visible, we'll deploy two tricks:
-			// 1) Use absolute positioning, and move the element off the screen
-			// 2) Make the element invisible
-			this.$el.css({
-				position:	'absolute',
-				visibility: 'hidden',
-				top:		-1000
-			});
-			$('body').append(this.$el);
 
-			// In some browsers, the selectedIndex of a select tag is always the first element,
-			// even when no particular option has explicitly been selected. We compensate for
-			// that behavior.
-			if (this.collection.selected().length == 0) {
-				this.select_tag[0].selectedIndex = -1;
+			this.$el.append(this.select_tag.render().$el);
+			if (this.options.width)
+				this.select_tag.$el.width(this.options.width);
+
+			// Configure select2 options
+			this.select2_opts = {
+				placeholder: this.options.placeholder,
+			};
+
+			// Create the select2 drop-down
+			if (this.$el.parent().length == 0) {
+				$('body').append(this.$el);
+				this.select_tag.$el.select2(this.select2_opts);
+				var container = this.select_tag.$el.select2('container').detach();
+				this.$el.append(container);
+				this.$el.detach();
+
 			}
+			else this.select_tag.$el.select2(this.select2_opts);
 
-			// Create the Chosen widget
-			chosen_options = {};
-			if (this.fuzzy_search) chosen_options.search_contains = true;
-			this.select_tag.chosen(chosen_options);
+			// Hack for multi-select elements
+			if (this.options.multiple && this.collection.selected().length == 0)
+				this.select_tag.$el.select2('val', '');
 
-			// Now that we've calculated the width, we can undo our hacks
-			this.$el.detach();
-			this.$el.removeAttr('style');
-
-			// Chosen doesn't generate the width 'just right'.
-			this.adjust_width();
+			// For IE, ensure that the text field has a width
+			this.$el.find('.select2-input').width(this.options.width-20);
 
 			return this;
 		}
@@ -288,8 +238,10 @@ jQuery(function($){
      * Represents an individual source used to collect displayable entities from
     **/
     Ngg.DisplayTab.Models.Source                = Backbone.Model.extend({
+		idAttribute: 'name',
         defaults: {
             title: '',
+			name: '',
             selected: false
         }
     });
@@ -305,7 +257,7 @@ jQuery(function($){
 			var retval = null;
 			var selected = this.selected();
 			if (selected.length > 0) {
-				retval = selected[0].get('value');
+				retval = selected[0].get('name');
 			}
 			return retval;
 		}
@@ -381,6 +333,18 @@ jQuery(function($){
 	Ngg.DisplayTab.Models.Display_Type			= Backbone.Model.extend({
 		defaults: {
 			title: ''
+		},
+
+		is_compatible_with_source: function(source){
+			var success = true;
+			for (index in source.get('returns')) {
+				var returned_entity_type = source.get('returns')[index];
+				if (_.indexOf(this.get('entity_types'), returned_entity_type) < 0) {
+					success = false;
+					break;
+				}
+			}
+			return success;
 		}
 	});
 
@@ -408,6 +372,15 @@ jQuery(function($){
 	Ngg.DisplayTab.Models.Entity				= Backbone.Model.extend({
 		entity_id: function(){
 			return this.get(this.get('id_field'));
+		},
+		is_excluded: function() {
+			current_value = this.get('exclude');
+			if (_.isUndefined(current_value)) return false;
+			else if (_.isBoolean(current_value)) return current_value;
+			else return parseInt(current_value) == 0 ? false : true;
+		},
+		is_included: function(){
+			return !this.is_excluded();
 		}
 	});
 
@@ -426,7 +399,7 @@ jQuery(function($){
 
 		included_ids: function(){
 			return _.compact(this.map(function(item){
-				if (!item.get('exclude')) return item.entity_id();
+				if (item.is_included()) return item.entity_id();
 			}));
 		}
 	});
@@ -474,7 +447,8 @@ jQuery(function($){
 			var chosen = new Ngg.Views.Chosen({
 				id: 'source_select',
 				collection: this.sources,
-				width: 150
+				placeholder: 'Select a source',
+				width: 500
 			});
             this.$el.html('<tr><td><label>Sources:</label></td><td id="source_column"></td></tr>');
             this.$el.find('#source_column').append(chosen.render().el);
@@ -518,7 +492,14 @@ jQuery(function($){
 		render: function(){
 			this.$el.empty();
 			this.display_types.each(function(item){
-				if (this.sources.selected().length == 0 || item.get('entity_type') == this.sources.selected().pop().get('display_type')) {
+				var display = false;
+
+				if (this.sources.selected().length == 0)
+					display = true;
+				else if (item.is_compatible_with_source(this.sources.selected().pop()))
+					display = true;
+
+				if (display) {
 					var display_type = new this.DisplayType;
 					display_type.model = item;
 					display_type.on('selected', this.selection_changed, this);
@@ -582,7 +563,7 @@ jQuery(function($){
 
 			// When an entity is added/removed to the collection, we'll add/remove it on the DOM
 			this.entities.on('add', this.render_entity, this);
-			this.entities.on('remove', this.render_entity, this);
+			this.entities.on('remove', this.remove_entity, this);
 
 			// When the collection is reset, we add a list item to clear the float. This is important -
 			// jQuery sortable() will break without the cleared element.
@@ -637,7 +618,12 @@ jQuery(function($){
 		},
 
 		render_entity: function(model){
-			this.entity_list.find('.clear').before(new this.EntityElement({model: model}).render().el);
+			var entity_element = new this.EntityElement({model: model});
+			this.entity_list.find('.clear').before(entity_element.render().$el);
+			entity_element.$el.css('visibility', 'hidden');
+			setTimeout(function(){
+				entity_element.$el.css('visibility', 'visible');
+			}, 0);
 			if (this.$el.find('.no_entities').length == 1) {
 				this.render();
 			}
@@ -647,11 +633,17 @@ jQuery(function($){
 		},
 
 		remove_entity: function(model){
-			this.entity_list.find('#'+model.get('id_field')+'_'+model.entity());
+			var id = this.id = model.get('id_field')+'_'+model.entity_id();
+			var entity = this.entity_list.find('#'+id).remove();
 			this.entity_list.sortable('refresh');
 			if (this.entities.length == 0) {
-				this.$el.empty();
+				this.render_no_images_notice();
 			}
+		},
+
+		render_no_images_notice: function(){
+			this.$el.empty();
+			this.$el.append("<p class='no_entities'>No entities to display for this source.</p>");
 		},
 
 		render: function(){
@@ -690,8 +682,7 @@ jQuery(function($){
 				this.entity_list.disableSelection();
 			}
 			else {
-				this.$el.empty();
-				this.$el.append("<p class='no_entities'>No entities to display for this source.</p>");
+				this.render_no_images_notice();
 			}
 			return this;
 		},
@@ -784,7 +775,7 @@ jQuery(function($){
 			populate_sorting_fields: function(){
 				// We display difference sorting buttons depending on what type of entities we're dealing with.
 				var entity_types = this.sources.selected().pop().get('returns');
-				if (entity_types.indexOf('images') !== -1) {
+				if (_.indexOf(entity_types, 'image') !== -1) {
 					this.fill_image_sortorder_options();
 				}
 				else {
@@ -911,6 +902,7 @@ jQuery(function($){
 				_.each(this.options, function(value, key){
 					this[key] = value;
 				}, this);
+				this.model.on('change', this.render, this);
 				this.id = this.model.get('id_field')+'_'+this.model.entity_id()
 			},
 
@@ -919,15 +911,20 @@ jQuery(function($){
 			},
 
 			render: function(){
+				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
-				var img = $('<img/>').attr({
-					rel: this.model.id,
-					src: this.model.get('thumb_url'),
-					alt: this.model.get('title'),
-					width: this.model.get('thumb_size').width,
-					height: this.model.get('thumb_size').height
+				var alt_text = this.model.get('alttext') ? this.model.get('alttext') : this.model.get('title');
+				alt_text = alt_text.replace(/\\&/g, '&').replace(/\\'/, "'");
+				image_container.attr({
+					title: alt_text,
+					style: "background-image: url('"+this.model.get('thumb_url')+"')"
+				}).css({
+					width:			this.model.get('max_width'),
+					height:			this.model.get('max_height'),
+					'max-width':	this.model.get('max_width'),
+					'max-height':	this.model.get('max_height')
 				});
-				image_container.append(img);
+
 				this.$el.append(image_container).addClass('ui-state-default');
 
 				// Add exclude checkbox
@@ -964,7 +961,7 @@ jQuery(function($){
 						this.$el.attr('type', 'checkbox');
 						this.type_set = true;
 					}
-					if (this.model.get('exclude')) this.$el.attr('checked', 'checked');
+					if (this.model.is_excluded()) this.$el.attr('checked', 'checked');
 					else this.$el.removeAttr('checked');
 					return this;
 				}
@@ -985,7 +982,9 @@ jQuery(function($){
 		render: function(){
 			var select = new Ngg.Views.Chosen({
 				collection: this.galleries,
-				multiple: true
+				placeholder: 'Select a gallery',
+				multiple: true,
+				width: 500
 			});
 			var html = $('<tr><td><label>Galleries</label></td><td class="galleries_column"></td></tr>');
 			this.$el.empty();
@@ -1006,7 +1005,9 @@ jQuery(function($){
 			var album_select = new Ngg.Views.Chosen({
 				collection: this.albums,
 				multiple: true,
-				text_field: 'name'
+				placeholder: 'Select an album',
+				text_field: 'name',
+				width: 500
 			});
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Albums</label></td><td class="albums_column"></td></tr>');
@@ -1026,7 +1027,9 @@ jQuery(function($){
 			var tag_select = new Ngg.Views.Chosen({
 				collection: this.tags,
 				multiple: true,
+				placeholder: 'Select a tag',
 				text_field: 'name',
+				width: 500
 			});
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Tags</label></td><td class="tags_column"></td></tr>');
@@ -1058,6 +1061,7 @@ jQuery(function($){
 				action: 'save_displayed_gallery',
 				displayed_gallery: this.displayed_gallery.toJSON()
 			};
+			console.log(request);
 
 			var self = this;
 			$.post(photocrati_ajax_url, request, function(response){
@@ -1077,6 +1081,9 @@ jQuery(function($){
 					var snippet = "<img class='ngg_displayed_gallery' src='"+preview_url+"'/>";
 					if (editor.getContent().indexOf(preview_url) < 0)
 						editor.execCommand('mceInsertContent', false, snippet);
+					else {
+						$(editor.contentDocument).find(".ngg_displayed_gallery[src='"+preview_url+"']").attr('src', preview_url);
+					}
 					close_attach_to_post_window();
 				}
 			});
@@ -1156,7 +1163,7 @@ jQuery(function($){
 					_.each(this.displayed_gallery.get('container_ids'), function(id){
 						var container = this[this.displayed_gallery.get('source')].find(function(item){
 							return item.id == id;
-						});
+						}, this);
 						if (container) container.set('selected', true);
 					}, this);
 				}
@@ -1167,7 +1174,14 @@ jQuery(function($){
 						return item.get('name') == this.displayed_gallery.get('display_type');
 					}, this);
 					if (display_type) display_type.set('selected', true);
+				}
 
+				// Pre-select source
+				if (this.displayed_gallery.get('source')) {
+					var source = this.sources.find(function(item){
+						return item.get('name') == this.displayed_gallery.get('source');
+					}, this);
+					if (source) source.set('selected', true);
 				}
 			}
 
@@ -1211,7 +1225,7 @@ jQuery(function($){
 				Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
 					if (app.sources.selected_value() == 'galleries') {
 						var gallery_id = parseInt(data.image.galleryid);
-						if (app.galleries.selected_ids().indexOf(gallery_id) >= 0) {
+						if (_.indexOf(app.galleries.selected_ids(), gallery_id) >= 0) {
 							app.entities.push(data.image);
 						}
 					}
@@ -1246,7 +1260,7 @@ jQuery(function($){
 					var selected_album_ids = app.sources.selected_ids();
 					if (album) app.albums.remove(album);
 					if (app.sources.selected_value() == 'albums') {
-						if (selected_album_ids.indexOf(album_id) >= 0) {
+						if (_.indexOf(selected_album_ids, album_id) >= 0) {
 							app.entities.reset();
 						}
 					}
@@ -1254,13 +1268,27 @@ jQuery(function($){
 
 				// Image deleted event
 				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-					var selected_source = app.source.selected().pop();
-					if (selected_source.get('returns').indexOf('images') >= 0) {
+					var selected_source = app.sources.selected().pop();
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
 						var image_id = parseInt(data.image_id);
 						var image = app.entities.find(function(item){
-							return parseInt(item.id) == image_id;
+							return parseInt(item.entity_id()) == image_id;
 						});
 						if (image) app.entities.remove(image);
+					}
+				});
+
+				// Image was modified
+				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
+					var selected_source = app.sources.selected().pop();
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
+						var image_id = parseInt(data.image[data.image.id_field]);
+						var image = app.entities.find(function(item){
+							return parseInt(item.entity_id()) == image_id;
+						});
+						if (image) {
+							image.set(data.image);
+						}
 					}
 				});
 
@@ -1271,6 +1299,50 @@ jQuery(function($){
 						return parseInt(item.id) == gallery_id;
 					});
 					if (gallery) app.galleries.remove(gallery);
+				});
+
+				// Gallery modified event
+				Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
+					var selected_source = app.sources.selected().pop();
+					var gallery_id = parseInt(data.gallery_id);
+					var gallery = app.galleries.find(function(item){
+						return parseInt(item.id) == gallery_id;
+					});
+
+					// Update the gallery
+					gallery.set(data.gallery);
+
+					// If we're viewing an album, refresh it's entities
+					// should this gallery be included
+					if (selected_source && _.indexOf(selected_source.get('returns'), 'gallery') >= 0) {
+						app.entities.reset();
+					}
+				});
+
+				// Thumbnail modified event
+				Frame_Event_Publisher.listen_for('attach_to_post:thumbnail_modified', function(data){
+					var selected_source = app.sources.selected().pop();
+					var image_id = data.image[data.image.id_field];
+
+					if (selected_source) {
+
+						// Does the currently selected source return images? If so,
+						// check refresh the modified image's thumbnail
+						if(_.indexOf(selected_source.get('returns'), 'image') >= 0) {
+							var image = app.entities.find(function(item){
+								return parseInt(item.entity_id()) == parseInt(image_id);
+							}, this);
+							if (image) image.set('thumb_url', data.image.thumb_url);
+						}
+
+						// It must be an album or gallery
+						else {
+							var entity = app.entities.find(function(item){
+								return parseInt(item.get('previewpic')) == image_id;
+							}, this);
+							if (entity) entity.trigger('change');
+						}
+					}
 				});
 			}
         },

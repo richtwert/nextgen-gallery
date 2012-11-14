@@ -3,7 +3,7 @@
 class C_Frame_Event_Publisher extends C_Component
 {
 	static $_instances = array();
-	var $cookie_name = 'frame_events';
+	var $setting_name = 'X-Frame-Events';
 
 	function define($context=FALSE)
 	{
@@ -30,7 +30,7 @@ class C_Frame_Event_Publisher extends C_Component
 class Mixin_Frame_Event_Publisher extends Mixin
 {
 	/**
-	 * Encodes data for a cookie
+	 * Encodes data for a setting
 	 * @param array $data
 	 * @return string
 	 */
@@ -40,7 +40,7 @@ class Mixin_Frame_Event_Publisher extends Mixin
 	}
 
 	/**
-	 * Decodes data from a cookie
+	 * Decodes data from a setting
 	 * @param string $data
 	 * @return array
 	 */
@@ -50,44 +50,17 @@ class Mixin_Frame_Event_Publisher extends Mixin
 	}
 
 	/**
-	 * Gets a cookie of particular name
-	 * @param string $name
-	 * @return array
+	 * Adds a setting to the frame events
+	 * @param type $data
+	 * @return type
 	 */
-	function _get_cookie($name)
-	{
-		$retval = array();
-		if (isset($_COOKIE[$name])) $retval = $this->object->_decode($_COOKIE[$name]);
-		foreach ($retval as $key => $value) {
-			if (!is_array($value)) $retval[$key] = (array)$value;
-		}
-		return $retval;
-	}
-
-	/**
-	 * Sets a cookie
-	 * @param string $name
-	 * @param array $value
-	 */
-	function _set_cookie($name, $value)
-	{
-		setrawcookie($name, $this->object->_encode($value));
-	}
-
-
 	function add_event($data)
 	{
-		$cookie = $this->object->_get_cookie($this->object->cookie_name);
+		$id			= md5(serialize($data));
+		$data['context'] = $this->object->context;
 
-		// We'll store events in the current context
-		if (!isset($cookie[$this->object->context])) {
-			$cookie[$this->object->context] = array();
-		}
+		setrawcookie($this->object->setting_name.'_'.$id,$this->object->_encode($data));
 
-		// Set the cookie
-		$cookie[$this->object->context][md5(serialize($data))] = $data;
-		$this->object->_set_cookie($this->object->cookie_name, $cookie);
-
-		return $cookie;
+		return $data;
 	}
 }

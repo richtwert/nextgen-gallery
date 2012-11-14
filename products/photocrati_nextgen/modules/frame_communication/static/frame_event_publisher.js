@@ -1,8 +1,9 @@
 window.Frame_Event_Publisher = {
-	cookie_name: 'frame_events',
+	id: window.name,
+	cookie_name: 'X-Frame-Events',
 	received: [],
 	initialized: false,
-	children: [],
+	children: {},
 
 	is_parent: function(){
 		return self.parent.document === self.document;
@@ -12,7 +13,18 @@ window.Frame_Event_Publisher = {
 		return !this.is_parent();
 	},
 
+	setup_ajax_handlers: function(){
+		var publisher = this;
+		jQuery(document).ajaxComplete(function(e, xhr, settings){
+			setTimeout(function(){
+				publisher.broadcast(publisher.get_events(document.cookie));
+			}, 0);
+		});
+	},
+
 	initialize: function(){
+		this.setup_ajax_handlers();
+		if (this.id.length == 0) this.id = "Unknown";
 		this.received = this.get_events(document.cookie);
 		this.initialized = true;
 		if (this.is_parent()) this.emit(this.received, true);
@@ -20,7 +32,9 @@ window.Frame_Event_Publisher = {
 	},
 
 	register_child: function(child) {
-		if (this.children.indexOf(child) < 0) this.children.push(child);
+		if (this.children[child.id] == undefined) {
+			this.children[child.id] = child;
+		}
 	},
 
 	broadcast: function(events, child){
@@ -55,7 +69,7 @@ window.Frame_Event_Publisher = {
 				child.emit(events);
 			}
 			catch (Exception) {
-				this.children.splice(index, 1);
+				delete this.children.index;
 			}
 		}
 	},
@@ -78,58 +92,51 @@ window.Frame_Event_Publisher = {
 	 */
 	emit: function(events, forced){
 		if (forced == undefined) forced = false;
-		for (var context in events) {
-			for (var event_id in events[context]) {
-				var event = events[context][event_id];
-				if (!forced && !this.has_received_event(context, event_id)) {
-					var publisher = this;
-					try {
-						if (window != null) {
-							window.setTimeout(function(){
-								publisher.trigger_event(context, event_id, event);
-							}, 0);
-						}
-					}
-					catch (ex) {
-						// XXX window object might be referring to an iframe that was destroyed?
-					}
-				}
+		for (var event_id in events) {
+			if (!forced && !this.has_received_event(event_id)) {
+				console.log("Emitting "+event_id+" to "+this.id);
+				this.trigger_event(event_id, events[event_id]);
 			}
 		}
 	},
 
-	has_received_event: function(context, id){
-		var retval = true;
-		if (this.received[context] == undefined) retval = false;
-		else if (this.received[context][id] == undefined) retval = false;
-		return retval;
+	has_received_event: function(id){
+		return this.received[id] != undefined;
 	},
 
-	trigger_event: function(context, id, event){
-		var signal = context+':'+event.event;
+	trigger_event: function(id, event){
+		var signal = event.context+':'+event.event;
 		event.id = id;
-		event.context = context;
 		if (window) jQuery(window).trigger(signal, event);
-		if (publisher.received[context] == undefined) publisher.received[context] = {};
-		publisher.received[context][id] = event;
+		this.received[id] = event;
 	},
 
 	/**
 	 * Parses the events found in the cookie
 	 */
 	get_events: function(cookie){
-		var frame_events = [];
+		var frame_events = {};
+		var cookies = cookie.split(' ');
 		try {
-			frame_events = JSON.parse(unescape(cookie.match(/frame_events=([^ ]*)/).pop().slice(0,-1)));
-			this.delete_cookie(cookie);
+			for (var i=0; i<cookies.length; i++) {
+				var current_cookie = cookies[i];
+				var parts = current_cookie.match(/X-Frame-Events_([^=]+)=(.*)/);
+				if (parts) {
+					var event_id = parts[1];
+					var event_data = parts[2].replace(/;$/, '');
+					frame_events[event_id] = JSON.parse(unescape(event_data));
+					var cookie_name = 'X-Frame-Events_'+event_id;
+					this.delete_cookie(cookie_name);
+				}
+			}
 		}
 		catch (Exception) {}
 		return frame_events;
 	},
 
 	delete_cookie: function(cookie){
-		var matched = cookie.match(/frame_events=[^ ]*/).pop();
-		document.cookie = document.cookie.replace(matched, this.cookie_name+'=;');
+		var date = new Date();
+		document.cookie = cookie+'=; expires='+date.toGMTString()+';';
 	},
 
 	listen_for: function(signal, callback){
@@ -137,10 +144,9 @@ window.Frame_Event_Publisher = {
 		jQuery(window).bind(signal, function(e, event){
 			var context = event.context;
 			var event_id = event.id;
-			if (!publisher.has_received_event(context, event_id)) {
+			if (!publisher.has_received_event(event_id)) {
 				callback.call(publisher, event);
-				if (publisher.received[context] == undefined) publisher.received[context] = {};
-				publisher.received[context][event_id] = event;
+				publisher.received[event_id] = event;
 			}
 		});
 	}
@@ -149,4 +155,3 @@ window.Frame_Event_Publisher = {
 jQuery(function($){
 	Frame_Event_Publisher.broadcast();
 });
-

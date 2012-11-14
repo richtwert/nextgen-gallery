@@ -90,6 +90,12 @@ class M_Attach_To_Post extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Ajax_Controller',   'A_Attach_To_Post_Ajax'
 		);
+
+		// Applies a post hook to the generate_thumbnail method of the
+		// gallery storage component
+		$this->get_registry()->add_adapter(
+			'I_Gallery_Storage', 'A_Gallery_Storage_Frame_Event'
+		);
 	}
 
 
@@ -120,6 +126,8 @@ class M_Attach_To_Post extends C_Base_Module
 		add_action('ngg_delete_album',			array(&$this, 'album_deleted_event'));
 		add_action('ngg_delete_picture',		array(&$this, 'image_deleted_event'));
 		add_action('ngg_delete_gallery',		array(&$this, 'gallery_deleted_event'));
+		add_action('ngg_image_updated',			array(&$this, 'image_modified_event'));
+		add_action('ngg_update_gallery',		array(&$this, 'gallery_modified_event'));
 	}
 
 	/**
@@ -308,10 +316,19 @@ class M_Attach_To_Post extends C_Base_Module
 	function new_image_event($image)
 	{
 		if (is_array($image) && !empty($image['id'])) {
-			$mapper = $this->get_registry()->get_utility('I_Image_Mapper');
+			$settings	= $this->get_registry()->get_utility('I_NextGen_Settings');
+			$storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
+			$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
+			$image		= $mapper->find($image['id']);
+			if ($image) {
+				$image->thumb_url  = $storage->get_image_url($image, 'thumb');
+				$image->max_width  = $settings->thumbwidth;
+				$image->max_height = $settings->thumbheight;
+			}
+
 			$this->events->add_event(array(
 				'event'	=>	'new_image',
-				'image'	=>	$mapper->find($image['id']),
+				'image'	=>	$image,
 			));
 		}
 	}
@@ -376,6 +393,44 @@ class M_Attach_To_Post extends C_Base_Module
 		$this->events->add_event(array(
 			'event'		=>	'gallery_deleted',
 			'gallery_id'=>	$gallery_id
+		));
+	}
+
+	/**
+	 * Notifies frames that an image has been modified
+	 * @param nggImage $image
+	 */
+	function image_modified_event($image)
+	{
+		$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
+		$storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
+		$settings	= $this->get_registry()->get_utility('I_NextGen_Settings');
+		$image_id	= $image->{$mapper->get_primary_key_column()};
+		$image		= $mapper->find($image_id);
+		if ($image) {
+			$image->thumb_url  = $storage->get_image_url($image, 'thumb');
+			$image->max_width  = $settings->thumbwidth;
+			$image->max_height = $settings->thumbheight;
+		}
+		$this->events->add_event(array(
+			'event'		=>	'image_modified',
+			'image'		=>	$image,
+			'image_id'	=>	$image_id
+		));
+	}
+
+	/**
+	 * Notifies a frame that a gallery has been modified
+	 * @param int $gallery_id
+	 * @param array $data
+	 */
+	function gallery_modified_event($gallery_id, $data=array())
+	{
+		$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$this->events->add_event(array(
+			'event'		=>	'gallery_modified',
+			'gallery'	=>	$mapper->find($gallery_id),
+			'gallery_id'=>	intval($gallery_id)
 		));
 	}
 }

@@ -51,15 +51,15 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size)) {
-			
+
 			$abspath = $this->object->get_image_abspath($image, $size, true);
-			
+
       if ($abspath == null) {
 				$params = $dynthumbs->get_params_from_name($size, true);
 				$retval = $dynthumbs->get_image_url($image, $params);
 			}
 		}
-    
+
     if ($retval == null) {
     	$retval = $this->call_parent('get_image_url', $image, $size);
     }
@@ -107,7 +107,7 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 		{
 			$named_params = $dynthumbs->get_params_from_name($size, true);
-			
+
 			foreach ($named_params as $param_name => $param_value)
 			{
 				$params[$param_name] = $param_value;

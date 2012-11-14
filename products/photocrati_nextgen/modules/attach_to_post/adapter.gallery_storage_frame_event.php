@@ -1,0 +1,27 @@
+<?php
+
+class A_Gallery_Storage_Frame_Event extends Mixin
+{
+	function initialize()
+	{
+		$this->object->add_post_hook(
+			'generate_thumbnail',
+			'After a new thumbnail has been generated, emits a frame event',
+			get_class(),
+			'emit_modified_thumbnail_event'
+		);
+	}
+
+	function emit_modified_thumbnail_event($image)
+	{
+		$events = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
+		$mapper	= $this->get_registry()->get_utility('I_Image_Mapper');
+		$storage= $this->get_registry()->get_utility('I_Gallery_Storage');
+		$image	= $mapper->find($image);
+		$image->thumb_url = add_query_arg('timestamp', time(), $storage->get_thumb_url($image));
+		$events->add_event(array(
+			'event'		=>	'thumbnail_modified',
+			'image'		=>	$image,
+		));
+	}
+}

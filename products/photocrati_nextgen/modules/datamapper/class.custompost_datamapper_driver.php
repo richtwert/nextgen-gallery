@@ -477,6 +477,12 @@ class C_CustomPost_DataMapper_Driver extends C_DataMapper_Driver_Base
 		$this->implement('I_CustomPost_DataMapper');
 	}
 
+	function initialize($object_name)
+	{
+		if (strlen($object_name) > 20) throw new Exception("The custom post name can be no longer than 20 characters long");
+		parent::initialize($object_name);
+	}
+
 
 	/**
 	 * Gets the name of the table

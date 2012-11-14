@@ -31,6 +31,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// make use of it.
 		$this->get_registry()->load_module('photocrati-validation');
 
+		// The MVC framework is really a templating framework - not MVC.
+		$this->get_registry()->load_module('photocrati-mvc');
+
 		// The NextGEN Settings module provides uniform centralized management
 		// of settings for the plugin.
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
@@ -49,9 +52,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// This is Alex Rabe's version of NextGEN, which we built on top of.
 		$this->get_registry()->load_module('photocrati-nextgen-legacy');
-
-		// The MVC framework is really a templating framework - not MVC.
-		$this->get_registry()->load_module('photocrati-mvc');
 
 		// This provides a general AJAX handler for all other modules to extend
 		$this->get_registry()->load_module('photocrati-ajax');

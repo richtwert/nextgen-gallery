@@ -65,10 +65,12 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_enqueue_script('jquery-ui-sortable');
 
 		// Enqueue chosen, a library to make our drop-downs look pretty
-		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
-		wp_enqueue_script(
-			'chosen', $this->static_url('chosen.js'), array('jquery')
-		);
+//		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
+//		wp_enqueue_script(
+//			'chosen', $this->static_url('chosen.js'), array('jquery')
+//		);
+		wp_enqueue_style('select2', $this->static_url('select2.css'));
+		wp_enqueue_script('select2', $this->static_url('select2.js'));
 
 		// Ensure we have the AJAX module ready
 		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
@@ -171,34 +173,37 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$found_preview_pic = FALSE;
 
 		if ($this->object->_validate_request()) {
-            $dyn_thumbs =   $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-			$storage    = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+            $dyn_thumbs		= $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+			$storage		= $this->object->get_registry()->get_utility('I_Gallery_Storage');
+			$image_mapper	= $this->object->get_registry()->get_utility('I_Image_Mapper');
 
 			// Get the first entity from the displayed gallery. We will use this
 			// for a preview pic
 			$entity = array_pop($this->object->_displayed_gallery->get_entities(1, FALSE, FALSE, TRUE));
 			$image = FALSE;
 			if ($entity) {
+				// This is an album or gallery
+				if (isset($entity->previewpic)) {
+					$image = (int)$entity->previewpic;
+					if (($image = $image_mapper->find($image))) {
+							$found_preview_pic = TRUE;
+					}
+				}
 
 				// Is this an image
-				if (isset($entity->galleryid)) {
+				else if (isset($entity->galleryid)) {
 					$image = $entity;
-				}
-				elseif (isset($entity->previewpic)) {
-					$image = $entity->previewpic;
+					$found_preview_pic = TRUE;
 				}
 			}
 
 			// Were we able to find a preview pic? If so, then render it
-			if ($image) {
-				$found_preview_pic = TRUE;
-				$storage->render_image($image, $dyn_thumbs->get_size_name(array(
-                    'width'     =>  200,
-                    'height'    =>  200,
-                    'quality'   =>  90,
-					'type'		=>	'jpg'
-                ), TRUE));
-			}
+			$found_preview_pic = $storage->render_image($image, $dyn_thumbs->get_size_name(array(
+				'width'     =>  200,
+				'height'    =>  200,
+				'quality'   =>  90,
+				'type'		=>	'jpg'
+			), TRUE));
 		}
 
 		// Render invalid image if no preview pic is found
@@ -285,7 +290,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$frame_url = real_site_url("/wp-admin/admin.php?page={$page}&attach_to_post");
 		$frame_url = esc_url($frame_url);
 
-		return "<iframe class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
+		return "<iframe name='{$page}' frameBorder='0' class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
 	}
 
 	/**

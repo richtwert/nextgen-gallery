@@ -15,8 +15,21 @@ class E_EntityNotFoundException extends RuntimeException
  */
 class E_InvalidEntityException extends RuntimeException
 {
-	function __construct($message=FALSE, $code=0, $previous=NULL)
+	function __construct($message_or_previous=FALSE, $code=0, $previous=NULL)
 	{
+		// We don't know if we have been passed a message yet or not
+		$message = FALSE;
+
+		// Determine if the first parameter is a string or exception
+		if ($message_or_previous) {
+			if (is_string($message_or_previous))
+				$message = $message_or_previous;
+			else {
+				$preview = $message_or_previous;
+			}
+		}
+
+		// If no message was provided, create a default message
 		if (!$message) {
 			$message =  "Invalid data type used for entity. Please use stdClass
 				or a subclass of C_DataMapper_Model. Arrays will be supported in
@@ -330,7 +343,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {
-			throw new E_InvalidEntityException;
+			throw new E_InvalidEntityException($ex);
 		}
 
 		return $retval;
