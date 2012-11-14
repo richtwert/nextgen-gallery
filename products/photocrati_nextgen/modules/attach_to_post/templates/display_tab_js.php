@@ -1038,6 +1038,60 @@ jQuery(function($){
 		}
 	});
 
+	Ngg.DisplayTab.Views.Recent_imagesSource = Backbone.View.extend({
+		tagName: 'tbody',
+
+		initialize: function(){
+			this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
+			this.amount_limit	= Ngg.DisplayTab.instance.displayed_gallery.get('amount_limit');
+		},
+
+		render: function(){
+			var self = this;
+			var edit_field = $('<input/>').attr({
+				type: 'text',
+				value: this.amount_limit,
+				name: 'amount_limit'
+			});
+			
+			edit_field.change(function () {
+				self.displayed_gallery.set('amount_limit', $(this).val());
+			});
+			
+			this.$el.empty();
+			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="recent_images_column"></td></tr>');
+			this.$el.find('.recent_images_column').append(edit_field);
+			return this;
+		}
+	});
+
+	Ngg.DisplayTab.Views.Random_imagesSource = Backbone.View.extend({
+		tagName: 'tbody',
+
+		initialize: function(){
+			this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
+			this.amount_limit	= Ngg.DisplayTab.instance.displayed_gallery.get('amount_limit');
+		},
+
+		render: function(){
+			var self = this;
+			var edit_field = $('<input/>').attr({
+				type: 'text',
+				value: this.amount_limit,
+				name: 'amount_limit'
+			});
+			
+			edit_field.change(function () {
+				self.displayed_gallery.set('amount_limit', $(this).val());
+			});
+			
+			this.$el.empty();
+			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="random_images_column"></td></tr>');
+			this.$el.find('.random_images_column').append(edit_field);
+			return this;
+		}
+	});
+
 	Ngg.DisplayTab.Views.SaveButton = Backbone.View.extend({
 		el: '#save_displayed_gallery',
 

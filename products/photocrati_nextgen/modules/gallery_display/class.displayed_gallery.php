@@ -119,11 +119,19 @@ class Mixin_Gallery_Source_Queries extends Mixin
             case 'recent_images':
                 $mapper->order_by('imagedate', 'DESC');
                 $mapper = $this->object->_modify_mapper_for_exclusions($mapper);
+                $amount_limit = intval($this->object->amount_limit);
+				        if ($amount_limit > 0) {
+				        	$limit = $amount_limit;
+				        }
                 if ($this->object->container_ids)
                     $mapper->where(array("{$gallery_key} in (%s)", $this->object->container_ids));
                 break;
             case 'random':
             case 'random_images':
+                $amount_limit = intval($this->object->amount_limit);
+				        if ($amount_limit > 0) {
+				        	$limit = $amount_limit;
+				        }
                 $mapper = $this->object->_create_random_image_query(
                     $mapper, $image_key, $gallery_key, $settings, $limit, $offset, $id_only
                 );
