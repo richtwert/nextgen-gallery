@@ -7,7 +7,11 @@ class A_NextGen_Basic_Album extends Mixin
      */
     function initialize()
     {
-        if ($this->object->name == PHOTOCRATI_GALLERY_NEXTGEN_BASIC_ALBUM) {
+		$ngglegacy_albums = array(
+			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM,
+			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
+		);
+		if (in_array($this->object->name, $ngglegacy_albums)) {
             $this->object->add_pre_hook(
               'validation',
               'NextGEN Basic Album Validation',
