@@ -52,33 +52,38 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
      *
      * How to use:
      *
-     * 1. To retrieve images from gallery #1 and #3, but exclude
-     * images 4,6:
-     * [ngg_images gallery_ids="1,3" exclusions="4,6" display_type="photocrati-nextgen_pro_thumbnails"]
+     * To retrieve images from gallery 1 & 3, but exclude images 4 & 6:
+     * [ngg_images gallery_ids="1,3" exclusions="4,6" display_type="photocrati-nextgen_basic_thumbnails"]
      *
-     * 2. To retrieve images matching tags "landscapes" and "wedding shoots":
-     * [ngg_images tag_ids="landscapes,wedding shoots" display_type="photocrati-nextgen_pro_thumbnails"]
+     * To retrieve images 1 & 2 from gallery 1:
+     * [ngg_images gallery_ids="1" image_ids="1,2" display_type="photocrati-nextgen_basic_thumbnails"]
      *
-     * 3. To retrieve galleries from albums #1 & #2, but exclude gallery #1:
-     * [ngg_images album_ids="1,2" exclusions="1" display_type="photocrati-nextgen-basic-compact-album"]
+     * To retrieve images matching tags "landscapes" and "wedding shoots":
+     * [ngg_images tag_ids="landscapes,wedding shoots" display_type="photocrati-nextgen_basic_thumbnails"]
      *
-     * 4. To retrieve image #2, #3, and #5 - independent of what container is used
-     * [ngg_images image_ids="2,3,5" display_type="photocrati-nextgen_pro_thumbnails"]
+     * To retrieve galleries from albums 1 & #, but exclude sub-album 1:
+     * [ngg_images album_ids="1,2" exclusions="a1" display_type="photocrati-nextgen_basic_album"]
      *
-     * 5. To retrieve galleries #3 and #5, custom sorted, in album view
-     * [ngg_images source="albums" gallery_ids="3,5" display_type="photocrati-nextgen-basic-compact-album"]
+     * To retrieve galleries from albums 1 & 2, but exclude gallery 1:
+     * [ngg_images album_ids="1,2" exclusions="1" display_type="photocrati-nextgen_basic_album"]
      *
-     * 6. To retrieve recent images, sorted by alt/title text
-     * [ngg_images source="recent" order_by="alttext" display_type="photocrati-nextgen_pro_thumbnails"]
+     * To retrieve image 2, 3, and 5 - independent of what container is used
+     * [ngg_images image_ids="2,3,5" display_type="photocrati-nextgen_basic_thumbnails"]
      *
-     * 7. To retrieve random image
-     * [ngg_images source="random" display_type="photocrati-nextgen_pro_thumbnails"]
+     * To retrieve galleries 3 & 5, custom sorted, in album view
+     * [ngg_images source="albums" gallery_ids="3,5" display_type="photocrati-nextgen_basic_album"]
      *
-     * 8. To retrieve a single image
-     * [ngg_images image_id='8' display_type='photocrati-nextgen_pro_singlepic']
+     * To retrieve recent images, sorted by alt/title text
+     * [ngg_images source="recent" order_by="alttext" display_type="photocrati-nextgen_basic_thumbnails"]
      *
-     * 9. To retrieve a tag cloud
-     * [ngg_images tagcloud=yes display_type='photocrati-nextgen_pro_tagcloud']
+     * To retrieve random image
+     * [ngg_images source="random" display_type="photocrati-nextgen_basic_thumbnails"]
+     *
+     * To retrieve a single image
+     * [ngg_images image_ids='8' display_type='photocrati-nextgen_basic_singlepic']
+     *
+     * To retrieve a tag cloud
+     * [ngg_images tagcloud=yes display_type='photocrati-nextgen_basic_tagcloud']
      */
     function display_images($params, $inner_content=NULL)
     {
@@ -101,7 +106,6 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
             'order_by'			=>	$settings->galSort,
             'order_direction'	=>	$settings->galSortOrder,
             'image_ids'			=>	array(),
-            'image_id'          =>  NULL,
             'entity_ids'		=>	array(),
             'tagcloud'          => FALSE,
             'inner_content'     => $inner_content,
@@ -118,14 +122,17 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
 
         // We're generating a new displayed gallery
         else {
-
             // Perform some conversions...
 
             // Galleries?
-            if ($args['gallery_ids']) {
-                if ($args['source'] != 'albums' AND $args['source'] != 'album') {
-                    $args['source']					= 'galleries';
-                    $args['container_ids']		= $args['gallery_ids'];
+            if ($args['gallery_ids'])
+            {
+                if ($args['source'] != 'albums' AND $args['source'] != 'album')
+                {
+                    $args['source']        = 'galleries';
+                    $args['container_ids'] = $args['gallery_ids'];
+                    if ($args['image_ids'])
+                        $args['entity_ids'] = $args['image_ids'];
                 }
                 elseif ($args['source'] == 'albums') {
                     $args['entity_ids']	= $args['gallery_ids'];
@@ -135,28 +142,28 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
 
             // Albums ?
             elseif ($args['album_ids']) {
-                $args['source']					= 'albums';
-                $args['container_ids']		= $args['album_ids'];
+                $args['source'] = 'albums';
+                $args['container_ids'] = $args['album_ids'];
                 unset($args['albums_ids']);
             }
 
             // Tags ?
             elseif ($args['tag_ids']) {
-                $args['source']					= 'tags';
-                $args['container_ids']		= $args['tag_ids'];
+                $args['source'] = 'tags';
+                $args['container_ids'] = $args['tag_ids'];
                 unset($args['tag_ids']);
             }
 
             // Specific images selected
             elseif ($args['image_ids']) {
-                $args['source'] = 'galleries';
+                $args['source'] = 'all';
                 $args['entity_ids'] = $args['image_ids'];
                 unset($args['image_ids']);
             }
 
             // Tagcloud support
             elseif ($args['tagcloud']) {
-                $args['source'] = 'image';
+                $args['source'] = 'tagcloud';
             }
 
             // Convert strings to arrays

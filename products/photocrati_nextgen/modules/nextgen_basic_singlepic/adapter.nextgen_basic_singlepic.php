@@ -19,6 +19,5 @@ class Hook_NextGen_Basic_Singlepic_Validation extends Hook
 {
     function validation()
     {
-        $this->object->validates_numericality_of('image_id');
     }
 }

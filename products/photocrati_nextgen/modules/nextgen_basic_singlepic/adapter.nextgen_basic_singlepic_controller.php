@@ -21,12 +21,10 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 
         $display_settings = $displayed_gallery->display_settings;
 
-        $image = $imap->find($displayed_gallery->image_id);
+        $image = $imap->find(reset($displayed_gallery->entity_ids));
 
         if (!$image)
-        {
             return $this->object->render_partial("no_images_found", array(), $return);
-        }
 
         switch ($display_settings['float']) {
             case 'left':
@@ -72,10 +70,8 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         $size = 'full';
 				
         if ($dynthumbs != null)
-        {
             $size = $dynthumbs->get_size_name($params);
-        }
-				
+
         $thumbnail_url = $storage->get_image_url($image, $size);
 
         if (!empty($display_settings['template']))
