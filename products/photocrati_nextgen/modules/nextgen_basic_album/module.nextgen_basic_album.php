@@ -7,14 +7,15 @@
 }
  **/
 
-define('PHOTOCRATI_GALLERY_NEXTGEN_BASIC_ALBUM', 'photocrati-nextgen_basic_album');
+define('PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM', 'photocrati-nextgen_basic_compact_album');
+define('PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM', 'photocrati-nextgen_basic_extended_album');
 
 class M_NextGen_Basic_Album extends C_Base_Module
 {
     function define()
     {
         parent::define(
-            PHOTOCRATI_GALLERY_NEXTGEN_BASIC_ALBUM,
+            'photocrati-nextgen_basic_album',
             'NextGEN Basic Album',
             "Provides support for NextGEN's Basic Album",
             '0.1',

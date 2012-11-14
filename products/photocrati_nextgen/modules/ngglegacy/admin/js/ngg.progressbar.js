@@ -32,7 +32,7 @@
 					position: {
 						my:		'center',
 						at:		'center',
-						of:		window.parent
+						of:		this.find_parent(window)
 					}
             	});
 			}
@@ -40,6 +40,19 @@
             this.div = $('#' + s.id + '_dialog');
             s.init = true;
 		},
+
+		/**
+		* Finds the parent window for the current child window
+		*/
+	   find_parent: function(child){
+		   var retval = child;
+		   try {
+			   while (retval.document !== retval.parent.document) retval = retval.parent;
+		   }
+		   catch (Exception){
+		   }
+		   return retval;
+	   },
 
 		addMessage: function( message ) {
 			s = this.settings;
@@ -91,7 +104,6 @@
 	      			$('.nggform').submit();
 	    		});
 	    	} else {
-
                 window.setTimeout(function() {
                     $("#" + s.id + "_dialog" ).delay(4000).dialog("destroy");
                     $("#" + s.id + "_dialog").remove();
@@ -100,6 +112,20 @@
                     $('.nggform').delay(4000).submit();
                 }, 1000);
 	    	}
+
+			// This is a hack to make these windows work properly in the
+			// Attach to Post interface. I don't like this fix, but it's the
+			// best I could come up with at the time. :(
+			try {
+				var windows = this.find_parent(window).tinyMCE.activeEditor.windowManager.windows;
+				for (var index in windows) {
+					var $window = jQuery('#'+windows[index].id);
+					$window.height($window.height());
+				}
+			}
+			catch (Exception) {
+
+			}
 		}
 	};
 })(jQuery);
