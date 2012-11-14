@@ -50,6 +50,7 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 	{
 		// Valid sources
 		$this->object->validates_presence_of('source');
+        $this->object->validates_presence_of('returns');
 
 		// Valid display type?
 		$this->object->validates_presence_of('display_type');
@@ -86,10 +87,14 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 
 class Mixin_Gallery_Source_Queries extends Mixin
 {
-   /**
+    /**
      * Gets the images associated with the displayed gallery
-     * @param int $limit
-     * @param int $offset
+     *
+     * @param int $limit (optional)
+     * @param int $offset (optional)
+     * @param bool $id_only (optional)
+     * @param bool $skip_exclusions (optional)
+     * @return array $retval
      */
     function get_entities($limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
     {
@@ -283,13 +288,13 @@ class Mixin_Gallery_Source_Queries extends Mixin
     function _modify_mapper_for_exclusions($mapper)
     {
         $image_key = $mapper->get_primary_key_column();
-        if (empty($this->object->returns))
-            $this->object->returns = 'included';
 
         if (!empty($this->object->exclusions) && 'included' == $this->object->returns)
             $mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+
         if (!empty($this->object->entity_ids) && 'included' == $this->object->returns)
             $mapper->where(array("{$image_key} IN %s", $this->object->entity_ids));
+
         if (!empty($this->object->entity_ids) && 'excluded' == $this->object->returns)
             $mapper->where(array("{$image_key} NOT IN %s", $this->object->entity_ids));
 
@@ -309,9 +314,9 @@ class Mixin_Gallery_Source_Queries extends Mixin
      */
     function _create_image_query_for_galleries($mapper, $image_key, $gallery_key, $settings, $limit=FALSE, $offset=FALSE, $id_only=FALSE, $skip_exclusions=FALSE)
     {
-        // We can do that by specifying what gallery ids we
-        // want images from:
-        if ($this->object->container_ids && !$this->object->entity_ids) {
+        // We can do that by specifying what gallery ids we want images from:
+        if ($this->object->container_ids && !$this->object->entity_ids)
+        {
             $mapper->where(array("{$gallery_key} IN (%s)", $this->object->container_ids));
 
             // the return param demands we be able to switch; we must be able to return the normal list of included
@@ -322,6 +327,11 @@ class Mixin_Gallery_Source_Queries extends Mixin
                 $mapper->where(array("{$image_key} IN (%s)", $this->object->exclusions));
 
             // Apply sorting
+            $mapper->order_by($this->object->order_by, $this->object->order_direction);
+        }
+
+        elseif ($this->object->entity_ids && (!$this->object->container_ids OR $skip_exclusions)) {
+            $mapper = $this->object->_modify_mapper_for_exclusions($mapper);
             $mapper->order_by($this->object->order_by, $this->object->order_direction);
         }
 
@@ -512,14 +522,31 @@ class Mixin_Album_Source_Queries extends Mixin
             // adjust our entities lists to match our results
             $subalbum_ids = array();
             $gallery_ids  = array();
-            $entity_ids   = array();
+
+            // fill our above arrays
+            foreach ($subalbums as $tmp) { $subalbum_ids[] = $tmp->$album_key; }
+            foreach ($galleries as $tmp) { $gallery_ids[]  = $tmp->$gallery_key; }
+
+            // we must update entity_ids **while maintaining sorting order** - so remove from entity_ids any
+            // results we no longer need and then append new ones we may have found
+            foreach ($entity_ids as $key => $id) {
+                if (strpos($id, 'a') === 0)
+                {
+                    if (FALSE === array_search(ltrim($id, 'a'), $subalbum_ids))
+                        unset($entity_ids[$key]);
+                }
+                elseif (FALSE === array_search($id, $gallery_ids)) {
+                    unset($entity_ids[$key]);
+                }
+            }
+
             foreach ($subalbums as $tmp) {
-                $subalbum_ids[] = $tmp->$album_key;
-                $entity_ids[] = 'a' . $tmp->$album_key;
+                if (FALSE === array_search('a' . $tmp->$album_key, $entity_ids))
+                    $entity_ids[] = 'a' . $tmp->$album_key;
             }
             foreach ($galleries as $tmp) {
-                $gallery_ids[] = $tmp->$gallery_key;
-                $entity_ids[]  = $tmp->$gallery_key;
+                if (FALSE === array_search($tmp->$gallery_key, $entity_ids))
+                    $entity_ids[]  = $tmp->$gallery_key;
             }
 
             // Get image totals for galleries
