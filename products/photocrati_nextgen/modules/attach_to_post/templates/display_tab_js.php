@@ -230,7 +230,8 @@ jQuery(function($){
             display_type: null,
             display_settings: {},
             exclusions: [],
-            returns: 'included'
+            returns: 'included',
+            sortorder: []
         }
     });
 
@@ -582,6 +583,7 @@ jQuery(function($){
 			this.entities.on('change:sortorder', function(model){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
+                this.displayed_gallery.set('sortorder', this.entities.entity_ids());
 				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 
@@ -1124,7 +1126,6 @@ jQuery(function($){
 				action: 'save_displayed_gallery',
 				displayed_gallery: this.displayed_gallery.toJSON()
 			};
-			console.log(request);
 
 			var self = this;
 			$.post(photocrati_ajax_url, request, function(response){
@@ -1271,7 +1272,8 @@ jQuery(function($){
 			}, this);
 
 			// Synchronize changes made to entities with the displayed gallery
-			this.entities.on('reset add remove change:exclude', function(){
+			this.entities.on('reset add remove change:exclude', function() {
+                this.displayed_gallery.set('sortorder', this.entities.entity_ids());
 				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 

@@ -127,7 +127,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 
             $displayed_gallery->returns = 'both';
 			$response['count']	= $displayed_gallery->get_entity_count();
-			$response['entities'] = $displayed_gallery->get_entities($limit,$offset);
+			$response['entities'] = $displayed_gallery->get_entities($limit, $offset);
 
             $displayed_gallery->returns = 'included';
 			$storage	  = $this->object->get_registry()->get_utility('I_Gallery_Storage');

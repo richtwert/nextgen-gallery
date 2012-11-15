@@ -305,33 +305,46 @@ class Mixin_Gallery_Source_Queries extends Mixin
     }
 
     /**
-     * When we return all images from a specified gallery this will mark which images to exclude based on an inputed
-     * array. Feed an object's entity_ids to mark all other images as excluded or the object's exclusions to.
+     * Creates a select clause for image queries
      *
      * @param C_Image_Mapper $mapper
-     * @param array $set
-     * @param bool $exclude TRUE = Exclude items in set; otherwise exclude items not in set
-     * @param $id_only
-     * @param $image_key
+     * @param string $image_key
+     * @param bool $id_only
+     * @param array $exclusions (optional)
      * @return C_Image_Mapper
      */
-    function _modify_mapper_for_gallery_sets($mapper, $set, $exclude = TRUE, $id_only, $image_key)
+    function _create_select_for_image_queries($mapper, $image_key, $id_only, $exclusions = array())
     {
-        // mysql parameters determining which set to mark
-        if ($exclude)
+        if ($id_only)
         {
-            $one = 0;
-            $two = 1;
+            $select = $image_key;
         }
         else {
-            $one = 1;
-            $two = 0;
+            // this requires some query building so that we:
+            // 1. don't have more than one sortorder or exclude column
+            // 2. mark as excluded images not in the $exclusions array
+            $select  = "{$image_key}, `image_slug`, `post_id`, `galleryid`, `filename`, `description`, `alttext`";
+            $select .= ", `imagedate`, `meta_data`";
+
+            if (!empty($this->object->sortorder))
+            {
+                $set = implode(',', $this->object->sortorder);
+                $select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS `sortorder`";
+            }
+            else {
+                $select .= ', `sortorder`';
+            }
+
+            if (!empty($exclusions))
+            {
+                $set = implode(',', array_reverse($exclusions));
+                $select .= ", IF(FIND_IN_SET({$image_key}, '{$set}') = 0, @exclude := 0, @exclude := 1) AS `exclude`";
+            }
+            else {
+                $select .= ', `exclude`';
+            }
         }
 
-        $select = $id_only ? $image_key : '*';
-        $set = implode(',', array_reverse($this->object->exclusions));
-        $select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS `sortorder`";
-        $select .= ", IF(@row = 0, @exclude := {$one}, @exclude := {$two}) AS `exclude`";
         $mapper->select($select);
         return $mapper;
     }
@@ -352,10 +365,10 @@ class Mixin_Gallery_Source_Queries extends Mixin
         // We can do that by specifying what gallery ids we want images from:
         if ($this->object->container_ids && !$this->object->entity_ids)
         {
-            if ($this->object->exclusions && 'both' == $this->object->returns)
-                $mapper = $this->object->_modify_mapper_for_gallery_sets(
-                    $mapper, $this->object->exclusions, TRUE, $id_only, $image_key
-                );
+            $exclusions = array();
+            if (!empty($this->object->exclusions) && 'both' == $this->object->returns)
+                $exclusions = $this->object->exclusions;
+            $mapper = $this->object->_create_select_for_image_queries($mapper, $image_key, $id_only, $exclusions);
 
             $mapper->where(array("{$gallery_key} IN (%s)", $this->object->container_ids));
 
@@ -370,19 +383,19 @@ class Mixin_Gallery_Source_Queries extends Mixin
             // Apply sorting
             $mapper->order_by($this->object->order_by, $this->object->order_direction);
         }
-
         elseif ($this->object->entity_ids && (!$this->object->container_ids OR $skip_exclusions)) {
             $mapper = $this->object->_modify_mapper_for_exclusions($mapper);
             $mapper->order_by($this->object->order_by, $this->object->order_direction);
         }
-
         // Finally, a user can specify what galleries they're interested in, and select what images in particular
         // they want. Exclusions are then calculated rather than specified. NOTE: This is used in the Attach to Post
         // interface
         elseif ($this->object->container_ids && $this->object->entity_ids) {
-
-            $mapper = $this->object->_modify_mapper_for_gallery_sets(
-                $mapper, $this->object->entity_ids, FALSE, $id_only, $image_key
+            $mapper = $this->object->_create_select_for_image_queries(
+                $mapper,
+                $image_key,
+                $id_only,
+                $this->object->entity_ids
             );
             $mapper = $this->object->_modify_mapper_for_exclusions($mapper);
 

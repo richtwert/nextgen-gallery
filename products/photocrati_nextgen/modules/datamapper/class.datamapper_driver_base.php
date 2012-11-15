@@ -293,7 +293,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 		// If there's a single value, treat it as an array so that we
 		// can still iterate
-		if (!$values) $values = array($value);
+		if (empty($values)) $values = array($value);
 		foreach ($values as $index => $value) {
 			$value = preg_replace("/^(\()?'/", '', $value);
 			$value = preg_replace("/'(\))?$/", '', $value);
