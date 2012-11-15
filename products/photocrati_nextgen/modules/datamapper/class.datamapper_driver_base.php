@@ -279,12 +279,17 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$operator = strtolower($operator);
 			$value = trim($condition);
 		}
-
+		
 		// Values will automatically be quoted, so remove them
 		// If the value is part of an IN clause or BETWEEN clause and
 		// has multiple values, we attempt to split the values apart into an
 		// array and iterate over them individually
-		$values = preg_split("/'?\s?(,|AND)\s?'?/i", $value);
+		if ($operator == 'in') {
+			$values = preg_split("/'?\s?(,)\s?'?/i", $value);
+		}
+		elseif ($operator == 'between') {
+			$values = preg_split("/'?\s?(AND)\s?'?/i", $value);
+		}
 
 		// If there's a single value, treat it as an array so that we
 		// can still iterate

@@ -124,8 +124,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 			foreach ($params as $key => $value) $displayed_gallery->$key = $value;
 			$response['limit']	= $limit = $limit ? $limit : 0;
 			$response['offset'] = $offset = $offset ? $offset : 0;
+
+            $displayed_gallery->returns = 'both';
 			$response['count']	= $displayed_gallery->get_entity_count();
 			$response['entities'] = $displayed_gallery->get_entities($limit,$offset);
+
+            $displayed_gallery->returns = 'included';
 			$storage	  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
 			$settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
