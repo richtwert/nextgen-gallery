@@ -102,4 +102,28 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 			TRUE
 		);
 	}
+
+
+	function render_show_alternative_view_link_field($display_type, $template_overrides=array())
+	{
+		// Params for template
+		$template_params = array(
+			'display_type_name'			=>	$display_type->name,
+			'show_alt_view_link_label'	=>	_('Show alternative view link?'),
+			'tooltip'					=>	_('When enabled, show a link for the user to activate an alternative view'),
+			'show_alternative_view_link'=>	$display_type->settings['show_alternative_view_link']
+		);
+
+		// Apply overrides
+		$template_params = $this->array_merge_assoc(
+			$template_params, $template_overrides,TRUE
+		);
+
+		// Render the template
+		return $this->render_partial(
+			'show_altview_link',
+			$template_params,
+			TRUE
+		);
+	}
 }
