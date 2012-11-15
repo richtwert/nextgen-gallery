@@ -28,6 +28,7 @@ class A_NextGen_Basic_ImageBrowser_Activation extends Mixin
 		$display_type->title				 = "NextGEN Basic ImageBrowser";
 		$display_type->entity_types			 = array('image');
 		$display_type->preview_image_relpath = $this->find_static_file('preview.gif', TRUE);
+    $display_type->default_source       = 'galleries';
 		$mapper->save($display_type);
 		unset($mapper);
 	}

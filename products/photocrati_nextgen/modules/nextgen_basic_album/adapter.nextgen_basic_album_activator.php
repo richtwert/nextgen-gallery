@@ -23,6 +23,7 @@ class A_NextGen_Basic_Album_Activator extends Mixin
         $display_type->title                = 'NextGEN Basic Compact Album';
         $display_type->preview_image_relpath= $this->find_static_file('compact_preview.gif', TRUE);
         $display_type->entity_types         = array('album', 'gallery');
+        $display_type->default_source       = 'albums';
         $mapper->save($display_type);
 
 		// Install NextGen Basic Extended Album
@@ -32,6 +33,7 @@ class A_NextGen_Basic_Album_Activator extends Mixin
         $display_type->title                = 'NextGEN Basic Extended Album';
         $display_type->preview_image_relpath= $this->find_static_file('extended_preview.gif', TRUE);
         $display_type->entity_types         = array('album', 'gallery');
+        $display_type->default_source       = 'albums';
         $mapper->save($display_type);
     }
 }

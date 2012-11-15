@@ -48,8 +48,8 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	function _get_display_tabs()
 	{
 		return array(
-			$this->object->_render_display_source_tab(),
 			$this->object->_render_display_types_tab(),
+			$this->object->_render_display_source_tab(),
 			$this->object->_render_display_settings_tab(),
 			$this->object->_render_preview_tab()
 		);
