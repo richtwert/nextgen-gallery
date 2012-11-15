@@ -151,11 +151,11 @@ jQuery(function($){
                 this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&'));
                 this.$el.attr({
                     value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
-                    selected: self.model.get('selected') == true,
+                    selected: self.model.get('selected') == true
                 });
                 return this;
             }
-        }),
+        })
     });
 
 
@@ -176,7 +176,7 @@ jQuery(function($){
 
 			// Configure select2 options
 			this.select2_opts = {
-				placeholder: this.options.placeholder,
+				placeholder: this.options.placeholder
 			};
 
 			// Create the select2 drop-down
@@ -229,7 +229,8 @@ jQuery(function($){
             entity_ids: [],
             display_type: null,
             display_settings: {},
-            exclusions: []
+            exclusions: [],
+            returns: 'included'
         }
     });
 
@@ -401,7 +402,15 @@ jQuery(function($){
 			return _.compact(this.map(function(item){
 				if (item.is_included()) return item.entity_id();
 			}));
-		}
+		},
+
+        excluded_ids: function() {
+            return _.compact(this.map(function(item) {
+                if (!item.is_included()) {
+                    return item.entity_id();
+                }
+            }));
+        }
 	});
 
 
@@ -573,7 +582,7 @@ jQuery(function($){
 			this.entities.on('change:sortorder', function(model){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
-				this.displayed_gallery.set('entity_ids', this.entities.included_ids());
+				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 
 			// Reset when the source changes
@@ -1263,7 +1272,7 @@ jQuery(function($){
 
 			// Synchronize changes made to entities with the displayed gallery
 			this.entities.on('reset add remove change:exclude', function(){
-				this.displayed_gallery.set('entity_ids', this.entities.included_ids());
+				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 
 			// Monitor events in other tabs and respond as appropriate
