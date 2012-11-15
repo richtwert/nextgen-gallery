@@ -797,7 +797,9 @@ the specific language governing permissions and limitations under the Apache Lic
                         opts.query = local(opts.data);
                     } else if ("tags" in opts) {
                         opts.query = tags(opts.tags);
-                        opts.createSearchChoice = function (term) { return {id: term, text: term}; };
+                        if (opts.createSearchChoice === undefined) {
+                            opts.createSearchChoice = function (term) { return {id: term, text: term}; };
+                        }
                         opts.initSelection = function (element, callback) {
                             var data = [];
                             $(splitVal(element.val(), opts.separator)).each(function () {
@@ -886,11 +888,14 @@ the specific language governing permissions and limitations under the Apache Lic
                 height = this.container.outerHeight(false),
                 width = this.container.outerWidth(false),
                 dropHeight = this.dropdown.outerHeight(false),
+	        viewPortRight = $(window).scrollLeft() + document.documentElement.clientWidth,
                 viewportBottom = $(window).scrollTop() + document.documentElement.clientHeight,
                 dropTop = offset.top + height,
                 dropLeft = offset.left,
                 enoughRoomBelow = dropTop + dropHeight <= viewportBottom,
                 enoughRoomAbove = (offset.top - dropHeight) >= this.body().scrollTop(),
+	        dropWidth = this.dropdown.outerWidth(false),
+	        enoughRoomOnRight = dropLeft + dropWidth <= viewPortRight,
                 aboveNow = this.dropdown.hasClass("select2-drop-above"),
                 bodyOffset,
                 above,
@@ -916,6 +921,10 @@ the specific language governing permissions and limitations under the Apache Lic
                 above = false;
                 if (!enoughRoomBelow && enoughRoomAbove) above = true;
             }
+
+	    if (!enoughRoomOnRight) {
+		   dropLeft = offset.left + width - dropWidth;
+	    }
 
             if (above) {
                 dropTop = offset.top - dropHeight;
@@ -1623,7 +1632,7 @@ the specific language governing permissions and limitations under the Apache Lic
             if (opts.element.get(0).tagName.toLowerCase() === "select") {
                 // install the selection initializer
                 opts.initSelection = function (element, callback) {
-                    var selected = element.find(":selected");
+                    var selected = element.find("option[selected]");
                     // a single select box always has a value, no need to null check 'selected'
                     if ($.isFunction(callback))
                         callback({id: selected.attr("value"), text: selected.text(), element:selected});
@@ -1724,7 +1733,7 @@ the specific language governing permissions and limitations under the Apache Lic
             if (this.select) {
                 this.select
                     .val(val)
-                    .find(":selected").each2(function (i, elm) {
+                    .find("option[selected]").each2(function (i, elm) {
                         data = {id: elm.attr("value"), text: elm.text()};
                         return false;
                     });
@@ -1803,7 +1812,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 opts.initSelection = function (element,callback) {
 
                     var data = [];
-                    element.find(":selected").each2(function (i, elm) {
+                    element.find("option[selected]").each2(function (i, elm) {
                         data.push({id: elm.attr("value"), text: elm.text(), element: elm});
                     });
 
@@ -2077,14 +2086,14 @@ the specific language governing permissions and limitations under the Apache Lic
                     "    <a href='#' onclick='return false;' class='select2-search-choice-close' tabindex='-1'></a>" +
                     "</li>"),
                 disabledItem = $(
-                    "<li class='select2-search-choice select2-locked'>" + 
+                    "<li class='select2-search-choice select2-locked'>" +
                     "<div></div>" +
                     "</li>");
             var choice = enableChoice ? enabledItem : disabledItem,
                 id = this.id(data),
                 val = this.getVal(),
                 formatted;
-            
+
             formatted=this.opts.formatSelection(data, choice.find("div"));
             if (formatted != undefined) {
                 choice.find("div").replaceWith("<div>"+this.opts.escapeMarkup(formatted)+"</div>");
@@ -2249,7 +2258,7 @@ the specific language governing permissions and limitations under the Apache Lic
             this.setVal(val);
 
             if (this.select) {
-                this.select.find(":selected").each(function () {
+                this.select.find("option[selected]").each(function () {
                     data.push({id: $(this).attr("value"), text: $(this).text()});
                 });
                 this.updateSelection(data);
