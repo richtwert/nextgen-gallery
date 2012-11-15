@@ -61,10 +61,12 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 		);
 
 		// Provides alternative views for this display type
-		$this->get_registry()->add_adapter(
-			'I_Display_Type_Controller',
-			'A_NextGen_Basic_Slideshow_Alternative_Views'
-		);
+		// TODO: This needs to be moved to something more global in nature:
+		// https://www.wrike.com/open.htm?id=8219830
+//		$this->get_registry()->add_adapter(
+//			'I_Display_Type_Controller',
+//			'A_NextGen_Basic_Slideshow_Alternative_Views'
+//		);
 	}
 
 

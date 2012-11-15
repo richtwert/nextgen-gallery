@@ -58,7 +58,8 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 			'display_type_name'			=>	$display_type->name,
 			'show_alt_view_link_label'	=>	_('Alternative view link'),
 			'tooltip'					=>	_('Show a link that allows end-users to change how a gallery is displayed'),
-			'alternative_view'=>	$display_type->settings['alternative_view']
+			'alternative_view'			=>	$display_type->settings['alternative_view'],
+			'altviews'					=>	$this->object->_get_alternative_views()
 		);
 
 		// Apply overrides
@@ -80,7 +81,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 	 * @param type $template_overrides
 	 * @return type
 	 */
-	function _render_alt_view_link_text_field($display_type, $template_overrides=array()){
+	function _render_alternative_view_link_text_field($display_type, $template_overrides=array()){
 		// Params for template
 		$template_params = array(
 			'display_type_name'				=>	$display_type->name,

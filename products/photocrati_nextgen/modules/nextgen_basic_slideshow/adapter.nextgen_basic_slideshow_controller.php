@@ -407,12 +407,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_gallery_dimensions',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',
-
-			'alternative_view',
-			'alternative_view_link_text',
-			'show_return_link',
-			'return_link_text',
-
 			'nextgen_basic_slideshow_flash_enabled',
 			'nextgen_basic_slideshow_flash_path',
             'nextgen_basic_slideshow_flash_background_music',
@@ -425,8 +419,12 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_flash_watermark_logo',
 			'nextgen_basic_slideshow_flash_slow_zoom',
             'nextgen_basic_slideshow_flash_xhtml_validation',
-
-            'nextgen_basic_slideshow_flash_colors_wrapper'
+            'nextgen_basic_slideshow_flash_colors_wrapper',
+			'alternative_view',
+			'show_return_link',
+			'alternative_view_link_text',
+			'return_link_text',
+			'nextgen_basic_templates_template',
 		);
 	}
 }

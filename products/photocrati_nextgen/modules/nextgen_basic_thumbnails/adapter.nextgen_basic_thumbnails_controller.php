@@ -326,8 +326,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_thumbnails_hidden',
 			'alternative_view',
-			'alternative_view_link_text',
 			'show_return_link',
+			'alternative_view_link_text',
 			'return_link_text',
             'nextgen_basic_templates_template',
 		);
