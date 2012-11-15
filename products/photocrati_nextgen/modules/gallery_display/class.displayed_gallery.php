@@ -298,6 +298,41 @@ class Mixin_Gallery_Source_Queries extends Mixin
         if (!empty($this->object->entity_ids) && 'excluded' == $this->object->returns)
             $mapper->where(array("{$image_key} NOT IN %s", $this->object->entity_ids));
 
+        if (!empty($this->object->exclusions) && 'excluded' == $this->object->returns)
+            $mapper->where(array("{$image_key} IN %s", $this->object->exclusions));
+
+        return $mapper;
+    }
+
+    /**
+     * When we return all images from a specified gallery this will mark which images to exclude based on an inputed
+     * array. Feed an object's entity_ids to mark all other images as excluded or the object's exclusions to.
+     *
+     * @param C_Image_Mapper $mapper
+     * @param array $set
+     * @param bool $exclude TRUE = Exclude items in set; otherwise exclude items not in set
+     * @param $id_only
+     * @param $image_key
+     * @return C_Image_Mapper
+     */
+    function _modify_mapper_for_gallery_sets($mapper, $set, $exclude = TRUE, $id_only, $image_key)
+    {
+        // mysql parameters determining which set to mark
+        if ($exclude)
+        {
+            $one = 0;
+            $two = 1;
+        }
+        else {
+            $one = 1;
+            $two = 0;
+        }
+
+        $select = $id_only ? $image_key : '*';
+        $set = implode(',', array_reverse($this->object->exclusions));
+        $select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS `sortorder`";
+        $select .= ", IF(@row = 0, @exclude := {$one}, @exclude := {$two}) AS `exclude`";
+        $mapper->select($select);
         return $mapper;
     }
 
@@ -317,12 +352,18 @@ class Mixin_Gallery_Source_Queries extends Mixin
         // We can do that by specifying what gallery ids we want images from:
         if ($this->object->container_ids && !$this->object->entity_ids)
         {
+            if ($this->object->exclusions && 'both' == $this->object->returns)
+                $mapper = $this->object->_modify_mapper_for_gallery_sets(
+                    $mapper, $this->object->exclusions, TRUE, $id_only, $image_key
+                );
+
             $mapper->where(array("{$gallery_key} IN (%s)", $this->object->container_ids));
 
             // the return param demands we be able to switch; we must be able to return the normal list of included
             // entities but also be able to return only the items left out
             if ($this->object->exclusions && 'included' == $this->object->returns)
                 $mapper->where(array("{$image_key} NOT IN (%s)", $this->object->exclusions));
+
             if ($this->object->exclusions && 'excluded' == $this->object->returns)
                 $mapper->where(array("{$image_key} IN (%s)", $this->object->exclusions));
 
@@ -340,15 +381,9 @@ class Mixin_Gallery_Source_Queries extends Mixin
         // interface
         elseif ($this->object->container_ids && $this->object->entity_ids) {
 
-            // We're going to return images from all of the galleries
-            // specified, but mark which images will be excluded. To do
-            // so, we have to create a dynamic column
-            $select = $id_only ? $image_key : '*';
-            $set = implode(',', array_reverse($this->object->entity_ids));
-            $select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS `sortorder`";
-            $select .= ", IF(@row = 0, @exclude := 1, @exclude := 0) AS `exclude`";
-            $mapper->select($select);
-
+            $mapper = $this->object->_modify_mapper_for_gallery_sets(
+                $mapper, $this->object->entity_ids, FALSE, $id_only, $image_key
+            );
             $mapper = $this->object->_modify_mapper_for_exclusions($mapper);
 
             // Limit by specified galleries
