@@ -49,7 +49,8 @@
             var click_timer;
 
             editor.onMouseDown.addToTop(function(editor, e) {
-                if (e.target.tagName == 'IMG' && e.target.className == 'ngg_displayed_gallery') {
+                if (e.target.tagName == 'IMG'
+                &&  e.target.getAttribute('class').indexOf('ngg_displayed_gallery') != -1) {
                     click_timer = setTimeout(function() {
                         drag_in_progress = true;
                     }, 250);
@@ -57,7 +58,9 @@
             });
 
             editor.onMouseUp.addToTop(function(editor, e) {
-				if (!drag_in_progress && e.target.tagName == 'IMG' && e.target.className == 'ngg_displayed_gallery') {
+				if (!drag_in_progress
+                &&  e.target.tagName == 'IMG'
+                &&  e.target.getAttribute('class').indexOf('ngg_displayed_gallery') != -1) {
 					editor.dom.events.cancel(e);
 					editor.dom.events.stop(e);
 					var id = e.target.src.match(/\d+$/);
