@@ -78,9 +78,8 @@ class Mixin_Display_Type_Mapper extends Mixin
 	function set_defaults($entity)
 	{
 		if (!isset($entity->settings)) $entity->settings = array();
-		echo "Setting alternative view for display type<br/>";
-		$this->_set_default_value($entity, 'settings', 'alternative_view', 0);
-		$this->_set_default_value($entity, 'settings', 'show_return_link', 0);
+		$this->_set_default_value($entity, 'settings', 'alternative_view', '');
+		$this->_set_default_value($entity, 'settings', 'show_return_link', '');
 		$this->_set_default_value($entity, 'settings', 'alternative_view_link_text', '');
 		$this->_set_default_value($entity, 'settings', 'return_link_text', '');
 		$this->_set_default_value($entity, 'preview_image_relpath', '');

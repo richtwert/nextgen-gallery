@@ -87,7 +87,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 			'display_type_name'				=>	$display_type->name,
 			'alt_view_link_text_label'		=>	_('Alternative view link text'),
 			'tooltip'						=>	_('The text of the link used to display the alternative view'),
-			'alternativew_view_link_text'	=>	$display_type->settings['alternative_view_link_text']
+			'alternative_view_link_text'	=>	$display_type->settings['alternative_view_link_text']
 		);
 
 		// Apply overrides

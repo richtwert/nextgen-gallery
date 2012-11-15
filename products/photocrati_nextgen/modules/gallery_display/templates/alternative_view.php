@@ -6,9 +6,9 @@
     </td>
     <td>
 		<select name='alternative_view'>
-			<option value="0" <?php echo checked(0, $alternative_view) ?>>None</option>
+			<option value="0" <?php echo selected(0, $alternative_view) ?>>None</option>
 			<?php foreach ($altviews as $altview_name => $altview_properties): ?>
-			<option value="<?php echo esc_attr($altview_name)?>" <?php echo checked($altview_name, $alternative_view)?>>
+			<option value="<?php echo esc_attr($altview_name)?>" <?php echo selected($altview_name, $alternative_view)?>>
 				<?php echo_h($altview_properties['title'])?>
 			</option>
 			<?php endforeach ?>
