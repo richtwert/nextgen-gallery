@@ -12,6 +12,7 @@ class C_Display_Type_Controller extends C_MVC_Controller
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Display_Type_Controller');
+		$this->add_mixin('Mixin_Display_Type_Controller_Fields');
 		$this->implement('I_Display_Type_Controller');
 	}
 
@@ -178,16 +179,6 @@ class Mixin_Display_Type_Controller extends Mixin
 		), $return);
 	}
 
-
-	/**
-	 * Displays the field used for alternative views
-	 */
-	function _render_alternative_view_field()
-	{
-		// TODO: Need to wrap up once Benjamin is finished interface adjustments
-	}
-
-
 	/**
 	 * Returns the name of the fields to
 	 */
@@ -302,6 +293,8 @@ class Mixin_Display_Type_Controller extends Mixin
 			$retval = $this->_render_alternative_view($displayed_gallery, $show, $return);
 		}
 
+		if (!$return) echo $retval;
+
         return $retval;
     }
 
@@ -359,7 +352,8 @@ class Mixin_Display_Type_Controller extends Mixin
 		foreach ($mapper->find_all() as $display_type) {
 			$retval[$display_type->name] = array(
 				'type'	=>	'display_type',
-				'name'	=>	$display_type->name
+				'name'	=>	$display_type->name,
+				'title'	=>	$display_type->title
 			);
 		}
 
@@ -485,6 +479,4 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		return $retval;
 	}
-
-
 }

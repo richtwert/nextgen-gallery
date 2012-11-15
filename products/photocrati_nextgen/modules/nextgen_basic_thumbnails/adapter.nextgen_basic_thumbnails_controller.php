@@ -73,25 +73,25 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $gallery_id = $displayed_gallery->to_transient();
 
 			$thumbnail_size_name = 'thumbnail';
-			
+
 			if ($display_settings['override_thumbnail_settings']) {
         $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-        
+
         if ($dynthumbs != null)
         {
         	$dyn_params = array(
         		'width' => $display_settings['thumbnail_width'],
         		'height' => $display_settings['thumbnail_height'],
         	);
-        	
+
         	if ($display_settings['thumbnail_crop']) {
         		$dyn_params['crop'] = true;
         	}
-        	
+
         	if ($display_settings['thumbnail_watermark']) {
         		$dyn_params['watermark'] = true;
         	}
-        	
+
           $thumbnail_size_name = $dynthumbs->get_size_name($dyn_params);
         }
 			}
@@ -186,15 +186,15 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'display_type_name' => $display_type->name,
                 'override_thumbnail_settings_label' => _('Override Thumbnail Settings'),
                 'override_thumbnail_settings' => $display_type->settings['override_thumbnail_settings'],
-								'thumbnail_dimensions_label'=>	_('Thumbnail dimensions'),
-								'thumbnail_width'		=>	$display_type->settings['thumbnail_width'],
-								'thumbnail_height'		=>	$display_type->settings['thumbnail_height'],
-								'thumbnail_quality_label'=>	_('Thumbnail Quality'),
-								'thumbnail_quality'=>	$display_type->settings['thumbnail_quality'],
-								'thumbnail_crop_label'=>	_('Thumbnail Crop'),
-								'thumbnail_crop'=>	$display_type->settings['thumbnail_crop'],
-								'thumbnail_watermark_label'=>	_('Thumbnail Watermark'),
-								'thumbnail_watermark'=>	$display_type->settings['thumbnail_watermark'],
+				'thumbnail_dimensions_label'=>	_('Thumbnail dimensions'),
+				'thumbnail_width'		=>	$display_type->settings['thumbnail_width'],
+				'thumbnail_height'		=>	$display_type->settings['thumbnail_height'],
+				'thumbnail_quality_label'=>	_('Thumbnail Quality'),
+				'thumbnail_quality'=>	$display_type->settings['thumbnail_quality'],
+				'thumbnail_crop_label'=>	_('Thumbnail Crop'),
+				'thumbnail_crop'=>	$display_type->settings['thumbnail_crop'],
+				'thumbnail_watermark_label'=>	_('Thumbnail Watermark'),
+				'thumbnail_watermark'=>	$display_type->settings['thumbnail_watermark'],
             ),
             TRUE
         );
@@ -239,25 +239,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
     }
 
     /**
-     * Renders the slideshow_link_text settings field
-     *
-     * @param C_Display_Type $display_type
-     * @return string
-     */
-    function _render_nextgen_basic_thumbnails_slideshow_link_text_field($display_type)
-    {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_slideshow_link_text',
-            array(
-                'display_type_name' => $display_type->name,
-                'slideshow_link_text_label' => _('Slideshow link text'),
-                'alternative_view_link_text' => $display_type->settings['alternative_view_link_text'],
-            ),
-            TRUE
-        );
-    }
-
-    /**
      * Renders the piclens_link_text settings field
      *
      * @param C_Display_Type $display_type
@@ -271,25 +252,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 'display_type_name' => $display_type->name,
                 'piclens_link_text_label' => _('Piclens link text'),
                 'piclens_link_text' => $display_type->settings['piclens_link_text']
-            ),
-            TRUE
-        );
-    }
-
-    /**
-     * Renders the show_slideshow_link settings field
-     *
-     * @param C_Display_Type $display_type
-     * @return string
-     */
-    function _render_nextgen_basic_thumbnails_show_slideshow_link_field($display_type)
-    {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_show_slideshow_link',
-            array(
-                'display_type_name' => $display_type->name,
-                'show_slideshow_link_label' => _('Show slideshow link'),
-                'show_alternative_view_link' => $display_type->settings['show_alternative_view_link']
             ),
             TRUE
         );
@@ -313,49 +275,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             TRUE
         );
     }
-
-	/**
-	 * Renders the "Show return Link" settings field
-	 * @param C_Display_Type $display_type
-	 * @return string
-	 */
-	function _render_nextgen_basic_thumbnails_return_link_text_field($display_type)
-	{
-		return $this->render_partial(
-			'nextgen_basic_thumbnails_settings_return_link_text',
-			array(
-				'display_type_name'			=>	$display_type->name,
-				'return_link_text_label'	=>	_('Return link text'),
-				'tooltip'					=>	_('The text used for the return
-												link when viewing as Slideshow'),
-				'return_link_text'			=>	$display_type->settings['return_link_text']
-			),
-			TRUE
-		);
-	}
-
-
-	/**
-	 * Renders the "Return link text" settings field
-	 * @param type $display_type
-	 * @return string
-	 */
-	function _render_nextgen_basic_thumbnail_show_return_link_field($display_type)
-	{
-		return $this->render_partial(
-			'nextgen_basic_thumbnails_settings_show_return_link',
-			array(
-				'display_type_name'			=>	$display_type->name,
-				'show_return_link_label'	=>	_('Show return link'),
-				'tooltip'					=>	_('When viewing as a Slideshow,
-												   do you want a return link to
-												   display Thumbnails?'),
-				'show_return_link'			=>	$display_type->settings['show_return_link']
-			),
-			TRUE
-		);
-	}
-
 
     /**
      * Renders the show_piclens_link settings field
@@ -402,14 +321,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 			'nextgen_basic_thumbnails_thumbnail_settings',
             'nextgen_basic_thumbnails_images_per_page',
             'nextgen_basic_thumbnails_number_of_columns',
-            'nextgen_basic_thumbnails_slideshow_link_text',
-			'nextgen_basic_thumbnails_return_link_text',
             'nextgen_basic_thumbnails_piclens_link_text',
-            'nextgen_basic_thumbnails_show_slideshow_link',
-			'nextgen_basic_thumbnail_show_return_link',
             'nextgen_basic_thumbnails_show_piclens_link',
 			'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_thumbnails_hidden',
+			'alternative_view',
+			'alternative_view_link_text',
+			'show_return_link',
+			'return_link_text',
             'nextgen_basic_templates_template',
 		);
 	}

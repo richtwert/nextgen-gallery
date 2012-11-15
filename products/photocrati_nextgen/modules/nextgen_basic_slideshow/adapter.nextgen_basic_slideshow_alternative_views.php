@@ -21,17 +21,14 @@ class Hook_NextGen_Basic_Slideshow_Alternative_Views extends Hook
 			$this->method_called, ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
 		);
 
-		// Add our custom views
-		if (is_array($views)) {
-			$view_info = array(
-				'type'	=>	'display_type',
-				'name'	=>	'photocrati-nextgen_basic_slideshow'
-			);
-			$views['slide']	= $views['slideshow'] = $view_info;
-			$this->object->set_method_property(
-				$this->method_called, ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE, $views
-			);
+		if (isset($views['photocrati-nextgen_basic_slideshow'])) {
+			$view_info = $view['photocrati-nextgen_basic_slideshow'];
+			$views['slide'] = $views['slideshow'] = $view_info;
 		}
+
+		$this->object->set_method_property(
+			$this->method_called, ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE, $views
+		);
 
 		return $views;
 	}
