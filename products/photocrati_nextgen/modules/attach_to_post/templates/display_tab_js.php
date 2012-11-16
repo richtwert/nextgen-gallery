@@ -618,6 +618,10 @@ jQuery(function($){
 			this.render();
 		},
 
+		events: {
+			opened: 'entities_reset'
+		},
+
 		entities_reset: function(e){
 			this.entity_list.empty().append('<li class="clear"/>');
 			this.fetch_entities();
@@ -1452,7 +1456,6 @@ jQuery(function($){
         // Updates the selected container_ids for the displayed gallery
         update_selected_containers: function(collection){
 			this.displayed_gallery.set('container_ids', this[collection].selected_ids());
-			this.entities.reset();
         },
 
         render: function(){
