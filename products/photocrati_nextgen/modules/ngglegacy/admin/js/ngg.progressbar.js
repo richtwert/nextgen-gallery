@@ -94,37 +94,54 @@
 			$("#" + s.id + " span").html( '100%' );
 			// in the case we add a note , we should wait for a click
 			var div = this.div;
+			var progressBar = this;
 			if (s.wait) {
                 $("#" + s.id).delay(1000).hide("slow");
 				div.click(function () {
-				    $("#" + s.id + "_dialog").dialog("destroy");
-                    $("#" + s.id + "_dialog").remove();
-                    // In the casee it's the manage page, force a submit
-					$('.nggform').prepend("<input type=\"hidden\" name=\"ajax_callback\" value=\"0\">");
-	      			$('.nggform').submit();
+					progressBar.remove_dialog(false, 0);
 	    		});
-	    	} else {
+	    	}
+			else {
                 window.setTimeout(function() {
-                    $("#" + s.id + "_dialog" ).delay(4000).dialog("destroy");
-                    $("#" + s.id + "_dialog").remove();
-    				// In the casee it's the manage page, force a submit
-                    $('.nggform').prepend("<input type=\"hidden\" name=\"ajax_callback\" value=\"1\">");
-                    $('.nggform').delay(4000).submit();
+					progressBar.remove_dialog(true, 1);
                 }, 1000);
 	    	}
+		},
+
+		remove_dialog: function(delay, value){
+			// Destroy the dialog
+			if (delay)
+				$("#" + s.id + "_dialog" ).delay(4000).dialog("destroy");
+			else
+				$("#" + s.id + "_dialog").dialog("destroy");
+
+			// Remove the dialog element
+			$("#" + s.id + "_dialog").remove();
+
+			// In the case it's the manage page, force a submit
+			$('.nggform').prepend("<input type=\"hidden\" name=\"ajax_callback\" value=\""+value+"\">");
+			if (delay)
+				$('.nggform').delay(4000).submit();
+			else
+				$('.nggform').submit();
 
 			// This is a hack to make these windows work properly in the
 			// Attach to Post interface. I don't like this fix, but it's the
 			// best I could come up with at the time. :(
 			try {
-				var windows = this.find_parent(window).tinyMCE.activeEditor.windowManager.windows;
+				var parent_window = nggProgressBar.find_parent(window);
+				var $parent_document = jQuery(parent_window.document);
+				var windows = parent_window.tinyMCE.activeEditor.windowManager.windows;
 				for (var index in windows) {
-					var $window = jQuery('#'+windows[index].id);
-					$window.height($window.height());
+					var $window = $parent_document.find('#'+windows[index].id);
+					var height = $window.height();
+					$window.height(0);
+					setTimeout(function(){
+						$window.height(height);
+					}, 0);
 				}
 			}
 			catch (Exception) {
-
 			}
 		}
 	};
