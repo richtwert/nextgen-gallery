@@ -166,6 +166,7 @@ jQuery(function($){
 			this.collection = this.options.collection;
 			if (!this.options.multiple) this.options.include_blank = true;
 			this.select_tag = new Ngg.Views.SelectTag(this.options);
+			this.collection.on('change', this.render, this);
 		},
 
 		render: function(){
@@ -496,29 +497,29 @@ jQuery(function($){
 					item.set('selected', false);
 				}
 			});
-			
+
 			if (selected_type) {
 				var selected_source = this.sources.selected();
 				if (selected_source.length <= 0 || !selected_type.is_compatible_with_source(selected_source.pop())) {
 					var default_source = selected_type.get('default_source');
-					
+					debugger;
 					if (default_source) {
 						var sources = this.sources;
 						var select_source = null;
-						
+
 						this.sources.each(function (source) {
 							if (source.get('name') == default_source) {
 								select_source = source.id;
 							}
 						});
-						
+
 						if (select_source) {
 							this.sources.select(select_source);
 						}
 					}
 				}
 			}
-			
+
 			$('.display_settings_form').each(function(){
 				$this = $(this);
 				if ($this.attr('rel') == value) $this.removeClass('hidden');
@@ -1091,11 +1092,11 @@ jQuery(function($){
 				value: this.amount_limit,
 				name: 'amount_limit'
 			});
-			
+
 			edit_field.change(function () {
 				self.displayed_gallery.set('amount_limit', $(this).val());
 			});
-			
+
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="recent_images_column"></td></tr>');
 			this.$el.find('.recent_images_column').append(edit_field);
@@ -1118,11 +1119,11 @@ jQuery(function($){
 				value: this.amount_limit,
 				name: 'amount_limit'
 			});
-			
+
 			edit_field.change(function () {
 				self.displayed_gallery.set('amount_limit', $(this).val());
 			});
-			
+
 			this.$el.empty();
 			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="random_images_column"></td></tr>');
 			this.$el.find('.random_images_column').append(edit_field);
