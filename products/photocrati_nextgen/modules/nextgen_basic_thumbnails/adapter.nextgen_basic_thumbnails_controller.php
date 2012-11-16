@@ -83,6 +83,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
         		'width' => $display_settings['thumbnail_width'],
         		'height' => $display_settings['thumbnail_height'],
         	);
+        	
+        	if ($display_settings['thumbnail_quality']) {
+        		$dyn_params['quality'] = $display_settings['thumbnail_quality'];
+        	}
 
         	if ($display_settings['thumbnail_crop']) {
         		$dyn_params['crop'] = true;
