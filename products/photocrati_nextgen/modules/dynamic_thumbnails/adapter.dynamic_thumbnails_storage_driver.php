@@ -93,6 +93,9 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 				
 				if (!isset($named_params['crop']) || $named_params['crop'] == null) {
 					$new_dims = wp_constrain_dimensions($full_dims['width'], $full_dims['height'], $retval['width'], $retval['height']);
+					
+					$retval['width'] = $new_dims[0];
+					$retval['height'] = $new_dims[1];
 				}
 			}
 		}
