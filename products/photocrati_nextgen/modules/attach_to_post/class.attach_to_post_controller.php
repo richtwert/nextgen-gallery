@@ -240,6 +240,9 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			$this->object->_displayed_gallery = $factory->create('displayed_gallery');
 		}
 
+		// The attach to post interface uses both included and excluded ids
+		if ($valid_request) $this->object->_displayed_gallery->returns = 'both';
+
 		return $valid_request;
 	}
 

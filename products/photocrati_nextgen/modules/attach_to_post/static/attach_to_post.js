@@ -21,9 +21,19 @@ jQuery(function($){
 	// Activate horizontal tabs
 	$('#attach_to_post_tabs').tabs();
 
+	// If the preview area is being displayed, emit an event for that
+	$('.accordion h3 a').click(function(e){
+		if ($(e.srcElement).parent().attr('id') == 'preview_tab') {
+			$('#preview_area').trigger('opened');
+		}
+	});
+
 	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 	$('.ui-tabs-nav a').click(function(e){
+
+		// If the accordion tab is used to display an iframe, ensure when
+		// clicked that the original iframe content is always displayed
 		if ($(e.srcElement).parent().hasClass('ui-state-active')) {
 			var iframe = $(e.srcElement.hash+' iframe');
 			if (iframe.length > 0) {

@@ -169,8 +169,8 @@ jQuery(function($){
 			this.collection.on('change', this.selection_changed, this);
 		},
 
-		selection_changed: function(){
-			this.select_tag.$el.trigger('change');
+		selection_changed: function(e){
+			//this.select_tag.$el.trigger('change');
 			this.render();
 		},
 
@@ -236,7 +236,7 @@ jQuery(function($){
             display_type: null,
             display_settings: {},
             exclusions: [],
-            returns: 'included',
+            returns: 'both',
             sortorder: []
         }
     });
@@ -606,17 +606,20 @@ jQuery(function($){
 			this.entities.on('change:sortorder', function(model){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
-                this.displayed_gallery.set('sortorder', this.entities.entity_ids());
-				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
+				this.displayed_gallery.set('sortorder', this.entities.entity_ids());
 			}, this);
 
 			// Reset when the source changes
 			this.sources.on('selected', this.render, this);
 
 			// Fetch the initial collection of entities
-			this.entities_reset();
+			this.entities.reset();
 
 			this.render();
+		},
+
+		events: {
+			opened: 'entities_reset'
 		},
 
 		entities_reset: function(e){
@@ -648,6 +651,7 @@ jQuery(function($){
 				if (response.count >= response.limit+response.offset) {
 					self.fetch_entities(response.limit, response.offset+response.limit);
 				}
+				else self.entities.trigger('finished_fetching');
 			});
 		},
 
@@ -1225,6 +1229,9 @@ jQuery(function($){
             this.displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
 				<?php echo $displayed_gallery ?>
 			);
+			this.original_displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
+				<?php echo $displayed_gallery ?>
+			);
             this.galleries = new Ngg.DisplayTab.Models.Gallery_Collection(
 				<?php echo $galleries ?>
 			);
@@ -1287,6 +1294,17 @@ jQuery(function($){
 			// Bind to the 'selected' event for the source, updating the displayed gallery
 			this.sources.on('selected', function(){
 				this.displayed_gallery.set('source', this.sources.selected_value());
+
+				// If the source changed, and it's not the set to the original value, then
+				// exclusions get's set to []
+				if (this.sources.selected_value() != this.original_displayed_gallery.get('source'))
+					this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
+
+				// Otherwise, we revert to the original exclusions
+				else
+					this.displayed_gallery.set('exclusions', this.original_displayed_gallery.get('exclusions'));
+
+				// Reset everything else
 				this.galleries.deselect_all();
 				this.albums.deselect_all();
 				this.tags.deselect_all();
@@ -1295,8 +1313,8 @@ jQuery(function($){
 			}, this);
 
 			// Synchronize changes made to entities with the displayed gallery
-			this.entities.on('reset add remove change:exclude', function() {
-                this.displayed_gallery.set('sortorder', this.entities.entity_ids());
+			this.entities.on('change:exclude finished_fetching', function(){
+				this.displayed_gallery.set('sortorder', this.entities.entity_ids());
 				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 
@@ -1438,7 +1456,6 @@ jQuery(function($){
         // Updates the selected container_ids for the displayed gallery
         update_selected_containers: function(collection){
 			this.displayed_gallery.set('container_ids', this[collection].selected_ids());
-			this.entities.reset();
         },
 
         render: function(){
