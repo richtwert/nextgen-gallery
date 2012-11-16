@@ -1,7 +1,10 @@
 <tr>
     <td>
-        <label for='<?php echo esc_attr($display_type_name); ?>_show_return_link'>
+        <label for='<?php echo esc_attr($display_type_name); ?>_show_return_link' class="tooltip">
             <?php echo_h($show_return_link_label); ?>
+			<span>
+				<?php echo_h($tooltip) ?>
+			</span>
         </label>
     </td>
     <td>
