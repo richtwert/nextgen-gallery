@@ -253,12 +253,3 @@ table {
 	font-family: 'segoe ui', Arial, sans-serif;
 	font-size: 13px;
 }
-
-/**
- * Make the accordion tabs clickable
- */
- .accordion h3 a {
-	 width: 100%;
-	 display: inline-block;
-	 position: absolute;
- }

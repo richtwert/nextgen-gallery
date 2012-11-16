@@ -22,8 +22,8 @@ jQuery(function($){
 	$('#attach_to_post_tabs').tabs();
 
 	// If the preview area is being displayed, emit an event for that
-	$('.accordion h3 a').click(function(e){
-		if ($(e.srcElement).parent().attr('id') == 'preview_tab') {
+	$('.accordion h3').bind('click', function(e){
+		if ($(this).attr('id') == 'preview_tab') {
 			$('#preview_area').trigger('opened');
 		}
 	});
