@@ -21,6 +21,13 @@ jQuery(function($){
 	// Activate horizontal tabs
 	$('#attach_to_post_tabs').tabs();
 
+	// If the preview area is being displayed, emit an event for that
+	$('.accordion h3 a').click(function(e){
+		if ($(e.srcElement).parent().attr('id') == 'preview_tab') {
+			$('#preview_area').trigger('opened');
+		}
+	});
+
 	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 	$('.ui-tabs-nav a').click(function(e){
@@ -34,11 +41,6 @@ jQuery(function($){
 					iframe[0].contentDocument.location = iframe.attr('src');
 				}
 			}
-		}
-
-		// If the preview area is being displayed, emit an event for that
-		if ($(e.srcElement).parent().attr('id') == 'preview_tab') {
-			$('#preview_area').trigger('opened');
 		}
 	});
 
