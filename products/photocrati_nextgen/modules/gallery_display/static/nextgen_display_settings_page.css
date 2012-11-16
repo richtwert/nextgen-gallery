@@ -59,3 +59,7 @@
 .ngg_settings_template {
     width: 250px !important;
 }
+
+.ngg_alternative_view {
+	width: 200px !important;
+}

@@ -104,12 +104,12 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 	}
 
 
-	function render_show_alternative_view_link_field($display_type, $template_overrides=array())
+	function _render_show_alternative_view_link_field($display_type, $template_overrides=array())
 	{
 		// Params for template
 		$template_params = array(
 			'display_type_name'			=>	$display_type->name,
-			'show_alt_view_link_label'	=>	_('Show alternative view link?'),
+			'show_alt_view_link_label'	=>	_('Show alternative view link'),
 			'tooltip'					=>	_('When enabled, show a link for the user to activate an alternative view'),
 			'show_alternative_view_link'=>	$display_type->settings['show_alternative_view_link']
 		);

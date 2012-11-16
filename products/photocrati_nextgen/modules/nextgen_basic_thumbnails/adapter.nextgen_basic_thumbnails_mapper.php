@@ -30,7 +30,7 @@ class Hook_NextGen_Basic_Thumbnails_Defaults extends Hook
 			$this->object->_set_default_value($entity, 'settings', 'disable_pagination', 0);
 
 			// Alternative view support
-			$this->object->_set_default_value($entity, 'settings', 'show_alternative_view_link', $settings->galShowSlide);
+			$this->object->_set_default_value($entity, 'settings', 'show_alternative_view_link', $settings->galShowSlide ? 1 : 0);
 			$this->object->_set_default_value($entity, 'settings', 'alternative_view', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW);
 			$this->object->_set_default_value($entity, 'settings', 'alternative_view_link_text', $settings->galTextSlide);
 			$this->object->_set_default_value($entity, 'settings', 'show_return_link', 1);
