@@ -166,7 +166,12 @@ jQuery(function($){
 			this.collection = this.options.collection;
 			if (!this.options.multiple) this.options.include_blank = true;
 			this.select_tag = new Ngg.Views.SelectTag(this.options);
-			this.collection.on('change', this.render, this);
+			this.collection.on('change', this.selection_changed, this);
+		},
+
+		selection_changed: function(){
+			this.select_tag.$el.trigger('change');
+			this.render();
 		},
 
 		render: function(){
@@ -502,7 +507,6 @@ jQuery(function($){
 				var selected_source = this.sources.selected();
 				if (selected_source.length <= 0 || !selected_type.is_compatible_with_source(selected_source.pop())) {
 					var default_source = selected_type.get('default_source');
-					debugger;
 					if (default_source) {
 						var sources = this.sources;
 						var select_source = null;
@@ -530,19 +534,10 @@ jQuery(function($){
 		render: function(){
 			this.$el.empty();
 			this.display_types.each(function(item){
-				var display = false;
-
-				if (this.sources.selected().length == 0)
-					display = true;
-				else if (item.is_compatible_with_source(this.sources.selected().pop()))
-					display = true;
-
-				if (display) {
-					var display_type = new this.DisplayType;
-					display_type.model = item;
-					display_type.on('selected', this.selection_changed, this);
-					this.$el.append(display_type.render().el);
-				}
+				var display_type = new this.DisplayType;
+				display_type.model = item;
+				display_type.on('selected', this.selection_changed, this);
+				this.$el.append(display_type.render().el);
 			}, this);
 			return this;
 		},
