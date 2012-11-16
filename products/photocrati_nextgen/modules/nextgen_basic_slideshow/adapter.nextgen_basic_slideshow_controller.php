@@ -22,7 +22,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		// Get the images to be displayed
 		$retval = '';
         $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
-    
+
 		if (($images = $displayed_gallery->get_included_entities($displayed_gallery->get_entity_count()))) {
 
 			// Get the gallery storage component
@@ -118,36 +118,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 					'gallery_width' => $display_type->settings['gallery_width'],
 					'gallery_height' => $display_type->settings['gallery_height'],
 			), True);
-	}
-
-
-	function _render_nextgen_basic_slideshow_show_thumbnails_link_field($display_type)
-	{
-		return $this->render_partial(
-			'nextgen_basic_slideshow_settings_show_thumbnails_link',
-			array(
-				'display_type_name'				=>	$display_type->name,
-				'show_thumbnails_link_label'	=>	_('Show thumbnails link'),
-				'show_alternative_view_link'	=>	$display_type->settings['show_alternative_view_link'],
-				'tooltip'						=>	_('Show a link to view thumbnails?'),
-			),
-			TRUE
-		);
-	}
-
-
-	function _render_nextgen_basic_slideshow_show_return_link_field($display_type)
-	{
-		return $this->render_partial(
-			'nextgen_basic_slideshow_settings_show_return_link',
-			array(
-				'display_type_name'				=>	$display_type->name,
-				'show_return_link_label'		=>	_('Show return link'),
-				'tooltip'						=>	_('Show a link to return back to the Slideshow?'),
-				'show_return_link'				=>	$display_type->settings['show_return_link'],
-			),
-			TRUE
-		);
 	}
 
     function _build_settings_array($display_type, $name)
@@ -437,10 +407,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_gallery_dimensions',
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',
-
-			'nextgen_basic_slideshow_show_thumbnails_link',
-			'nextgen_basic_slideshow_show_return_link',
-
 			'nextgen_basic_slideshow_flash_enabled',
 			'nextgen_basic_slideshow_flash_path',
             'nextgen_basic_slideshow_flash_background_music',
@@ -453,8 +419,13 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_flash_watermark_logo',
 			'nextgen_basic_slideshow_flash_slow_zoom',
             'nextgen_basic_slideshow_flash_xhtml_validation',
-
-            'nextgen_basic_slideshow_flash_colors_wrapper'
+            'nextgen_basic_slideshow_flash_colors_wrapper',
+			'show_alternative_view_link',
+			'show_return_link',
+			'alternative_view',
+			'alternative_view_link_text',
+			'return_link_text',
+			'nextgen_basic_templates_template',
 		);
 	}
 }

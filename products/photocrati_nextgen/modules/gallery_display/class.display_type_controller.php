@@ -12,6 +12,7 @@ class C_Display_Type_Controller extends C_MVC_Controller
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Display_Type_Controller');
+		$this->add_mixin('Mixin_Display_Type_Controller_Fields');
 		$this->implement('I_Display_Type_Controller');
 	}
 
@@ -178,16 +179,6 @@ class Mixin_Display_Type_Controller extends Mixin
 		), $return);
 	}
 
-
-	/**
-	 * Displays the field used for alternative views
-	 */
-	function _render_alternative_view_field()
-	{
-		// TODO: Need to wrap up once Benjamin is finished interface adjustments
-	}
-
-
 	/**
 	 * Returns the name of the fields to
 	 */
@@ -302,6 +293,8 @@ class Mixin_Display_Type_Controller extends Mixin
 			$retval = $this->_render_alternative_view($displayed_gallery, $show, $return);
 		}
 
+		if (!$return) echo $retval;
+
         return $retval;
     }
 
@@ -321,8 +314,8 @@ class Mixin_Display_Type_Controller extends Mixin
 		$params['return_link']					= '';
 
 		// Add show alternative view link
-		if ($params['show_alternative_view_link']) {
-			if (($url = $this->object->get_absolute_url('nggallery/'.$params['show_alternative_view_link']))) {
+		if ($params['show_alternative_view_link'] && $params['alternative_view']) {
+			if (($url = $this->object->get_absolute_url('nggallery/'.$params['alternative_view']))) {
 				$params['alternative_view_link_url'] = $url;
 				$params['alternative_view_link'] = "<a href='".esc_attr($url)."'>".
 						htmlentities($params['alternative_view_link_text']).
@@ -334,7 +327,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		// a return link
 		if ($this->object->is_serving_alternative_view($displayed_gallery->display_type) && $params['show_return_link']) {
 			if (($url = $this->object->get_absolute_url())) {
-				$url = remove_query_arg('show', $url);
+				$url = urldecode(remove_query_arg('show', $url));
 				$params['return_link_url'] = $url;
 				$params['return_link'] =
 					"<a href='".esc_attr($url)."'>".
@@ -359,7 +352,8 @@ class Mixin_Display_Type_Controller extends Mixin
 		foreach ($mapper->find_all() as $display_type) {
 			$retval[$display_type->name] = array(
 				'type'	=>	'display_type',
-				'name'	=>	$display_type->name
+				'name'	=>	$display_type->name,
+				'title'	=>	$display_type->title
 			);
 		}
 
@@ -485,6 +479,4 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		return $retval;
 	}
-
-
 }

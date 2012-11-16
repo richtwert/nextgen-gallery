@@ -110,7 +110,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             // Get the page link
             $uri = $_SERVER['REQUEST_URI'];
             $uri = remove_query_arg('gallery', $uri);
-            $uri = remove_query_arg('album', $uri);
+            $uri = urldecode(remove_query_arg('album', $uri));
             $id_field = $gallery->id_field;
             $gallery->pagelink = add_query_arg(($gallery->is_album ? 'album' : 'gallery'), $gallery->$id_field);
 
