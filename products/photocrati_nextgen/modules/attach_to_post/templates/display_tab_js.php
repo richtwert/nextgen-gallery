@@ -236,7 +236,7 @@ jQuery(function($){
             display_type: null,
             display_settings: {},
             exclusions: [],
-            returns: 'included',
+            returns: 'both',
             sortorder: []
         }
     });
@@ -1225,6 +1225,7 @@ jQuery(function($){
             this.displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
 				<?php echo $displayed_gallery ?>
 			);
+			console.log(this.displayed_gallery);
             this.galleries = new Ngg.DisplayTab.Models.Gallery_Collection(
 				<?php echo $galleries ?>
 			);
@@ -1297,6 +1298,7 @@ jQuery(function($){
 			// Synchronize changes made to entities with the displayed gallery
 			this.entities.on('reset add remove change:exclude', function() {
                 this.displayed_gallery.set('sortorder', this.entities.entity_ids());
+				debugger;
 				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 
