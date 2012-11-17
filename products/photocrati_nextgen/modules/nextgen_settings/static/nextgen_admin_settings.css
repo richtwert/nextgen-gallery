@@ -32,10 +32,8 @@ table.nextgen_settings_position {
 span.tooltip,
 label.tooltip {
     position: relative;
-    cursor: help;
     display: inline-block;
     outline: none;
-    border-bottom: 1px dotted;
     background-image: url('information.png');
     background-repeat: no-repeat;
     padding-left: 18px;
