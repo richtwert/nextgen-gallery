@@ -45,6 +45,7 @@ jQuery(function($){
 					item.set('selected', true);
 				}
 			});
+			this.trigger('selected');
 		}
     });
 
