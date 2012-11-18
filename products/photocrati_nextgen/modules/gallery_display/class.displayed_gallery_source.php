@@ -43,6 +43,7 @@ class Mixin_Displayed_Gallery_Source extends Mixin
 		$this->object->validates_presence_of('title');
 		$this->object->validates_presence_of('name');
 		$this->object->validates_presence_of('returns');
+		$this->object->validates_presence_of('container_type');
 		return $this->object->is_valid();
 	}
 }

@@ -76,4 +76,13 @@ class Mixin_Displayed_Gallery_Source_Mapper extends Mixin
 	{
 		return $entity->title;
 	}
+
+	/**
+	 * Sets default values for a source
+	 * @param stdClass|C_DataMapper_Model $entity
+	 */
+	function set_defaults($entity)
+	{
+		if (!isset($entity->aliases)) $entity->aliases = array();
+	}
 }
