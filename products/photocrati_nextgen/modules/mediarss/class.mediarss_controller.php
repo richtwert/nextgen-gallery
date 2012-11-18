@@ -129,7 +129,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 	{
 		// Get gallery titles
 		$gallery_titles = array();
-		foreach ($displayed_gallery->get_gallery_containers() as $gallery) {
+		foreach ($displayed_gallery->get_galleries() as $gallery) {
 			$gallery_titles[] = $gallery->title;
 		}
 
