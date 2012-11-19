@@ -257,7 +257,6 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
 	function test_get_recent_images()
 	{
-		return;
 		// Test getting 5 of the most recent images
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'recent';
