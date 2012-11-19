@@ -47,7 +47,8 @@
 	   find_parent: function(child){
 		   var retval = child;
 		   try {
-			   while (retval.document !== retval.parent.document) retval = retval.parent;
+		   	if (retval && retval.parent)
+		   		retval = retval.parent;
 		   }
 		   catch (Exception){
 		   }
