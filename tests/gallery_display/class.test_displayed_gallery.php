@@ -279,7 +279,6 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
 	function test_get_random_images()
 	{
-		return;
 		// Test retrieving 5 random images, from the test galleries we've created
 		$displayed_gallery = $this->get_factory()->create('displayed_gallery');
 		$displayed_gallery->source = 'random';
