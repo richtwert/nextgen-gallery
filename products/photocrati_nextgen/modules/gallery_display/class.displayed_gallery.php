@@ -277,7 +277,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			// Filter by container ids
 			if ($this->object->container_ids) {
 				$album_mapper->where(
-					array("${$album_key} IN %s", $this->object->container_ids)
+					array("{$album_key} IN %s", $this->object->container_ids)
 				);
 			}
 
@@ -287,7 +287,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			$included_ids	= array();
 			$excluded_ids	= array();
 			foreach ($album_mapper->run_query() as $album) {
-				$entity_ids = array_merge($entity_ids, implode(",", $album->sortorder));
+				$entity_ids = array_merge($entity_ids, $album->sortorder);
 			}
 
 			// Break the list of entities into two groups, included entities
@@ -314,6 +314,11 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			elseif ($this->object->exclusions) {
 				$included_ids = array_diff($entity_ids, $this->object->exclusions);
 				$excluded_ids = array_diff($entity_ids, $included_ids);
+			}
+
+			// We have no entity ids and no exclusions
+			else {
+				$included_ids = $entity_ids;
 			}
 
 			// We've built our two groups. Let's determine how we'll focus on
@@ -476,10 +481,10 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		// Fetch entities
 		$galleries	= $gallery_mapper->select($gallery_select)->where(
 			array("{$gallery_key} IN %s", $gallery_ids)
-		);
+		)->run_query();
 		$albums		= $album_mapper->select($album_select)->where(
 			array("{$album_key} IN %s", $album_ids)
-		);
+		)->run_query();
 
 		// Reorder entities according to order specified in entity_ids
 		foreach ($entity_ids as $entity_id) {

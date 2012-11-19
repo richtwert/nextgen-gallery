@@ -295,13 +295,12 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
     function test_get_gallery_containers()
     {
-		return;
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
         $displayed_gallery->source = 'gallery';
         $displayed_gallery->container_ids = $this->gallery_ids;
         $displayed_gallery->returns = 'included';
         $gal_key = $this->gal_key;
-        $galleries = $displayed_gallery->get_gallery_containers();
+        $galleries = $displayed_gallery->get_galleries();
         $this->assertEqual(count($this->gallery_ids), count($galleries));
         for ($i=0; $i<count($galleries); $i++) {
             $gallery = $galleries[$i];
@@ -315,7 +314,6 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
     function test_get_album_entities_by_container()
     {
-		return;
         // Test fetching entities from a single album
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
         $displayed_gallery->source = 'album';
@@ -354,7 +352,6 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
     function test_get_specific_album_entities()
     {
-		return;
         // Test fetching specific entities to display as an album
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
         $displayed_gallery->source = 'album';
