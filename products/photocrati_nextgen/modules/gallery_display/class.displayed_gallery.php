@@ -130,9 +130,16 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 			// We need to add two dynamic columns, one called "sortorder" and
 			// the other called "exclude". They're self explanation
-			$set = implode(",", array_reverse($this->object->entity_ids));
-			$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
-			$select .= ", IF(@row = 0, 1, 0) AS exclude";
+			if ($this->object->entity_ids) {
+				$set = implode(",", array_reverse($this->object->entity_ids));
+				$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
+				$select .= ", IF(@row = 0, 1, 0) AS exclude";
+			}
+			elseif ($this->object->exclusions) {
+				$set = implode(",", array_reverse($this->object->exclusions));
+				$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
+				$select .= ", IF(@row = 0, 0, 1) AS exclude";
+			}
 			$mapper->select($select);
 
 			// A user might want to sort the results by the order of

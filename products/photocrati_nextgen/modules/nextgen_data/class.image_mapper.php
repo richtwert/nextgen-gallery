@@ -70,6 +70,10 @@ class Mixin_Gallery_Image_Mapper extends Mixin
 				$path_parts['filename'];
 			$this->object->_set_default_value($entity, 'alttext', $alttext);
 		}
+
+		// Ensure that the exclude parameter is an integer or boolean-evaluated
+		// value
+		if (is_string($entity->exclude)) $entity->exclude = intval($entity->exclude);
 	}
 }
 
