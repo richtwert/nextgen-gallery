@@ -16,7 +16,8 @@ class A_Gallery_Display_Deactivation extends Mixin
     {
         $mappers = array(
             'I_Displayed_Gallery_Mapper',
-            'I_Display_Type_Mapper'
+            'I_Display_Type_Mapper',
+			'I_Displayed_Gallery_Source_Mapper'
         );
         foreach ($mappers as $map_name) {
             $mapper = $this->object->get_registry()->get_utility($map_name);

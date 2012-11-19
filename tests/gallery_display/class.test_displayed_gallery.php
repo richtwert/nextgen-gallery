@@ -20,6 +20,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 	function __construct()
 	{
 		parent::__construct();
+		@ini_set('max_execution_time', 300);
 		$this->gal_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$this->img_mapper = $this->get_registry()->get_utility('I_Image_Mapper');
 		$this->alb_mapper = $this->get_registry()->get_utility('I_Album_Mapper');
@@ -299,7 +300,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
         $displayed_gallery->container_ids = $this->gallery_ids;
         $displayed_gallery->returns = 'included';
         $gal_key = $this->gal_key;
-        $galleries = $displayed_gallery->get_gallery_containers();
+        $galleries = $displayed_gallery->get_galleries();
         $this->assertEqual(count($this->gallery_ids), count($galleries));
         for ($i=0; $i<count($galleries); $i++) {
             $gallery = $galleries[$i];

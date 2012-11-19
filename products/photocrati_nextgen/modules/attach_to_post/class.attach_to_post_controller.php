@@ -179,7 +179,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 			// Get the first entity from the displayed gallery. We will use this
 			// for a preview pic
-			$entity = array_pop($this->object->_displayed_gallery->get_entities(1, FALSE, FALSE, TRUE));
+			$entity = array_pop($this->object->_displayed_gallery->get_entities(1, FALSE, FALSE));
 			$image = FALSE;
 			if ($entity) {
 				// This is an album or gallery
@@ -239,9 +239,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$this->object->_displayed_gallery = $factory->create('displayed_gallery');
 		}
-
-		// The attach to post interface uses both included and excluded ids
-		if ($valid_request) $this->object->_displayed_gallery->returns = 'both';
 
 		return $valid_request;
 	}

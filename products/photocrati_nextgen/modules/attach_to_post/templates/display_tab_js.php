@@ -237,7 +237,6 @@ jQuery(function($){
             display_type: null,
             display_settings: {},
             exclusions: [],
-            returns: 'both',
             sortorder: []
         }
     });
