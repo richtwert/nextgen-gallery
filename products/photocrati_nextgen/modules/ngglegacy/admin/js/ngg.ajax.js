@@ -96,6 +96,8 @@ nggAjax = {
 		},
 	
 		init: function( s ) {
+			if (this.inited)
+				return;
 
 			var index  = 0;
 								
@@ -113,6 +115,8 @@ nggAjax = {
 				// start the ajax process
 				this.run( index );				
 			}
+			
+			this.inited = true;
 		}
 	}
 }(jQuery));
