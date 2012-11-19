@@ -279,7 +279,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			$operator = strtolower($operator);
 			$value = trim($condition);
 		}
-		
+
 		// Values will automatically be quoted, so remove them
 		// If the value is part of an IN clause or BETWEEN clause and
 		// has multiple values, we attempt to split the values apart into an

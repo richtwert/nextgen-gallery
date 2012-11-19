@@ -65,7 +65,7 @@ class Mixin_Displayed_Gallery_Validation extends Mixin
 			// Is the display type compatible with the source? E.g., if we're
 			// using a display type that expects images, we can't be feeding it
 			// galleries and albums
-			if (($source = $this->get_source())) {
+			if (($source = $this->object->get_source())) {
 				if (!$display_type->is_compatible_with_source($source)) {
 					$this->object->add_error(
 						_('Source not compatible with selected display type'),
@@ -93,9 +93,9 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		if ($this->object->_parse_parameters()) {
 
 			// Is this an image query?
-			$source_obj = get_source();
+			$source_obj = $this->object->get_source();
 			if (in_array('image', $source_obj->returns)) {
-				$retval = $this->object->_get_images_entities($source_obj, $limit, $offset, $id_only, $returns);
+				$retval = $this->object->_get_image_entities($source_obj, $limit, $offset, $id_only, $returns);
 			}
 
 			// Is this a gallery/album query?
@@ -117,8 +117,8 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	 */
 	function _get_image_entities($source_obj, $limit, $offset, $id_only, $returns)
 	{
-		$image_mapper	= $this->get_registry()->get_utility('I_Image_Mapper');
-		$image_key		= $image_mapper->get_primary_key_column();
+		$mapper	= $this->get_registry()->get_utility('I_Image_Mapper');
+		$image_key		= $mapper->get_primary_key_column();
 		$select			= $ids_only ? $image_key : '*';
 		$sort_direction	= $this->object->order_direction;
 		$sort_by		= $this->object->order_by;
@@ -194,7 +194,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		if ($this->object->container_ids) {
 
 			// Container ids are tags
-			if ($source_obj->container_type == 'tag') {
+			if ($source_obj->name == 'tags') {
 				$term_ids = $this->object->_get_term_ids_for_tags($this->object->container_ids);
 				$mapper->where(array("{$image_key} IN %s",get_objects_in_term($term_ids, 'ngg_tag')));
 			}
@@ -232,6 +232,8 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 				$mapper->order_by($settings->galSort, $settings->galSortDir);
 			}
 		}
+
+		return $mapper->run_query();
 	}
 
 	/**
@@ -351,7 +353,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	function get_entity_count($returns='included')
 	{
 		// Is this an image query?
-		$source_obj = get_source();
+		$source_obj = $this->object->get_source();
 		if (in_array('image', $source_obj->returns)) {
 			return count($this->object->_get_image_entities($source_obj, FALSE, FALSE, TRUE, $returns));
 		}
@@ -524,8 +526,10 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 	 */
 	function get_source()
 	{
+		$sources = $this->object->_get_source_map();
 		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper');
-		return $mapper->find($this->object->source, TRUE);
+		$retval = $mapper->find_by_name($sources[$this->object->source], TRUE);
+		return $retval;
 	}
 
 	/**

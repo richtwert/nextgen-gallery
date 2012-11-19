@@ -198,7 +198,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 			if ($retval) {
 				$new_entity = $this->object->find($retval);
 				foreach ($new_entity as $key => $value) $entity->$key = $value;
-				$retval = intval($entity->$primary_key);
 			}
 		}
 		$entity->id_field = $primary_key;

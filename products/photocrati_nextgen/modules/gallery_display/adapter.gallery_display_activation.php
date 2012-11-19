@@ -19,9 +19,10 @@ class A_Gallery_Display_Activation extends Mixin
 		// Save "Galleries" source
 		$source = $mapper->find_by_name('galleries');
 		if (!$source) $source = new stdClass();
-		$source->name		= 'galleries';
-		$source->title		= 'Galleries';
-		$source->returns	= array('image');
+		$source->name			= 'galleries';
+		$source->title			= 'Galleries';
+		$source->returns		= array('image');
+		$source->aliases		= array('gallery', 'images', 'image');
 		$mapper->save($source);
 
 		// Save "Albums" source
@@ -30,6 +31,7 @@ class A_Gallery_Display_Activation extends Mixin
 		$source->name		= 'albums';
 		$source->title		= 'Albums';
 		$source->returns	= array('gallery', 'album');
+		$source->aliases	= array('album');
 		$mapper->save($source);
 
 		// Save "Tags" source
@@ -38,6 +40,7 @@ class A_Gallery_Display_Activation extends Mixin
 		$source->name		= 'tags';
 		$source->title		= 'Tags';
 		$source->returns	= array('image');
+		$source->aliases	= array('tag', 'image_tag', 'image_tags');
 		$mapper->save($source);
 
 		// Save "Random Images" source
@@ -46,6 +49,7 @@ class A_Gallery_Display_Activation extends Mixin
 		$source->name		= 'random_images';
 		$source->title		= 'Random Images';
 		$source->returns	= array('image');
+		$source->aliases	= array('random', 'random_image');
 		$mapper->save($source);
 
 		// Save "Recent Images" source
@@ -54,6 +58,7 @@ class A_Gallery_Display_Activation extends Mixin
 		$source->name		= 'recent_images';
 		$source->title		= 'Recent Images';
 		$source->returns	= array('image');
+		$source->aliases	= array('recent', 'recent_image');
 		$mapper->save($source);
 	}
 }

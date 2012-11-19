@@ -66,6 +66,23 @@ class Mixin_Album_Mapper extends Mixin
 		return $entity->name;
 	}
 
+	/**
+	 * Override the save method to avoid trying to save the 'exclude' property
+	 * to the database, which will fail since the column doesn't exist in the
+	 * database.
+	 * TODO: This is just a workaround and should be removed when we implement
+	 * https://www.wrike.com/open.htm?id=8250095
+	 * @param stdClass|C_DataMapper_Model $entity
+	 * @return boolean
+	 */
+	function _convert_to_table_data($entity)
+	{
+		$exclude = $entity->exclude;
+		unset($entity->exclude);
+		$retval = $this->call_parent('_convert_to_table_data', $entity);
+		$entity->exclude = $exclude;
+		return $retval;
+	}
 
     /**
      * Sets the defaults for an album
