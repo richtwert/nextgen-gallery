@@ -314,8 +314,10 @@ class Mixin_Display_Type_Controller extends Mixin
 		$params['return_link']					= '';
 
 		// Add show alternative view link
-		if ($params['show_alternative_view_link'] && $params['alternative_view']) {
-			if (($url = $this->object->get_absolute_url('nggallery/'.$params['alternative_view']))) {
+        if ($params['show_alternative_view_link'] && $params['alternative_view'])
+        {
+            if (($url = $this->object->get_absolute_url('nggallery/' . $params['alternative_view'])))
+            {
 				$params['alternative_view_link_url'] = $url;
 				$params['alternative_view_link'] = "<a href='".esc_attr($url)."'>".
 						htmlentities($params['alternative_view_link_text']).

@@ -163,8 +163,7 @@ abstract class C_MVC_Controller extends C_Component
 	 */
 	function get_relative_url($segment='')
 	{
-		return isset($_SERVER['REQUEST_URI']) ?
-			path_join($_SERVER['REQUEST_URI'], $segment) : '';
+		return isset($_SERVER['REQUEST_URI']) ? path_join($_SERVER['REQUEST_URI'], $segment) : '';
 	}
 
 
