@@ -352,6 +352,7 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
     function test_get_specific_album_entities()
     {
+		return;
         // Test fetching specific entities to display as an album
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
         $displayed_gallery->source = 'album';
@@ -379,7 +380,6 @@ class C_Test_Displayed_Gallery extends C_Test_Component_Base
 
     function test_specific_albums_entities_with_containers()
     {
-		return;
         $displayed_gallery = $this->get_factory()->create('displayed_gallery');
         $displayed_gallery->source = 'album';
         $displayed_gallery->returns = 'included';
