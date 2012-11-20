@@ -196,6 +196,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 					'sortorder',
 					TRUE
 				);
+				$sort_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
 			}
 
 			$mapper->select($select);
@@ -227,6 +228,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 					'sortorder',
 					TRUE
 				);
+				$sort_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
 			}
 
 			// Mark each result as excluded
@@ -287,16 +289,6 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		if ($limit) {
 			if ($offset) $mapper->limit($limit, $offset);
 			else		 $mapper->limit($limit);
-		}
-
-		// When using a custom order (sortorder), we should apply a
-		// secondary sort order to maintain the default sort order
-		// for galleries as much as possible
-		if ($this->object->order_by == 'sortorder') {
-			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-			if ($settings->galSort != 'sortorder') {
-				$mapper->order_by($settings->galSort, $settings->galSortDir);
-			}
 		}
 
 		return $mapper->run_query();
