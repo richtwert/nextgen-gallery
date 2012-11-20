@@ -518,6 +518,7 @@ jQuery(function($){
 						});
 
 						if (select_source) {
+							this.sources.deselect_all();
 							this.sources.select(select_source);
 						}
 					}
