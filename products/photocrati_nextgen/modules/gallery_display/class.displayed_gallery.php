@@ -353,7 +353,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			$included_ids	= array();
 			$excluded_ids	= array();
 			foreach ($album_mapper->run_query() as $album) {
-				$entity_ids = array_merge($entity_ids, $album->sortorder);
+				$entity_ids = array_merge($entity_ids, (array) $album->sortorder);
 			}
 
 			// Break the list of entities into two groups, included entities
