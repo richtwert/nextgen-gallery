@@ -176,6 +176,19 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		// just provide a where clause to limit how many images we're returning
 		// based on the entity_ids, exclusions, and container_ids parameters
 		if ($returns == 'included') {
+
+			// If the sortorder propery is available, then we need to override
+			// the sortorder
+			if ($this->object->sortorder) {
+				$select = $this->object->_add_find_in_set_column(
+					$select,
+					$image_key,
+					$this->object->sortorder,
+					'sortorder',
+					TRUE
+				);
+			}
+
 			$mapper->select($select);
 
 			// Filter based on entity_ids selection
@@ -194,6 +207,19 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		// list of exclusions, and exclusions become the list of entity_ids to
 		// return. All results we return must be marked as excluded
 		elseif ($returns == 'excluded') {
+
+			// If the sortorder propery is available, then we need to override
+			// the sortorder
+			if ($this->object->sortorder) {
+				$select = $this->object->_add_find_in_set_column(
+					$select,
+					$image_key,
+					$this->object->sortorder,
+					'sortorder',
+					TRUE
+				);
+			}
+
 			// Mark each result as excluded
 			$select .= ", 1 AS exclude";
 			$mapper->select($select);
