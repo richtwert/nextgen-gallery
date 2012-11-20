@@ -642,6 +642,7 @@ jQuery(function($){
 				if (!_.isObject(response)) response = JSON.parse(response);
 
 				_.each(response.entities, function(item){
+					debugger;
 					item.exclude = parseInt(item.exclude) == 1 ? true : false;
 					item = new Ngg.DisplayTab.Models.Entity(item);
 					self.entities.push(item);
