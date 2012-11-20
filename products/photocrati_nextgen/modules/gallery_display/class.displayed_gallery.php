@@ -117,11 +117,20 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	 */
 	function _get_image_entities($source_obj, $limit, $offset, $id_only, $returns)
 	{
+		// TODO: This method is very long, and therefore more difficult to read
+		// Find a way to minimalize or segment
 		$mapper	= $this->get_registry()->get_utility('I_Image_Mapper');
 		$image_key		= $mapper->get_primary_key_column();
 		$select			= $ids_only ? $image_key : '*';
 		$sort_direction	= $this->object->order_direction;
 		$sort_by		= $this->object->order_by;
+
+		// Here's what this method is doing:
+		// 1) Determines what results need returned
+		// 2) Determines from what container ids the results should come from
+		// 3) Applies ORDER BY clause
+		// 4) Applies LIMIT/OFFSET clause
+		// 5) Executes the query and returns the result
 
 		// We start with the most difficult query. When returns is "both", we
 		// need to return a list of both included and excluded entity ids, and
@@ -406,6 +415,59 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		return $retval;
 	}
 
+	/**
+	 * Takes a list of entities, and returns the mapped
+	 * galleries and sub-albums
+	 * @param array $entity_ids
+	 * @return array
+	 */
+	function _entities_to_galleries_and_albums($entity_ids, $id_only=FALSE, $exclusions=array())
+	{
+		$retval			= array();
+		$gallery_ids	= array();
+		$album_ids		= array();
+		$album_mapper	= $this->get_registry()->get_utility('I_Album_Mapper');
+		$album_key		= $album_mapper->get_primary_key_column();
+		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$gallery_key	= $gallery_mapper->get_primary_key_column();
+		$album_select	= $id_only ? $album_key : '*';
+		$gallery_select = $id_only ? $gallery_key : '*';
+
+		// Segment entity ids into two groups - galleries and albums
+		foreach ($entity_ids as $entity_id) {
+			if (substr($entity_id, 0, 1) == 'a')
+				$album_ids[]	= intval(substr($entity_id, 1));
+			else
+				$gallery_ids[]	= intval($entity_id);
+		}
+
+		// Adjust query to include an exclude property
+		if ($exclusions) {
+			$set = implode(",", array_reverse($exclusions));
+			$album_select	.= ", @row := FIND_IN_SET({$album_key}, '{$set}')";
+			$album_select	.= ", IF(@row = 0, 1, 0) AS exclude";
+			$gallery_select	.= ", @row := FIND_IN_SET({$gallery_key}, '{$set}')";
+			$gallery_select	.= ", IF(@row = 0, 1, 0) AS exclude";
+		}
+
+		// Fetch entities
+		$galleries	= $gallery_mapper->select($gallery_select)->where(
+			array("{$gallery_key} IN %s", $gallery_ids)
+		)->run_query();
+		$albums		= $album_mapper->select($album_select)->where(
+			array("{$album_key} IN %s", $album_ids)
+		)->run_query();
+
+		// Reorder entities according to order specified in entity_ids
+		foreach ($entity_ids as $entity_id) {
+			if (substr($entity_id, 0, 1) == 'a')
+				$retval[] = array_shift($albums);
+			else
+				$retval[] = array_shift($galleries);
+		}
+
+		return $retval;
+	}
 
 	/**
 	 * Returns the total number of entities in this displayed gallery
@@ -527,59 +589,6 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		return $term_ids;
 	}
 
-	/**
-	 * Takes a list of entities, and returns the mapped
-	 * galleries and sub-albums
-	 * @param array $entity_ids
-	 * @return array
-	 */
-	function _entities_to_galleries_and_albums($entity_ids, $id_only=FALSE, $exclusions=array())
-	{
-		$retval			= array();
-		$gallery_ids	= array();
-		$album_ids		= array();
-		$album_mapper	= $this->get_registry()->get_utility('I_Album_Mapper');
-		$album_key		= $album_mapper->get_primary_key_column();
-		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
-		$gallery_key	= $gallery_mapper->get_primary_key_column();
-		$album_select	= $id_only ? $album_key : '*';
-		$gallery_select = $id_only ? $gallery_key : '*';
-
-		// Segment entity ids into two groups - galleries and albums
-		foreach ($entity_ids as $entity_id) {
-			if (substr($entity_id, 0, 1) == 'a')
-				$album_ids[]	= intval(substr($entity_id, 1));
-			else
-				$gallery_ids[]	= intval($entity_id);
-		}
-
-		// Adjust query to include an exclude property
-		if ($exclusions) {
-			$set = implode(",", array_reverse($exclusions));
-			$album_select	.= ", @row := FIND_IN_SET({$album_key}, '{$set}')";
-			$album_select	.= ", IF(@row = 0, 1, 0) AS exclude";
-			$gallery_select	.= ", @row := FIND_IN_SET({$gallery_key}, '{$set}')";
-			$gallery_select	.= ", IF(@row = 0, 1, 0) AS exclude";
-		}
-
-		// Fetch entities
-		$galleries	= $gallery_mapper->select($gallery_select)->where(
-			array("{$gallery_key} IN %s", $gallery_ids)
-		)->run_query();
-		$albums		= $album_mapper->select($album_select)->where(
-			array("{$album_key} IN %s", $album_ids)
-		)->run_query();
-
-		// Reorder entities according to order specified in entity_ids
-		foreach ($entity_ids as $entity_id) {
-			if (substr($entity_id, 0, 1) == 'a')
-				$retval[] = array_shift($albums);
-			else
-				$retval[] = array_shift($galleries);
-		}
-
-		return $retval;
-	}
 
 	/**
 	 * Sorts the results of an album query
