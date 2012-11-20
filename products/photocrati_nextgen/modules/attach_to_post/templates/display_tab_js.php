@@ -612,9 +612,6 @@ jQuery(function($){
 			// Reset when the source changes
 			this.sources.on('selected', this.render, this);
 
-			// Fetch the initial collection of entities
-			this.entities.reset();
-
 			this.render();
 		},
 
@@ -642,7 +639,6 @@ jQuery(function($){
 				if (!_.isObject(response)) response = JSON.parse(response);
 
 				_.each(response.entities, function(item){
-					debugger;
 					item.exclude = parseInt(item.exclude) == 1 ? true : false;
 					item = new Ngg.DisplayTab.Models.Entity(item);
 					self.entities.push(item);

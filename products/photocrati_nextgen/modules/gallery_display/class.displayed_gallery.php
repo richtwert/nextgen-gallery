@@ -129,17 +129,41 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		if ($returns == 'both') {
 
 			// We need to add two dynamic columns, one called "sortorder" and
-			// the other called "exclude". They're self explanation
-			if ($this->object->entity_ids) {
-				$set = implode(",", array_reverse($this->object->entity_ids));
-				$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
-				$select .= ", IF(@row = 0, 1, 0) AS exclude";
+			// the other called "exclude".
+			$if_true		= 1;
+			$if_false		= 0;
+			$excluded_set	= $this->object->entity_ids;
+			if (!$excluded_set) {
+				$if_true	= 0;
+				$if_false	= 1;
+				$excluded_set = $this->object->exclusions;
 			}
-			elseif ($this->object->exclusions) {
-				$set = implode(",", array_reverse($this->object->exclusions));
-				$select .= ", @row := FIND_IN_SET({$image_key}, '{$set}') AS sortorder";
-				$select .= ", IF(@row = 0, 0, 1) AS exclude";
-			}
+			$sortorder_set	= $this->object->sortorder ? $this->object->sortorder :  $excluded_set;
+
+			// Add sortorder column
+			$select = $this->object->_add_find_in_set_column(
+				$select,
+				$image_key,
+				$sortorder_set,
+				'sortorder',
+				TRUE
+			);
+
+			// Add exclude column
+			$select = $this->object->_add_find_in_set_column(
+				$select,
+				$image_key,
+				$excluded_set,
+				'exclude'
+			);
+			$select = $this->object->_add_if_column(
+				$select,
+				'exclude',
+				$if_true,
+				$if_false
+			);
+
+			// Select what we want
 			$mapper->select($select);
 
 			// A user might want to sort the results by the order of
@@ -386,6 +410,33 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	function get_included_entities($limit=FALSE, $offset=FALSE, $id_only=FALSE)
 	{
 		return $this->object->get_entities($limit, $offset, $id_only, 'included');
+	}
+
+	/**
+	 * Adds a FIND_IN_SET call to the select portion of the query, and
+	 * optionally defines a dynamic column
+	 * @param string $select
+	 * @param string $key
+	 * @param array $array
+	 * @param string $alias
+	 * @param boolean $add_column
+	 * @return string
+	 */
+	function _add_find_in_set_column($select, $key, $array, $alias, $add_column)
+	{
+		$set = implode(",", array_reverse($array));
+		if (!$select) $select = "1";
+		$select .= ", @{$alias} := FIND_IN_SET({$key}, '{$set}')";
+		if ($add_column) $select .= " AS {$alias}";
+		return $select;
+	}
+
+
+	function _add_if_column($select, $alias, $true, $false)
+	{
+		if (!$select) $select = "1";
+		$select .= ", IF(@{$alias} = 0, {$true}, {$false}) AS {$alias}";
+		return $select;
 	}
 
 	/**
