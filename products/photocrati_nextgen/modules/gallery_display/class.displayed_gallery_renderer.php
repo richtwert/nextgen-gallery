@@ -156,7 +156,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
 
             // Specific images selected
             elseif ($args['image_ids']) {
-                $args['source'] = 'all';
+                $args['source'] = 'galleries';
                 $args['entity_ids'] = $args['image_ids'];
                 unset($args['image_ids']);
             }
