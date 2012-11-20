@@ -445,9 +445,9 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		if ($exclusions) {
 			$set = implode(",", array_reverse($exclusions));
 			$album_select	.= ", @row := FIND_IN_SET({$album_key}, '{$set}')";
-			$album_select	.= ", IF(@row = 0, 1, 0) AS exclude";
+			$album_select	.= ", IF(@row = 0, 0, 1) AS exclude";
 			$gallery_select	.= ", @row := FIND_IN_SET({$gallery_key}, '{$set}')";
-			$gallery_select	.= ", IF(@row = 0, 1, 0) AS exclude";
+			$gallery_select	.= ", IF(@row = 0, 0, 1) AS exclude";
 		}
 
 		// Fetch entities

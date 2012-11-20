@@ -948,7 +948,9 @@ jQuery(function($){
 			render: function(){
 				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
-				var alt_text = this.model.get('alttext') ? this.model.get('alttext') : this.model.get('title');
+				var alt_text = this.model.get('alttext');
+				if (!alt_text) alt_text = this.model.get('title'); // galleries
+				if (!alt_text) alt_text = this.model.get('name');  // albums
 				alt_text = alt_text.replace(/\\&/g, '&').replace(/\\'/, "'");
 				image_container.attr({
 					title: alt_text,
