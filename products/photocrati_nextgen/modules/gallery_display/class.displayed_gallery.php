@@ -510,7 +510,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	 * @param boolean $add_column
 	 * @return string
 	 */
-	function _add_find_in_set_column($select, $key, $array, $alias, $add_column)
+	function _add_find_in_set_column($select, $key, $array, $alias, $add_column=FALSE)
 	{
 		$set = implode(",", array_reverse($array));
 		if (!$select) $select = "1";
