@@ -211,7 +211,7 @@ class M_Gallery_Display extends C_Base_Module
     {
         $params['source']           = $this->_get_param('source', 'albums', $params);
         $params['container_ids']    = $this->_get_param('id', NULL, $params);
-        $params['display_type']     = $this->_get_param('display_type', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_ALBUM, $params);
+        $params['display_type']     = $this->_get_param('display_type', PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM, $params);
         unset($params['id']);
         return $this->renderer->display_images($params, $inner_content);
     }

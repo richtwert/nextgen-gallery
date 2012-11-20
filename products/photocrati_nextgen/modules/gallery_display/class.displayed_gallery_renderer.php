@@ -62,16 +62,16 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
      * [ngg_images tag_ids="landscapes,wedding shoots" display_type="photocrati-nextgen_basic_thumbnails"]
      *
      * To retrieve galleries from albums 1 & #, but exclude sub-album 1:
-     * [ngg_images album_ids="1,2" exclusions="a1" display_type="photocrati-nextgen_basic_album"]
+     * [ngg_images album_ids="1,2" exclusions="a1" display_type="photocrati-nextgen_basic_compact_album"]
      *
      * To retrieve galleries from albums 1 & 2, but exclude gallery 1:
-     * [ngg_images album_ids="1,2" exclusions="1" display_type="photocrati-nextgen_basic_album"]
+     * [ngg_images album_ids="1,2" exclusions="1" display_type="photocrati-nextgen_basic_compact_album"]
      *
      * To retrieve image 2, 3, and 5 - independent of what container is used
      * [ngg_images image_ids="2,3,5" display_type="photocrati-nextgen_basic_thumbnails"]
      *
      * To retrieve galleries 3 & 5, custom sorted, in album view
-     * [ngg_images source="albums" gallery_ids="3,5" display_type="photocrati-nextgen_basic_album"]
+     * [ngg_images source="albums" gallery_ids="3,5" display_type="photocrati-nextgen_basic_compact_album"]
      *
      * To retrieve recent images, sorted by alt/title text
      * [ngg_images source="recent" order_by="alttext" display_type="photocrati-nextgen_basic_thumbnails"]
@@ -198,7 +198,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
                 $displayed_gallery->id(md5(serialize($displayed_gallery)));
 
                 // Display!
-				print_r($displayed_gallery);
+				// print_r($displayed_gallery);
                 return $this->object->render_displayed_gallery($displayed_gallery, TRUE);
             }
             else $retval =  "Invalid Displayed Gallery".var_dump($displayed_gallery->get_errors());
