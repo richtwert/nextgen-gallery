@@ -179,7 +179,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 			// Get the first entity from the displayed gallery. We will use this
 			// for a preview pic
-			$entity = array_pop($this->object->_displayed_gallery->get_entities(1, FALSE, FALSE));
+			$entity = array_pop($this->object->_displayed_gallery->get_included_entities(1, FALSE, FALSE));
 			$image = FALSE;
 			if ($entity) {
 				// This is an album or gallery

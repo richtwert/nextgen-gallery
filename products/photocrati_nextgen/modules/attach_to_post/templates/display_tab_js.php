@@ -984,7 +984,7 @@ jQuery(function($){
 				type_set: false,
 
 				entity_excluded: function(e){
-					this.model.set('exclude', e.srcElement.checked);
+					this.model.set('exclude', e.target.checked);
 				},
 
 				initialize: function(){
