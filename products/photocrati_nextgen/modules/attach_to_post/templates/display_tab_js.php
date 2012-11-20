@@ -381,14 +381,32 @@ jQuery(function($){
 		entity_id: function(){
 			return this.get(this.get('id_field'));
 		},
+
 		is_excluded: function() {
 			current_value = this.get('exclude');
 			if (_.isUndefined(current_value)) return false;
 			else if (_.isBoolean(current_value)) return current_value;
 			else return parseInt(current_value) == 0 ? false : true;
 		},
+
 		is_included: function(){
 			return !this.is_excluded();
+		},
+
+		is_gallery: function(){
+			retval = false;
+			if (this.get('is_gallery') == true) retval = true;
+			return retval;
+		},
+
+		is_album: function(){
+			retval = false;
+			if (this.get('is_album') == true) retval = true;
+			return retval;
+		},
+
+		is_image: function(){
+			return !this.is_album() && !this.is_gallery();
 		}
 	});
 
@@ -607,6 +625,7 @@ jQuery(function($){
 				this.entities.remove(model, {silent: true});
 				this.entities.add(model, {at: model.changed.sortorder, silent: true});
 				this.displayed_gallery.set('sortorder', this.entities.entity_ids());
+				this.displayed_gallery.set('order_by', 'sortorder');
 			}, this);
 
 			// Reset when the source changes
@@ -640,6 +659,8 @@ jQuery(function($){
 
 				_.each(response.entities, function(item){
 					item.exclude = parseInt(item.exclude) == 1 ? true : false;
+					item.is_gallery = parseInt(item.is_gallery) == 1 ? true : false;
+					item.is_album = parseInt(item.is_album) == 1 ? true : false;
 					item = new Ngg.DisplayTab.Models.Entity(item);
 					self.entities.push(item);
 				});
@@ -838,7 +859,7 @@ jQuery(function($){
 
 			fill_gallery_sortorder_options: function(){
 				this.sortorder_options.reset();
-				this.sortorder_options.push(this.create_sortorder_option('' ,'Custom'));
+				this.sortorder_options.push(this.create_sortorder_option('sortorder' ,'Custom'));
 				this.sortorder_options.push(this.create_sortorder_option('name', 'Name'));
 				this.sortorder_options.push(this.create_sortorder_option('galdesc', 'Description'));
 			},
@@ -1247,6 +1268,8 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
+
+			console.log(this.displayed_gallery);
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {

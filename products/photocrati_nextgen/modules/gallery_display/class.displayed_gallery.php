@@ -322,7 +322,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$gallery_key	= $gallery_mapper->get_primary_key_column();
 		$select			= $id_only ? $album_key : '*';
-		$retval		= array();
+		$retval			= array();
 
 		// If no exclusions are specified, are entity_ids are specified,
 		// and we're to return is "included", then we have a relatively easy
@@ -404,14 +404,6 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			}
 		}
 
-		// Sort the entities
-		if ($this->object->order_by && $this->object->order_by != 'sortorder')
-			usort($retval, array(&$this, '_sort_album_result'));
-
-		// Limit the entities
-		if ($limit && $offset)
-			$retval = array_slice($retval, $offset, $limit);
-
 		return $retval;
 	}
 
@@ -430,8 +422,14 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		$album_key		= $album_mapper->get_primary_key_column();
 		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$gallery_key	= $gallery_mapper->get_primary_key_column();
-		$album_select	= $id_only ? $album_key : '*';
-		$gallery_select = $id_only ? $gallery_key : '*';
+		$album_select	= ($id_only ? $album_key : '*').", 1 AS is_album";
+		$gallery_select = ($id_only ? $gallery_key : '*').", 1 AS is_gallery";
+
+		// Modify the sort order of the entities
+		if ($this->object->sortorder) {
+			$sortorder = array_intersect($this->object->sortorder, $entity_ids);
+			$entity_ids = array_merge($sortorder,array_diff($entity_ids, $sortorder));
+		}
 
 		// Segment entity ids into two groups - galleries and albums
 		foreach ($entity_ids as $entity_id) {
@@ -443,11 +441,30 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 		// Adjust query to include an exclude property
 		if ($exclusions) {
-			$set = implode(",", array_reverse($exclusions));
-			$album_select	.= ", @row := FIND_IN_SET({$album_key}, '{$set}')";
-			$album_select	.= ", IF(@row = 0, 0, 1) AS exclude";
-			$gallery_select	.= ", @row := FIND_IN_SET({$gallery_key}, '{$set}')";
-			$gallery_select	.= ", IF(@row = 0, 0, 1) AS exclude";
+			$album_select = $this->object->_add_find_in_set_column(
+				$album_select,
+				$album_key,
+				$this->object->exclusions,
+				'exclude'
+			);
+			$album_select = $this->object->_add_if_column(
+				$album_select,
+				'exclude',
+				0,
+				1
+			);
+			$gallery_select = $this->object->_add_find_in_set_column(
+				$gallery_select,
+				$gallery_key,
+				$this->object->exclusions,
+				'exclude'
+			);
+			$gallery_select = $this->object->_add_if_column(
+				$gallery_select,
+				'exclude',
+				0,
+				1
+			);
 		}
 
 		// Fetch entities
@@ -465,6 +482,16 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			else
 				$retval[] = array_shift($galleries);
 		}
+
+		// Sort the entities
+		if ($this->object->order_by && $this->object->order_by != 'sortorder')
+			usort($retval, array(&$this, '_sort_album_result'));
+		if ($this->object->order_direction == 'DESC')
+			$retval = array_reverse($retval);
+
+		// Limit the entities
+		if ($limit && $offset)
+			$retval = array_slice($retval, $offset, $limit);
 
 		return $retval;
 	}
@@ -520,7 +547,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	}
 
 
-	function _add_if_column($select, $alias, $true, $false)
+	function _add_if_column($select, $alias, $true=1, $false=0)
 	{
 		if (!$select) $select = "1";
 		$select .= ", IF(@{$alias} = 0, {$true}, {$false}) AS {$alias}";
