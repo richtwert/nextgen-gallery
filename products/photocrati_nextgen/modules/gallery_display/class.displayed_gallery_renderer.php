@@ -198,7 +198,6 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
                 $displayed_gallery->id(md5(serialize($displayed_gallery)));
 
                 // Display!
-				// print_r($displayed_gallery);
                 return $this->object->render_displayed_gallery($displayed_gallery, TRUE);
             }
             else $retval =  "Invalid Displayed Gallery".var_dump($displayed_gallery->get_errors());
