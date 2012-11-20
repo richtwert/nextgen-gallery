@@ -237,7 +237,6 @@ jQuery(function($){
             display_type: null,
             display_settings: {},
             exclusions: [],
-            returns: 'both',
             sortorder: []
         }
     });
@@ -613,9 +612,6 @@ jQuery(function($){
 			// Reset when the source changes
 			this.sources.on('selected', this.render, this);
 
-			// Fetch the initial collection of entities
-			this.entities.reset();
-
 			this.render();
 		},
 
@@ -985,7 +981,7 @@ jQuery(function($){
 				type_set: false,
 
 				entity_excluded: function(e){
-					this.model.set('exclude', e.srcElement.checked);
+					this.model.set('exclude', e.target.checked);
 				},
 
 				initialize: function(){
