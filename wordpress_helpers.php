@@ -9,11 +9,12 @@ function real_site_url($path="", $scheme=NULL, $admin_url=FALSE)
 {
     // determine if we need to edit $path
     $parsed_url   = parse_url(site_url());
-    $exploded_url = explode('/', ltrim($parsed_url['path'], '/'));
 
-    // if site_url() returns subdirectories as part of the site url we must
-    // strip those from the requested path so wordpress won't just add them
-    // again when we call site_url()
+    if (isset($parsed_url['path']))
+        $exploded_url = explode('/', ltrim($parsed_url['path'], '/'));
+
+    // if site_url() returns subdirectories as part of the site url we must strip those from the requested path so
+    // wordpress won't just add them again when we call site_url()
     if (!empty($exploded_url))
     {
         $exploded_path = explode('/', ltrim($path, '/'));
