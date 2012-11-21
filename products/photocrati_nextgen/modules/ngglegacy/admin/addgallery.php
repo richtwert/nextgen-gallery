@@ -272,6 +272,9 @@ class nggAddGallery {
     	});
 
     	uploader.bind('FileUploaded', function(up, file, response) {
+            $('html, body').animate({
+                scrollTop: $('#' + file.id).position().top - 20
+            });
     		uploadSuccess(file, response);
     	});
 
