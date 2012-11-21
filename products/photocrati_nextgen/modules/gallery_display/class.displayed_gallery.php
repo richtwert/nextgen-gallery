@@ -459,13 +459,29 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			);
 		}
 
+		// Add sorting parameter to the gallery and album queries
+		$gallery_select = $this->object->_add_find_in_set_column(
+			$gallery_select,
+			$gallery_key,
+			$gallery_ids,
+			'ordered_by',
+			TRUE
+		);
+		$album_select = $this->object->_add_find_in_set_column(
+			$album_select,
+			$album_key,
+			$album_ids,
+			'ordered_by',
+			TRUE
+		);
+
 		// Fetch entities
 		$galleries	= $gallery_mapper->select($gallery_select)->where(
 			array("{$gallery_key} IN %s", $gallery_ids)
-		)->run_query();
+		)->order_by('ordered_by', 'DESC')->run_query();
 		$albums		= $album_mapper->select($album_select)->where(
 			array("{$album_key} IN %s", $album_ids)
-		)->run_query();
+		)->order_by('ordered_by', 'DESC')->run_query();
 
 		// Reorder entities according to order specified in entity_ids
 		foreach ($entity_ids as $entity_id) {
