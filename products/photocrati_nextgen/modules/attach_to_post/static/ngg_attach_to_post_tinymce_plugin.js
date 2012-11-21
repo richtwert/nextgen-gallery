@@ -104,6 +104,8 @@
 			// when the attach to post interface is closed
 			this.editor.windowManager.onClose.add(function(win){
 				jQuery('html,body').css('overflow', 'auto');
+                tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select('p')[0]);
+                tinyMCE.activeEditor.selection.collapse(0);
 			});
 
 			// Open a window, occupying 90% of the screen real estate
