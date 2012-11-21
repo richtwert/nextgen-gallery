@@ -97,6 +97,9 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         $params['galleries']    = $params['entities'];
         unset($params['entities']);
         foreach ($params['galleries'] as &$gallery) {
+			$gallery->title		= stripslashes($gallery->title);
+			$gallery->name		= stripslashes($gallery->name);
+			$gallery->galdesc	= stripslashes($gallery->galdesc);
 
             // Get the preview image url
            $gallery->previewurl = '';

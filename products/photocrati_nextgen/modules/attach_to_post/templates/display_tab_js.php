@@ -149,7 +149,7 @@ jQuery(function($){
 
             render: function(){
                 var self = this;
-                this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&'));
+                this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&').replace(/\\'/g, "'"));
                 this.$el.attr({
                     value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
                     selected: self.model.get('selected') == true
@@ -407,6 +407,18 @@ jQuery(function($){
 
 		is_image: function(){
 			return !this.is_album() && !this.is_gallery();
+		},
+
+		alttext: function(){
+			if (this.is_image()) {
+				return this.get('alttext');
+			}
+			else if (this.is_gallery()) {
+				return this.get('title');
+			}
+			else if (this.is_album()) {
+				return this.get('name');
+			}
 		}
 	});
 
@@ -970,10 +982,7 @@ jQuery(function($){
 			render: function(){
 				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
-				var alt_text = this.model.get('alttext');
-				if (!alt_text) alt_text = this.model.get('title'); // galleries
-				if (!alt_text) alt_text = this.model.get('name');  // albums
-				alt_text = alt_text.replace(/\\&/g, '&').replace(/\\'/, "'");
+				var alt_text = this.model.alttext().replace(/\\&/g, '&').replace(/\\'/g, "'");
 				image_container.attr({
 					title: alt_text,
 					style: "background-image: url('"+this.model.get('thumb_url')+"')"
