@@ -460,20 +460,30 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		}
 
 		// Add sorting parameter to the gallery and album queries
-		$gallery_select = $this->object->_add_find_in_set_column(
-			$gallery_select,
-			$gallery_key,
-			$gallery_ids,
-			'ordered_by',
-			TRUE
-		);
-		$album_select = $this->object->_add_find_in_set_column(
-			$album_select,
-			$album_key,
-			$album_ids,
-			'ordered_by',
-			TRUE
-		);
+		if ($gallery_ids) {
+			$gallery_select = $this->object->_add_find_in_set_column(
+				$gallery_select,
+				$gallery_key,
+				$gallery_ids,
+				'ordered_by',
+				TRUE
+			);
+		}
+		else {
+			$gallery_select .= ", 0 AS ordered_by";
+		}
+		if ($album_ids) {
+			$album_select = $this->object->_add_find_in_set_column(
+				$album_select,
+				$album_key,
+				$album_ids,
+				'ordered_by',
+				TRUE
+			);
+		}
+		else {
+			$album_select .= ", 0 AS ordered_by";
+		}
 
 		// Fetch entities
 		$galleries	= $gallery_mapper->select($gallery_select)->where(
@@ -592,6 +602,19 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		if (isset($sources[$this->object->source])) {
 			$this->object->source = $sources[$this->object->source];
 			$valid = TRUE;
+		}
+
+		// Ensure that exclusions, entity_ids, and sortorder have valid elements.
+		// IE likes to send empty array as an array with a single element that
+		// has no value
+		if ($this->object->exclusions && !$this->object->exclusions[0]) {
+			$this->object->exclusions = array();
+		}
+		if ($this->object->entity_ids && !$this->object->entity_ids[0]) {
+			$this->object->entity_ids = array();
+		}
+		if ($this->object->sortorder && !$this->object->sortorder[0]) {
+			$this->object->sortorder = array();
 		}
 
 		return $valid;

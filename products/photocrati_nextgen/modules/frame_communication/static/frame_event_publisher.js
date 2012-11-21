@@ -68,7 +68,7 @@ window.Frame_Event_Publisher = {
 			try {
 				child.emit(events);
 			}
-			catch (Exception) {
+			catch (ex) {
 				delete this.children.index;
 			}
 		}
@@ -82,7 +82,8 @@ window.Frame_Event_Publisher = {
 		try {
 			while (retval.document !== retval.parent.document) retval = retval.parent;
 		}
-		catch (Exception){
+		catch (ex){
+			console.log(ex);
 		}
 		return retval.Frame_Event_Publisher;
 	},

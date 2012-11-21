@@ -179,7 +179,6 @@ class nggAddGallery {
 				var option = $('<option/>').attr({
 					value:	gallery_id
 				});
-				debugger;
 				option.html(gallery_id+' - '+gallery_title);
 				$('#galleryselect').append(option);
 				$('select[name="zipgalselect"]').append(option.clone());
