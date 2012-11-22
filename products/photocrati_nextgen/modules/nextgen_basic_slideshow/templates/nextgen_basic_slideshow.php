@@ -137,15 +137,15 @@
 	<script type="text/javascript">
 	//<![CDATA[
 	jQuery('#<?php echo_h($anchor)?>-image-list').hide().removeClass('ngg-slideshow-nojs');
-	
-	jQuery(document).ready(function(){
-		jQuery('#<?php echo_h($anchor)?>').nggShowSlideshow({
-			id: '<?php echo_h($displayed_gallery_id)?>',
-			fx: '<?php echo_h($cycle_effect)?>',
-			width: <?php echo_h($gallery_width)?>,
-			height: <?php echo_h($gallery_height)?>,
-			domain: '<?php echo_h(trailingslashit(home_url()))?>',
-			timeout: <?php echo_h(intval($cycle_interval)*1000)?>
+
+    jQuery(document).ready(function() {
+		jQuery('#<?php echo_h($anchor); ?>').nggShowSlideshow({
+			id: '<?php echo_h($displayed_gallery_id); ?>',
+			fx: '<?php echo_h($cycle_effect); ?>',
+			width: <?php echo_h($gallery_width); ?>,
+			height: <?php echo_h($gallery_height); ?>,
+			domain: '<?php echo_h(trailingslashit(home_url())); ?>',
+			timeout: <?php echo_h(intval($cycle_interval) * 1000); ?>
 		});
 	});
 	//]]>
