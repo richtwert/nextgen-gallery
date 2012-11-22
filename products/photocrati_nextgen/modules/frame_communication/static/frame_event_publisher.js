@@ -83,7 +83,7 @@ window.Frame_Event_Publisher = {
 			while (retval.document !== retval.parent.document) retval = retval.parent;
 		}
 		catch (ex){
-			console.log(ex);
+			//console.log(ex);
 		}
 		return retval.Frame_Event_Publisher;
 	},
@@ -95,7 +95,7 @@ window.Frame_Event_Publisher = {
 		if (forced == undefined) forced = false;
 		for (var event_id in events) {
 			if (!forced && !this.has_received_event(event_id)) {
-				console.log("Emitting "+event_id+" to "+this.id);
+				//console.log("Emitting "+event_id+" to "+this.id);
 				this.trigger_event(event_id, events[event_id]);
 			}
 		}

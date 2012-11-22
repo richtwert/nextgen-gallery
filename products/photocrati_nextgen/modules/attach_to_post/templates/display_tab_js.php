@@ -1196,7 +1196,7 @@ jQuery(function($){
 				else {
 					var id_field = response.displayed_gallery.id_field;
 					var id = response.displayed_gallery[id_field];
-					console.log(self.displayed_gallery.get('sortorder'));
+					//console.log(self.displayed_gallery.get('sortorder'));
 					self.displayed_gallery.set('id', id);
 					var editor = parent.tinyMCE.activeEditor;
 					var preview_url = ngg_displayed_gallery_preview_url + '?id='+id;
@@ -1280,7 +1280,7 @@ jQuery(function($){
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
 
-			console.log(this.displayed_gallery);
+			//console.log(this.displayed_gallery);
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
