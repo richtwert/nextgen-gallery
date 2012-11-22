@@ -13,7 +13,7 @@ if (window.frameElement) {
 		// Adjust the height of the frame
 		parent.adjust_height_for_frame(window.frameElement, function(){
 			$('#iframely').css({
-				position: 'relative',
+				position: 'static',
 				visibility: 'visible'
 			}).animate({
 				opacity: 1.0
