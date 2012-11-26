@@ -300,7 +300,8 @@ class C_Image_Wrapper
                 return $this->_cache['thumbHTML'];
 
             case 'thumbPath':
-                $this->_cache['thumbPath'] = $this->__get('thumbnailURL');
+                $storage = $this->get_storage();
+                $this->_cache['thumbPath'] = $storage->get_image_abspath($this->_orig_image, 'thumbnail');
                 return $this->_cache['thumbPath'];
 
             case 'thumbnailURL':
