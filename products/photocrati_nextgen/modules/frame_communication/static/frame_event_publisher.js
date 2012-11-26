@@ -32,9 +32,7 @@ window.Frame_Event_Publisher = {
 	},
 
 	register_child: function(child) {
-		if (this.children[child.id] == undefined) {
-			this.children[child.id] = child;
-		}
+		this.children[child.id] = child;
 	},
 
 	broadcast: function(events, child){
@@ -69,6 +67,7 @@ window.Frame_Event_Publisher = {
 				child.emit(events);
 			}
 			catch (ex) {
+				if (console) console.log(ex);
 				delete this.children.index;
 			}
 		}
@@ -83,7 +82,7 @@ window.Frame_Event_Publisher = {
 			while (retval.document !== retval.parent.document) retval = retval.parent;
 		}
 		catch (ex){
-			//console.log(ex);
+			if (console) console.log(ex);
 		}
 		return retval.Frame_Event_Publisher;
 	},
@@ -94,8 +93,9 @@ window.Frame_Event_Publisher = {
 	emit: function(events, forced){
 		if (forced == undefined) forced = false;
 		for (var event_id in events) {
+			var event = events[event_id];
 			if (!forced && !this.has_received_event(event_id)) {
-				//console.log("Emitting "+event_id+" to "+this.id);
+				if (console) console.log("Emitting "+event_id+":"+event.event+" to "+this.id);
 				this.trigger_event(event_id, events[event_id]);
 			}
 		}

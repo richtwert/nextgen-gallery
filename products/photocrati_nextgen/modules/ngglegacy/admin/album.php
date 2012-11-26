@@ -189,7 +189,7 @@ jQuery(document).ready(
 
 			// When a new album is added, add it to the drop-down as well as
 			// create a selectable album used for drag n'drop
-			Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries, attach_to_post:new_gallery', function(){
+			Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries attach_to_post:new_gallery', function(){
 				window.location.reload(true);
 			});
 
