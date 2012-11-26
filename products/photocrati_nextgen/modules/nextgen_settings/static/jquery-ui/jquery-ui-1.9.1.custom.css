@@ -1848,6 +1848,7 @@ body .ui-tooltip {
 }
 
 .ui-tabs .ui-tabs-nav li a {
+    outline: none;
     border-bottom: 1px solid #dfdfdf;
 }
 
@@ -1862,10 +1863,17 @@ body .ui-tooltip {
     border-bottom: 1px solid #ffffff;
 }
 
+.ui-tabs-icon + ul.ui-tabs-nav {
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+    -khtml-border-bottom-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
 .ui-tabs-icon {
     float: left;
     background-image: url('images/ui-icons-photocrati.png');
-    margin-right: 4px;
+    margin: 4px 4px 0 0;
     height: 30px;
     width: 30px;
 }
