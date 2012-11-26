@@ -26,31 +26,11 @@ html,body {
 	background: none;
 }
 
-/* tabs bottom border/underline */
 .ui-widget-header {
 	border: 0px;
 	border-bottom: 1px solid #dfdfdf;
 	background: none;
 }
-
-.ui-tabs .ui-tabs-nav li {
-    margin-bottom: -1px;
-}
-
-.ui-tabs .ui-tabs-nav li a {
-    border-bottom: 1px solid #dfdfdf;
-}
-
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
-    border-bottom: 1px solid #ffffff;
-}
-
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
-    border-top: 1px solid #8a8a8a;
-    border-right: 1px solid #8a8a8a;
-    border-left: 1px solid #8a8a8a;
-}
-/* end tabs bottom border/underline */
 
 iframe {
 	width: 100%;

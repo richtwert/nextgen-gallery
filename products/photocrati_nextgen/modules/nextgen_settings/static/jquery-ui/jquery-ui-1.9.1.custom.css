@@ -4,6 +4,7 @@
 * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=sans-serif&fwDefault=normal&fsDefault=12px&cornerRadius=4px&bgColorHeader=ececec&bgTextureHeader=03_highlight_soft.png&bgImgOpacityHeader=75&borderColorHeader=dfdfdf&fcHeader=333333&iconColorHeader=999999&bgColorContent=ffffff&bgTextureContent=01_flat.png&bgImgOpacityContent=75&borderColorContent=dfdfdf&fcContent=333333&iconColorContent=333333&bgColorDefault=ececec&bgTextureDefault=04_highlight_hard.png&bgImgOpacityDefault=75&borderColorDefault=dfdfdf&fcDefault=333333&iconColorDefault=333333&bgColorHover=ececec&bgTextureHover=06_inset_hard.png&bgImgOpacityHover=75&borderColorHover=cccccc&fcHover=000000&iconColorHover=333333&bgColorActive=ececec&bgTextureActive=01_flat.png&bgImgOpacityActive=65&borderColorActive=dfdfdf&fcActive=333333&iconColorActive=333333&bgColorHighlight=ffffe0&bgTextureHighlight=02_glass.png&bgImgOpacityHighlight=55&borderColorHighlight=e6db55&fcHighlight=333333&iconColorHighlight=21759b&bgColorError=ffebe8&bgTextureError=02_glass.png&bgImgOpacityError=95&borderColorError=cc0000&fcError=cc0000&iconColorError=cc0000&bgColorOverlay=aaaaaa&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=0&opacityOverlay=30&bgColorShadow=aaaaaa&bgTextureShadow=01_flat.png&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=3px
 * Copyright (c) 2012 jQuery Foundation and other contributors Licensed MIT */
 /* This theme is made to look like the Wordpress style when possible */
+/* This file is presented as-is from jqueryui.com; scroll to line ~1812 to find changes */
 
 /* Layout helpers
 ----------------------------------*/
@@ -66,7 +67,6 @@
     text-indent: -99999px;
     overflow: hidden;
     background-repeat: no-repeat;
-    float: left;
 }
 
 /* Misc visuals
@@ -172,10 +172,6 @@
     margin-top: 2px;
     padding: .5em .5em .5em .7em;
     zoom: 1;
-    font-size: 1.17em;
-    text-shadow: #fff 0 1px 0;
-    font-family: Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
-    line-height: 1;
 }
 
 .ui-accordion .ui-accordion-icons {
@@ -1810,4 +1806,66 @@ body .ui-tooltip {
     -khtml-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
+}
+
+/* Everything that follows was added by Photocrati */
+.ui-icon {
+    float: left;
+}
+
+/* Make accordions look like Wordpress' semi-accordion header field */
+.ui-accordion .ui-accordion-header {
+    font-size: 1.17em;
+    text-shadow: #fff 0 1px 0;
+    font-family: Georgia, "Times New Roman", "Bitstream Charter", Times, serif;
+    line-height: 1;
+}
+
+/* Tabs: remove background, change text color, and add :hover state */
+.ui-tabs .ui-tabs-nav li {
+    background: none;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+    background: none;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+    color: #aaa;
+}
+
+.ui-tabs .ui-tabs-nav li a:hover {
+    color: #d54e21
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+    color: #464646;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    margin-bottom: -1px;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+    border-bottom: 1px solid #dfdfdf;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+    border-bottom: 1px solid #ffffff;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+    border-top: 1px solid #8a8a8a;
+    border-right: 1px solid #8a8a8a;
+    border-left: 1px solid #8a8a8a;
+    border-bottom: 1px solid #ffffff;
+}
+
+.ui-tabs-icon {
+    float: left;
+    background-image: url('images/ui-icons-photocrati.png');
+    margin-right: 4px;
+    height: 30px;
+    width: 30px;
 }

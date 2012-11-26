@@ -9,6 +9,7 @@
     </head>
 	<body>
 		<div id="attach_to_post_tabs">
+            <div class='ui-tabs-icon'><br/></div>
 			<ul>
 			<?php foreach ($tab_titles as $title => $id): ?>
 				<li>
