@@ -120,14 +120,8 @@ class M_Attach_To_Post extends C_Base_Module
 
 		// Emit frame communication events
 		add_action('ngg_created_new_gallery',	array(&$this, 'new_gallery_event'));
-		add_action('ngg_added_new_image',		array(&$this, 'new_image_event'));
-		add_action('ngg_add_album',				array(&$this, 'new_album_event'));
-		add_action('ngg_update_album',			array(&$this, 'album_modified_event'));
-		add_action('ngg_delete_album',			array(&$this, 'album_deleted_event'));
-		add_action('ngg_delete_picture',		array(&$this, 'image_deleted_event'));
-		add_action('ngg_delete_gallery',		array(&$this, 'gallery_deleted_event'));
-		add_action('ngg_image_updated',			array(&$this, 'image_modified_event'));
-		add_action('ngg_update_gallery',		array(&$this, 'gallery_modified_event'));
+		add_action('ngg_after_new_images_added',array(&$this, 'images_added_event'));
+		add_action('ngg_page_event',			array(&$this, 'nextgen_page_event'));
 	}
 
 	/**
@@ -380,7 +374,7 @@ class M_Attach_To_Post extends C_Base_Module
 	{
 		$this->events->add_event(array(
 			'event'		=>	'image_deleted',
-			'image_id'	=>	$image_id
+			'entity_id'	=>	$image_id
 		));
 	}
 
@@ -392,7 +386,7 @@ class M_Attach_To_Post extends C_Base_Module
 	{
 		$this->events->add_event(array(
 			'event'		=>	'gallery_deleted',
-			'gallery_id'=>	$gallery_id
+			'parent_id'	=>	$gallery_id
 		));
 	}
 
@@ -403,19 +397,15 @@ class M_Attach_To_Post extends C_Base_Module
 	function image_modified_event($image)
 	{
 		$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
-		$storage	= $this->get_registry()->get_utility('I_Gallery_Storage');
-		$settings	= $this->get_registry()->get_utility('I_NextGen_Settings');
 		$image_id	= $image->{$mapper->get_primary_key_column()};
+		$gallery_id	= 0;
 		$image		= $mapper->find($image_id);
-		if ($image) {
-			$image->thumb_url  = $storage->get_image_url($image, 'thumb');
-			$image->max_width  = $settings->thumbwidth;
-			$image->max_height = $settings->thumbheight;
-		}
+		if ($image) $gallery_id = intval($image->galleryid);
+
 		$this->events->add_event(array(
 			'event'		=>	'image_modified',
-			'image'		=>	$image,
-			'image_id'	=>	$image_id
+			'entity_id'	=>	$image_id,
+			'parent_id'	=>	$gallery_id
 		));
 	}
 
@@ -429,9 +419,31 @@ class M_Attach_To_Post extends C_Base_Module
 		$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$this->events->add_event(array(
 			'event'		=>	'gallery_modified',
-			'gallery'	=>	$mapper->find($gallery_id),
-			'gallery_id'=>	intval($gallery_id)
+			'entity_id'	=>	intval($gallery_id)
 		));
+	}
+
+	/**
+	 * Notifies a frame that images have been added to a gallery
+	 * @param int $gallery_id
+	 * @param array $image_ids
+	 */
+	function images_added_event($gallery_id, $image_ids=array())
+	{
+		$this->events->add_event(array(
+			'event'			=>	'images_added',
+			'gallery_id'		=>	intval($gallery_id)
+		));
+	}
+
+	/**
+	 * Notifies a frame that an action has been performed on a particular
+	 * NextGEN page
+	 * @param array $event
+	 */
+	function nextgen_page_event($event)
+	{
+		$this->events->add_event($event);
 	}
 }
 
