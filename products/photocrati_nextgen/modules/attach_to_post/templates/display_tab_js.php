@@ -1360,101 +1360,33 @@ jQuery(function($){
 					app.galleries.push(data.gallery);
 				});
 
-				// New image event
-				Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
-					if (app.sources.selected_value() == 'galleries') {
-						var gallery_id = parseInt(data.image.galleryid);
-						if (_.indexOf(app.galleries.selected_ids(), gallery_id) >= 0) {
-							app.entities.push(data.image);
-						}
-					}
-				});
+				// A change has been made using the "Manage Galleries" page
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries attach_to_post:manage_images', function(data){
 
-				// New album event
-				Frame_Event_Publisher.listen_for('attach_to_post:new_album', function(data){
-					app.albums.push(data.album);
-				});
+					// Refresh the list of galleries
+					// TODO
 
-				// Album modified event
-				Frame_Event_Publisher.listen_for('attach_to_post:album_modified', function(data){
-					var album_id = parseInt(data.album[data.album.id_field]);
-					var album = app.albums.find(function(item){
-						return parseInt(item.id) == album_id;
-					});
-					album.set(data.album);
-
-					if (app.sources.selected_value() == 'albums'){
-						if (app.albums.selected_ids().indexOf(album_id) >= 0) {
+					// If we're viewing galleries or images, then we need to refresh the entity list
+					var selected_source = app.sources.selected().pop();
+					if (selected_source) {
+						if (_.indexOf(selected_source.get('returns'), 'image') >= 0 ||
+							_.indexOf(selected_source.get('returns'), 'gallery')) {
 							app.entities.reset();
 						}
 					}
 				});
 
-				// Album deleted event
-				Frame_Event_Publisher.listen_for('attach_to_post:album_deleted', function(data){
-					var album_id = parseInt(data.album_id);
-					var album = app.albums.find(function(item){
-						return parseInt(item.id) == album_id;
-					});
-					var selected_album_ids = app.sources.selected_ids();
-					if (album) app.albums.remove(album);
-					if (app.sources.selected_value() == 'albums') {
-						if (_.indexOf(selected_album_ids, album_id) >= 0) {
+				// A change has been made using the "Manage Albums" page
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_albums', function(data){
+					// Refresh the list of albums
+					// TODO
+
+					// If we're viewing albums, then we need to refresh the entity list
+					var selected_source = app.sources.selected().pop();
+					if (selected_source) {
+						if (_.indexOf(selected_source.get('returns'), 'album') >= 0) {
 							app.entities.reset();
 						}
-					}
-				});
-
-				// Image deleted event
-				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-					var selected_source = app.sources.selected().pop();
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
-						var image_id = parseInt(data.image_id);
-						var image = app.entities.find(function(item){
-							return parseInt(item.entity_id()) == image_id;
-						});
-						if (image) app.entities.remove(image);
-					}
-				});
-
-				// Image was modified
-				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
-					var selected_source = app.sources.selected().pop();
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
-						var image_id = parseInt(data.image[data.image.id_field]);
-						var image = app.entities.find(function(item){
-							return parseInt(item.entity_id()) == image_id;
-						});
-						if (image) {
-							image.set(data.image);
-						}
-					}
-				});
-
-				// Gallery deleted event
-				Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
-					var gallery_id = parseInt(data.gallery_id);
-					var gallery = app.galleries.find(function(item){
-						return parseInt(item.id) == gallery_id;
-					});
-					if (gallery) app.galleries.remove(gallery);
-				});
-
-				// Gallery modified event
-				Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
-					var selected_source = app.sources.selected().pop();
-					var gallery_id = parseInt(data.gallery_id);
-					var gallery = app.galleries.find(function(item){
-						return parseInt(item.id) == gallery_id;
-					});
-
-					// Update the gallery
-					gallery.set(data.gallery);
-
-					// If we're viewing an album, refresh it's entities
-					// should this gallery be included
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'gallery') >= 0) {
-						app.entities.reset();
 					}
 				});
 

@@ -233,56 +233,6 @@ function checkSelected() {
 jQuery(document).ready( function($) {
 	if ($(this).data('ready')) return;
 
-	if (window.Frame_Event_Publisher) {
-
-		// If an image has been added to a gallery, and we're viewing that
-		// gallery, refresh the page to get the latest information
-		Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
-			var gallery_id = data.image.galleryid;
-			if (location.search.indexOf("gid="+gallery_id) >= 0) {
-					window.location.reload(true);
-			}
-		});
-
-		// If an image has been deleted, and we're viewing that particular
-		// gallery, refresh the page to get the latest information
-		Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-			var gallery_id = data.image.galleryid;
-			if (location.search.indexOf("gid="+gallery_id) >= 0) {
-					window.location.reload(true);
-			}
-		});
-
-		// If a gallery has been deleted, and we're viewing that particular
-		// gallery, then we need to go back to the "Manage Galleries" page
-		Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(){
-			if (window.frameElement) {
-				window.location = window.frameElement.src;
-			}
-		});
-
-		// If an image has been modified and we're currently displaying
-		// the gallery (with the list of images contained), then refresh
-		// the page
-		Frame_Event_Publisher.listen_for('image_modified', function(data){
-			var gallery_id = data.image.galleryid;
-			if (location.search.indexOf("gid="+gallery_id) >= 0) {
-				window.location.reload(true);
-			}
-		});
-
-		// If a gallery has been modified, we'll refresh the page to display
-		// the most recent information
-		Frame_Event_Publisher.listen_for('gallery_modified', function(data){
-			var gallery_id = data.image.galleryid;
-
-			// If we're viewing the gallery, then we need to refresh the page
-			if (location.search.indexOf("gid="+gallery_id) >= 0) {
-				window.location.reload(true);
-			}
-		});
-	}
-
 	// close postboxes that should be closed
 	jQuery('.if-js-closed').removeClass('if-js-closed').addClass('closed');
 	postboxes.add_postbox_toggles('ngg-manage-gallery');

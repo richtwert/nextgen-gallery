@@ -38,7 +38,7 @@ class nggAdminPanel{
 		// Notify of page event
 		if (isset($_REQUEST['page']) && $_POST) {
 			$event = array(
-				'event'	=>	$_REQUEST['page']
+				'event'	=>	str_replace('-', '_', str_replace('nggallery', '', $_REQUEST['page']))
 			);
 
 			// Do we have a list of galleries that are being affected?
