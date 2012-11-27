@@ -243,9 +243,15 @@ jQuery(function($){
 				action: this.action,
 				limit: limit ? limit : this.fetch_limit,
 				offset: offset ? offset : 0
-
 			};
-			return _.extend(request, this.extra_data);
+
+			var extra_data = {};
+			for (var index in this.extra_data) {
+				var item = this.extra_data[index];
+				extra_data[index] = item.toJSON? item.toJSON() : item;
+			}
+
+			return _.extend(request, extra_data);
 		},
 
 		_add_item: function(item) {
@@ -1314,7 +1320,7 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
-			this.entities.extra_data.displayed_gallery = this.displayed_gallery.toJSON();
+			this.entities.extra_data.displayed_gallery = this.displayed_gallery;
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
