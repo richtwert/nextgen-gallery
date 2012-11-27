@@ -296,10 +296,9 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function new_gallery_event($gallery_id)
 	{
-		$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$this->events->add_event(array(
 			'event'		=>	'new_gallery',
-			'gallery'	=>	$mapper->find($gallery_id)
+			'gallery_id'=>	intval($gallery_id)
 		));
 	}
 

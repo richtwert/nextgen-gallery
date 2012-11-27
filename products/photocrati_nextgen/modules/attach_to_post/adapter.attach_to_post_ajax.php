@@ -50,7 +50,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 		// Get the galleries
 		$mapper->select();
 		if ($limit) $mapper->limit($limit, $offset);
-		$response['galleries'] = $mapper->run_query();
+		$response['items'] = $mapper->run_query();
 
 		return $response;
 	}
@@ -76,7 +76,7 @@ class A_Attach_To_Post_Ajax extends Mixin
         // Get the albums
         $mapper->select();
         if ($limit) $mapper->limit($limit, $offset);
-        $response['albums'] = $mapper->run_query();
+        $response['items'] = $mapper->run_query();
 
         return $response;
     }
@@ -85,7 +85,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 	 * Gets existing image tags
 	 * @return array
 	 */
-	function get_image_tags_action()
+	function get_existing_image_tags_action()
 	{
 		$response = array();
 
@@ -93,14 +93,14 @@ class A_Attach_To_Post_Ajax extends Mixin
 		$offset = $this->object->param('offset');
 		$response['limit'] = $limit = $limit ? $limit : 0;
 		$response['offset'] = $offset = $offset ? $offset : 0;
-		$response['image_tags'] = array();
+		$response['items'] = array();
 		$params = array(
 			'number'	=>	$limit,
 			'offset'	=>	$offset,
 			'fields'	=>	'names'
 		);
 		foreach (get_terms('ngg_tag', $params) as $term) {
-			$response['image_tags'][] = array(
+			$response['items'][] = array(
 				'id'	=>	$term,
 				'title'	=>	$term
 			);
@@ -124,12 +124,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 			foreach ($params as $key => $value) $displayed_gallery->$key = $value;
 			$response['limit']	= $limit = $limit ? $limit : 0;
 			$response['offset'] = $offset = $offset ? $offset : 0;
-			$response['count']	= $displayed_gallery->get_entity_count('both');
-			$response['entities'] = $displayed_gallery->get_entities($limit, $offset, FALSE, 'both');
+			$response['total']	= $displayed_gallery->get_entity_count('both');
+			$response['items'] = $displayed_gallery->get_entities($limit, $offset, FALSE, 'both');
 			$storage	  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
 			$settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-			foreach ( $response['entities'] as &$entity) {
+			foreach ( $response['items'] as &$entity) {
                 $image = $entity;
                 if (in_array($displayed_gallery->source, array('album','albums'))) {
                     // Set the alttext of the preview image to the
