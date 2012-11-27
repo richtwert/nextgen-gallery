@@ -689,15 +689,21 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			}
 
 			if (!isset($params['crop_frame'])) {
+				$crop_frame_size_name = 'thumbnail';
+				
 				if (isset($image->meta_data[$size]['crop_frame'])) {
-					$params['crop_frame'] = $image->meta_data[$size]['crop_frame'];
+					$crop_frame_size_name = $size;
+				}
+				
+				if (isset($image->meta_data[$crop_frame_size_name]['crop_frame'])) {
+					$params['crop_frame'] = $image->meta_data[$crop_frame_size_name]['crop_frame'];
 
 					if (!isset($params['crop_frame']['final_width'])) {
-						$params['crop_frame']['final_width'] = $image->meta_data[$size]['width'];
+						$params['crop_frame']['final_width'] = $image->meta_data[$crop_frame_size_name]['width'];
 					}
 
 					if (!isset($params['crop_frame']['final_height'])) {
-						$params['crop_frame']['final_height'] = $image->meta_data[$size]['height'];
+						$params['crop_frame']['final_height'] = $image->meta_data[$crop_frame_size_name]['height'];
 					}
 				}
 			}
