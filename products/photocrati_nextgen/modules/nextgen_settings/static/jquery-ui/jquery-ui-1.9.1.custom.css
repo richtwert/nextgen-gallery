@@ -1836,7 +1836,7 @@ body .ui-tooltip {
 }
 
 .ui-tabs .ui-tabs-nav li a:hover {
-    color: #d54e21
+    color: #5e9d2b;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
@@ -1873,7 +1873,7 @@ body .ui-tooltip {
 .ui-tabs-icon {
     float: left;
     background-image: url('images/ui-icons-photocrati.png');
-    margin: 4px 4px 0 0;
-    height: 30px;
-    width: 30px;
+    margin: 12px 6px 0 4px;
+    height: 14px;
+    width: 14px;
 }

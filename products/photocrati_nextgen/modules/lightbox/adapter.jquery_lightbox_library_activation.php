@@ -37,7 +37,7 @@ class A_JQuery_Lightbox_Library_Activation extends Mixin
             'nextgen_lightbox_close_btn_url'   => $this->static_url('/images/lightbox-btn-close.gif'),
             'nextgen_lightbox_btn_prev_url'    => $this->static_url('/images/lightbox-btn-prev.gif'),
             'nextgen_lightbox_btn_next_url'    => $this->static_url('/images/lightbox-btn-next.gif'),
-            'nextgen_lightbox_blank_img_url'   => $this->static_url('/images/lightbox-btn-prev.gif')
+            'nextgen_lightbox_blank_img_url'   => $this->static_url('/images/lightbox-blank.gif')
         );
 
         $mapper->save($lightbox);
