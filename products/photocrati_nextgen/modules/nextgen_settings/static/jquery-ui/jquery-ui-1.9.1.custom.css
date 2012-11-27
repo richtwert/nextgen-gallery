@@ -1880,5 +1880,8 @@ body .ui-tooltip {
 
 /** Fix overlays in IE8 **/
 .ui-widget-overlay {
+	background: #000000 50% 50% repeat-x;
+	opacity: .4;
+    filter: Alpha(Opacity = 40);
 	filter: -\9;
 }
