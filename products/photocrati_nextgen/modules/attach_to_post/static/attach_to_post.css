@@ -253,3 +253,8 @@ table {
 	font-family: 'segoe ui', Arial, sans-serif;
 	font-size: 13px;
 }
+
+/** Refresh button in the preview area **/
+.refresh_button {
+	float: right;
+}

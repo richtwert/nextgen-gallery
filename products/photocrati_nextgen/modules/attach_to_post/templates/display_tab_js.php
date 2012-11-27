@@ -752,7 +752,11 @@ jQuery(function($){
 		render: function(){
 			this.$el.empty();
 			if (this.entities.length > 0 && this.displayed_gallery.get('container_ids').length > 0) {
+
 				// Render header rows
+				this.$el.append(new this.RefreshButton({
+					entities: this.entities
+				}).render().el);
 				this.$el.append(new this.SortButtons({
 					entities: this.entities,
 					displayed_gallery: this.displayed_gallery,
@@ -789,6 +793,36 @@ jQuery(function($){
 			}
 			return this;
 		},
+
+		RefreshButton: Backbone.View.extend({
+			className: 'refresh_button',
+
+			tagName: 'input',
+
+			label: 'Refresh',
+
+			events: {
+				click: 'clicked'
+			},
+
+			clicked: function(){
+				this.entities.reset();
+			},
+
+			initialize: function(){
+				_.each(this.options, function(value, key){
+					this[key] = value;
+				}, this);
+			},
+
+			render: function(){
+				this.$el.attr({
+					value: this.label,
+					type:  'button'
+				});
+				return this;
+			}
+		}),
 
 		ExcludeButtons: Backbone.View.extend({
 			className: 'header_row',

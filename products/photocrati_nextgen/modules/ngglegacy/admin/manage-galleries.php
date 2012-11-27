@@ -31,7 +31,7 @@ function nggallery_manage_gallery_main() {
 		if (window.Frame_Event_Publisher) {
 
 			// If a new gallery is added, refresh the page
-			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery attach_to_post:manage_images',function(){
+			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery attach_to_post:manage_images attach_to_post:images_added',function(){
 				window.location.reload(true);
 			});
 		}
