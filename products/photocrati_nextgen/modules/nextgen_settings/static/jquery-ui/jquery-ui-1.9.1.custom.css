@@ -1877,3 +1877,8 @@ body .ui-tooltip {
     height: 14px;
     width: 14px;
 }
+
+/** Fix overlays in IE8 **/
+.ui-widget-overlay {
+	filter: -\9;
+}

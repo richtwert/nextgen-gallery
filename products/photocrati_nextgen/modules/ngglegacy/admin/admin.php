@@ -345,7 +345,12 @@ class nggAdminPanel{
                 wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.css', false, '1.3.2', 'screen');
 			case "nggallery-roles" :
 			case "nggallery-manage-album" :
-				wp_enqueue_style( 'ngg-jqueryui' );
+				wp_enqueue_style(
+					PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
+					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
+					array(),
+					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
+				);
 				wp_enqueue_style( 'nggadmin' );
 			break;
 			case "nggallery-tags" :
