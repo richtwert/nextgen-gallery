@@ -2,23 +2,23 @@
 
 /**
  * @author Alex Rabe
- * 
+ *
  */
 
 function nggallery_sortorder($galleryID = 0){
 	global $wpdb, $ngg, $nggdb;
-	
+
 	if ($galleryID == 0) return;
 
 	$galleryID = (int) $galleryID;
-	
+
 	if (isset ($_POST['updateSortorder']))  {
 		check_admin_referer('ngg_updatesortorder');
-		// get variable new sortorder 
+		// get variable new sortorder
 		parse_str($_POST['sortorder']);
-		if (is_array($sortArray)){ 
+		if (is_array($sortArray)){
 			$neworder = array();
-			foreach($sortArray as $pid) {		
+			foreach($sortArray as $pid) {
 				$pid = substr($pid, 4); // get id from "pid-x"
 				$neworder[] = (int) $pid;
 			}
@@ -31,30 +31,30 @@ function nggallery_sortorder($galleryID = 0){
 			do_action('ngg_gallery_sort', $galleryID);
 
 			nggGallery::show_message(__('Sort order changed','nggallery'));
-		} 
+		}
 	}
-	
-	// look for presort args	
+
+	// look for presort args
 	$presort = isset($_GET['presort']) ? $_GET['presort'] : false;
 	$dir = ( isset($_GET['dir']) && $_GET['dir'] == 'DESC' ) ? 'DESC' : 'ASC';
 	$sortitems = array('pid', 'filename', 'alttext', 'imagedate');
 	// ensure that nobody added some evil sorting :-)
 	if (in_array( $presort, $sortitems) )
 		$picturelist = $nggdb->get_gallery($galleryID, $presort, $dir, false);
-	else	
+	else
 		$picturelist = $nggdb->get_gallery($galleryID, 'sortorder', $dir, false);
-		
+
 	//this is the url without any presort variable
 	$clean_url = 'admin.php?page=nggallery-manage-gallery&amp;mode=sort&amp;gid=' . $galleryID;
 	//if we go back , then the mode should be edit
 	$back_url  = 'admin.php?page=nggallery-manage-gallery&amp;mode=edit&amp;gid=' . $galleryID;
-	
+
 	// In the case somebody presort, then we take this url
 	if ( isset($_GET['dir']) || isset($_GET['presort']) )
 		$base_url = $_SERVER['REQUEST_URI'];
-	else		
+	else
 		$base_url = $clean_url;
-	
+
 ?>
 	<script type="text/javascript">
 		// seralize the ImageOrder
@@ -66,16 +66,30 @@ function nggallery_sortorder($galleryID = 0){
 				if(objects[no].className=='imageBox' || objects[no].className=='imageBoxHighlighted'){
 					if (serial.length > 0)	serial = serial + '&'
 					serial = serial + "sortArray[]=" + objects[no].id;
-				}			
+				}
 			}
 			jQuery('input[name=sortorder]').val(serial);
 			// debug( 'This is the new order of the images(IDs) : <br>' + orderString );
-			
+
 		}
 		jQuery(document).ready(function($) {
+			if ($(this).data('ready')) return;
+
+			// Enable sorting
 			$(".jqui-sortable").sortable({items: 'div.imageBox'});
+
+			// Listen for events in other frames
+			if (window.Frame_Event_Publisher) {
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries attach_to_post:manage_images', function(){
+					window.location.reload(true);
+				});
+			}
+
+			$(this).data('ready', true);
 		});
-	</script>	
+
+
+	</script>
 	<div class="wrap">
 		<form id="sortGallery" method="POST" action="<?php echo $clean_url ?>" onsubmit="saveImageOrder()" accept-charset="utf-8">
 			<h2><?php _e('Sort Gallery', 'nggallery') ?></h2>
@@ -87,7 +101,7 @@ function nggallery_sortorder($galleryID = 0){
 				<div class="alignright actions">
 					<a href="<?php echo esc_url( $back_url ); ?>" class="button"><?php _e('Back to gallery', 'nggallery'); ?></a>
 				</div>
-			</div>	
+			</div>
 			<input name="sortorder" type="hidden" />
 			<ul class="subsubsub">
 				<li><?php _e('Presort', 'nggallery') ?> :</li>
@@ -102,12 +116,12 @@ function nggallery_sortorder($galleryID = 0){
 		</form>
 		<div id="debug" style="clear:both"></div>
 		<div class='jqui-sortable'>
-			<?php 
+			<?php
 			if($picturelist) {
 				foreach($picturelist as $picture) {
 					?>
 					<div class="imageBox" id="pid-<?php echo $picture->pid ?>">
-						<div class="imageBox_theImage" style="background-image:url('<?php echo esc_url( $picture->thumbURL ); ?>')"></div>	
+						<div class="imageBox_theImage" style="background-image:url('<?php echo esc_url( $picture->thumbURL ); ?>')"></div>
 						<div class="imageBox_label"><span><?php echo esc_html( stripslashes($picture->alttext) ); ?></span></div>
 					</div>
 					<?php
@@ -116,7 +130,7 @@ function nggallery_sortorder($galleryID = 0){
 			?>
 		</div>
 	</div>
-	
+
 <?php
 }
 ?>

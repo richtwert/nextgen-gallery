@@ -35,6 +35,28 @@ class nggAdminPanel{
 
 	function start_buffer()
 	{
+		// Notify of page event
+		if (isset($_REQUEST['page']) && $_POST) {
+			$event = array(
+				'event'	=>	str_replace('-', '_', str_replace('nggallery', '', $_REQUEST['page']))
+			);
+
+			// Do we have a list of galleries that are being affected?
+			if (isset($_REQUEST['doaction'])) {
+				$event['gallery_ids']	= $_REQUEST['doaction'];
+			}
+
+			// Do we have a particular gallery id?
+			elseif (isset($_REQUEST['gid'])) {
+				$event['gallery_id']	= $_REQUEST['gid'];
+			}
+
+			// Do we have an album id?
+			elseif (isset($_REQUEST['act_album']) && $_REQUEST['act_album']) {
+				$event['album_id']		= $_REQUEST['act_album'];
+			}
+			do_action('ngg_page_event', $event);
+		}
 		ob_start();
 	}
 

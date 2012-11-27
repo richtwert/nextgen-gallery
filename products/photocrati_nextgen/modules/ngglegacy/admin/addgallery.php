@@ -173,7 +173,7 @@ class nggAddGallery {
 
 			// If a new gallery has been created, add it to the drop-downs of
 			// available galleries
-			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
+			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(){
 				var gallery_id = data.gallery[data.gallery.id_field];
 				var gallery_title = data.gallery.title.replace(/\\&/, '&');
 				var option = $('<option/>').attr({
@@ -186,19 +186,8 @@ class nggAddGallery {
 
 			// If a gallery has been deleted, remove it from the drop-downs of
 			// available galleries
-			Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
-				var gallery_id = data.gallery_id;
-				$('#galleryselect option[value="'+gallery_id+'"]').remove();
-				$('select[name="zipgalselect"] option[value="'+gallery_id+'"]').remove();
-			});
-
-			// If a gallery has been modified, ensure that we're displaying
-			// the correct gallery title
-			Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
-				var gallery_id		= data.gallery[data.gallery.id_field];
-				var gallery_title	= data.gallery.title;
-				$('#galleryselect option[value="'+gallery_id+'"]').html(gallery_title.replace(/\\&/g, "&"));
-				$('select[name="zipgalselect"] option[value="'+gallery_id+'"]').html(gallery_title.replace(/\\&/g, "&"));
+			Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries', function(){
+				window.location.reload(true);
 			});
 		}
 

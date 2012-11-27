@@ -75,11 +75,16 @@ jQuery(function($){
 			}, this);
 			this.collection.on('add', this.render_new_option, this);
 			this.collection.on('remove', this.remove_existing_option, this);
+			this.collection.on('reset', this.empty_list, this);
         },
 
         events: {
             'change': 'selection_changed'
         },
+
+		empty_list: function(){
+			this.$el.empty();
+		},
 
 		render_new_option: function(item){
 			this.$el.append(new this.Option({
@@ -171,7 +176,6 @@ jQuery(function($){
 		},
 
 		selection_changed: function(e){
-			//this.select_tag.$el.trigger('change');
 			this.render();
 		},
 
@@ -224,6 +228,51 @@ jQuery(function($){
     /*****************************************************************************
      * MODEL CLASSES
     **/
+
+	/**
+	 * A collection that can fetch it's entities from the server
+	**/
+	Ngg.Models.Remote_Collection			= Ngg.Models.SelectableItems.extend({
+		fetch_limit: 50,
+		fetch_url:   photocrati_ajax_url,
+		action: 	 '',
+		extra_data:  {},
+
+		_create_request: function(limit, offset) {
+			var request = {
+				action: this.action,
+				limit: limit ? limit : this.fetch_limit,
+				offset: offset ? offset : 0
+
+			};
+			return _.extend(request, this.extra_data);
+		},
+
+		_add_item: function(item) {
+			this.push(item);
+		},
+
+		fetch: 	function(limit, offset){
+			// Request the entities from the server
+			var self = this;
+			$.post(this.fetch_url, this._create_request(limit, offset), function(response){
+				if (!_.isObject(response)) response = JSON.parse(response);
+
+				if (response.items) {
+					_.each(response.items, function(item){
+						self._add_item(item);
+					});
+
+					// Continue fetching ?
+					if (response.total >= response.limit+response.offset) {
+						self.fetch(response.limit, response.offset+response.limit);
+					}
+					else self.trigger('finished_fetching');
+				}
+			});
+		}
+	});
+
 
     /**
      * Ngg.DisplayTab.Models.Displayed_Gallery
@@ -287,8 +336,10 @@ jQuery(function($){
      * Ngg.DisplayTab.Models.Gallery_Collection
      * Collection of gallery objects
     **/
-    Ngg.DisplayTab.Models.Gallery_Collection    = Ngg.Models.SelectableItems.extend({
-        model: Ngg.DisplayTab.Models.Gallery
+    Ngg.DisplayTab.Models.Gallery_Collection    = Ngg.Models.Remote_Collection.extend({
+        model: Ngg.DisplayTab.Models.Gallery,
+
+		action: 'get_existing_galleries'
     });
 
     /**
@@ -306,8 +357,10 @@ jQuery(function($){
      * Ngg.DisplayTab.Models.Album_Collection
      * Used as a collection of album objects
     **/
-    Ngg.DisplayTab.Models.Album_Collection        = Ngg.Models.SelectableItems.extend({
-        model: Ngg.DisplayTab.Models.Album
+    Ngg.DisplayTab.Models.Album_Collection        = Ngg.Models.Remote_Collection.extend({
+        model: Ngg.DisplayTab.Models.Album,
+
+		action: 'get_existing_albums'
     });
 
     /**
@@ -331,7 +384,9 @@ jQuery(function($){
 			return this.selected().map(function(item){
 				return item.get('name');
 			});
-		}
+		},
+
+		action: 'get_existing_image_tags'
     });
 
 	/**
@@ -426,8 +481,17 @@ jQuery(function($){
 	 * Ngg.DisplayTab.Models.Entity_Collection
 	 * Represents a collection of entities
 	**/
-	Ngg.DisplayTab.Models.Entity_Collection		= Ngg.Models.SelectableItems.extend({
+	Ngg.DisplayTab.Models.Entity_Collection		= Ngg.Models.Remote_Collection.extend({
 		model: Ngg.DisplayTab.Models.Entity,
+
+		action: 'get_displayed_gallery_entities',
+
+		_add_item: function(item){
+			item.exclude = parseInt(item.exclude) == 1 ? true : false;
+			item.is_gallery = parseInt(item.is_gallery) == 1 ? true : false;
+			item.is_album = parseInt(item.is_album) == 1 ? true : false;
+			this.push(item);
+		},
 
 		entity_ids: function(){
 			return this.map(function(item){
@@ -653,37 +717,7 @@ jQuery(function($){
 
 		entities_reset: function(e){
 			this.entity_list.empty().append('<li class="clear"/>');
-			this.fetch_entities();
-		},
-
-		fetch_entities: function(limit, offset){
-			// Create the request
-			var request = {
-				action: 'get_displayed_gallery_entities',
-				displayed_gallery: this.displayed_gallery.toJSON(),
-				limit: limit ? limit : this.fetch_limit,
-				offset: offset ? offset : 0
-			};
-
-			// Request the entities from the server
-			var self = this;
-			$.post(this.fetch_url, request, function(response){
-				if (!_.isObject(response)) response = JSON.parse(response);
-
-				_.each(response.entities, function(item){
-					item.exclude = parseInt(item.exclude) == 1 ? true : false;
-					item.is_gallery = parseInt(item.is_gallery) == 1 ? true : false;
-					item.is_album = parseInt(item.is_album) == 1 ? true : false;
-					item = new Ngg.DisplayTab.Models.Entity(item);
-					self.entities.push(item);
-				});
-
-				// Continue fetching ?
-				if (response.count >= response.limit+response.offset) {
-					self.fetch_entities(response.limit, response.offset+response.limit);
-				}
-				else self.entities.trigger('finished_fetching');
-			});
+			this.entities.fetch();
 		},
 
 		render_entity: function(model){
@@ -1260,6 +1294,7 @@ jQuery(function($){
             this.displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
 				<?php echo $displayed_gallery ?>
 			);
+
 			this.original_displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
 				<?php echo $displayed_gallery ?>
 			);
@@ -1279,8 +1314,7 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
-
-			//console.log(this.displayed_gallery);
+			this.entities.extra_data.displayed_gallery = this.displayed_gallery.toJSON();
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
@@ -1356,105 +1390,56 @@ jQuery(function($){
 				var app = this;
 
 				// New gallery event
-				Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
-					app.galleries.push(data.gallery);
+				Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(){
+					app.galleries.reset();
+					app.galleries.fetch();
 				});
 
-				// New image event
-				Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
-					if (app.sources.selected_value() == 'galleries') {
-						var gallery_id = parseInt(data.image.galleryid);
-						if (_.indexOf(app.galleries.selected_ids(), gallery_id) >= 0) {
-							app.entities.push(data.image);
-						}
-					}
-				});
+				// A change has been made using the "Manage Galleries" page
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries attach_to_post:manage_images', function(data){
 
-				// New album event
-				Frame_Event_Publisher.listen_for('attach_to_post:new_album', function(data){
-					app.albums.push(data.album);
-				});
+					// Refresh the list of galleries
+					app.galleries.reset();
+					app.galleries.fetch();
 
-				// Album modified event
-				Frame_Event_Publisher.listen_for('attach_to_post:album_modified', function(data){
-					var album_id = parseInt(data.album[data.album.id_field]);
-					var album = app.albums.find(function(item){
-						return parseInt(item.id) == album_id;
-					});
-					album.set(data.album);
-
-					if (app.sources.selected_value() == 'albums'){
-						if (app.albums.selected_ids().indexOf(album_id) >= 0) {
+					// If we're viewing galleries or images, then we need to refresh the entity list
+					var selected_source = app.sources.selected().pop();
+					if (selected_source) {
+						if (_.indexOf(selected_source.get('returns'), 'image') >= 0 ||
+							_.indexOf(selected_source.get('returns'), 'gallery')) {
 							app.entities.reset();
 						}
 					}
 				});
 
-				// Album deleted event
-				Frame_Event_Publisher.listen_for('attach_to_post:album_deleted', function(data){
-					var album_id = parseInt(data.album_id);
-					var album = app.albums.find(function(item){
-						return parseInt(item.id) == album_id;
-					});
-					var selected_album_ids = app.sources.selected_ids();
-					if (album) app.albums.remove(album);
-					if (app.sources.selected_value() == 'albums') {
-						if (_.indexOf(selected_album_ids, album_id) >= 0) {
+				// A change has been made using the "Manage Albums" page
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_albums', function(data){
+					// Refresh the list of albums
+					app.albums.reset();
+					app.albums.fetch();
+
+					// If we're viewing albums, then we need to refresh the entity list
+					var selected_source = app.sources.selected().pop();
+					if (selected_source) {
+						if (_.indexOf(selected_source.get('returns'), 'album') >= 0) {
 							app.entities.reset();
 						}
 					}
 				});
 
-				// Image deleted event
-				Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-					var selected_source = app.sources.selected().pop();
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
-						var image_id = parseInt(data.image_id);
-						var image = app.entities.find(function(item){
-							return parseInt(item.entity_id()) == image_id;
-						});
-						if (image) app.entities.remove(image);
-					}
-				});
+				// A change has been made using the "Manage Tags" page
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_tags', function(data){
+					// Refresh the list of tags
+					app.tags.reset();
+					app.tags.fetch();
 
-				// Image was modified
-				Frame_Event_Publisher.listen_for('attach_to_post:image_modified', function(data){
+					// If we're viewing galleries or images, then we need to refresh the entity list
 					var selected_source = app.sources.selected().pop();
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'image') >= 0) {
-						var image_id = parseInt(data.image[data.image.id_field]);
-						var image = app.entities.find(function(item){
-							return parseInt(item.entity_id()) == image_id;
-						});
-						if (image) {
-							image.set(data.image);
+					if (selected_source) {
+						if (_.indexOf(selected_source.get('returns'), 'image') >= 0 ||
+							_.indexOf(selected_source.get('returns'), 'gallery')) {
+							app.entities.reset();
 						}
-					}
-				});
-
-				// Gallery deleted event
-				Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(data){
-					var gallery_id = parseInt(data.gallery_id);
-					var gallery = app.galleries.find(function(item){
-						return parseInt(item.id) == gallery_id;
-					});
-					if (gallery) app.galleries.remove(gallery);
-				});
-
-				// Gallery modified event
-				Frame_Event_Publisher.listen_for('attach_to_post:gallery_modified', function(data){
-					var selected_source = app.sources.selected().pop();
-					var gallery_id = parseInt(data.gallery_id);
-					var gallery = app.galleries.find(function(item){
-						return parseInt(item.id) == gallery_id;
-					});
-
-					// Update the gallery
-					gallery.set(data.gallery);
-
-					// If we're viewing an album, refresh it's entities
-					// should this gallery be included
-					if (selected_source && _.indexOf(selected_source.get('returns'), 'gallery') >= 0) {
-						app.entities.reset();
 					}
 				});
 

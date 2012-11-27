@@ -31,55 +31,8 @@ function nggallery_manage_gallery_main() {
 		if (window.Frame_Event_Publisher) {
 
 			// If a new gallery is added, refresh the page
-			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery',function(){
+			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery attach_to_post:manage_images',function(){
 				window.location.reload(true);
-			});
-
-			// If a new image is added, increment the image count if the
-			// gallery is included in the list
-			Frame_Event_Publisher.listen_for('attach_to_post:new_image', function(data){
-				var image_id = data.image[data.image.id_field];
-				var gallery_id = data.image.galleryid;
-				var gallery = jQuery('#gallery-'+gallery_id);
-
-				// Are we on the "Manage Galleries" page ?
-				if (gallery.length > 0) {
-					var quantity = gallery.find('.quantity');
-					var number_of_images = parseInt(quantity.text());
-					quantity.text(number_of_images+1);
-				}
-			});
-
-			// If a gallery has been deleted, we'll refresh the page
-			Frame_Event_Publisher.listen_for('attach_to_post:gallery_deleted', function(){
-				window.location.reload(true);
-			});
-
-			// If an image has been deleted, and that it's gallery is currently
-			// being displayed, then we'll decrement the image count
-			Frame_Event_Publisher.listen_for('attach_to_post:image_deleted', function(data){
-				var image_id = data.image[data.image.id_field];
-				var gallery_id = data.image.galleryid;
-				var gallery = jQuery('#gallery-'+gallery_id);
-
-				// Are we on the "Manage Galleries" page ?
-				if (gallery.length > 0) {
-					var quantity = gallery.find('.quantity');
-					var number_of_images = parseInt(quantity.text());
-					quantity.text(number_of_images-1);
-				}
-			});
-
-			// If a gallery has been modified, we'll refresh the page to display
-			// the most recent information
-			Frame_Event_Publisher.listen_for('gallery_modified', function(data){
-				var gallery_id = data.image.galleryid;
-
-				// If the gallery is being displayed in the list of galleries,
-				// then we'll refresh the page to display the latest information
-				if ($('#gallery_'+gallery_id).length > 0) {
-					window.location.reload(true);
-				}
 			});
 		}
 
