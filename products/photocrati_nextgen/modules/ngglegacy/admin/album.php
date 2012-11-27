@@ -173,6 +173,8 @@ class nggManageAlbum {
 
 	global $wpdb, $nggdb;
 
+	$this->currentID = isset($_REQUEST['act_album']) ? (int) $_REQUEST['act_album'] : 0 ;
+
 	//TODO:Code MUST be optimized, how to flag a used gallery better ?
 	$used_list = $this->get_used_galleries();
 
@@ -187,8 +189,7 @@ jQuery(document).ready(
 
 		if (window.Frame_Event_Publisher) {
 
-			// When a new album is added, add it to the drop-down as well as
-			// create a selectable album used for drag n'drop
+			// Refresh when a new gallery has been added
 			Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries attach_to_post:new_gallery', function(){
 				window.location.reload(true);
 			});

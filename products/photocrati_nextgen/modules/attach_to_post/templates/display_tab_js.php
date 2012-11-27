@@ -243,15 +243,9 @@ jQuery(function($){
 				action: this.action,
 				limit: limit ? limit : this.fetch_limit,
 				offset: offset ? offset : 0
+
 			};
-
-			var extra_data = {};
-			for (var index in this.extra_data) {
-				var item = this.extra_data[index];
-				extra_data[index] = item.toJSON? item.toJSON() : item;
-			}
-
-			return _.extend(request, extra_data);
+			return _.extend(request, this.extra_data);
 		},
 
 		_add_item: function(item) {
@@ -1320,7 +1314,7 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
-			this.entities.extra_data.displayed_gallery = this.displayed_gallery;
+			this.entities.extra_data.displayed_gallery = this.displayed_gallery.toJSON();
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
@@ -1421,12 +1415,29 @@ jQuery(function($){
 				// A change has been made using the "Manage Albums" page
 				Frame_Event_Publisher.listen_for('attach_to_post:manage_albums', function(data){
 					// Refresh the list of albums
-					// TODO
+					app.albums.reset();
+					app.albums.fetch();
 
 					// If we're viewing albums, then we need to refresh the entity list
 					var selected_source = app.sources.selected().pop();
 					if (selected_source) {
 						if (_.indexOf(selected_source.get('returns'), 'album') >= 0) {
+							app.entities.reset();
+						}
+					}
+				});
+
+				// A change has been made using the "Manage Tags" page
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_tags', function(data){
+					// Refresh the list of tags
+					app.tags.reset();
+					app.tags.fetch();
+
+					// If we're viewing galleries or images, then we need to refresh the entity list
+					var selected_source = app.sources.selected().pop();
+					if (selected_source) {
+						if (_.indexOf(selected_source.get('returns'), 'image') >= 0 ||
+							_.indexOf(selected_source.get('returns'), 'gallery')) {
 							app.entities.reset();
 						}
 					}
