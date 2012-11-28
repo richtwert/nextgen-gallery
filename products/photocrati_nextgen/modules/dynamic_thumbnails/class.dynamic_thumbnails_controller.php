@@ -26,8 +26,26 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 			
 			$image_id = $params['image'];
 			$size = $dynthumbs->get_size_name($params);
+			$abspath = $storage->get_image_abspath($image_id, $size, true);
+			$valid = true;
 			
-			$storage->render_image($image_id, $size);
+			// Render invalid image if hash check fails
+			if ($abspath == null) {
+				$uri_plain = $dynthumbs->get_uri_from_params($params);
+				$hash = wp_hash($uri_plain);
+				
+				if (strpos($uri, $hash) === false) {
+					$valid = false;
+					$filename = $this->object->find_static_file('invalid_image.png');
+					$this->set_content_type('image/png');
+					readfile($filename);
+					$this->render();
+				}
+			}
+			
+			if ($valid) {
+				$storage->render_image($image_id, $size);
+			}
 		}
 	}
 }
