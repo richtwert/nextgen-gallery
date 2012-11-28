@@ -176,7 +176,7 @@ jQuery(function($){
 		},
 
 		selection_changed: function(e){
-			this.render();
+			if (_.isUndefined(e.changed['selected'])) this.render();
 		},
 
 		render: function(){
@@ -209,10 +209,29 @@ jQuery(function($){
 			this.$el.find('.select2-input').width(this.options.width-20);
 
 			// For IE8, ensure that the selection is being displayed
-			var selected_value = this.$el.find('.select2-choice span:first');
-			if (!this.options.multiple && selected_value.text().length == 0) {
-				var selected_item = this.collection.selected().pop();
-				selected_value.text(selected_item.get(this.select_tag.text_field));
+			if (!this.options.multiple) {
+				var selected_value = this.$el.find('.select2-choice span:first');
+				if (selected_value.text().length == 0 && this.collection.selected().length > 0) {
+					var selected_item = this.collection.selected().pop();
+					selected_value.text(selected_item.get(this.select_tag.text_field));
+				}
+			}
+			else {
+				var selected_values = this.$el.find('.select2-search-choice');
+				if (this.collection.selected().length > 0 && selected_values.length == 0) {
+					this.select_tag.$el.select2('val', '');
+					var data = [];
+					var value_field = this.select_tag.value_field;
+					_.each(this.collection.selected(), function(item){
+						var value = value_field == 'id' ? item.id : item.get(value_field);
+						data.push({
+							id: 	value,
+							text: 	item.get(this.select_tag.text_field)
+						});
+					}, this);
+					debugger;
+					this.select_tag.$el.select2('data', data);
+				}
 			}
 
 			return this;

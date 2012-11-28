@@ -50,7 +50,6 @@
 
             editor.onMouseDown.addToTop(function(editor, e) {
                 if (e.target.tagName == 'IMG') {
-					console.log(self.get_class_name(e.target));
 					if (self.get_class_name(e.target).indexOf('ngg_displayed_gallery') >= 0) {
 						click_timer = setTimeout(function() {
 							drag_in_progress = true;
