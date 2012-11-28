@@ -208,6 +208,13 @@ jQuery(function($){
 			// For IE, ensure that the text field has a width
 			this.$el.find('.select2-input').width(this.options.width-20);
 
+			// For IE8, ensure that the selection is being displayed
+			var selected_value = this.$el.find('.select2-choice span:first');
+			if (!this.options.multiple && selected_value.text().length == 0) {
+				var selected_item = this.collection.selected().pop();
+				selected_value.text(selected_item.get(this.select_tag.text_field));
+			}
+
 			return this;
 		}
 	});

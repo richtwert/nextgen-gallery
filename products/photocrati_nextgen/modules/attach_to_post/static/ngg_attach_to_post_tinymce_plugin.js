@@ -49,33 +49,43 @@
             var click_timer;
 
             editor.onMouseDown.addToTop(function(editor, e) {
-                if (e.target.tagName == 'IMG'
-                &&  e.target.getAttribute('class').indexOf('ngg_displayed_gallery') != -1) {
-                    click_timer = setTimeout(function() {
-                        drag_in_progress = true;
-                    }, 250);
-                }
+                if (e.target.tagName == 'IMG') {
+					console.log(self.get_class_name(e.target));
+					if (self.get_class_name(e.target).indexOf('ngg_displayed_gallery') >= 0) {
+						click_timer = setTimeout(function() {
+							drag_in_progress = true;
+						}, 250);
+					}
+				}
             });
 
             editor.onMouseUp.addToTop(function(editor, e) {
-				if (!drag_in_progress
-                &&  e.target.tagName == 'IMG'
-                &&  e.target.getAttribute('class').indexOf('ngg_displayed_gallery') != -1) {
-					editor.dom.events.cancel(e);
-					editor.dom.events.stop(e);
-					var id = e.target.src.match(/\d+$/);
-					if (id) id = id.pop();
-					var obj = tinymce.extend(self, {
-						editor: editor,
-						plugin: editor.plugins.NextGEN_AttachToPost,
-						id:		id
-					});
-					self.render_attach_to_post_interface.call(obj);
+				if (!drag_in_progress &&  e.target.tagName == 'IMG') {
+					if (self.get_class_name(e.target).indexOf('ngg_displayed_gallery') >= 0) {
+						editor.dom.events.cancel(e);
+						editor.dom.events.stop(e);
+						var id = e.target.src.match(/\d+$/);
+						if (id) id = id.pop();
+						var obj = tinymce.extend(self, {
+							editor: editor,
+							plugin: editor.plugins.NextGEN_AttachToPost,
+							id:		id
+						});
+						self.render_attach_to_post_interface.call(obj);
+					}
 				}
                 clearTimeout(click_timer);
                 drag_in_progress = false;
 				return false;
 			});
+		},
+
+		get_class_name: function(node) {
+			var class_name = node.getAttribute('class') ?
+				node.getAttribute('class') : node.className;
+
+			if (class_name) return class_name;
+			else return "";
 		},
 
 
