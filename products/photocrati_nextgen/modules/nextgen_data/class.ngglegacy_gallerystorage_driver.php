@@ -201,6 +201,13 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		return $retval;
 	}
 
+	
+	function get_image_format_list()
+	{
+		$format_list = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png');
+		
+		return $format_list;
+	}
 
 	/**
 	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
@@ -261,7 +268,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$clone_basename = basename($clone_path, $clone_extension_str);
 			// We use a default suffix as passing in null as the suffix will make WordPress use a default
 			$clone_suffix = null;
-			$format_list = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png');
+			$format_list = $this->object->get_image_format_list();
 			$clone_format = null; // format is determined below and based on $type otherwise left to null
 
 			// suffix is only used to reconstruct paths for image_resize function
@@ -722,9 +729,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			$existing_image_dir = dirname($existing_image_abpath);
 
 			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it, leaving commented in as reminder in case there are issues in the future
-            if (file_exists($existing_image_abpath)) {
-                //  unlink($existing_image_abpath);
-            }
+      if (file_exists($existing_image_abpath)) {
+          //  unlink($existing_image_abpath);
+      }
 
 			wp_mkdir_p($existing_image_dir);
 
@@ -804,28 +811,42 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 */
 	function render_image($image, $size=FALSE)
 	{
+		$format_list = $this->object->get_image_format_list();
 		$abspath = $this->get_image_abspath($image, $size, true);
-		$image_rx = null;
+
+		if ($abspath == null)
+		{
+			$thumbnail = $this->object->generate_image_size($image, $size);
+			
+			if ($thumbnail != null)
+			{
+				$abspath = $thumbnail->fileName;
+				
+				$thumbnail->destruct();
+			}
+		}
 
 		if ($abspath != null)
 		{
-			$image_rx = new C_NggLegacy_Thumbnail($abspath, true);
-		}
-		else
-		{
-			$image_rx = $this->object->generate_image_size($image, $size);
-		}
-
-		if ($image_rx != null)
-		{
+  		$data = @getimagesize($abspath);
+  		$format = 'jpg';
+  		
+  		if ($data != null && is_array($data) && isset($format_list[$data[2]])) 
+  		{
+  			$format = $format_list[$data[2]];
+  		}
+      
 			// Clear output
 			while (ob_get_level() > 0)
 			{
 				ob_end_clean();
 			}
-
+  		
+  		$format = strtolower($format);
+			
 			// output image and headers
-			$image_rx->show();
+			header('Content-type: image/' . $format);
+			readfile($abspath);
 
 			return true;
 		}

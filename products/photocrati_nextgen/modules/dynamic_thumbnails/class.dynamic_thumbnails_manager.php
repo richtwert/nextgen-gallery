@@ -16,7 +16,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	{
 		$params = $this->object->_get_params_sanitized($params);
 		$image = isset($params['image']) ? $params['image'] : null;
-		$image_id = is_int($image) ? $image : $image->pid;
+		$image_id = is_scalar($image) ? ((int)$image) : $image->pid;
 		$image_width = isset($params['width']) ? $params['width'] : null;
 		$image_height = isset($params['height']) ? $params['height'] : null;
 		$image_quality = isset($params['quality']) ? $params['quality'] : null;
@@ -33,11 +33,11 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$uri .= $this->object->get_route_name() . '/';
 		$uri .= strval($image_id) . '/';
 		
-		$uri .= $image_width . 'x' . $image_height;
+		$uri .= strval($image_width) . 'x' . strval($image_height);
 		
 		if ($image_quality != null)
 		{
-			$uri .= 'x' . $image_quality;
+			$uri .= 'x' . strval($image_quality);
 		}
 		
 		$uri .= '/';
@@ -71,6 +71,13 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	{
 		$params['image'] = $image;
 		$uri = $this->object->get_uri_from_params($params);
+		
+		if (substr($uri, -1) != '/')
+		{
+			$uri .= '/';
+		}
+		
+		$uri .= wp_hash($uri) . '/';
 		
 		return $uri;
 	}
