@@ -327,7 +327,7 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		// If we're serving an alternative view, then we'll need to add
 		// a return link
-		if ($this->object->is_serving_alternative_view($displayed_gallery->display_type) && $params['show_return_link']) {
+		if ($this->object->is_serving_alternative_view($displayed_gallery->get_display_type()) && $params['show_return_link']) {
 			if (($url = $this->object->get_absolute_url())) {
 				$url = urldecode(remove_query_arg('show', $url));
 				$params['return_link_url'] = $url;
@@ -345,13 +345,18 @@ class Mixin_Display_Type_Controller extends Mixin
 	 * Gets alternative views available, by returning a URI segment to match
 	 * and and asociated display type
 	 */
-	function _get_alternative_views()
+	function _get_alternative_views($current_display_type)
 	{
 		$retval = array();
 
 		// Add each existing display type
 		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-		foreach ($mapper->find_all() as $display_type) {
+		foreach ($mapper->find_by_entity_type($current_display_type->entity_types) as $display_type) {
+
+			// Skip the current display type
+			if ($current_display_type->name == $display_type->name) continue;
+
+			// Add any other supported display type as an alternative view
 			$retval[$display_type->name] = array(
 				'type'	=>	'display_type',
 				'name'	=>	$display_type->name,
@@ -367,16 +372,16 @@ class Mixin_Display_Type_Controller extends Mixin
 	 * displayed
 	 * @return boolean
 	 */
-	function is_alternative_view_request()
+	function is_alternative_view_request($display_type)
 	{
 		$retval = FALSE;
 
 		// Let the request determine what display type or alternative view to render
 		if (($show = get_query_var('show'))) {
-			$retval = $this->_get_alternative_view($show);
+			$retval = $this->_get_alternative_view($show, $display_type);
 		}
 		elseif (isset($_SERVER['NGGALLERY']) && (($show = $_SERVER['NGGALLERY']))) {
-			$retval = $this->_get_alternative_view($show);
+			$retval = $this->_get_alternative_view($show, $display_type);
 		}
 
 		return $retval;
@@ -388,11 +393,11 @@ class Mixin_Display_Type_Controller extends Mixin
 	 * alternate view
 	 * @param string $display_type_name
 	 */
-	function is_serving_alternative_view($display_type_name)
+	function is_serving_alternative_view($display_type)
 	{
 		$retval = FALSE;
-		if (($view = $this->object->is_alternative_view_request())) {
-			$retval = ($view['type'] == 'display_type' && $display_type_name == $view['name']);
+		if (($view = $this->object->is_alternative_view_request($display_type))) {
+			$retval = ($view['type'] == 'display_type' && $display_type->name == $view['name']);
 		}
 		return $retval;
 	}
@@ -402,9 +407,9 @@ class Mixin_Display_Type_Controller extends Mixin
 	 * @param string $uri_segment
 	 * @return array
 	 */
-	function _get_alternative_view($uri_segment)
+	function _get_alternative_view($uri_segment, $display_type)
 	{
-		$views = $this->object->_get_alternative_views();
+		$views = $this->object->_get_alternative_views($display_type);
 		return isset($views[$uri_segment]) ? $views[$uri_segment] : NULL;
 	}
 
@@ -417,7 +422,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	function _render_alternative_view($displayed_gallery, $uri_segment, $return)
 	{
 		$retval = '';
-		if (($view = $this->_get_alternative_view($uri_segment))) {
+		if (($view = $this->_get_alternative_view($uri_segment, $displayed_gallery->get_display_type()))) {
 
 			// We leave room for other alternative view 'types'
 			// by letting a method become responsible for displaying

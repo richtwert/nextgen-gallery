@@ -62,6 +62,28 @@ class Mixin_Display_Type_Mapper extends Mixin
 	}
 
 	/**
+	 * Finds display types used to display specific types of entities
+	 * @param string|array $entity_type e.g. image, gallery, album
+	 * @return array
+	 */
+	function find_by_entity_type($entity_type, $model=FALSE)
+	{
+		$find_entity_types = is_array($entity_type) ? $entity_type : array($entity_type);
+
+		$retval = NULL;
+		foreach ($this->object->find_all($model) as $display_type) {
+			foreach ($find_entity_types as $entity_type) {
+				if (in_array($entity_type, $display_type->entity_types)) {
+					$retval[] = $display_type;
+					break;
+				}
+			}
+		}
+
+		return $retval;
+	}
+
+	/**
 	 * Uses the title attribute as the post title
 	 * @param stdClass $entity
 	 * @return string

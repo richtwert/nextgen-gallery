@@ -229,7 +229,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
 
         // Render the displayed gallery!
         $controller->enqueue_frontend_resources($displayed_gallery);
-        return $controller->is_alternative_view_request() ?
+        return $controller->is_alternative_view_request($displayed_gallery->get_display_type()) ?
             $controller->alternative_index($displayed_gallery, $return) :
             $controller->index_action($displayed_gallery, $return);
     }

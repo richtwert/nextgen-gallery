@@ -8,7 +8,7 @@
         </label>
     </td>
     <td>
-		<select class="ngg_alternative_view" name='alternative_view'>
+		<select class="ngg_alternative_view" name='<?php echo esc_attr($display_type_name); ?>[alternative_view]'>
 			<option value="0" <?php echo selected(0, $alternative_view) ?>>None</option>
 			<?php foreach ($altviews as $altview_name => $altview_properties): ?>
 			<option value="<?php echo esc_attr($altview_name)?>" <?php echo selected($altview_name, $alternative_view)?>>
