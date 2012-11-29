@@ -10,8 +10,32 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      */
     function _render_nextgen_basic_templates_template_field($display_type)
     {
+        switch($display_type->get_entity()->name) {
+            case 'photocrati-nextgen_basic_singlepic':
+                $prefix = 'singlepic';
+                break;
+            case 'photocrati-nextgen_basic_thumbnails':
+                $prefix = 'gallery';
+                break;
+            case 'photocrati-nextgen_basic_slideshow':
+                $prefix = 'gallery';
+                break;
+            case 'photocrati-nextgen_basic_imagebrowser':
+                $prefix = 'imagebrowser';
+                break;
+            case 'photocrati-nextgen_basic_compact_album':
+                $prefix = 'album';
+                break;
+            case 'photocrati-nextgen_basic_extended_album':
+                $prefix = 'album';
+                break;
+            default:
+                $prefix = FALSE;
+                break;
+        }
+
         // ensure the current file is in the list
-        $templates = $this->object->_get_available_templates();
+        $templates = $this->object->_get_available_templates($prefix);
         if (!isset($templates[$display_type->settings['template']]))
             $templates[$display_type->settings['template']] = $display_type->settings['template'];
 
@@ -35,13 +59,13 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      * is array(file_abspath => label)
      * @return array
      */
-    function _get_available_templates()
+    function _get_available_templates($prefix = FALSE)
     {
         $templates = array();
         foreach ($this->object
                       ->get_registry()
                       ->get_utility('I_Legacy_Template_Locator')
-                      ->find_all() as $label => $files) {
+                      ->find_all($prefix) as $label => $files) {
             foreach ($files as $file) {
                 $tmp = explode(DIRECTORY_SEPARATOR, $file);
                 $templates[$file] = "{$label}: " . end($tmp);
