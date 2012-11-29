@@ -1,6 +1,6 @@
 <?php
 
-class A_Shutter_Library_Activation extends Mixin
+class A_Shutter_Reloaded_Library_Activation extends Mixin
 {
 	function initialize()
 	{
@@ -17,7 +17,7 @@ class A_Shutter_Library_Activation extends Mixin
 	{
 		$mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$mapper->save((object)array(
-			'name'				=>	'shutter',
+			'name'				=>	'shutter 2.0.1',
 			'code'				=>	'class="shutterset_%GALLERY_NAME%"',
 			'css_stylesheets'	=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/static/shutter/shutter.css',
 			'scripts'			=>	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/static/shutter/shutter.js'."\n".
