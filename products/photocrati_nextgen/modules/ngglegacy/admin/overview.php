@@ -35,7 +35,6 @@ function nggallery_admin_overview()  {
         jQuery(document).ready( function($) {
         	// These widgets are sometimes populated via ajax
         	ajaxWidgets = [
-        		'ngg_lastdonators',
         		'dashboard_primary',
         		'ngg_locale',
         		'dashboard_plugins'
@@ -100,8 +99,7 @@ function ngg_AboutMetaBox()
 {
 	?>
 		<div id="poststuff">
-				<p><?php _e('NextGEN Gallery is primarily developed, maintained, supported and documented by <a href="http://www.photocrati.com" target="_blank">Photocrati Media</a>. We\'d like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011. There are many others who have made contributions:', 'nggallery') ;?></p>
-				<p><?php ngg_list_contributors(); ?></p>
+				<p><?php _e('NextGEN Gallery is primarily developed, maintained, supported and documented by <a href="http://www.photocrati.com" target="_blank">Photocrati Media</a>. We\'d like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011.', 'nggallery') ;?></p>
 			<h3 class="hndle"><span><?php _e('Contributors / Tribute to', 'nggallery'); ?></span></h3>
 				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?></p>
 				<ul class="ngg-list">
