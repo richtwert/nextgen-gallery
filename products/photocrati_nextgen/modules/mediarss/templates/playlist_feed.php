@@ -10,10 +10,12 @@
 			
 			$image_title = $image->description;
 			
-			if ($image_title == null) {
+			if ($image_title == null)
 				$image_title = $image->alttext;
-			}
-		?>
+
+            if (strlen($image_title) >= 25)
+                $image_title = substr_replace($image_title, '...', 15, -10);
+            ?>
 		<track>
 			<title><![CDATA[<?php echo_h($image_title)?>]]></title>
 			<location><![CDATA[<?php echo esc_url($image_url)?>]]></location>
