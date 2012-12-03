@@ -737,7 +737,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
     {
         $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
         $key = md5(serialize($this->object->get_entity()));
-        $transient_handler->set_value($key, $this->object->get_entity());
+        $transient_handler->set_value($key, $this->object->get_entity(), (60*60*24));
         return $key;
     }
 
