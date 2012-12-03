@@ -769,6 +769,12 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 
 				$image->meta_data[$size] = $size_meta;
+				
+				if ($size == 'full')
+				{
+					$image->meta_data['width'] = $size_meta['width'];
+					$image->meta_data['height'] = $size_meta['height'];
+				}
 
 				$retval = $this->object->_image_mapper->save($image);
 

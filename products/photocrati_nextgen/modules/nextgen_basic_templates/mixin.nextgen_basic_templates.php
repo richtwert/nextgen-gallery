@@ -10,7 +10,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
      */
     function _render_nextgen_basic_templates_template_field($display_type)
     {
-        switch($display_type->get_entity()->name) {
+        switch($display_type->name) {
             case 'photocrati-nextgen_basic_singlepic':
                 $prefix = 'singlepic';
                 break;
