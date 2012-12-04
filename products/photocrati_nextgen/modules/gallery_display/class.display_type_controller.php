@@ -405,6 +405,18 @@ class Mixin_Display_Type_Controller extends Mixin
 	function _get_alternative_view($uri_segment)
 	{
 		$views = $this->object->_get_alternative_views();
+
+        // for legacy support: map old names to our replacement
+        switch ($uri_segment) {
+            case 'images':
+                $uri_segment = 'photocrati-nextgen_basic_thumbnails';
+                break;
+            case 'slide':
+            case 'slideshow':
+                $uri_segment = 'photocrati-nextgen_basic_slideshow';
+                break;
+        }
+
 		return isset($views[$uri_segment]) ? $views[$uri_segment] : NULL;
 	}
 
