@@ -200,420 +200,9 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
-
 	
-	function get_image_format_list()
+	function get_image_size_params($image, $size, $params = null, $skip_defaults = false)
 	{
-		$format_list = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png');
-		
-		return $format_list;
-	}
-
-	/**
-	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
-	 * @param int|stdClass|C_Image $image
-	 * @param array $params
-	 * @return object
-	 */
-	function generate_image_clone($image_path, $clone_path, $params)
-	{
-		$width      = isset($params['width'])      ? $params['width']      : NULL;
-		$height     = isset($params['height'])     ? $params['height']     : NULL;
-		$quality    = isset($params['quality'])    ? $params['quality']    : NULL;
-		$type       = isset($params['type'])       ? $params['type']       : NULL;
-		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
-		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
-		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
-		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : NULL;
-		$destpath   = NULL;
-		$thumbnail  = NULL;
-
-		// XXX this should maybe be removed and extra settings go into $params?
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-
-		// Ensure we have a valid image
-		if ($image_path && file_exists($image_path))
-		{
-			// Ensure target directory exists, but only create 1 subdirectory
-			$image_dir = dirname($image_path);
-			$clone_dir = dirname($clone_path);
-
-			if (!file_exists($clone_dir))
-			{
-				if (strtolower(realpath($image_dir)) != strtolower(realpath($clone_dir)))
-				{
-					if (strtolower(realpath($image_dir)) == strtolower(realpath(dirname($clone_dir))))
-					{
-						wp_mkdir_p($clone_dir);
-					}
-				}
-			}
-
-			$image_extension = pathinfo($image_path, PATHINFO_EXTENSION);
-			$image_extension_str = null;
-			$clone_extension = pathinfo($clone_path, PATHINFO_EXTENSION);
-			$clone_extension_str = null;
-
-			if ($image_extension != null)
-			{
-				$image_extension_str = '.' . $image_extension;
-			}
-
-			if ($clone_extension != null)
-			{
-				$clone_extension_str = '.' . $clone_extension;
-			}
-
-			$image_basename = basename($image_path, $image_extension_str);
-			$clone_basename = basename($clone_path, $clone_extension_str);
-			// We use a default suffix as passing in null as the suffix will make WordPress use a default
-			$clone_suffix = null;
-			$format_list = $this->object->get_image_format_list();
-			$clone_format = null; // format is determined below and based on $type otherwise left to null
-
-			// suffix is only used to reconstruct paths for image_resize function
-			if (strpos($clone_basename, $image_basename) === 0)
-			{
-				$clone_suffix = substr($clone_basename, strlen($image_basename));
-			}
-
-			if ($clone_suffix != null && $clone_suffix[0] == '-')
-			{
-				// WordPress adds '-' on its own
-				$clone_suffix = substr($clone_suffix, 1);
-			}
-
-			$dimensions = null;
-
-			if (function_exists('getimagesize')) {
-				$dimensions = getimagesize($image_path);
-			}
-
-			if ($width == null && $height == null) {
-				if ($dimensions != null) {
-
-					if ($width == null) {
-						$width = $dimensions[0];
-					}
-
-					if ($height == null) {
-						$height = $dimensions[1];
-					}
-				}
-				else {
-					// XXX Don't think there's any other option here but to fail miserably...use some hard-coded defaults maybe?
-					return null;
-				}
-			}
-
-			if ($dimensions != null) {
-				$dimensions_ratio = $dimensions[0] / $dimensions[1];
-
-				if ($width == null) {
-					$width = (int) round($height * $dimensions_ratio);
-
-					if ($width == ($dimensions[0] - 1))
-					{
-						$width = $dimensions[0];
-					}
-				}
-				else if ($height == null) {
-					$height = (int) round($width / $dimensions_ratio);
-
-					if ($height == ($dimensions[1] - 1))
-					{
-						$height = $dimensions[1];
-					}
-				}
-
-				if ($width > $dimensions[0]) {
-					$width = $dimensions[0];
-				}
-
-				if ($height > $dimensions[1]) {
-					$height = $dimensions[1];
-				}
-
-				$image_format = $dimensions[2];
-
-				if ($type != null)
-				{
-					if (is_string($type))
-					{
-						$type = strtolower($type);
-
-						// Indexes in the $format_list array correspond to IMAGETYPE_XXX values appropriately
-						if (($index = array_search($type, $format_list)) !== false)
-						{
-							$type = $index;
-
-							if ($type != $image_format)
-							{
-								// Note: this only changes the FORMAT of the image but not the extension
-								$clone_format = $type;
-							}
-						}
-					}
-				}
-			}
-
-			if ($width == null || $height == null) {
-				// Something went wrong...
-				return null;
-			}
-
-			// image_resize() has limitations:
-			// - no easy crop frame support
-			// - fails if the dimensions are unchanged
-			// - doesn't support filename prefix, only suffix so names like thumbs_original_name.jpg for $clone_path are not supported
-			//   also suffix cannot be null as that will make WordPress use a default suffix...we could use an object that returns empty string from __toString() but for now just fallback to ngg generator
-			if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height) && $clone_suffix != null)
-			{
-				$destpath = image_resize(
-						$image_path,
-						$width, $height, $crop,
-						$clone_suffix, // filename suffix
-						$clone_dir,
-						$quality
-				);
-			}
-			else
-			{
-				$destpath = $clone_path;
-				$thumbnail = new C_NggLegacy_Thumbnail($image_path, true);
-
-				$original_width = $dimensions[0];
-				$original_height = $dimensions[1];
-				$original_ratio = $original_width / $original_height;
-
-				$aspect_ratio = $width / $height;
-
-				$orig_ratio_x = $original_width / $width;
-				$orig_ratio_y = $original_height / $height;
-
-				if ($crop)
-				{
-					$algo = 'shrink'; // either 'adapt' or 'shrink'
-
-					if ($crop_frame != null)
-					{
-						$crop_x = (int) round($crop_frame['x']);
-						$crop_y = (int) round($crop_frame['y']);
-						$crop_width = (int) round($crop_frame['width']);
-						$crop_height = (int) round($crop_frame['height']);
-						$crop_final_width = (int) round($crop_frame['final_width']);
-						$crop_final_height = (int) round($crop_frame['final_height']);
-
-						$crop_width_orig = $crop_width;
-						$crop_height_orig = $crop_height;
-
-						$crop_factor_x = $crop_width / $crop_final_width;
-						$crop_factor_y = $crop_height / $crop_final_height;
-
-						$crop_ratio_x = $crop_width / $width;
-						$crop_ratio_y = $crop_height / $height;
-
-						if ($algo == 'adapt')
-						{
-							// XXX not sure about this...don't use for now
-#							$crop_width = (int) round($width * $crop_factor_x);
-#							$crop_height = (int) round($height * $crop_factor_y);
-						}
-						else if ($algo == 'shrink')
-						{
-							if ($crop_ratio_x < $crop_ratio_y)
-							{
-								$crop_width = max($crop_width, $width);
-								$crop_height = (int) round($crop_width / $aspect_ratio);
-							}
-							else
-							{
-								$crop_height = max($crop_height, $height);
-								$crop_width = (int) round($crop_height * $aspect_ratio);
-							}
-
-							if ($crop_width == ($crop_width_orig - 1))
-							{
-								$crop_width = $crop_width_orig;
-							}
-
-							if ($crop_height == ($crop_height_orig - 1))
-							{
-								$crop_height = $crop_height_orig;
-							}
-						}
-
-						$crop_diff_x = (int) round(($crop_width_orig - $crop_width) / 2);
-						$crop_diff_y = (int) round(($crop_height_orig - $crop_height) / 2);
-
-						$crop_x += $crop_diff_x;
-						$crop_y += $crop_diff_y;
-
-						$crop_max_x = ($crop_x + $crop_width);
-						$crop_max_y = ($crop_y + $crop_height);
-
-						// Check if we're overflowing borders
-						//
-						if ($crop_x < 0)
-						{
-							$crop_x = 0;
-						}
-						else if ($crop_max_x > $original_width)
-						{
-							$crop_x -= ($crop_max_x - $original_width);
-						}
-
-						if ($crop_y < 0)
-						{
-							$crop_y = 0;
-						}
-						else if ($crop_max_y > $original_height)
-						{
-							$crop_y -= ($crop_max_y - $original_height);
-						}
-					}
-					else
-					{
-						if ($orig_ratio_x < $orig_ratio_y)
-						{
-							$crop_width = $original_width;
-							$crop_height = (int) round($height * $orig_ratio_x);
-
-							if ($crop_height == ($height - 1))
-							{
-								$crop_height = $height;
-							}
-						}
-						else
-						{
-							$crop_height = $original_height;
-							$crop_width = (int) round($width * $orig_ratio_y);
-
-							if ($crop_width == ($width - 1))
-							{
-								$crop_width = $width;
-							}
-						}
-
-						$crop_x = (int) round(($original_width - $crop_width) / 2);
-						$crop_y = (int) round(($original_height - $crop_height) / 2);
-					}
-
-					$thumbnail->crop($crop_x, $crop_y, $crop_width, $crop_height);
-				}
-				else {
-					// Just constraint dimensions to ensure there's no stretching or deformations
-					list($width, $height) = wp_constrain_dimensions($original_width, $original_height, $width, $height);
-				}
-
-				$thumbnail->resize($width, $height);
-			}
-
-			// We successfully generated the thumbnail
-			if (is_string($destpath) && (file_exists($destpath) || $thumbnail != null))
-			{
-				if ($clone_format != null)
-				{
-					if (isset($format_list[$clone_format]))
-					{
-						$clone_format_extension = $format_list[$clone_format];
-						$clone_format_extension_str = null;
-
-						if ($clone_format_extension != null)
-						{
-							$clone_format_extension_str = '.' . $clone_format_extension;
-						}
-
-						$destpath_info = pathinfo($destpath);
-						$destpath_extension = $destpath_info['extension'];
-						$destpath_extension_str = null;
-
-						if ($destpath_extension != null)
-						{
-							$destpath_extension_str = '.' . $destpath_extension;
-						}
-
-						if (strtolower($destpath_extension) != strtolower($clone_format_extension))
-						{
-							$destpath_dir = $destpath_info['dirname'];
-							$destpath_basename = $destpath_info['filename'];
-							$destpath_new = $destpath_dir . DIRECTORY_SEPARATOR . $destpath_basename . $clone_format_extension_str;
-
-							if (rename($destpath, $destpath_new))
-							{
-								$destpath = $destpath_new;
-							}
-						}
-					}
-				}
-
-				if (is_null($thumbnail))
-				{
-					$thumbnail = new C_NggLegacy_Thumbnail($destpath, true);
-				}
-				else
-				{
-					$thumbnail->fileName = $destpath;
-				}
-
-				// This is quite odd, when watermark equals int(0) it seems all statements below ($watermark == 'image') and ($watermark == 'text') both evaluate as true
-				// so we set it at null if it evaluates to any null-like value
-				if ($watermark == null)
-				{
-					$watermark = null;
-				}
-
-				if ($watermark == 1 || $watermark === true)
-				{
-					if (in_array($settings->wmType, array('image', 'text')))
-					{
-						$watermark = $settings->wmType;
-					}
-					else
-					{
-						$watermark = 'text';
-					}
-				}
-
-				if ($watermark == 'image')
-				{
-					$thumbnail->watermarkImgPath = $settings['wmPath'];
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
-				}
-				else if ($watermark == 'text')
-				{
-					$thumbnail->watermarkText = $settings['wmText'];
-					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
-					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
-				}
-
-				if ($reflection)
-				{
-					$thumbnail->createReflection(40, 40, 50, FALSE, '#a4a4a4');
-				}
-
-				if ($clone_format != null && isset($format_list[$clone_format]))
-				{
-					// Force format
-					$thumbnail->format = strtoupper($format_list[$clone_format]);
-				}
-
-				$thumbnail->save($destpath, $quality);
-			}
-		}
-
-		return $thumbnail;
-	}
-
-	/**
-	 * Generates a specific size for an image
-	 * @param int|stdClass|C_Image $image
-	 * @return bool
-	 */
-	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
-	{
-		$retval = FALSE;
-
 		// Get the image entity
 		if (is_numeric($image)) {
 			$image = $this->object->_image_mapper->find($image);
@@ -629,7 +218,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				// Get default settings
 				if (!isset($params['crop'])) {
 					$params['crop'] = $settings->thumbfix;
-		        }
+				}
 
 				if (!isset($params['quality'])) {
 					$params['quality'] = $settings->thumbquality;
@@ -681,20 +270,6 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 			}
 
-			// Get the image filename
-			$filename = $this->object->get_original_abspath($image, 'original');
-			$thumbnail = null;
-
-			if ($size == 'full' && $settings->imgBackup == 1) {
-				// XXX change this? 'full' should be the resized path and 'original' the _backup path
-				$backup_path = $this->object->get_backup_abspath($image);
-
-				if (!file_exists($backup_path))
-				{
-					@copy($filename, $backup_path);
-				}
-			}
-
 			if (!isset($params['crop_frame'])) {
 				$crop_frame_size_name = 'thumbnail';
 				
@@ -723,15 +298,84 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					$params['crop_frame']['final_height'] = $params['height'];
 				}
 			}
+		}
+
+		return $params;
+	}
+	
+	/**
+	 * Returns an array of dimensional properties (width, height, real_width, real_height) of a resulting clone image if and when generated
+	 * @param string $image_path
+	 * @param string $clone_path
+	 * @param array $params
+	 * @return array
+	 */
+	function calculate_image_size_dimensions($image, $size, $params = null, $skip_defaults = false)
+	{
+		$retval = FALSE;
+
+		// Get the image entity
+		if (is_numeric($image)) {
+			$image = $this->object->_image_mapper->find($image);
+		}
+
+		// Ensure we have a valid image
+		if ($image)
+		{
+			$params = $this->object->get_image_size_params($image, $size, $params, $skip_defaults);
+
+			// Get the image filename
+			$image_path = $this->object->get_original_abspath($image, 'original');
+			$clone_path = $this->object->get_image_abspath($image, $size);
+			
+			$retval = $this->object->calculate_image_clone_dimensions($image_path, $clone_path, $params);
+		}
+		
+		return $retval;
+	}
+
+	/**
+	 * Generates a specific size for an image
+	 * @param int|stdClass|C_Image $image
+	 * @return bool|object
+	 */
+	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
+	{
+		$retval = FALSE;
+
+		// Get the image entity
+		if (is_numeric($image)) {
+			$image = $this->object->_image_mapper->find($image);
+		}
+
+		// Ensure we have a valid image
+		if ($image)
+		{
+			$params = $this->object->get_image_size_params($image, $size, $params, $skip_defaults);
+			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+
+			// Get the image filename
+			$filename = $this->object->get_original_abspath($image, 'original');
+			$thumbnail = null;
+
+			if ($size == 'full' && $settings->imgBackup == 1) {
+				// XXX change this? 'full' should be the resized path and 'original' the _backup path
+				$backup_path = $this->object->get_backup_abspath($image);
+
+				if (!file_exists($backup_path))
+				{
+					@copy($filename, $backup_path);
+				}
+			}
 
 			// Generate the thumbnail using WordPress
 			$existing_image_abpath = $this->object->get_image_abspath($image, $size);
 			$existing_image_dir = dirname($existing_image_abpath);
 
 			// removing the old thumbnail is actually not needed as generate_image_clone() will replace it, leaving commented in as reminder in case there are issues in the future
-      if (file_exists($existing_image_abpath)) {
-          //  unlink($existing_image_abpath);
-      }
+			if (file_exists($existing_image_abpath)) {
+				//unlink($existing_image_abpath);
+			}
 
 			wp_mkdir_p($existing_image_dir);
 
@@ -834,21 +478,21 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		if ($abspath != null)
 		{
-  		$data = @getimagesize($abspath);
-  		$format = 'jpg';
-  		
-  		if ($data != null && is_array($data) && isset($format_list[$data[2]])) 
-  		{
-  			$format = $format_list[$data[2]];
-  		}
-      
+			$data = @getimagesize($abspath);
+			$format = 'jpg';
+			
+			if ($data != null && is_array($data) && isset($format_list[$data[2]])) 
+			{
+				$format = $format_list[$data[2]];
+			}
+			
 			// Clear output
 			while (ob_get_level() > 0)
 			{
 				ob_end_clean();
 			}
-  		
-  		$format = strtolower($format);
+			
+			$format = strtolower($format);
 			
 			// output image and headers
 			header('Content-type: image/' . $format);

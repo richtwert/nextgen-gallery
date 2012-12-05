@@ -323,14 +323,14 @@ class nggAdmin{
 			$params['width'] = $width;
 		}
 		else {
-			$params['width'] = $settings->imgWidth;;
+			$params['width'] = $settings->imgWidth;
 		}
 
 		if ($height > 0) {
 			$params['height'] = $height;
 		}
 		else {
-			$params['width'] = $settings->imgHeight;;
+			$params['height'] = $settings->imgHeight;
 		}
 
 		$result = $storage->generate_image_size($image, 'full', $params);
