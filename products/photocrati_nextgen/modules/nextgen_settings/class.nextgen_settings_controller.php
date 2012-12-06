@@ -336,7 +336,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'hidden_label'				=>	_('(Show Customization Options)'),
 			'active_label'				=>	_('(Hide Customization Options)'),
             'thumbnail_url'             => $thumbnail_url,
-            'preview_label'             => _('Preview of saved settings:')
+            'preview_label'             => _('Preview of saved settings:'),
+            'refresh_label'             => _('Refresh preview image')
 		), TRUE);
 	}
 
