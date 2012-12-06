@@ -76,34 +76,16 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 			
 			if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 			{
-				$full_dims = $this->object->get_image_dimensions($image, 'full');
-				$named_params = $dynthumbs->get_params_from_name($size, true);
+				$new_dims = $this->object->calculate_image_size_dimensions($image, $size);
 				
-				$retval = array('width' => $named_params['width'], 'height' => $named_params['height']);
-				
-				if ($full_dims['width'] < $retval['width'])
-				{
-					$retval['width'] = $full_dims['width'];
-				}
-				
-				if ($full_dims['height'] < $retval['height'])
-				{
-					$retval['height'] = $full_dims['height'];
-				}
-				
-				if (!isset($named_params['crop']) || $named_params['crop'] == null) {
-					$new_dims = wp_constrain_dimensions($full_dims['width'], $full_dims['height'], $retval['width'], $retval['height']);
-					
-					$retval['width'] = $new_dims[0];
-					$retval['height'] = $new_dims[1];
-				}
+				$retval = array('width' => $new_dims['real_width'], 'height' => $new_dims['real_height']);
 			}
 		}
 		
 		return $retval;
   }
 
-	function generate_image_size($image, $size, $params = null, $skip_defaults = false)
+	function get_image_size_params($image, $size, $params = null, $skip_defaults = false)
 	{
 		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
@@ -117,6 +99,6 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 			}
 		}
 
-		return $this->call_parent('generate_image_size', $image, $size, $params, $skip_defaults);
+		return $this->call_parent('get_image_size_params', $image, $size, $params, $skip_defaults);
 	}
 }

@@ -396,11 +396,6 @@ li.ngg-next a, li.ngg-prev a  {
 	text-decoration: none;
 }
 
-.ngg-tagcloud a {
-    white-space: nowrap;
-    margin-right: 3px;
-}
-
 #TB_window {
 	z-index: 9999 !important;
 }
