@@ -229,7 +229,6 @@ jQuery(function($){
 							text: 	item.get(this.select_tag.text_field)
 						});
 					}, this);
-					debugger;
 					this.select_tag.$el.select2('data', data);
 				}
 			}
@@ -271,7 +270,17 @@ jQuery(function($){
 				offset: offset ? offset : 0
 
 			};
-			return _.extend(request, this.extra_data);
+			for (var index in this.extra_data) {
+				var value = this.extra_data[index];
+				if (typeof(request[index]) == 'undefined') {
+					request[index] = {};
+				}
+				if (typeof(value['toJSON']) != 'undefined') {
+					value = value.toJSON();
+				}
+				request[index] = _.extend(request[index], value);
+			}
+			return request;
 		},
 
 		_add_item: function(item) {
@@ -702,10 +711,6 @@ jQuery(function($){
 
 	Ngg.DisplayTab.Views.Preview_Area = Backbone.View.extend({
 		el: '#preview_area',
-
- 		fetch_limit: 50,
-
-		fetch_url: photocrati_ajax_url,
 
 		initialize: function(){
 			this.entities			= Ngg.DisplayTab.instance.entities;
@@ -1374,7 +1379,7 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
-			this.entities.extra_data.displayed_gallery = this.displayed_gallery.toJSON();
+			this.entities.extra_data.displayed_gallery = this.displayed_gallery;
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
