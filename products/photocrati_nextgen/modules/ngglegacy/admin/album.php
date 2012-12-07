@@ -539,11 +539,12 @@ function showDialog() {
 
 			// for speed reason we limit it to 50
 			if ( $this->num_albums < 50 ) {
-				if ($album->previewpic != 0) {
-					$image = $nggdb->find_image( $album->previewpic );
-					$image->thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
-    				$preview_image = ( !is_null($image->thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$image->pid.'" src="' . esc_url( $image->thumbURL ). '" /></div>' : '';
-                }
+				$thumbURL = "";
+				if ($gallery->previewpic) {
+					$image = $nggdb->find_image( $gallery->previewpic );
+					$thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
+				}
+				$preview_image = ( !is_null($thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$gallery->previewpic.'" src="' . esc_url( $thumbURL ). '" /></div>' : '';
 			}
 
 			// this indicates that we have a album container
@@ -565,9 +566,12 @@ function showDialog() {
 			// for spped reason we limit it to 50
 			if ( $this->num_galleries < 50 ) {
 				// set image url
-				$image = $nggdb->find_image( $gallery->previewpic );
-				$image->thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
-				$preview_image = ( !is_null($image->thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$image->pid.'" src="' . esc_url( $image->thumbURL ). '" /></div>' : '';
+				$thumbURL = "";
+				if ($gallery->previewpic) {
+					$image = $nggdb->find_image( $gallery->previewpic );
+					$thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
+				}
+				$preview_image = ( !is_null($thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$gallery->previewpic.'" src="' . esc_url( $thumbURL ). '" /></div>' : '';
 			}
 
 			$prefix = '';
