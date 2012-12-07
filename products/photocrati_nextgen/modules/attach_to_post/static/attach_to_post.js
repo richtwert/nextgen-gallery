@@ -30,12 +30,17 @@ jQuery(function($){
 
 	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
+
+	// If the active display tab is clicked, then we assume that the user
+	// wants to display the original tab content
 	$('.ui-tabs-nav a').click(function(e){
+
+		var element = e.target ? e.target : e.srcElement;
 
 		// If the accordion tab is used to display an iframe, ensure when
 		// clicked that the original iframe content is always displayed
-		if ($(e.srcElement).parent().hasClass('ui-state-active')) {
-			var iframe = $(e.srcElement.hash+' iframe');
+		if ($(element).parent().hasClass('ui-state-active')) {
+			var iframe = $(element.hash+' iframe');
 			if (iframe.length > 0) {
 				if (iframe[0].contentDocument.location != iframe.attr('src')) {
 					iframe[0].contentDocument.location = iframe.attr('src');
