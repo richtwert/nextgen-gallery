@@ -56,4 +56,12 @@ jQuery(function($){
 		if (e.keyCode == 27) close_attach_to_post_window();
 		return;
 	});
+
+	// Fade in now that all GUI elements are intact
+	$('body').css({
+		position: 'static',
+		visibility: 'visible'
+	}).animate({
+		opacity: 1.0
+	});
 });
