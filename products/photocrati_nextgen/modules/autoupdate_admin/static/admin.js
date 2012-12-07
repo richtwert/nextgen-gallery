@@ -160,19 +160,26 @@ var Photocrati_AutoUpdate_Admin = {
 						})
 			.success(function (updateList, updateIndex) {
 				return function (data, textStatus, jqXHR) {
-					updaterLog.append('Success.\n');
-					
-					if ('action' in data)
+					if (typeof(data) == 'string')
 					{
-						updateList[updateIndex] = data;
+						updaterLog.append('Possibly Failed...wrong output generated ["{0}"].\n'.format(data));
 					}
-					else if (data.length > 0 && 'action' in data[0])
+					else
 					{
-						updateList.splice(0, updateList.length);
-						
-						for (var i = 0; i < data.length; i++)
+						updaterLog.append('Success.\n');
+					
+						if ('action' in data)
 						{
-							updateList.push(data[i]);
+							updateList[updateIndex] = data;
+						}
+						else if (data.length > 0 && 'action' in data[0])
+						{
+							updateList.splice(0, updateList.length);
+						
+							for (var i = 0; i < data.length; i++)
+							{
+								updateList.push(data[i]);
+							}
 						}
 					}
 				}

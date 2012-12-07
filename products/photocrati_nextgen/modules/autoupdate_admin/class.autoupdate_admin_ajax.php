@@ -1,5 +1,8 @@
 <?php
 
+if (strpos(basename(dirname(__FILE__)), '__') !== 0)
+{
+
 class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 {
 	function _handle_action($action, $params)
@@ -10,7 +13,7 @@ class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 			return null;
 		}
 		
-		$updater = $this->_get_registry()->get_module('photocrati-auto_update');
+		$updater = $this->object->get_registry()->get_module('photocrati-auto_update');
 		
 		if ($updater != null)
 		{
@@ -151,4 +154,6 @@ class C_AutoUpdate_Admin_Ajax extends C_Component
 	{
 		parent::initialize($context);
 	}
+}
+
 }

@@ -14,6 +14,8 @@ class M_AutoUpdate_Admin extends C_Base_Module
 {
 		var $_updater = null;
 		var $_update_list = null;
+		var $_controller = null;
+		var $_ajax_handler = null;
 		
     function define()
     {
@@ -21,25 +23,21 @@ class M_AutoUpdate_Admin extends C_Base_Module
             'photocrati-auto_update-admin',
             'Photocrati Auto Update Admin',
             "Provides an AJAX admin interface to sequentially and progressively download and install updates",
-            '0.1',
+            '0.2',
             'http://www.photocrati.com',
             'Photocrati Media',
             'http://www.photocrati.com'
         );
     }
-    
-    
-    function initialize()
-    {
-        $factory = $this->_get_registry()->get_singleton_utility('I_Component_Factory');
-        $this->_controller = $factory->create('autoupdate_admin_controller');
-    }
-    
+
     
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Component_Factory', 'A_AutoUpdate_Admin_Factory');
-        $this->_get_registry()->add_adapter('I_Ajax_Handler', 'A_AutoUpdate_Admin_Ajax');
+        $this->object->get_registry()->add_adapter('I_Component_Factory', 'A_AutoUpdate_Admin_Factory');
+        $this->object->get_registry()->add_adapter('I_Ajax_Handler', 'A_AutoUpdate_Admin_Ajax');
+        
+        $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+        $this->_controller = $factory->create('autoupdate_admin_controller');
     }
     
     
@@ -51,7 +49,11 @@ class M_AutoUpdate_Admin extends C_Base_Module
         
         if (is_admin())
         {
-		      if (!interface_exists('I_Ajax_Handler')) {
+		      if (!interface_exists('I_Ajax_Handler', false)) {
+		      	if (!class_exists('C_AutoUpdate_Admin_Ajax')) {
+		      		include_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'class.autoupdate_admin_ajax.php');
+		      	}
+		      	
 		      	$this->_ajax_handler = new C_AutoUpdate_Admin_Ajax();
 		      	
 						add_action('wp_ajax_photocrati_autoupdate_admin_handle', array($this->_ajax_handler, 'handle_ajax'));
@@ -99,7 +101,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     {
     	if ($this->_update_list == null)
     	{
-		    $this->_updater = $this->_get_registry()->get_module('photocrati-auto_update');
+		    $this->_updater = $this->object->get_registry()->get_module('photocrati-auto_update');
 		    
 		    if ($this->_updater != null)
 		    {
@@ -189,7 +191,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
 			// XXX always use WP built-in ajax handler?
 			$ajaxurl = admin_url('ajax_handler');
 
-			if (!interface_exists('I_Ajax_Handler')) {
+			if (!interface_exists('I_Ajax_Handler', false)) {
 				$ajaxurl = admin_url('admin-ajax.php');
 			}
 
@@ -237,7 +239,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     
     function dashboard_widget()
     {
-    	$product_list = $this->_get_registry()->get_product_list();
+    	$product_list = $this->object->get_registry()->get_product_list();
     	$product_count = count($product_list);
     	$update_list = $this->_get_update_list();
     	$out = null;
@@ -250,7 +252,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
     		
     		for ($i = 0, $l = 0; $i < $product_count; $i++)
     		{
-    			$product = $this->_get_registry()->get_product($product_list[$i]);
+    			$product = $this->object->get_registry()->get_product($product_list[$i]);
     			
     			if (!$product->is_background_product())
     			{
