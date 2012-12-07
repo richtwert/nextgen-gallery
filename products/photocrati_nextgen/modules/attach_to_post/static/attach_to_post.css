@@ -1,9 +1,17 @@
 html,body {
 	width: 100%;
-	/*height: 100%;*/
+	height: 100%;
 	padding: 0px;
 	margin: 0px;
 	font-size: 13px;
+}
+
+body {
+	position: absolute;
+	visibility: hidden;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	filter: alpha(opacity=0);
+	opacity: 0.0;
 }
 
 .entity_errors {
@@ -24,6 +32,11 @@ html,body {
 #attach_to_post_tabs {
 	border: 0px;
 	background: none;
+	height: 100%;
+}
+
+.ui-tabs-panel {
+	height: 100%;
 }
 
 .ui-widget-header {
@@ -34,7 +47,7 @@ html,body {
 
 iframe {
 	width: 100%;
-	height: 100px;
+	height: 100%;
 	border: none;
 	padding: 0px;
 	margin: 0px;
