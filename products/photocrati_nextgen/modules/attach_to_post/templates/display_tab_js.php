@@ -747,6 +747,7 @@ jQuery(function($){
 		},
 
 		entities_reset: function(e){
+			this.entities.reset(null, {silent: true});
 			this.entity_list.empty().append('<li class="clear"/>');
 			this.entities.fetch();
 		},
@@ -1446,6 +1447,7 @@ jQuery(function($){
 
 			// Synchronize changes made to entities with the displayed gallery
 			this.entities.on('change:exclude finished_fetching', function(){
+				console.log(this.entities.entity_ids());
 				this.displayed_gallery.set('sortorder', this.entities.entity_ids());
 				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
