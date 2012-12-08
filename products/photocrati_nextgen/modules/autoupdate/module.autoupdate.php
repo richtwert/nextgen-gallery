@@ -17,7 +17,7 @@ class M_AutoUpdate extends C_Base_Module
             'photocrati-auto_update',
             'Photocrati Auto Update',
             "Provides automatic updates",
-            '0.1',
+            '0.2',
             'http://www.photocrati.com',
             'Photocrati Media',
             'http://www.photocrati.com'
@@ -78,7 +78,7 @@ class M_AutoUpdate extends C_Base_Module
     				{
     					$this->set_license($license_new, $product);
     					
-    					$autoupdate_admin = $this->_get_registry()->get_module('photocrati-auto_update-admin');
+    					$autoupdate_admin = $this->object->get_registry()->get_module('photocrati-auto_update-admin');
     					
     					if ($autoupdate_admin != null)
     					{
@@ -118,7 +118,7 @@ class M_AutoUpdate extends C_Base_Module
     {
     	// XXX use Mixin_Component_Config?
     	$license_default = get_option('photocrati_license_default');
-  		$product_list = $this->_get_registry()->get_product_list();
+  		$product_list = $this->object->get_registry()->get_product_list();
   		$path_list = array();
     	$license = null;
     	
@@ -133,14 +133,14 @@ class M_AutoUpdate extends C_Base_Module
     		
     		if (array_search($product, $product_list) !== false)
     		{
-    			$path_list[] = $this->_get_registry()->get_module_dir($product);
+    			$path_list[] = $this->object->get_registry()->get_module_dir($product);
     		}
     	}
     	else
     	{
     		foreach ($product_list as $product)
     		{
-    			$path_list[] = $this->_get_registry()->get_module_dir($product);
+    			$path_list[] = $this->object->get_registry()->get_module_dir($product);
     		}
     	}
     	
@@ -188,12 +188,12 @@ class M_AutoUpdate extends C_Base_Module
     // Returns a product_id -> product_version associative array of all the loaded products
     function get_product_list()
     {
-    	$product_list = $this->_get_registry()->get_product_list();
+    	$product_list = $this->object->get_registry()->get_product_list();
     	$version_list = array();
     	
     	foreach ($product_list as $product_id)
     	{
-    		$product = $this->_get_registry()->get_product($product_id);
+    		$product = $this->object->get_registry()->get_product($product_id);
     		
     		$version_list[$product_id] = $product->module_version;
     	}
@@ -205,12 +205,12 @@ class M_AutoUpdate extends C_Base_Module
     // Returns a module_id -> module_version associative array of all the loaded modules
     function get_module_list()
     {
-    	$module_list = $this->_get_registry()->get_module_list();
+    	$module_list = $this->object->get_registry()->get_module_list();
     	$version_list = array();
     	
     	foreach ($module_list as $module_id)
     	{
-    		$module = $this->_get_registry()->get_module($module_id);
+    		$module = $this->object->get_registry()->get_module($module_id);
     		
     		$version_list[$module_id] = $module->module_version;
     	}
@@ -312,7 +312,7 @@ class M_AutoUpdate extends C_Base_Module
     {
     	$local_path = isset($module_info['module-local-path']) ? $module_info['module-local-path'] : null;
     	$install_path = null;
-    	$current_path = $this->_get_registry()->get_module_dir($module_info['module-id']);
+    	$current_path = $this->object->get_registry()->get_module_dir($module_info['module-id']);
     	$basename = basename($current_path);
     	
     	if ($local_path != null && ($current_path == null || isset($local_path['force'])))
@@ -320,7 +320,7 @@ class M_AutoUpdate extends C_Base_Module
     		// XXX transform local relative path to absolute path
     		if (isset($local_path['product']))
     		{
-    			$path = $this->_get_registry()->get_product_module_path($local_path['product']);
+    			$path = $this->object->get_registry()->get_product_module_path($local_path['product']);
     			
     			if ($path != null)
     			{
@@ -350,7 +350,7 @@ class M_AutoUpdate extends C_Base_Module
     	if ($install_path == null)
     	{
     		// XXX pick better default install path?
-    		$path = $this->_get_registry()->get_default_module_path();
+    		$path = $this->object->get_registry()->get_default_module_path();
     		
     		if ($path != null)
     		{
