@@ -1210,24 +1210,25 @@ jQuery(function($){
 		tagName: 'tbody',
 
 		initialize: function(){
-			this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
-			this.amount_limit	= Ngg.DisplayTab.instance.displayed_gallery.get('amount_limit');
+			this.displayed_gallery		= Ngg.DisplayTab.instance.displayed_gallery;
+			this.maximum_entity_count	= Ngg.DisplayTab.instance.displayed_gallery.get('maximum_entity_count');
+			this.displayed_gallery.set('container_ids', []);
 		},
 
 		render: function(){
 			var self = this;
 			var edit_field = $('<input/>').attr({
 				type: 'text',
-				value: this.amount_limit,
-				name: 'amount_limit'
+				value: this.maximum_entity_count,
+				name: 'maximum_entity_count'
 			});
 
 			edit_field.change(function () {
-				self.displayed_gallery.set('amount_limit', $(this).val());
+				self.displayed_gallery.set('maximum_entity_count', $(this).val());
 			});
 
 			this.$el.empty();
-			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="recent_images_column"></td></tr>');
+			this.$el.append('<tr><td><label># of Images To Display</label></td><td class="recent_images_column"></td></tr>');
 			this.$el.find('.recent_images_column').append(edit_field);
 			return this;
 		}
@@ -1237,24 +1238,25 @@ jQuery(function($){
 		tagName: 'tbody',
 
 		initialize: function(){
-			this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
-			this.amount_limit	= Ngg.DisplayTab.instance.displayed_gallery.get('amount_limit');
+			this.displayed_gallery		= Ngg.DisplayTab.instance.displayed_gallery;
+			this.maximum_entity_count	= Ngg.DisplayTab.instance.displayed_gallery.get('maximum_entity_count');
+			this.displayed_gallery.set('container_ids', []);
 		},
 
 		render: function(){
 			var self = this;
 			var edit_field = $('<input/>').attr({
 				type: 'text',
-				value: this.amount_limit,
-				name: 'amount_limit'
+				value: this.maximum_entity_count,
+				name: 'maximum_entity_count'
 			});
 
 			edit_field.change(function () {
-				self.displayed_gallery.set('amount_limit', $(this).val());
+				self.displayed_gallery.set('maximum_entity_count', $(this).val());
 			});
 
 			this.$el.empty();
-			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="random_images_column"></td></tr>');
+			this.$el.append('<tr><td><label># of Images To Display</label></td><td class="random_images_column"></td></tr>');
 			this.$el.find('.random_images_column').append(edit_field);
 			return this;
 		}
@@ -1354,7 +1356,7 @@ jQuery(function($){
         initialize: function(){
 			// TODO: We're currently fetching ALL galleries, albums, and tags
 			// in one shot. Instead, we should display the displayed_gallery's
-			// containers, if there are any, otherwise get the first 25 or so.
+			// containers, if there are any, otherwise get the first 100 or so.
 			// We can then use AJAX to fetch the rest of batches.
             this.displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
 				<?php echo $displayed_gallery ?>
@@ -1384,6 +1386,14 @@ jQuery(function($){
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
 
+				// Pre-select source
+				if (this.displayed_gallery.get('source')) {
+					var source = this.sources.find(function(item){
+						return item.get('name') == this.displayed_gallery.get('source');
+					}, this);
+					if (source) source.set('selected', true);
+				}
+
 				// Pre-select containers
 				if (this.displayed_gallery.get('container_ids')) {
 					_.each(this.displayed_gallery.get('container_ids'), function(id){
@@ -1400,14 +1410,6 @@ jQuery(function($){
 						return item.get('name') == this.displayed_gallery.get('display_type');
 					}, this);
 					if (display_type) display_type.set('selected', true);
-				}
-
-				// Pre-select source
-				if (this.displayed_gallery.get('source')) {
-					var source = this.sources.find(function(item){
-						return item.get('name') == this.displayed_gallery.get('source');
-					}, this);
-					if (source) source.set('selected', true);
 				}
 			}
 

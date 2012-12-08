@@ -89,6 +89,14 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	{
 		$retval = array();
 
+		// If a maximum entity count has been set for the displayed gallery,
+		// then ensure that's honoured
+		if (isset($this->object->maximum_entity_count)) {
+			if (!$limit OR (is_numeric($limit) && $limit > $this->object->maximum_entity_count)) {
+				$limit = intval($this->object->maximum_entity_count);
+			}
+		}
+
 		// Ensure that all parameters have values that are expected
 		if ($this->object->_parse_parameters()) {
 

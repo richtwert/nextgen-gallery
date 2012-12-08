@@ -93,5 +93,9 @@ class Mixin_Displayed_Gallery_Defaults extends Mixin
         $this->object->_seT_default_value($entity, 'sortorder',     array());
 		$this->object->_set_default_value($entity, 'entity_ids', array());
 		$this->object->_set_default_value($entity, 'returns', 'included');
+
+		// Set maximum_entity_count
+		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$this->object->_set_default_value($entity, 'maximum_entity_count', $settings->maximum_entity_count);
 	}
 }
