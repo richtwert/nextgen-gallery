@@ -229,7 +229,6 @@ jQuery(function($){
 							text: 	item.get(this.select_tag.text_field)
 						});
 					}, this);
-					debugger;
 					this.select_tag.$el.select2('data', data);
 				}
 			}
@@ -271,7 +270,17 @@ jQuery(function($){
 				offset: offset ? offset : 0
 
 			};
-			return _.extend(request, this.extra_data);
+			for (var index in this.extra_data) {
+				var value = this.extra_data[index];
+				if (typeof(request[index]) == 'undefined') {
+					request[index] = {};
+				}
+				if (typeof(value['toJSON']) != 'undefined') {
+					value = value.toJSON();
+				}
+				request[index] = _.extend(request[index], value);
+			}
+			return request;
 		},
 
 		_add_item: function(item) {
@@ -703,10 +712,6 @@ jQuery(function($){
 	Ngg.DisplayTab.Views.Preview_Area = Backbone.View.extend({
 		el: '#preview_area',
 
- 		fetch_limit: 50,
-
-		fetch_url: photocrati_ajax_url,
-
 		initialize: function(){
 			this.entities			= Ngg.DisplayTab.instance.entities;
 			this.sources			= Ngg.DisplayTab.instance.sources;
@@ -742,6 +747,7 @@ jQuery(function($){
 		},
 
 		entities_reset: function(e){
+			this.entities.reset(null, {silent: true});
 			this.entity_list.empty().append('<li class="clear"/>');
 			this.entities.fetch();
 		},
@@ -1204,24 +1210,25 @@ jQuery(function($){
 		tagName: 'tbody',
 
 		initialize: function(){
-			this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
-			this.amount_limit	= Ngg.DisplayTab.instance.displayed_gallery.get('amount_limit');
+			this.displayed_gallery		= Ngg.DisplayTab.instance.displayed_gallery;
+			this.maximum_entity_count	= Ngg.DisplayTab.instance.displayed_gallery.get('maximum_entity_count');
+			this.displayed_gallery.set('container_ids', []);
 		},
 
 		render: function(){
 			var self = this;
 			var edit_field = $('<input/>').attr({
 				type: 'text',
-				value: this.amount_limit,
-				name: 'amount_limit'
+				value: this.maximum_entity_count,
+				name: 'maximum_entity_count'
 			});
 
 			edit_field.change(function () {
-				self.displayed_gallery.set('amount_limit', $(this).val());
+				self.displayed_gallery.set('maximum_entity_count', $(this).val());
 			});
 
 			this.$el.empty();
-			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="recent_images_column"></td></tr>');
+			this.$el.append('<tr><td><label># of Images To Display</label></td><td class="recent_images_column"></td></tr>');
 			this.$el.find('.recent_images_column').append(edit_field);
 			return this;
 		}
@@ -1231,24 +1238,25 @@ jQuery(function($){
 		tagName: 'tbody',
 
 		initialize: function(){
-			this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
-			this.amount_limit	= Ngg.DisplayTab.instance.displayed_gallery.get('amount_limit');
+			this.displayed_gallery		= Ngg.DisplayTab.instance.displayed_gallery;
+			this.maximum_entity_count	= Ngg.DisplayTab.instance.displayed_gallery.get('maximum_entity_count');
+			this.displayed_gallery.set('container_ids', []);
 		},
 
 		render: function(){
 			var self = this;
 			var edit_field = $('<input/>').attr({
 				type: 'text',
-				value: this.amount_limit,
-				name: 'amount_limit'
+				value: this.maximum_entity_count,
+				name: 'maximum_entity_count'
 			});
 
 			edit_field.change(function () {
-				self.displayed_gallery.set('amount_limit', $(this).val());
+				self.displayed_gallery.set('maximum_entity_count', $(this).val());
 			});
 
 			this.$el.empty();
-			this.$el.append('<tr><td><label>Maximum Image Amount</label></td><td class="random_images_column"></td></tr>');
+			this.$el.append('<tr><td><label># of Images To Display</label></td><td class="random_images_column"></td></tr>');
 			this.$el.find('.random_images_column').append(edit_field);
 			return this;
 		}
@@ -1290,7 +1298,6 @@ jQuery(function($){
 				else {
 					var id_field = response.displayed_gallery.id_field;
 					var id = response.displayed_gallery[id_field];
-					//console.log(self.displayed_gallery.get('sortorder'));
 					self.displayed_gallery.set('id', id);
 					var editor = parent.tinyMCE.activeEditor;
 					var preview_url = ngg_displayed_gallery_preview_url + '?id='+id;
@@ -1349,7 +1356,7 @@ jQuery(function($){
         initialize: function(){
 			// TODO: We're currently fetching ALL galleries, albums, and tags
 			// in one shot. Instead, we should display the displayed_gallery's
-			// containers, if there are any, otherwise get the first 25 or so.
+			// containers, if there are any, otherwise get the first 100 or so.
 			// We can then use AJAX to fetch the rest of batches.
             this.displayed_gallery = new Ngg.DisplayTab.Models.Displayed_Gallery(
 				<?php echo $displayed_gallery ?>
@@ -1374,10 +1381,18 @@ jQuery(function($){
 				<?php echo $display_types ?>
 			);
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
-			this.entities.extra_data.displayed_gallery = this.displayed_gallery.toJSON();
+			this.entities.extra_data.displayed_gallery = this.displayed_gallery;
 
 			// Pre-select current displayed gallery values
 			if (this.displayed_gallery.get('source')) {
+
+				// Pre-select source
+				if (this.displayed_gallery.get('source')) {
+					var source = this.sources.find(function(item){
+						return item.get('name') == this.displayed_gallery.get('source');
+					}, this);
+					if (source) source.set('selected', true);
+				}
 
 				// Pre-select containers
 				if (this.displayed_gallery.get('container_ids')) {
@@ -1395,14 +1410,6 @@ jQuery(function($){
 						return item.get('name') == this.displayed_gallery.get('display_type');
 					}, this);
 					if (display_type) display_type.set('selected', true);
-				}
-
-				// Pre-select source
-				if (this.displayed_gallery.get('source')) {
-					var source = this.sources.find(function(item){
-						return item.get('name') == this.displayed_gallery.get('source');
-					}, this);
-					if (source) source.set('selected', true);
 				}
 			}
 
@@ -1441,7 +1448,7 @@ jQuery(function($){
 
 			// Synchronize changes made to entities with the displayed gallery
 			this.entities.on('change:exclude finished_fetching', function(){
-				this.displayed_gallery.set('sortorder', this.entities.entity_ids());
+				//this.displayed_gallery.set('sortorder', this.entities.entity_ids());
 				this.displayed_gallery.set('exclusions', this.entities.excluded_ids());
 			}, this);
 

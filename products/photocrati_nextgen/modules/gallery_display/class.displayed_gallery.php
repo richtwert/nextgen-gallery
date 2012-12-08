@@ -89,6 +89,14 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	{
 		$retval = array();
 
+		// If a maximum entity count has been set for the displayed gallery,
+		// then ensure that's honoured
+		if (isset($this->object->maximum_entity_count)) {
+			if (!$limit OR (is_numeric($limit) && $limit > $this->object->maximum_entity_count)) {
+				$limit = intval($this->object->maximum_entity_count);
+			}
+		}
+
 		// Ensure that all parameters have values that are expected
 		if ($this->object->_parse_parameters()) {
 
@@ -165,12 +173,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 				$excluded_set,
 				'exclude'
 			);
-			$select = $this->object->_add_if_column(
-				$select,
-				'exclude',
-				$if_true,
-				$if_false
-			);
+			$select .= ", IF (exclude = 0 AND @exclude = 0, $if_true, $if_false) AS 'exclude'";
 
 			// Select what we want
 			$mapper->select($select);
@@ -210,6 +213,10 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			if ($this->object->exclusions) {
 				$mapper->where(array("{$image_key} NOT IN %s", $this->object->exclusions));
 			}
+
+			// Ensure that no images marked as excluded at the gallery level are
+			// returned
+			$mapper->where(array("exclude = %d", 0));
 		}
 
 		// When returns is "excluded", it's a little more complicated as the
@@ -255,6 +262,9 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			else if ($this->object->exclusions) {
 				$mapper->where(array("{$image_key} IN %s", $this->object->exclusions));
 			}
+
+			// Ensure that images marked as excluded are returned as well
+			$mapper->where(array("exclude = 1"));
 		}
 
 		// Filter based on containers_ids. Container ids is a little more
