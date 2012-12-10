@@ -30,7 +30,7 @@ class M_Shutter_Reloaded extends C_Base_Module
     {
 		$this->get_registry()->add_adapter(
 			'I_NextGen_Activator',
-			'A_Shutter_Library_Activation'
+			'A_Shutter_Reloaded_Library_Activation'
 		);
     }
 }

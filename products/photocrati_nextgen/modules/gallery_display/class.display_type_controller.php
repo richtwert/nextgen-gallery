@@ -280,10 +280,9 @@ class Mixin_Display_Type_Controller extends Mixin
      */
     function alternative_index($displayed_gallery, $return=FALSE)
     {
-		// TODO - Move this function to the M_Gallery_Display class, so that it
-		// gets executed higher up in the stack, avoiding unnecessary execution
-		// of other things
-		$retval					= FALSE;
+		// TODO - Move this function to the M_Gallery_Display class, so that it gets executed higher up in the stack,
+        // avoiding unnecessary execution of other things
+		$retval	= FALSE;
 
         // Let the request determine what display type or alternative view to render
 		if (($show = get_query_var('show'))) {
@@ -293,7 +292,8 @@ class Mixin_Display_Type_Controller extends Mixin
 			$retval = $this->_render_alternative_view($displayed_gallery, $show, $return);
 		}
 
-		if (!$return) echo $retval;
+		if (!$return)
+            echo $retval;
 
         return $retval;
     }
@@ -422,8 +422,9 @@ class Mixin_Display_Type_Controller extends Mixin
 	function _render_alternative_view($displayed_gallery, $uri_segment, $return)
 	{
 		$retval = '';
-		if (($view = $this->_get_alternative_view($uri_segment, $displayed_gallery->get_display_type()))) {
 
+		if (($view = $this->_get_alternative_view($uri_segment)))
+        {
 			// We leave room for other alternative view 'types'
 			// by letting a method become responsible for displaying
 			// the alternative view. Third-party methods just need to

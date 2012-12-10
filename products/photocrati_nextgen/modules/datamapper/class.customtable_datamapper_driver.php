@@ -134,6 +134,26 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		return $retval;
 	}
 
+	/**
+	 * Returns the generated SQL query to be executed
+	 * @return string
+	 */
+	function get_generated_query()
+	{
+		$sql = array();
+		$sql[] = $this->object->_select_clause;
+		$sql[] = 'FROM `'.$this->object->get_table_name().'`';
+		$where_clauses = array();
+		foreach ($this->object->_where_clauses as $where) {
+			$where_clauses[] = '('.$where.')';
+		}
+		if ($where_clauses) $sql[] = 'WHERE '.implode(' AND ', $where_clauses);
+		if ($this->object->_order_clauses) $sql[] = 'ORDER BY '.implode(', ', $this->object->_order_clauses);
+		if ($this->object->_group_by_columns) $sql[] = 'GROUP BY '.implode(', ', $this->object->_group_by_columns);
+		if ($this->object->_limit_clause) $sql[] = $this->object->_limit_clause;
+		return implode(' ', $sql);
+	}
+
 
 	/**
 	 * Run the query
@@ -145,20 +165,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		$retval = array();
 
 		// Or generate SQL query
-		if (!$sql) {
-			$sql = array();
-			$sql[] = $this->object->_select_clause;
-			$sql[] = 'FROM `'.$this->object->get_table_name().'`';
-			$where_clauses = array();
-			foreach ($this->object->_where_clauses as $where) {
-				$where_clauses[] = '('.$where.')';
-			}
-			if ($where_clauses) $sql[] = 'WHERE '.implode(' AND ', $where_clauses);
-			if ($this->object->_order_clauses) $sql[] = 'ORDER BY '.implode(', ', $this->object->_order_clauses);
-            if ($this->object->_group_by_columns) $sql[] = 'GROUP BY '.implode(', ', $this->object->_group_by_columns);
-			if ($this->object->_limit_clause) $sql[] = $this->object->_limit_clause;
-			$sql = implode(' ', $sql);
-		}
+		if (!$sql) $sql = $this->object->get_generated_query();
 
 		// If we have a SQL statement to execute, then heck, execute it!
 		if ($sql) {

@@ -29,6 +29,18 @@ jQuery(function($){
 		$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source').click();
 	});
 
+    $('#nextgen_settings_preview_refresh').click(function(event) {
+        event.preventDefault();
+        var img = $(this).prev();
+        var src = img.attr('src');
+
+        queryPos = src.indexOf('?');
+        if (queryPos != -1) {
+            src = src.substring(0, queryPos);
+        }
+
+        img.attr('src', src + '?' + new Date().getTime());
+    });
 	/**** STYLES TAB ****/
 
 	// When the selected stylesheet changes, fetch it's contents

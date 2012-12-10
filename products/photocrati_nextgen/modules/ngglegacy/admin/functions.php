@@ -301,7 +301,7 @@ class nggAdmin{
 	 * @return string result code
 	 */
 	function resize_image($image, $width = 0, $height = 0) {
-
+		
 		if (is_object($image)) {
 			if (isset($image->id)) {
 				$image = $image->id;
@@ -313,6 +313,8 @@ class nggAdmin{
 
 		$registry = C_Component_Registry::get_instance();
     $storage  = $registry->get_utility('I_Gallery_Storage');
+    // XXX maybe get rid of this...it's needed to get width/height defaults, placing these directly in generate_image_size could have unwanted consequences
+		$settings = $registry->get_utility('I_NextGen_Settings');
 
 		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
 		$params = array('watermark' => false, 'reflection' => false);
@@ -320,9 +322,15 @@ class nggAdmin{
 		if ($width > 0) {
 			$params['width'] = $width;
 		}
+		else {
+			$params['width'] = $settings->imgWidth;
+		}
 
 		if ($height > 0) {
 			$params['height'] = $height;
+		}
+		else {
+			$params['height'] = $settings->imgHeight;
 		}
 
 		$result = $storage->generate_image_size($image, 'full', $params);

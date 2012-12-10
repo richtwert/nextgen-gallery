@@ -89,6 +89,14 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	{
 		$retval = array();
 
+		// If a maximum entity count has been set for the displayed gallery,
+		// then ensure that's honoured
+		if (isset($this->object->maximum_entity_count)) {
+			if (!$limit OR (is_numeric($limit) && $limit > $this->object->maximum_entity_count)) {
+				$limit = intval($this->object->maximum_entity_count);
+			}
+		}
+
 		// Ensure that all parameters have values that are expected
 		if ($this->object->_parse_parameters()) {
 
@@ -121,7 +129,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		// Find a way to minimalize or segment
 		$mapper	= $this->get_registry()->get_utility('I_Image_Mapper');
 		$image_key		= $mapper->get_primary_key_column();
-		$select			= $ids_only ? $image_key : '*';
+		$select			= $id_only ? $image_key : '*';
 		$sort_direction	= $this->object->order_direction;
 		$sort_by		= $this->object->order_by;
 
@@ -165,12 +173,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 				$excluded_set,
 				'exclude'
 			);
-			$select = $this->object->_add_if_column(
-				$select,
-				'exclude',
-				$if_true,
-				$if_false
-			);
+			$select .= ", IF (exclude = 0 AND @exclude = 0, $if_true, $if_false) AS 'exclude'";
 
 			// Select what we want
 			$mapper->select($select);
@@ -210,6 +213,10 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			if ($this->object->exclusions) {
 				$mapper->where(array("{$image_key} NOT IN %s", $this->object->exclusions));
 			}
+
+			// Ensure that no images marked as excluded at the gallery level are
+			// returned
+			$mapper->where(array("exclude = %d", 0));
 		}
 
 		// When returns is "excluded", it's a little more complicated as the
@@ -255,6 +262,9 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			else if ($this->object->exclusions) {
 				$mapper->where(array("{$image_key} IN %s", $this->object->exclusions));
 			}
+
+			// Ensure that images marked as excluded are returned as well
+			$mapper->where(array("exclude = 1"));
 		}
 
 		// Filter based on containers_ids. Container ids is a little more
@@ -322,7 +332,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		// the entity_ids field
 		if ($returns == 'included' && $this->object->entity_ids && empty($this->object->exclusions)) {
 			$retval = $this->object->_entities_to_galleries_and_albums(
-				$this->object->entity_ids, $id_only
+				$this->object->entity_ids, $id_only, array(), $limit, $offset
 			);
 		}
 
@@ -379,20 +389,37 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 				$included_ids = $entity_ids;
 			}
 
-			// We've built our two groups. Let's determine how we'll focus on
-			// them
+			// We've built our two groups. Let's determine how we'll focus on them
 			// --
 			// We're interested in only the included ids
 			if ($returns == 'included')
-				$retval = $this->object->_entities_to_galleries_and_albums($included_ids, $id_only);
+				$retval = $this->object->_entities_to_galleries_and_albums(
+                    $included_ids,
+                    $id_only,
+                    array(),
+                    $limit,
+                    $offset
+                );
 
 			// We're interested in only the excluded ids
 			elseif ($returns == 'excluded')
-				$retval = $this->object->_entities_to_galleries_and_albums($excluded_ids, $id_only, $excluded_ids);
+				$retval = $this->object->_entities_to_galleries_and_albums(
+                    $excluded_ids,
+                    $id_only,
+                    $excluded_ids,
+                    $limit,
+                    $offset
+                );
 
 			// We're interested in both groups
 			else {
-				$retval = $this->object->_entities_to_galleries_and_albums($entity_ids, $id_only, $excluded_ids);
+				$retval = $this->object->_entities_to_galleries_and_albums(
+                    $entity_ids,
+                    $id_only,
+                    $excluded_ids,
+                    $limit,
+                    $offset
+                );
 			}
 		}
 
@@ -400,12 +427,20 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	}
 
 	/**
-	 * Takes a list of entities, and returns the mapped
-	 * galleries and sub-albums
+	 * Takes a list of entities, and returns the mapped galleries and sub-albums
+     *
 	 * @param array $entity_ids
+     * @param bool $id_only
+     * @param array $exclusions
+     * @param int $limit
+     * @param int $offset
 	 * @return array
 	 */
-	function _entities_to_galleries_and_albums($entity_ids, $id_only=FALSE, $exclusions=array())
+	function _entities_to_galleries_and_albums($entity_ids,
+                                               $id_only = FALSE,
+                                               $exclusions = array(),
+                                               $limit = FALSE,
+                                               $offset = FALSE)
 	{
 		$retval			= array();
 		$gallery_ids	= array();
@@ -737,7 +772,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
     {
         $transient_handler = $this->object->get_registry()->get_utility('I_Transients');
         $key = md5(serialize($this->object->get_entity()));
-        $transient_handler->set_value($key, $this->object->get_entity());
+        $transient_handler->set_value($key, $this->object->get_entity(), (60*60*24));
         return $key;
     }
 

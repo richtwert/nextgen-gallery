@@ -22,7 +22,7 @@ class Hook_NextGen_Basic_Slideshow_Alternative_Views extends Hook
 		);
 
 		if (isset($views['photocrati-nextgen_basic_slideshow'])) {
-			$view_info = $view['photocrati-nextgen_basic_slideshow'];
+			$view_info = $views['photocrati-nextgen_basic_slideshow'];
 			$views['slide'] = $views['slideshow'] = $view_info;
 		}
 

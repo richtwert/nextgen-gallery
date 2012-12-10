@@ -12,7 +12,9 @@ define('PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM', 'photocrati-nextgen_ba
 
 class M_NextGen_Basic_Album extends C_Base_Module
 {
-    function define()
+	var $module_id = 'photocrati-nextgen_basic_album';
+
+	function define()
     {
         parent::define(
             'photocrati-nextgen_basic_album',
@@ -30,7 +32,15 @@ class M_NextGen_Basic_Album extends C_Base_Module
     {
         $this->get_registry()->add_adapter('I_Display_Type',            'A_NextGen_Basic_Album');
         $this->get_registry()->add_adapter('I_NextGen_Activator',       'A_NextGen_Basic_Album_Activator');
-        $this->get_registry()->add_adapter('I_Display_Type_Controller', 'A_NextGen_Basic_Album_Controller');
+        $this->get_registry()->add_adapter(
+			'I_Display_Type_Controller',
+			'A_NextGen_Basic_Album_Controller',
+			array(
+				PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM,
+				PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM,
+				$this->module_id
+			)
+		);
         $this->get_registry()->add_adapter('I_Display_Type_Mapper',     'A_NextGen_Basic_Album_Mapper');
     }
 }

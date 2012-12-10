@@ -84,6 +84,7 @@ class M_NggLegacy extends C_Base_Module
 					}
 				}
 			}
+			else break;
 		}
 
 		// If we changed the previewpic, save the changes

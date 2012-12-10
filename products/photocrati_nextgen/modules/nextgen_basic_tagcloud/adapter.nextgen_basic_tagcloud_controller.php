@@ -40,7 +40,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
 
         $defaults = array(
             'exclude'  => '',
-            'format'   => 'flat',
+            'format'   => 'list',
             'include'  => '',
             'largest'  => 22,
             'link'     => 'view',
@@ -66,6 +66,17 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         $params['storage']       = &$storage;
         $params['tagcloud']      = wp_generate_tag_cloud($tags, $args);
         return $this->object->render_partial('nextgen_basic_tagcloud', $params, $return);
+    }
+
+    /**
+     * Enqueues all static resources required by this display type
+     *
+     * @param C_Displayed_Gallery $displayed_gallery
+     */
+    function enqueue_frontend_resources($displayed_gallery)
+    {
+        wp_enqueue_style('photocrati-nextgen_basic_tagcloud-style', $this->static_url('nextgen_basic_tagcloud.css'));
+        $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
     }
 
 }

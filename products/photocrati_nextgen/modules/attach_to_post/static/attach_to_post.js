@@ -8,10 +8,12 @@ function close_attach_to_post_window()
 // the specified callback
 function adjust_height_for_frame(frame, callback)
 {
-	var current_height	= jQuery(frame.contentDocument).height();
-	jQuery(frame).height(current_height);
+	var new_height		= jQuery(frame.contentDocument).height();
+	var current_height	= jQuery(frame).height();
+	if (current_height < new_height) jQuery(frame).height(new_height);
+
 	if (callback != undefined)
-		return callback.call(frame, current_height);
+		return callback.call(frame, new_height);
 	else
 		return true;
 }
@@ -30,12 +32,17 @@ jQuery(function($){
 
 	// Activate accordion for display tab
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
+
+	// If the active display tab is clicked, then we assume that the user
+	// wants to display the original tab content
 	$('.ui-tabs-nav a').click(function(e){
+
+		var element = e.target ? e.target : e.srcElement;
 
 		// If the accordion tab is used to display an iframe, ensure when
 		// clicked that the original iframe content is always displayed
-		if ($(e.srcElement).parent().hasClass('ui-state-active')) {
-			var iframe = $(e.srcElement.hash+' iframe');
+		if ($(element).parent().hasClass('ui-state-active')) {
+			var iframe = $(element.hash+' iframe');
 			if (iframe.length > 0) {
 				if (iframe[0].contentDocument.location != iframe.attr('src')) {
 					iframe[0].contentDocument.location = iframe.attr('src');
@@ -48,5 +55,13 @@ jQuery(function($){
 	$(this).keydown(function(e){
 		if (e.keyCode == 27) close_attach_to_post_window();
 		return;
+	});
+
+	// Fade in now that all GUI elements are intact
+	$('body').css({
+		position: 'static',
+		visibility: 'visible'
+	}).animate({
+		opacity: 1.0
 	});
 });
