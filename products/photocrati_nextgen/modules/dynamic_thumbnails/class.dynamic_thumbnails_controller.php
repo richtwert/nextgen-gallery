@@ -13,6 +13,7 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 		
 		$uri = $_SERVER['REQUEST_URI'];
 		$params = $dynthumbs->get_params_from_uri($uri);
+		$request_params = $params;
 		
 		if ($params != null)
 		{
@@ -31,7 +32,7 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 			
 			// Render invalid image if hash check fails
 			if ($abspath == null) {
-				$uri_plain = $dynthumbs->get_uri_from_params($params);
+				$uri_plain = $dynthumbs->get_uri_from_params($request_params);
 				$hash = wp_hash($uri_plain);
 				
 				if (strpos($uri, $hash) === false) {
