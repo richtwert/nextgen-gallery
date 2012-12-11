@@ -2,7 +2,7 @@
 
 class Mixin_MVC_Controller_URI_Params extends Mixin
 {
-    public $_pattern = '/^(?<id>.+)--(?<name>.+)--(?<value>.+)/';
+    public $_pattern = '/^(?<id>.+)--(ngg)?(?<name>.+)--(?<value>.+)/';
     public $_parameters = array();
 
     /**
@@ -72,7 +72,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
         $matches = array();
         preg_match($this->_pattern, $string, $matches);
 
-        if (7 == count($matches))
+        if (8 == count($matches))
         {
             return array('id'     => $matches['id'],
                          'name'   => $matches['name'],
@@ -91,17 +91,45 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      * @param string $prefix
      * @return mixed
      */
-    public function get_parameter($name, $prefix)
+    public function get_parameter($name, $prefix = FALSE)
     {
         $retval = NULL;
 
-        if (isset($this->_parameters[$prefix]))
+        if (!empty($_GET[$name]))
+            $retval = $_GET[$name];
+
+        if (!empty($_GET['ngg' . $name]))
+            $retval = $_GET['ngg' . $name];
+
+        if ($prefix && isset($this->_parameters[$prefix]))
         {
+            // check for the ngg prefix in both the requested and stored names
             foreach ($this->_parameters[$prefix] as $parameter) {
-                if ($parameter['name'] == $name)
+                if ($parameter['name'] == $name
+                ||  'ngg' . $parameter['name'] == $name
+                ||  $parameter['name'] == 'ngg' . $name)
+                {
                     $retval = $parameter['value'];
+                }
             }
         }
+
+        // after this is just $retval massage; if it's still null just leave now
+        if (is_null($retval))
+            return $retval;
+
+        // wordpress strips magic quotes but also then adds them right back
+        if (get_magic_quotes_gpc())
+            $retval = stripslashes_deep($retval);
+
+        if ('null' == strtolower($retval))
+            $retval = NULL;
+
+        if ('false' == strtolower($retval))
+            $retval = FALSE;
+
+        if ('true' == strtolower($retval))
+            $retval = TRUE;
 
         return $retval;
     }
