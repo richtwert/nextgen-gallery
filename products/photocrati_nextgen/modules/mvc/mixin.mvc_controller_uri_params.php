@@ -2,8 +2,8 @@
 
 class Mixin_MVC_Controller_URI_Params extends Mixin
 {
-    public $_pattern = '/^(?<id>.+)--(ngg)?(?<name>.+)--(?<value>.+)/';
-    public $_parameters = array();
+    public $_pattern = '/^((?<id>.+)--)?(ngg)?(?<name>.+)--(?<value>.+)/';
+    public $_parameters = array('global' => array(), 'prefixed' => array());
 
     /**
      * Starts a chain that will cache SEO/permalink style and query-string parameters into a formatted array
@@ -12,6 +12,8 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     {
         $this->object->cache_permalink_parameters();
         $this->object->cache_query_string_parameters();
+
+        var_dump($this->_parameters);
     }
 
     /**
@@ -57,8 +59,17 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     public function cache_parameter($parameter)
     {
         $tmp = $this->object->is_segment_a_parameter($parameter);
-        if (!empty($tmp))
-            $this->_parameters[$tmp['id']][] = $tmp;
+
+        if (empty($tmp))
+            return;
+
+        if (!empty($tmp['id']))
+        {
+            $this->_parameters['prefixed'][$tmp['id']][] = $tmp;
+        }
+        else {
+            $this->_parameters['global'][] = $tmp;
+        }
     }
 
     /**
@@ -72,7 +83,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
         $matches = array();
         preg_match($this->_pattern, $string, $matches);
 
-        if (8 == count($matches))
+        if (9 == count($matches))
         {
             return array('id'     => $matches['id'],
                          'name'   => $matches['name'],
@@ -95,16 +106,28 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     {
         $retval = NULL;
 
-        if (!empty($_GET[$name]))
-            $retval = $_GET[$name];
+        if (!empty($_REQUEST[$name]))
+            $retval = $_REQUEST[$name];
 
-        if (!empty($_GET['ngg' . $name]))
-            $retval = $_GET['ngg' . $name];
+        if (!empty($_REQUEST['ngg' . $name]))
+            $retval = $_REQUEST['ngg' . $name];
 
-        if ($prefix && isset($this->_parameters[$prefix]))
+
+        // check for global parameters
+        foreach ($this->_parameters['global'] as $parameter) {
+            if ($parameter['name'] == $name
+                ||  'ngg' . $parameter['name'] == $name
+                ||  $parameter['name'] == 'ngg' . $name)
+            {
+                $retval = $parameter['value'];
+            }
+        }
+
+        // check for prefixed parameters
+        if ($prefix && isset($this->_parameters['prefixed'][$prefix]))
         {
             // check for the ngg prefix in both the requested and stored names
-            foreach ($this->_parameters[$prefix] as $parameter) {
+            foreach ($this->_parameters['prefixed'][$prefix] as $parameter) {
                 if ($parameter['name'] == $name
                 ||  'ngg' . $parameter['name'] == $name
                 ||  $parameter['name'] == 'ngg' . $name)
