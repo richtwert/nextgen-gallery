@@ -33,12 +33,17 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      *
      * @return array
      */
-    public function get_query_string_parameters()
+    public function get_query_string_parameters($uri = NULL)
     {
-        if (empty($_SERVER['QUERY_STRING']))
+        if (is_null($uri) && empty($_SERVER['QUERY_STRING']))
             return array();
 
-        $string = parse_url($_SERVER['REQUEST_URI']);
+        if (is_null($uri))
+            $target = $_SERVER['REQUEST_URI'];
+        else
+            $target = $uri;
+
+        $string = parse_url($target);
         $segments = explode('&', $string['query']);
 
         if (empty($segments))
@@ -65,9 +70,14 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      *
      * @return array
      */
-    public function get_permalink_parameters()
+    public function get_permalink_parameters($uri = NULL)
     {
-        $string = parse_url($_SERVER['REQUEST_URI']);
+        if (is_null($uri))
+            $target = $_SERVER['REQUEST_URI'];
+        else
+            $target = $uri;
+
+        $string = parse_url($target);
         $segments = explode('/', trim($string['path'], '/'));
 
         if (empty($segments))
@@ -130,7 +140,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      * @param string $prefix (optional)
      * @return mixed
      */
-    public function get_parameter($name, $prefix = FALSE)
+    public function get_parameter($name, $prefix = NULL)
     {
         // it's important that we check these in order; never terminate before the end of the function here
         $retval = NULL;
@@ -194,12 +204,21 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      * @param string $prefix (optional)
      * @return string
      */
-    public function create_parameter_string($name, $val, $prefix = FALSE)
+    public function create_parameter_string($name, $val, $prefix = NULL)
     {
         if (!empty($prefix))
             $string = $this->_long_create_pattern;
         else
             $string = $this->_short_create_pattern;
+
+        if (TRUE === $val)
+            $val = 'true';
+
+        if (FALSE === $val)
+            $val = 'false';
+
+        if (NULL === $val)
+            $val = 'null';
 
         $string = str_replace('%id%',    $prefix, $string);
         $string = str_replace('%name%',  $name,   $string);
@@ -217,7 +236,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      * @param string $prefix
      * @return mixed
      */
-    public function modify_parameter_string($parameter, $name, $val, $prefix = FALSE)
+    public function modify_parameter_string($parameter, $name, $val, $prefix = NULL)
     {
         $parsed = $this->object->is_segment_a_parameter($parameter);
         if (!$parsed)
@@ -228,7 +247,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
         if (empty($prefix) && empty($parsed['id']) && $name == $parsed['name'])
             $string = $this->object->create_parameter_string($name, $val);
 
-        if ($prefix == $parsed['id'] && $name == $parsed['name'])
+        if (!empty($prefix) && $prefix == $parsed['id'] && $name == $parsed['name'])
             $string = $this->object->create_parameter_string($name, $val, $prefix);
 
         return $string;
@@ -242,10 +261,10 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      * @param string $prefix (optional)
      * @return string
      */
-    public function add_parameter($name, $val, $prefix = FALSE)
+    public function add_parameter($name, $val, $prefix = NULL, $uri = NULL)
     {
-        $permalink_params = $this->object->get_permalink_parameters();
-        $query_string_params = $this->object->get_query_string_parameters();
+        $permalink_params = $this->object->get_permalink_parameters($uri);
+        $query_string_params = $this->object->get_query_string_parameters($uri);
 
         $found = FALSE;
 

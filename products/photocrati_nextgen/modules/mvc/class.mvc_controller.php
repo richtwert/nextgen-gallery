@@ -33,16 +33,17 @@ abstract class C_MVC_Controller extends C_Component
         $this->add_mixin('Mixin_MVC_Controller_Defaults');
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
+        $this->add_mixin('Mixin_MVC_Controller_URI_Params');
         $this->implement('I_MVC_Controller');
     }
 
     function initialize()
     {
         parent::initialize();
-        $this->_request = function_exists('apache_request_headers') ?
-            apache_request_headers() : array();
+        $this->_request = function_exists('apache_request_headers') ? apache_request_headers() : array();
         $this->_params = $this->parse_params($_REQUEST);
         $this->_request_method = $_SERVER['REQUEST_METHOD'];
+        $this->object->cache_all_parameters();
     }
 
 
