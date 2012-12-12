@@ -65,7 +65,7 @@ if (!class_exists('nggLoader')) {
 
 			// Determine plugin basename based on whether NGG is being used in
 			// it's legacy form, or as a Photocrati Gallery
-			if (defined('PHOTOCRATI_GALLERY_PLUGIN_BASENAME')) $this->plugin_name = PHOTOCRATI_GALLERY_PLUGIN_BASENAME;
+			if (defined('NEXTGEN_GALLERY_PLUGIN_BASENAME')) $this->plugin_name = NEXTGEN_GALLERY_PLUGIN_BASENAME;
 			else $this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 
 			// Get some constants first

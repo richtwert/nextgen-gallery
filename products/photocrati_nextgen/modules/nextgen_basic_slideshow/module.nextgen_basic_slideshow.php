@@ -9,7 +9,7 @@
 
 define(
 	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL',
-	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
+	NEXTGEN_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
 );
 
 define(

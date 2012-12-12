@@ -7,7 +7,7 @@
 	}
 ***/
 
-define('PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_URL', path_join(PHOTOCRATI_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
+define('PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_URL', path_join(NEXTGEN_GALLERY_MODULE_URL, basename(dirname(__FILE__))));
 define('PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL', path_join(PHOTOCRATI_GALLERY_AUTOUPDATE_ADMIN_MOD_URL, 'static'));
 
 class M_AutoUpdate_Admin extends C_Base_Module

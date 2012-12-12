@@ -34,7 +34,7 @@ class Mixin_NextGen_Deactivator extends Mixin
 {
     function deactivate()
     {
-        deactivate_plugins(PHOTOCRATI_GALLERY_PLUGIN_BASENAME);
+        deactivate_plugins(NEXTGEN_GALLERY_PLUGIN_BASENAME);
         delete_option('ngg_init_check');
         delete_option('ngg_update_exists');
     }

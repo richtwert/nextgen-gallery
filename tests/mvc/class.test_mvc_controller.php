@@ -1,6 +1,6 @@
 <?php
 
-require_once(path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
+require_once(path_join(NEXTGEN_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
 require_once('mocks.php');
 
 class C_Test_MVC_Controller extends C_Test_Component_Base

@@ -8,6 +8,52 @@ class Mixin_Route_Persistence extends Mixin
 
 }
 
+class Mixin_Router extends Mixin
+{
+	function initialize()
+	{
+		parent::initialize();
+		$this->request_uri =	$this->get_request_uri();
+		$this->request_method = $_SERVER['REQUEST_METHOD'];
+	}
+
+	function get_request_uri()
+	{
+		$retval = '';
+		if (isset($_SERVER['PATH_INFO']))
+			$retval = $_SERVER['PATH_INFO'];
+		else {
+			$retval = $_SERVER['REQUEST_URI'];
+		}
+
+		if (substr($retval, -1) != '/') $retval .= '/';
+
+		return $retval;
+	}
+
+
+	function app($name)
+	{
+		$factory = $this->get_registry()-get_utility('I_Component_Factory');
+		$app = $this->object->get_apps();
+		$retval = $factory->create('routing_app', $name);
+		$apps[] = $retval;
+		return $retval;
+	}
+
+	/**
+	 * Gets a list of apps registered for the router
+	 * @return array
+	 */
+	function get_apps()
+	{
+		if (!isset($this->object->_apps) OR !is_array($this->object->_apps))
+			$this->object->_apps = array();
+
+		return $this->object->_apps;
+	}
+}
+
 
 /**
  * Provides routing pattern methods
@@ -18,7 +64,7 @@ class Mixin_Route_Patterns extends Mixin
 	{
 		if ($use_pathinfo === null) {
 			$permalink_struct = get_option('permalink_structure');
-			
+
 			if ($permalink_struct == null) {
 				$use_pathinfo = true;
 			}
@@ -28,7 +74,7 @@ class Mixin_Route_Patterns extends Mixin
 		}
 
 		$uri = '/' . ltrim($route, '/');
-		
+
 		if ($add_trailing_slash) {
 			$uri .= '/';
 		}
@@ -221,7 +267,7 @@ class Mixin_Router extends Mixin
         if ($controller->debug) {
             echo implode("\n", array(
                 '<pre>',
-                'Execution Time: '.(microtime() - PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT),
+                'Execution Time: '.(microtime() - NEXTGEN_GALLERY_PLUGIN_STARTED_AT),
                 'Memory Consumption: '.(memory_get_usage(TRUE)/1000/1000).'MB',
                 'Peaked Memory Consumption: '.(memory_get_peak_usage(TRUE)/100/1000).'MB',
                 '</pre>'
