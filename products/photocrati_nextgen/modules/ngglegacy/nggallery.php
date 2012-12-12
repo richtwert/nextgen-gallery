@@ -288,15 +288,15 @@ if (!class_exists('nggLoader')) {
 
 			define(
 				'NGGALLERY_ABSPATH',
-				defined('PHOTOCRATI_GALLERY_NGGLEGACY_MOD_DIR') ?
-					trailingslashit(PHOTOCRATI_GALLERY_NGGLEGACY_MOD_DIR) :
+				defined('NEXTGEN_GALLERY_NGGLEGACY_MOD_DIR') ?
+					trailingslashit(NEXTGEN_GALLERY_NGGLEGACY_MOD_DIR) :
 					trailingslashit(dirname(__FILE__))
 			);
 
 			define(
 				'NGGALLERY_URLPATH',
-				defined('PHOTOCRATI_GALLERY_NGGLEGACY_MOD_URL') ?
-					trailingslashit(PHOTOCRATI_GALLERY_NGGLEGACY_MOD_URL) :
+				defined('NEXTGEN_GALLERY_NGGLEGACY_MOD_URL') ?
+					trailingslashit(NEXTGEN_GALLERY_NGGLEGACY_MOD_URL) :
 					trailingslashit( plugins_url( NGGFOLDER ) )
 			);
 

@@ -7,12 +7,12 @@
  */
 
 define(
-	'PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
+	'NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
 	real_admin_url('/attach_to_post/preview')
 );
 
 define(
-	'PHOTOCRATI_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
+	'NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
 	real_admin_url('/attach_to_post/display_tab_js')
 );
 
@@ -147,7 +147,7 @@ class M_Attach_To_Post extends C_Base_Module
                 foreach ($imgs as $img) {
 
                     // The placeholder MUST have a gallery instance id
-                    $preview_url = preg_quote(PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
+                    $preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
                     if (preg_match("/{$preview_url}\?id=(\d+)/", $img->src, $match)) {
 
                         // Find the displayed gallery
@@ -260,7 +260,7 @@ class M_Attach_To_Post extends C_Base_Module
 		global $displayed_galleries_to_cleanup;
 		$displayed_galleries_to_cleanup = array();
 		$post = get_post($post_id);
-		$preview_url = preg_quote(PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
+		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
 		if (preg_match_all("/{$preview_url}\?id=(\d+)/", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');

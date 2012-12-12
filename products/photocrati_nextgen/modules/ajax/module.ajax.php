@@ -8,7 +8,7 @@
  */
 
 define(
-	'PHOTOCRATI_GALLERY_AJAX_URL',
+	'NEXTGEN_GALLERY_AJAX_URL',
 	real_site_url('photocrati_ajax')
 );
 
@@ -63,7 +63,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
+		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_URL.'/js');
 	}
 }
 

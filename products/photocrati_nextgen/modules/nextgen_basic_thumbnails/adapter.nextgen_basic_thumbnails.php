@@ -4,7 +4,7 @@ class A_NextGen_Basic_Thumbnails extends Mixin
 {
 	function initialize()
 	{
-		if ($this->object->name == PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS) {
+		if ($this->object->name == NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS) {
 			$this->object->add_pre_hook(
 				'validation',
 				get_class(),

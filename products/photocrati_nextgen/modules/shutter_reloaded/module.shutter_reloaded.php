@@ -6,7 +6,7 @@
     }
  ***/
 
-define('PHOTOCRATI_GALLERY_SHUTTER_IMAGES_URL', path_join(
+define('NEXTGEN_GALLERY_SHUTTER_IMAGES_URL', path_join(
     NEXTGEN_GALLERY_MODULE_URL,
     basename(dirname(__FILE__)).'/static/shutter/images/'
 ));

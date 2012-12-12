@@ -8,7 +8,7 @@
  ***/
 
 define(
-	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS',
+	'NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS',
 	'photocrati-nextgen_basic_thumbnails'
 );
 
@@ -17,7 +17,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_THUMBNAILS,
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS,
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
 			'1.9.6',

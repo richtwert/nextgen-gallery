@@ -331,10 +331,10 @@ class nggAdminPanel{
 			break;
 			case "nggallery-add-gallery":
 				wp_enqueue_style(
-					PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
-					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
+					NEXTGEN_GALLERY_JQUERY_UI_THEME,
+					NEXTGEN_GALLERY_JQUERY_UI_THEME_URL,
 					array(),
-					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
+					NEXTGEN_GALLERY_JQUERY_UI_THEME_VERSION
 				);
 				wp_enqueue_style( 'jqueryFileTree', NGGALLERY_URLPATH .'admin/js/jqueryFileTree/jqueryFileTree.css', false, '1.0.1', 'screen' );
 			case "nggallery-options" :
@@ -346,10 +346,10 @@ class nggAdminPanel{
 			case "nggallery-roles" :
 			case "nggallery-manage-album" :
 				wp_enqueue_style(
-					PHOTOCRATI_GALLERY_JQUERY_UI_THEME,
-					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL,
+					NEXTGEN_GALLERY_JQUERY_UI_THEME,
+					NEXTGEN_GALLERY_JQUERY_UI_THEME_URL,
 					array(),
-					PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION
+					NEXTGEN_GALLERY_JQUERY_UI_THEME_VERSION
 				);
 				wp_enqueue_style( 'nggadmin' );
 			break;

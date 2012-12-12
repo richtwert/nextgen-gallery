@@ -8,8 +8,8 @@ class A_NextGen_Basic_Album extends Mixin
     function initialize()
     {
 		$ngglegacy_albums = array(
-			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM,
-			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM,
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
 		);
 		if (in_array($this->object->name, $ngglegacy_albums)) {
             $this->object->add_pre_hook(
