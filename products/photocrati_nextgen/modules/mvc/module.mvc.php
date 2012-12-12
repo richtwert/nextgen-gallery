@@ -23,6 +23,8 @@ if (!class_exists('E_Clean_Exit')) {
 
 class M_MVC extends C_Base_Module
 {
+	var $rethrow = FALSE;
+
     function define()
     {
         parent::define(
@@ -68,9 +70,14 @@ class M_MVC extends C_Base_Module
     function handle_exit($exception)
     {
         if (!($exception instanceof E_Clean_Exit)) {
-            throw $exception;
+			$this->rethrow = $exception;
         }
     }
+
+	function __destruct()
+	{
+		if ($this->rethrow) throw $this->rethrow;
+	}
 }
 
 new M_MVC();

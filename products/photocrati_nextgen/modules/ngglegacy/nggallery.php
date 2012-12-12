@@ -53,6 +53,7 @@ if (!class_exists('nggLoader')) {
 		var $manage_page;
 		var $add_PHP5_notice = false;
 		var $plugin_name = '';
+		var $rethrow = FALSE;
 
 		function nggLoader() {
 
@@ -603,7 +604,12 @@ if (!class_exists('nggLoader')) {
 		*/
 		function exception_handler($ex)
 		{
-			if (get_class($ex) != 'E_Clean_Exit') throw $ex;
+			if (get_class($ex) != 'E_Clean_Exit') $this->rethrow = $ex;
+		}
+
+		function __destruct()
+		{
+			if ($this->rethrow) throw $this->rethrow;
 		}
 	}
 
