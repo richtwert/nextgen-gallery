@@ -2,7 +2,11 @@
 
 class Mixin_MVC_Controller_URI_Params extends Mixin
 {
-    public $_pattern = '/^((?<id>.+)--)?(ngg)?(?<name>.+)--(?<value>.+)/';
+    public $_search_pattern = '/^((?<id>.+)--)?(ngg)?(?<name>.+)--(?<value>.+)/';
+
+    public $_short_create_pattern = '%name%--%value%';
+    public $_long_create_pattern  = '%id%--%name%--%value%';
+
     public $_parameters = array('global' => array(), 'prefixed' => array());
 
     /**
@@ -12,8 +16,6 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     {
         $this->object->cache_permalink_parameters();
         $this->object->cache_query_string_parameters();
-
-        var_dump($this->_parameters);
     }
 
     /**
@@ -21,18 +23,31 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      */
     public function cache_query_string_parameters()
     {
+        foreach ($this->object->get_query_string_parameters() as $segment) {
+            $this->object->cache_parameter($segment);
+        }
+    }
+
+    /**
+     * Returns available query string parameters, if any
+     *
+     * @return array
+     */
+    public function get_query_string_parameters()
+    {
         if (empty($_SERVER['QUERY_STRING']))
-            return;
+            return array();
 
         $string = parse_url($_SERVER['REQUEST_URI']);
         $segments = explode('&', $string['query']);
 
         if (empty($segments))
-            return;
+            return array();
 
-        foreach ($segments as $segment) {
-            $this->object->cache_parameter($segment);
-        }
+        if ($segments == array(0 => ''))
+            return array();
+
+        return $segments;
     }
 
     /**
@@ -40,15 +55,28 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      */
     public function cache_permalink_parameters()
     {
+        foreach ($this->object->get_permalink_parameters() as $segment) {
+            $this->object->cache_parameter($segment);
+        }
+    }
+
+    /**
+     * Returns available permalink parameters, if any
+     *
+     * @return array
+     */
+    public function get_permalink_parameters()
+    {
         $string = parse_url($_SERVER['REQUEST_URI']);
         $segments = explode('/', trim($string['path'], '/'));
 
         if (empty($segments))
-            return;
+            return array();
 
-        foreach ($segments as $segment) {
-            $this->object->cache_parameter($segment);
-        }
+        if ($segments == array(0 => ''))
+            return array();
+
+        return $segments;
     }
 
     /**
@@ -81,7 +109,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     public function is_segment_a_parameter($string)
     {
         $matches = array();
-        preg_match($this->_pattern, $string, $matches);
+        preg_match($this->_search_pattern, $string, $matches);
 
         if (9 == count($matches))
         {
@@ -99,19 +127,20 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
      * Finds and returns a cached parameter
      *
      * @param string $name
-     * @param string $prefix
+     * @param string $prefix (optional)
      * @return mixed
      */
     public function get_parameter($name, $prefix = FALSE)
     {
+        // it's important that we check these in order; never terminate before the end of the function here
         $retval = NULL;
 
+        // check $_GET first
         if (!empty($_REQUEST[$name]))
             $retval = $_REQUEST[$name];
 
         if (!empty($_REQUEST['ngg' . $name]))
             $retval = $_REQUEST['ngg' . $name];
-
 
         // check for global parameters
         foreach ($this->_parameters['global'] as $parameter) {
@@ -143,7 +172,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
 
         // wordpress strips magic quotes but also then adds them right back
         if (get_magic_quotes_gpc())
-            $retval = stripslashes_deep($retval);
+            $retval = urldecode(stripslashes_deep($retval));
 
         if ('null' == strtolower($retval))
             $retval = NULL;
@@ -155,6 +184,117 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
             $retval = TRUE;
 
         return $retval;
+    }
+
+    /**
+     * Given a name/value pair this creates a parameter string to be added/appended/etc
+     *
+     * @param string $name
+     * @param string $val
+     * @param string $prefix (optional)
+     * @return string
+     */
+    public function create_parameter_string($name, $val, $prefix = FALSE)
+    {
+        if (!empty($prefix))
+            $string = $this->_long_create_pattern;
+        else
+            $string = $this->_short_create_pattern;
+
+        $string = str_replace('%id%',    $prefix, $string);
+        $string = str_replace('%name%',  $name,   $string);
+        $string = str_replace('%value%', $val,    $string);
+
+        return $string;
+    }
+
+    /**
+     * Compares $parameter to the name/value/prefix pairing and returns a modified string or FALSE
+     *
+     * @param string $parameter
+     * @param string $name
+     * @param string $val
+     * @param string $prefix
+     * @return mixed
+     */
+    public function modify_parameter_string($parameter, $name, $val, $prefix = FALSE)
+    {
+        $parsed = $this->object->is_segment_a_parameter($parameter);
+        if (!$parsed)
+            return FALSE;
+
+        $string = FALSE;
+
+        if (empty($prefix) && empty($parsed['id']) && $name == $parsed['name'])
+            $string = $this->object->create_parameter_string($name, $val);
+
+        if ($prefix == $parsed['id'] && $name == $parsed['name'])
+            $string = $this->object->create_parameter_string($name, $val, $prefix);
+
+        return $string;
+    }
+
+    /**
+     * Returns the current URL modified with the requested parameters
+     *
+     * @param string $name
+     * @param string $val
+     * @param string $prefix (optional)
+     * @return string
+     */
+    public function add_parameter($name, $val, $prefix = FALSE)
+    {
+        $permalink_params = $this->object->get_permalink_parameters();
+        $query_string_params = $this->object->get_query_string_parameters();
+
+        $found = FALSE;
+
+        // check for modifications in the permalink parameters
+        foreach ($permalink_params as &$parameter) {
+            $tmp = $this->object->modify_parameter_string($parameter, $name, $val, $prefix);
+            if ($tmp)
+            {
+                $found = TRUE;
+                $parameter = $tmp;
+            }
+        }
+
+        // check for modifications in the query string parameters
+        foreach ($query_string_params as &$parameter) {
+            $tmp = $this->object->modify_parameter_string($parameter, $name, $val, $prefix);
+            if ($tmp)
+            {
+                $found = TRUE;
+                $parameter = $tmp;
+            }
+        }
+
+        // we didn't modify any existing parameters, so add it
+        if (!$found)
+        {
+            $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+
+            if ($settings->usePermalinks)
+                $permalink_params[] = $this->object->create_parameter_string($name, $val, $prefix);
+            else
+                $query_string_params[] = $this->object->create_parameter_string($name, $val, $prefix);
+        }
+
+        $final_string = '';
+
+        if (!empty($permalink_params))
+        {
+            $permalink_string = '/' . implode('/', $permalink_params) . '/';
+            $final_string .= $permalink_string;
+        }
+
+        if (!empty($query_string_params))
+        {
+            $query_string_string = '?' . implode('&', $query_string_params);
+            $final_string .= $query_string_string;
+        }
+
+        return $final_string;
     }
 
 }
