@@ -119,22 +119,8 @@ abstract class C_MVC_Controller extends C_Component
     function &param($key, $default=NULL)
     {
         $retval = $default;
-
-        if (isset($this->_params[$key]))
-        {
-            $val = &$this->_params[$key];
-
-            // wordpress strips magic quotes but it also then adds them right back again
-            if (get_magic_quotes_gpc())
-                $val = stripslashes_deep($val);
-
-            if (is_array($val))
-                $retval = &$val;
-            elseif (is_string($val) && !in_array(strtolower($val), array('null','false')))
-                $retval = &$val;
-        }
-
-        return $retval;
+        $result = $this->object->get_parameter($key);
+        return (!is_null($result) ? $result : $retval);
     }
 
 
