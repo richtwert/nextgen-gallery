@@ -8,51 +8,51 @@ class Mixin_Route_Persistence extends Mixin
 
 }
 
-class Mixin_Router extends Mixin
-{
-	function initialize()
-	{
-		parent::initialize();
-		$this->request_uri =	$this->get_request_uri();
-		$this->request_method = $_SERVER['REQUEST_METHOD'];
-	}
-
-	function get_request_uri()
-	{
-		$retval = '';
-		if (isset($_SERVER['PATH_INFO']))
-			$retval = $_SERVER['PATH_INFO'];
-		else {
-			$retval = $_SERVER['REQUEST_URI'];
-		}
-
-		if (substr($retval, -1) != '/') $retval .= '/';
-
-		return $retval;
-	}
-
-
-	function app($name)
-	{
-		$factory = $this->get_registry()-get_utility('I_Component_Factory');
-		$app = $this->object->get_apps();
-		$retval = $factory->create('routing_app', $name);
-		$apps[] = $retval;
-		return $retval;
-	}
-
-	/**
-	 * Gets a list of apps registered for the router
-	 * @return array
-	 */
-	function get_apps()
-	{
-		if (!isset($this->object->_apps) OR !is_array($this->object->_apps))
-			$this->object->_apps = array();
-
-		return $this->object->_apps;
-	}
-}
+//class Mixin_Router extends Mixin
+//{
+//	function initialize()
+//	{
+//		parent::initialize();
+//		$this->request_uri =	$this->get_request_uri();
+//		$this->request_method = $_SERVER['REQUEST_METHOD'];
+//	}
+//
+//	function get_request_uri()
+//	{
+//		$retval = '';
+//		if (isset($_SERVER['PATH_INFO']))
+//			$retval = $_SERVER['PATH_INFO'];
+//		else {
+//			$retval = $_SERVER['REQUEST_URI'];
+//		}
+//
+//		if (substr($retval, -1) != '/') $retval .= '/';
+//
+//		return $retval;
+//	}
+//
+//
+//	function app($name)
+//	{
+//		$factory = $this->get_registry()-get_utility('I_Component_Factory');
+//		$app = $this->object->get_apps();
+//		$retval = $factory->create('routing_app', $name);
+//		$apps[] = $retval;
+//		return $retval;
+//	}
+//
+//	/**
+//	 * Gets a list of apps registered for the router
+//	 * @return array
+//	 */
+//	function get_apps()
+//	{
+//		if (!isset($this->object->_apps) OR !is_array($this->object->_apps))
+//			$this->object->_apps = array();
+//
+//		return $this->object->_apps;
+//	}
+//}
 
 
 /**
