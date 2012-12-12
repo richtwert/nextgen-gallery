@@ -74,38 +74,36 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 			$thumbnail_size_name = 'thumbnail';
 
-			if ($display_settings['override_thumbnail_settings']) {
-        $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+			if ($display_settings['override_thumbnail_settings'])
+            {
+                $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
-        if ($dynthumbs != null)
-        {
-        	$dyn_params = array(
-        		'width' => $display_settings['thumbnail_width'],
-        		'height' => $display_settings['thumbnail_height'],
-        	);
+                if ($dynthumbs != null)
+                {
+                    $dyn_params = array(
+                        'width' => $display_settings['thumbnail_width'],
+                        'height' => $display_settings['thumbnail_height'],
+                    );
 
-        	if ($display_settings['thumbnail_quality']) {
-        		$dyn_params['quality'] = $display_settings['thumbnail_quality'];
-        	}
+                    if ($display_settings['thumbnail_quality'])
+                        $dyn_params['quality'] = $display_settings['thumbnail_quality'];
 
-        	if ($display_settings['thumbnail_crop']) {
-        		$dyn_params['crop'] = true;
-        	}
+                    if ($display_settings['thumbnail_crop'])
+                        $dyn_params['crop'] = true;
 
-        	if ($display_settings['thumbnail_watermark']) {
-        		$dyn_params['watermark'] = true;
-        	}
+                    if ($display_settings['thumbnail_watermark'])
+                        $dyn_params['watermark'] = true;
 
-          $thumbnail_size_name = $dynthumbs->get_size_name($dyn_params);
-        }
-			}
+                    $thumbnail_size_name = $dynthumbs->get_size_name($dyn_params);
+                }
+            }
 
-			// Determine what the piclens link would be
-			$piclens_link = '';
-			if ($display_settings['show_piclens_link']) {
+            // Determine what the piclens link would be
+            $piclens_link = '';
+            if ($display_settings['show_piclens_link']) {
                 $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
-				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
-			}
+                $piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
+            }
 
             // The render functions require different processing
             if (!empty($display_settings['template']))
