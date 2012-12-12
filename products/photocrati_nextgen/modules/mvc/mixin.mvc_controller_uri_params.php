@@ -44,6 +44,10 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
             $target = $uri;
 
         $string = parse_url($target);
+
+        if (empty($string['query']))
+            return array();
+
         $segments = explode('&', $string['query']);
 
         if (empty($segments))
@@ -78,6 +82,10 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
             $target = $uri;
 
         $string = parse_url($target);
+
+        if (empty($string['path']))
+            return array();
+
         $segments = explode('/', trim($string['path'], '/'));
 
         if (empty($segments))

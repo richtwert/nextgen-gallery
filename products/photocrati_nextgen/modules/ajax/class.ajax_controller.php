@@ -23,11 +23,9 @@ class C_Ajax_Controller extends C_MVC_Controller
 			}
 		}
 
-		// If no retval has been set, then return an
-		// error
-		if (!$retval) {
+		// If no retval has been set, then return an error
+		if (!$retval)
 			$retval = array('error' => 'Not a valid AJAX action');
-		}
 
 		// Return the JSON to the browser
 		echo json_encode($retval);
@@ -41,5 +39,6 @@ class C_Ajax_Controller extends C_MVC_Controller
 			'ajax_url'	=>	NEXTGEN_GALLERY_AJAX_URL,
 			'site_url'	=> real_site_url()
 		));
+        throw new E_Clean_Exit();
 	}
 }

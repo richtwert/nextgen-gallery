@@ -59,11 +59,14 @@ class M_Attach_To_Post extends C_Base_Module
 	function _add_routes()
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
+        $url = $this->get_registry()
+                    ->get_utility('I_Display_Type_Controller')
+                    ->add_parameter('attach_to_post', TRUE, NULL, admin_url());
 
-		$router->add_route(
+        $router->add_route(
 			__CLASS__ . '_Attach_to_Post',
 			'C_Attach_to_Post_Controller',
-			array('uri'=>$router->routing_pattern($this->attach_to_post_route))
+			array('uri' => $router->routing_pattern($url))
 		);
 	}
 

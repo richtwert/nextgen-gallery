@@ -7,11 +7,6 @@
  }
  */
 
-define(
-	'NEXTGEN_GALLERY_AJAX_URL',
-	real_site_url('photocrati_ajax')
-);
-
 class M_Ajax extends C_Base_Module
 {
 	function define()
@@ -43,9 +38,17 @@ class M_Ajax extends C_Base_Module
 	function _add_routes()
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
-        $router->add_route(__CLASS__, 'C_Ajax_Controller', array(
-            'uri'=>$router->routing_pattern('photocrati_ajax')
-        ));
+        $url = $this->get_registry()
+                    ->get_utility('I_Display_Type_Controller')
+                    ->add_parameter('photocrati_ajax', TRUE, NULL, site_url());
+
+        define('NEXTGEN_GALLERY_AJAX_URL', $url);
+
+        $router->add_route(
+            __CLASS__,
+            'C_Ajax_Controller',
+            array('uri' => $router->routing_pattern($url))
+        );
 	}
 
 	/**
@@ -63,7 +66,10 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_URL.'/js');
+        $url = $this->get_registry()
+                    ->get_utility('I_Display_Type_Controller')
+                    ->add_parameter('action', 'js', NULL, NEXTGEN_GALLERY_AJAX_URL);
+		wp_enqueue_script('photocrati_ajax', $url);
 	}
 }
 
