@@ -56,7 +56,7 @@ class C_NextGEN_Bootstrap
 
 		// Load embedded products. Each product is expected any
 		// modules required
-		$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
+		$registry->add_module_path(PHOTOCRATI_GALLERY_PLUGIN_PRODUCT_DIR, true, false);
 		$registry->load_all_products();
 
 		// Initializes all loaded modules
@@ -127,10 +127,10 @@ class C_NextGEN_Bootstrap
 		define('PHOTOCRATI_GALLERY_PLUGIN_URL', $this->path_uri());
 		define('PHOTOCRATI_GALLERY_I8N_DOMAIN', 'nggallery');
 		define('PHOTOCRATI_GALLERY_TESTS_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'tests'));
-		define('PHOTOCRATI_GALLERY_PRODUCT_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'products'));
-		define('PHOTOCRATI_GALLERY_PRODUCT_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'products'));
-		define('PHOTOCRATI_GALLERY_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PRODUCT_DIR, 'photocrati_nextgen/modules'));
-		define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
+		define('PHOTOCRATI_GALLERY_PLUGIN_PRODUCT_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'products'));
+		define('PHOTOCRATI_GALLERY_PLUGIN_PRODUCT_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'products'));
+		define('PHOTOCRATI_GALLERY_PLUGIN_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_PRODUCT_DIR, 'photocrati_nextgen/modules'));
+		define('PHOTOCRATI_GALLERY_PLUGIN_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_PRODUCT_URL, 'photocrati_nextgen/modules'));
 		define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'module.photocrati_gallery_plugin.php'));
 		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.9');
