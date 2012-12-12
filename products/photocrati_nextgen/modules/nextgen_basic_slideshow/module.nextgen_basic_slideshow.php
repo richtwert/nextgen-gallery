@@ -8,12 +8,12 @@
  ***/
 
 define(
-	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL',
-	PHOTOCRATI_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
+	'NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL',
+	NEXTGEN_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
 );
 
 define(
-	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW',
+	'NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW',
 	'photocrati-nextgen_basic_slideshow'
 );
 
@@ -22,7 +22,7 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			PHOTOCRATI_GALLERY_NEXTGEN_BASIC_SLIDESHOW,
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW,
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
 			'1.9.5',

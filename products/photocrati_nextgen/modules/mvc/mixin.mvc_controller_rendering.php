@@ -190,8 +190,8 @@ class Mixin_MVC_Controller_Rendering extends Mixin
     {
         $path = $this->find_static_file($resource);
         return str_replace(
-            realpath(PHOTOCRATI_GALLERY_PLUGIN_DIR),
-            PHOTOCRATI_GALLERY_PLUGIN_URL,
+            realpath(NEXTGEN_GALLERY_PLUGIN_DIR),
+            NEXTGEN_GALLERY_PLUGIN_URL,
             $path
         );
     }

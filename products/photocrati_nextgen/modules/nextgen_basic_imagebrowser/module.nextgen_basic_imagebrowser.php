@@ -7,7 +7,7 @@
 ***/
 
 define(
-	'PHOTOCRATI_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER',
+	'NEXTGEN_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER',
 	'photocrati-nextgen_basic_imagebrowser'
 );
 

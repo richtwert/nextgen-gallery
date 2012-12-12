@@ -7,8 +7,8 @@
 }
  **/
 
-define('PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM', 'photocrati-nextgen_basic_compact_album');
-define('PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM', 'photocrati-nextgen_basic_extended_album');
+define('NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM', 'photocrati-nextgen_basic_compact_album');
+define('NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM', 'photocrati-nextgen_basic_extended_album');
 
 class M_NextGen_Basic_Album extends C_Base_Module
 {
@@ -36,8 +36,8 @@ class M_NextGen_Basic_Album extends C_Base_Module
 			'I_Display_Type_Controller',
 			'A_NextGen_Basic_Album_Controller',
 			array(
-				PHOTOCRATI_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM,
-				PHOTOCRATI_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM,
+				NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM,
+				NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM,
 				$this->module_id
 			)
 		);

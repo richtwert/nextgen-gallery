@@ -1,6 +1,6 @@
 <?php
 
-require_once(path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
+require_once(path_join(NEXTGEN_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
 
 class C_Test_Displayed_Gallery extends C_Test_Component_Base
 {

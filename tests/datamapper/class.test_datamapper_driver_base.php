@@ -1,5 +1,5 @@
 <?php
-require_once(path_join(PHOTOCRATI_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
+require_once(path_join(NEXTGEN_GALLERY_TESTS_DIR, 'class.test_component_base.php'));
 
 /**
  * Tests the interface for DataMapper Drivers

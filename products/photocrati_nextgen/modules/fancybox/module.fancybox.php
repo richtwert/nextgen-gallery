@@ -6,7 +6,7 @@
     }
 ***/
 
-define('PHOTOCRATI_GALLERY_FANCYBOX_VERSION', '1.3.4');
+define('NEXTGEN_GALLERY_FANCYBOX_VERSION', '1.3.4');
 
 class M_Fancybox extends C_Base_Module
 {

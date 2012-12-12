@@ -73,7 +73,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_enqueue_script('select2', $this->static_url('select2.js'));
 
 		// Ensure we have the AJAX module ready
-		wp_enqueue_script('photocrati_ajax', PHOTOCRATI_GALLERY_AJAX_URL.'/js');
+		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_URL.'/js');
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
@@ -120,14 +120,14 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			add_query_arg(
 				'id',
 				$this->_displayed_gallery->id(),
-				PHOTOCRATI_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL
+				NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL
 			),
 			array('backbone', 'underscore.string')
 		);
 		wp_localize_script(
 			'ngg_display_tab',
 			'ngg_displayed_gallery_preview_url',
-			PHOTOCRATI_GALLERY_ATTACH_TO_POST_PREVIEW_URL
+			NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL
 		);
 	}
 

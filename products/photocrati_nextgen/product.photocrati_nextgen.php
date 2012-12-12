@@ -6,7 +6,7 @@
 	}
 ***/
 
-define('PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP', 'NextGEN Manage gallery');
+define('NEXTGEN_GALLERY_CHANGE_OPTIONS_CAP', 'NextGEN Manage gallery');
 
 class P_Photocrati_NextGen extends C_Base_Product
 {

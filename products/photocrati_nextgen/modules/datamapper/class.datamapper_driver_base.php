@@ -25,7 +25,7 @@ class E_InvalidEntityException extends RuntimeException
 			if (is_string($message_or_previous))
 				$message = $message_or_previous;
 			else {
-				$preview = $message_or_previous;
+				$previous = $message_or_previous;
 			}
 		}
 
@@ -35,8 +35,7 @@ class E_InvalidEntityException extends RuntimeException
 				or a subclass of C_DataMapper_Model. Arrays will be supported in
 				the future.";
 		}
-
-		parent::__construct($message, $code, $previous);
+		parent::__construct($message, $code);
 	}
 }
 

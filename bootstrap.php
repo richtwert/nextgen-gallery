@@ -41,12 +41,12 @@ class C_NextGEN_Bootstrap
 		$this->_register_hooks();
 
 		// Include pope framework
-		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, implode(
+		require_once(path_join(NEXTGEN_GALLERY_PLUGIN_DIR, implode(
 			DIRECTORY_SEPARATOR, array('pope','lib','autoload.php')
 		)));
 
 		// Include some extra helpers
-		require_once(path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
+		require_once(path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
 		// Get the component registry
 		$registry = C_Component_Registry::get_instance();
@@ -56,7 +56,7 @@ class C_NextGEN_Bootstrap
 
 		// Load embedded products. Each product is expected any
 		// modules required
-		$registry->add_module_path(PHOTOCRATI_GALLERY_PRODUCT_DIR, true, false);
+		$registry->add_module_path(NEXTGEN_GALLERY_PRODUCT_DIR, true, false);
 		$registry->load_all_products();
 
 		// Initializes all loaded modules
@@ -72,7 +72,7 @@ class C_NextGEN_Bootstrap
 	{
 		// Load text domain
 		load_plugin_textdomain(
-			PHOTOCRATI_GALLERY_I8N_DOMAIN,
+			NEXTGEN_GALLERY_I8N_DOMAIN,
 			false,
 			$this->directory_path('lang')
 		);
@@ -100,15 +100,15 @@ class C_NextGEN_Bootstrap
 			// Grant NextGEN capabilities for Administator role
 			$role = get_role('administrator');
 			$caps = array(
-				PHOTOCRATI_GALLERY_OVERVIEW_CAP,
+				NEXTGEN_GALLERY_OVERVIEW_CAP,
 				'NextGEN Use TinyMCE',
-				PHOTOCRATI_GALLERY_UPLOAD_IMAGE_CAP,
-				PHOTOCRATI_GALLERY_MANAGE_GALLERY_CAP,
-				PHOTOCRATI_GALLERY_MANAGE_TAGS_CAP,
+				NEXTGEN_GALLERY_UPLOAD_IMAGE_CAP,
+				NEXTGEN_GALLERY_MANAGE_GALLERY_CAP,
+				NEXTGEN_GALLERY_MANAGE_TAGS_CAP,
 				'NextGEN Manage others gallery',
-				PHOTOCRATI_GALLERY_MANAGE_ALBUM_CAP,
+				NEXTGEN_GALLERY_MANAGE_ALBUM_CAP,
 				'NextGEN Change style',
-				PHOTOCRATI_GALLERY_CHANGE_OPTIONS_CAP
+				NEXTGEN_GALLERY_CHANGE_OPTIONS_CAP
 			);
 			foreach ($caps as $cap) $role->add_cap($cap);
 		}
@@ -121,20 +121,20 @@ class C_NextGEN_Bootstrap
 	function _define_constants()
 	{
 		// NextGEN by Photocrati Constants
-		define('PHOTOCRATI_GALLERY_PLUGIN', basename($this->directory_path()));
-		define('PHOTOCRATI_GALLERY_PLUGIN_BASENAME', plugin_basename(__FILE__));
-		define('PHOTOCRATI_GALLERY_PLUGIN_DIR', $this->directory_path());
-		define('PHOTOCRATI_GALLERY_PLUGIN_URL', $this->path_uri());
-		define('PHOTOCRATI_GALLERY_I8N_DOMAIN', 'nggallery');
-		define('PHOTOCRATI_GALLERY_TESTS_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'tests'));
-		define('PHOTOCRATI_GALLERY_PRODUCT_DIR', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'products'));
-		define('PHOTOCRATI_GALLERY_PRODUCT_URL', path_join(PHOTOCRATI_GALLERY_PLUGIN_URL, 'products'));
-		define('PHOTOCRATI_GALLERY_MODULE_DIR', path_join(PHOTOCRATI_GALLERY_PRODUCT_DIR, 'photocrati_nextgen/modules'));
-		define('PHOTOCRATI_GALLERY_MODULE_URL', path_join(PHOTOCRATI_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
-		define('PHOTOCRATI_GALLERY_PLUGIN_CLASS', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'module.photocrati_gallery_plugin.php'));
-		define('PHOTOCRATI_GALLERY_PLUGIN_STARTED_AT', microtime());
-		define('PHOTOCRATI_GALLERY_PLUGIN_VERSION', '1.9.9');
-		//define('LOG_WPDB_QUERIES', path_join(PHOTOCRATI_GALLERY_PLUGIN_DIR, 'wpdb.log'));
+		define('NEXTGEN_GALLERY_PLUGIN', basename($this->directory_path()));
+		define('NEXTGEN_GALLERY_PLUGIN_BASENAME', plugin_basename(__FILE__));
+		define('NEXTGEN_GALLERY_PLUGIN_DIR', $this->directory_path());
+		define('NEXTGEN_GALLERY_PLUGIN_URL', $this->path_uri());
+		define('NEXTGEN_GALLERY_I8N_DOMAIN', 'nggallery');
+		define('NEXTGEN_GALLERY_TESTS_DIR', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'tests'));
+		define('NEXTGEN_GALLERY_PRODUCT_DIR', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'products'));
+		define('NEXTGEN_GALLERY_PRODUCT_URL', path_join(NEXTGEN_GALLERY_PLUGIN_URL, 'products'));
+		define('NEXTGEN_GALLERY_MODULE_DIR', path_join(NEXTGEN_GALLERY_PRODUCT_DIR, 'photocrati_nextgen/modules'));
+		define('NEXTGEN_GALLERY_MODULE_URL', path_join(NEXTGEN_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
+		define('NEXTGEN_GALLERY_PLUGIN_CLASS', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'module.NEXTGEN_GALLERY_PLUGIN.php'));
+		define('NEXTGEN_GALLERY_PLUGIN_STARTED_AT', microtime());
+		define('NEXTGEN_GALLERY_PLUGIN_VERSION', '1.9.9');
+		//define('LOG_WPDB_QUERIES', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
 
@@ -160,13 +160,13 @@ class C_NextGEN_Bootstrap
 //        foreach ($suites['pope'] as &$suite)
 //        {
 //            $suite = path_join(
-//                PHOTOCRATI_GALLERY_PLUGIN_DIR,
+//                NEXTGEN_GALLERY_PLUGIN_DIR,
 //                'pope' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $suite . '.php'
 //            );
 //        }
 
 		// Define Test Directory
-		$tests_dir = PHOTOCRATI_GALLERY_TESTS_DIR;
+		$tests_dir = NEXTGEN_GALLERY_TESTS_DIR;
 
 		if (file_exists($tests_dir)) {
 

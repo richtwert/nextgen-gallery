@@ -53,6 +53,7 @@ if (!class_exists('nggLoader')) {
 		var $manage_page;
 		var $add_PHP5_notice = false;
 		var $plugin_name = '';
+		var $rethrow = FALSE;
 
 		function nggLoader() {
 
@@ -65,7 +66,7 @@ if (!class_exists('nggLoader')) {
 
 			// Determine plugin basename based on whether NGG is being used in
 			// it's legacy form, or as a Photocrati Gallery
-			if (defined('PHOTOCRATI_GALLERY_PLUGIN_BASENAME')) $this->plugin_name = PHOTOCRATI_GALLERY_PLUGIN_BASENAME;
+			if (defined('NEXTGEN_GALLERY_PLUGIN_BASENAME')) $this->plugin_name = NEXTGEN_GALLERY_PLUGIN_BASENAME;
 			else $this->plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 
 			// Get some constants first
@@ -121,7 +122,7 @@ if (!class_exists('nggLoader')) {
 			$this->translator .= '<p class="hint">'. __('<strong>This translation is not yet updated for Version 1.9.0</strong>. If you would like to help with translation, download the current po from the plugin folder and read <a href="http://alexrabe.de/wordpress-plugins/wordtube/translation-of-plugins/">here</a> how you can translate the plugin.', 'nggallery') . '</p>';
 
 			// Check for upgrade
-			$this->check_for_upgrade();
+			//$this->check_for_upgrade();
 
 			// Content Filters
 			add_filter('ngg_gallery_name', 'sanitize_title');
@@ -288,15 +289,15 @@ if (!class_exists('nggLoader')) {
 
 			define(
 				'NGGALLERY_ABSPATH',
-				defined('PHOTOCRATI_GALLERY_NGGLEGACY_MOD_DIR') ?
-					trailingslashit(PHOTOCRATI_GALLERY_NGGLEGACY_MOD_DIR) :
+				defined('NEXTGEN_GALLERY_NGGLEGACY_MOD_DIR') ?
+					trailingslashit(NEXTGEN_GALLERY_NGGLEGACY_MOD_DIR) :
 					trailingslashit(dirname(__FILE__))
 			);
 
 			define(
 				'NGGALLERY_URLPATH',
-				defined('PHOTOCRATI_GALLERY_NGGLEGACY_MOD_URL') ?
-					trailingslashit(PHOTOCRATI_GALLERY_NGGLEGACY_MOD_URL) :
+				defined('NEXTGEN_GALLERY_NGGLEGACY_MOD_URL') ?
+					trailingslashit(NEXTGEN_GALLERY_NGGLEGACY_MOD_URL) :
 					trailingslashit( plugins_url( NGGFOLDER ) )
 			);
 
@@ -603,7 +604,12 @@ if (!class_exists('nggLoader')) {
 		*/
 		function exception_handler($ex)
 		{
-			if (get_class($ex) != 'E_Clean_Exit') throw $ex;
+			if (get_class($ex) != 'E_Clean_Exit') $this->rethrow = $ex;
+		}
+
+		function __destruct()
+		{
+			if ($this->rethrow) throw $this->rethrow;
 		}
 	}
 

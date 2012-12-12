@@ -27,9 +27,9 @@ class M_NextGen_Settings extends C_Base_Module
 		);
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 
-		define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME', 'jquery-ui-nextgen');
-        define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_URL', $this->static_url('jquery-ui/jquery-ui-1.9.1.custom.css'));
-        define('PHOTOCRATI_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
+		define('NEXTGEN_GALLERY_JQUERY_UI_THEME', 'jquery-ui-nextgen');
+        define('NEXTGEN_GALLERY_JQUERY_UI_THEME_URL', $this->static_url('jquery-ui/jquery-ui-1.9.1.custom.css'));
+        define('NEXTGEN_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
 	}
 
 
@@ -126,13 +126,13 @@ class M_NextGen_Settings extends C_Base_Module
 	{
 		// Use the NextGEN Activator to run activation routines
 		add_action(
-			'activate_'.PHOTOCRATI_GALLERY_PLUGIN_BASENAME,
+			'activate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME,
 			array(&$this->activator, 'install')
 		);
 
         // NextGEN Deactivator routines
-        register_deactivation_hook(PHOTOCRATI_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
-        register_uninstall_hook(PHOTOCRATI_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
+        register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
+        register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(

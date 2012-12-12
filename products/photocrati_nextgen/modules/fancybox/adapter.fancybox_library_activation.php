@@ -25,10 +25,10 @@ class A_Fancybox_Library_Activation extends Mixin
 		if (!$fancybox) $fancybox = new stdClass();
 		$fancybox->name = 'fancybox';
 		$fancybox->code = 'class="ngg-fancybox" rel="%GALLERY_NAME%"';
-		$fancybox->css_stylesheets = $this->static_url('/fancybox/jquery.fancybox-'.PHOTOCRATI_GALLERY_FANCYBOX_VERSION.'.css');
+		$fancybox->css_stylesheets = $this->static_url('/fancybox/jquery.fancybox-'.NEXTGEN_GALLERY_FANCYBOX_VERSION.'.css');
 		$fancybox->scripts = implode("\n", array(
 			$this->static_url('/fancybox/jquery.easing-1.3.pack.js'),
-			$this->static_url('/fancybox/jquery.fancybox-'.PHOTOCRATI_GALLERY_FANCYBOX_VERSION.'.pack.js' ),
+			$this->static_url('/fancybox/jquery.fancybox-'.NEXTGEN_GALLERY_FANCYBOX_VERSION.'.pack.js' ),
 			$this->static_url('/nextgen_fancybox_init.js')
 		));
 		$mapper->save($fancybox);
