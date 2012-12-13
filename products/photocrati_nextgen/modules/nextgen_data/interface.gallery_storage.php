@@ -2,5 +2,5 @@
 
 interface I_Gallery_Storage
 {
-	function get_instance($context = False);
+	static function get_instance($context = False);
 }

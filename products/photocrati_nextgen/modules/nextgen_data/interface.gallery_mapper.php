@@ -8,5 +8,5 @@ interface I_Gallery_Mapper
 	 */
 	function set_gallery_preview_image($gallery);
 
-    function get_instance($context = False);
+    static function get_instance($context = False);
 }
