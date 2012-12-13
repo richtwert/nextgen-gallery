@@ -47,11 +47,15 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _add_routes()
 	{
-		$router = $this->get_registry()->get_utility('I_Router');
+        $router   = $this->object->get_registry()->get_utility('I_Router');
+        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+
+        $original_permalinks_setting = $settings->usePermalinks;
+        $settings->usePermalinks = FALSE;
+
         $url = $this->get_registry()
                     ->get_utility('I_Display_Type_Controller')
                     ->add_parameter('attach_to_post', TRUE, NULL, admin_url());
-
         define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $url);
 
         define(
@@ -69,6 +73,8 @@ class M_Attach_To_Post extends C_Base_Module
 			'C_Attach_to_Post_Controller',
 			array('uri' => $router->routing_pattern($url))
 		);
+
+        $settings->usePermalinks = $original_permalinks_setting;
 	}
 
 
@@ -151,8 +157,8 @@ class M_Attach_To_Post extends C_Base_Module
                 foreach ($imgs as $img) {
 
                     // The placeholder MUST have a gallery instance id
-                    $preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
-                    if (preg_match("/{$preview_url}\?id=(\d+)/", $img->src, $match)) {
+                    $preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
+                    if (preg_match("#{$preview_url}/id--(\d+)#", $img->src, $match)) {
 
                         // Find the displayed gallery
                         $displayed_gallery_id = $match[1];
@@ -263,8 +269,8 @@ class M_Attach_To_Post extends C_Base_Module
 		global $displayed_galleries_to_cleanup;
 		$displayed_galleries_to_cleanup = array();
 		$post = get_post($post_id);
-		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
-		if (preg_match_all("/{$preview_url}\?id=(\d+)/", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
+		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
+		if (preg_match_all("#{$preview_url}/id--(\d+)#", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');
 				// The post was edited, and the displayed gallery placeholder was removed
