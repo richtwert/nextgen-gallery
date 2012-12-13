@@ -9,7 +9,7 @@ class C_Displayed_Gallery_Renderer extends C_Component
      * @param mixed $context
      * @return C_Displayed_Gallery_Renderer
      */
-    function get_instance($context=FALSE)
+    static function get_instance($context=FALSE)
     {
         if (!isset(self::$_instances[$context])) {
             $klass = __CLASS__;
