@@ -493,7 +493,7 @@ if (!class_exists('nggLoader')) {
 
 				if ($isNetwork and $isActivation){
 					$old_blog = $wpdb->blogid;
-					$blogids = $wpdb->get_col($wpdb->prepare("SELECT blog_id FROM $wpdb->blogs"));
+					$blogids = $wpdb->get_col($wpdb->prepare("SELECT blog_id FROM $wpdb->blogs", NULL));
 					foreach ($blogids as $blog_id) {
 						switch_to_blog($blog_id);
 						nggallery_install();
