@@ -6,19 +6,8 @@
  }
  */
 
-define(
-	'NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
-	real_admin_url('/attach_to_post/preview')
-);
-
-define(
-	'NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
-	real_admin_url('/attach_to_post/display_tab_js')
-);
-
 class M_Attach_To_Post extends C_Base_Module
 {
-	var $attach_to_post_route           = 'wp-admin/attach_to_post';
 	var $attach_to_post_tinymce_plugin  = 'NextGEN_AttachToPost';
 
 	/**
@@ -62,6 +51,18 @@ class M_Attach_To_Post extends C_Base_Module
         $url = $this->get_registry()
                     ->get_utility('I_Display_Type_Controller')
                     ->add_parameter('attach_to_post', TRUE, NULL, admin_url());
+
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $url);
+
+        define(
+            'NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
+            NEXTGEN_GALLERY_ATTACH_TO_POST_URL . '/preview'
+        );
+
+        define(
+            'NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
+            NEXTGEN_GALLERY_ATTACH_TO_POST_URL . '/display_tab_js'
+        );
 
         $router->add_route(
 			__CLASS__ . '_Attach_to_Post',
@@ -210,6 +211,8 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _enqueue_tinymce_resources()
 	{
+        wp_localize_script('jquery', 'nextgen_gallery_attach_to_post_url', NEXTGEN_GALLERY_ATTACH_TO_POST_URL);
+
 		// Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
             if (get_user_option('rich_editing') == 'true') {
@@ -244,10 +247,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
-		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url(
-			'ngg_attach_to_post_tinymce_plugin.js'
-		);
-
+		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url('ngg_attach_to_post_tinymce_plugin.js');
 		return $plugins;
 	}
 
