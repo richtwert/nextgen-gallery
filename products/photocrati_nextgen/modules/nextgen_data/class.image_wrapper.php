@@ -248,7 +248,8 @@ class C_Image_Wrapper
                 return $this->_orig_image_id;
 
             case 'pidlink':
-                $nggpage = get_query_var('nggpage');
+                $controller = C_Component_Registry::get_instance()->get_utility('I_Display_Type_Controller');
+                $nggpage = $controller->param('page');
                 $args = array(
                     'nggpage' => (empty($nggpage) ? FALSE : $nggpage),
                     'pid'     => ($this->get_settings()->usePermalinks) ? $this->__get('image_slug') : $this->__get('id')

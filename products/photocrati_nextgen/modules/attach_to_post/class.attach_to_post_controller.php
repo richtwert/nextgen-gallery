@@ -117,11 +117,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue the backbone app for the display tab
 		wp_enqueue_script(
 			'ngg_display_tab',
-			add_query_arg(
-				'id',
-				$this->_displayed_gallery->id(),
-				NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL
-			),
+            NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL . '/id--' . $this->_displayed_gallery->id(),
 			array('backbone', 'underscore.string')
 		);
 		wp_localize_script(

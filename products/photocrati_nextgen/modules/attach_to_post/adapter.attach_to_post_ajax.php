@@ -126,6 +126,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 			$response['offset'] = $offset = $offset ? $offset : 0;
 			$response['total']	= $displayed_gallery->get_entity_count('both');
 			$response['items'] = $displayed_gallery->get_entities($limit, $offset, FALSE, 'both');
+            $controller   = $this->object->get_registry()->get_utility('I_Display_Type_Controller');
 			$storage	  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
 			$settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
@@ -150,11 +151,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 
 				// Get the thumbnail
 				$entity->thumb_html	= $storage->get_image_html($image, 'thumb');
-				$entity->thumb_url  = add_query_arg(
-					'timestamp',
-					time(),
-					$storage->get_image_url($image, 'thumb')
-				);
+                $entity->thumb_url = $controller->add_parameter(
+                    'timestamp',
+                    time(),
+                    NULL,
+                    $storage->get_image_url($image, 'thumb')
+                );
 				$entity->max_width  = $settings->thumbwidth;
 				$entity->max_height = $settings->thumbheight;
 			}

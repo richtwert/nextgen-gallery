@@ -21,7 +21,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         $display_settings = $displayed_gallery->display_settings;
 
         // Are we to display a gallery?
-        if ($gallery = get_query_var('gallery'))
+        if ($gallery = $this->param('gallery'))
         {
             if (!is_numeric($gallery))
             {
@@ -41,7 +41,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             );
         }
 
-        elseif (($album = get_query_var('album')))
+        elseif (($album = $this->param('album')))
         {
             // Are we to display a sub-album?
             if (!is_numeric($album))
@@ -56,7 +56,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         }
 
         // None of the above: Display the main album. Get the settings required for display
-        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+        $current_page = (int)$this->param('page', 1);
         $offset = $display_settings['galleries_per_page'] * ($current_page - 1);
         $total = $displayed_gallery->get_entity_count();
         $entities = $displayed_gallery->get_included_entities($display_settings['galleries_per_page'], $offset);
@@ -130,7 +130,10 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $uri = remove_query_arg('gallery', $uri);
             $uri = urldecode(remove_query_arg('album', $uri));
             $id_field = $gallery->id_field;
-            $gallery->pagelink = add_query_arg((empty($gallery->is_album) ? 'album' : 'gallery'), $gallery->$id_field);
+            $gallery->pagelink = $this->object->add_parameter(
+                (empty($gallery->is_album) ? 'album' : 'gallery'),
+                $gallery->$id_field
+            );
 
             // Let plugins modify the gallery
             $gallery = apply_filters('ngg_album_galleryobject', $gallery);

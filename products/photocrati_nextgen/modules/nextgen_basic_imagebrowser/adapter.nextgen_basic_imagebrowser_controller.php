@@ -63,7 +63,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         $imap     = $this->object->get_registry()->get_utility('I_Image_Mapper');
 
         // the pid may be a slug so we must track it & the slug target's database id
-        $pid = get_query_var('pid');
+        $pid = $this->object->param('pid');
         $numeric_pid = NULL;
 
         // makes the upcoming which-image-am-I loop easier
