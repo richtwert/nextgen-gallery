@@ -112,8 +112,6 @@ class C_Image_Wrapper
      */
     public function __get($name)
     {
-        global $nggRewrite;
-
         if (isset($this->_cache_overrides[$name]))
         {
             return $this->_cache_overrides[$name];
@@ -249,13 +247,10 @@ class C_Image_Wrapper
 
             case 'pidlink':
                 $controller = C_Component_Registry::get_instance()->get_utility('I_Display_Type_Controller');
-                $nggpage = $controller->param('page');
-                $args = array(
-                    'nggpage' => (empty($nggpage) ? FALSE : $nggpage),
-                    'pid'     => ($this->get_settings()->usePermalinks) ? $this->__get('image_slug') : $this->__get('id')
+                $this->_cache['pidlink'] = $controller->add_parameter(
+                    'pid',
+                    $this->get_settings()->usePermalinks ? $this->__get('image_slug') : $this->__get('id')
                 );
-
-                $this->_cache['pidlink'] = $nggRewrite->get_permalink($args);
                 return $this->_cache['pidlink'];
 
             case 'previewpic':

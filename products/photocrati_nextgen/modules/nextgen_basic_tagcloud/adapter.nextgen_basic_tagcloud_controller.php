@@ -14,7 +14,6 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return = FALSE)
     {
-        global $nggRewrite;
         $display_settings = $displayed_gallery->display_settings;
         $tag = $this->param('gallerytag');
 
@@ -57,7 +56,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         $tags = get_terms($args['taxonomy'], array_merge($args, array('orderby' => 'count', 'order' => 'DESC')));
 
         foreach ($tags as $key => $tag) {
-            $tags[$key]->link = $nggRewrite->get_permalink(array('gallerytag' => $tag->slug));
+            $tags[$key]->link = $this->object->add_parameter('gallerytag', $tag->slug);
             $tags[$key]->id = $tag->term_id;
         }
 
