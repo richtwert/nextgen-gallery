@@ -9,6 +9,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	{
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
+        $this->add_mixin('Mixin_Basic_Pagination');
 	}
 
 	/**
@@ -59,14 +60,16 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 			// Create pagination
 			if ($display_settings['images_per_page'] && !$display_settings['disable_pagination']) {
-				$nggNav = new nggNavigation;
-				$pagination = $nggNav->create_navigation(
+                $pagination_result = $this->object->create_pagination(
                     $current_page,
                     $total,
                     $display_settings['images_per_page']
                 );
+                $pagination_prev = $pagination_result['prev'];
+                $pagination_next = $pagination_result['next'];
+                $pagination      = $pagination_result['output'];
 			} else {
-                $pagination = NULL;
+                list($pagination_prev, $pagination_next, $pagination) = array(NULL, NULL, NULL);
             }
 
             if ($display_settings['show_piclens_link'] || $display_settings['ajax_pagination'])
@@ -112,8 +115,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $images,
                     $displayed_gallery,
                     array(
-                        'next' => (empty($nggNav->next)) ? FALSE : $nggNav->next,
-                        'prev' => (empty($nggNav->prev)) ? FALSE : $nggNav->prev,
+                        'next' => (empty($pagination_next)) ? FALSE : $pagination_next,
+                        'prev' => (empty($pagination_prev)) ? FALSE : $pagination_prev,
                         'pagination' => $pagination,
                         'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
                         'piclens_link' => $piclens_link

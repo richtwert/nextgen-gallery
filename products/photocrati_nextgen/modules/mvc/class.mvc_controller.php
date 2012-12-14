@@ -116,7 +116,7 @@ abstract class C_MVC_Controller extends C_Component
      * @param string $key
      * @return mixed
      */
-    function &param($key, $default=NULL)
+    function param($key, $default=NULL)
     {
         $retval = $default;
         $result = $this->object->get_parameter($key);

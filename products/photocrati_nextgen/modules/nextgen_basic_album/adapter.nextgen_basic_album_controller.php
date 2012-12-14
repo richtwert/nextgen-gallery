@@ -67,12 +67,12 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             //  Create pagination
             if ($display_settings['galleries_per_page'] && !$display_settings['disable_pagination'])
             {
-                $pagination = new nggNavigation;
-                $display_settings['pagination'] = $pagination->create_navigation(
+                $pagination_result = $this->object->create_pagination(
                     $current_page,
                     $total,
-                    $display_settings['galleries_per_page']
+                    $display_settings['images_per_page']
                 );
+                $display_settings['pagination'] = $pagination_result['output'];
             }
 
             // Add additional parameters
