@@ -5,7 +5,7 @@ Plugin URI: http://www.nextgen-gallery.com/
 Description: A NextGENeration Photo Gallery for WordPress
 Author: Photocrati
 Author URI: http://www.photocrati.com/
-Version: 1.9.8
+Version: 1.9.9
 
 Copyright (c) 2007-2011 by Alex Rabe & NextGEN DEV-Team
 Copyright (c) 2012 Photocrati Media
@@ -45,7 +45,7 @@ if (!class_exists('E_Clean_Exit')) {
 if (!class_exists('nggLoader')) {
 	class nggLoader {
 
-		var $version     = '1.9.8';
+		var $version     = '1.9.9';
 		var $dbversion   = '1.8.1';
 		var $minimum_WP  = '3.4';
 		var $donators    = 'http://www.nextgen-gallery.com/donators.php';
@@ -83,9 +83,6 @@ if (!class_exists('nggLoader')) {
 
 			// Register_taxonomy must be used during the init
 			add_action( 'init', array(&$this, 'register_taxonomy') );
-
-			// Hook to upgrade all blogs with one click and adding a new one later
-			add_action( 'wpmu_upgrade_site', array(&$this, 'multisite_upgrade') );
 			add_action( 'wpmu_new_blog', array(&$this, 'multisite_new_blog'), 10, 6);
 
 			// Add a message for PHP4 Users, can disable the update message later on
@@ -115,9 +112,6 @@ if (!class_exists('nggLoader')) {
 			// All credits to the tranlator
 			$this->translator  = '<p class="hint">'. __('<strong>Translation by : </strong><a target="_blank" href="http://alexrabe.de/wordpress-plugins/nextgen-gallery/languages/">See here</a>', 'nggallery') . '</p>';
 			$this->translator .= '<p class="hint">'. __('<strong>This translation is not yet updated for Version 1.9.0</strong>. If you would like to help with translation, download the current po from the plugin folder and read <a href="http://alexrabe.de/wordpress-plugins/wordtube/translation-of-plugins/">here</a> how you can translate the plugin.', 'nggallery') . '</p>';
-
-			// Check for upgrade
-			$this->check_for_upgrade();
 
 			// Content Filters
 			add_filter('ngg_gallery_name', 'sanitize_title');
@@ -223,23 +217,6 @@ if (!class_exists('nggLoader')) {
 
 			return true;
 
-		}
-
-		function check_for_upgrade() {
-
-			// Inform about a database upgrade
-			if( get_option( 'ngg_db_version' ) != NGG_DBVERSION ) {
-				if ( isset ($_GET['page']) && $_GET['page'] == NGGFOLDER ) return;
-				add_action(
-					'admin_notices',
-					create_function(
-						'',
-						'echo \'<div id="message" class="error"><p><strong>' . __('Please update the database of NextGEN Gallery.', 'nggallery') . ' <a href="admin.php?page=nextgen-gallery">' . __('Click here to proceed.', 'nggallery') . '</a>' . '</strong></p></div>\';'
-					)
-				);
-			}
-
-			return;
 		}
 
 		function define_tables() {
@@ -541,18 +518,6 @@ if (!class_exists('nggLoader')) {
 
 			include_once (dirname (__FILE__) . '/admin/install.php');
 			nggallery_uninstall();
-		}
-
-		function multisite_upgrade ( $blog_id ) {
-			global $wpdb;
-
-			include_once (dirname (__FILE__) . '/admin/upgrade.php');
-
-			$current_blog = $wpdb->blogid;
-			switch_to_blog( $blog_id );
-			ngg_upgrade();
-			switch_to_blog($current_blog);
-			return;
 		}
 
 		function disable_upgrade($option){
