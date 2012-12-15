@@ -9,6 +9,15 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
 
     public $_parameters = array('global' => array(), 'prefixed' => array());
 
+    function initialize()
+    {
+        $this->add_post_hook(
+            'add_parameter',
+            'Make Wordpress specific URI adjustments',
+            'Hook_Wordpress_URI_Params_Modifier'
+        );
+    }
+
     /**
      * Starts a chain that will cache SEO/permalink style and query-string parameters into a formatted array
      */
