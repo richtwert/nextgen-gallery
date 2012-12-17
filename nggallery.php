@@ -76,7 +76,7 @@ if (!class_exists('nggLoader')) {
 			register_deactivation_hook( $this->plugin_name, array(&$this, 'deactivate') );
 
 			// Register a uninstall hook to remove all tables & option automatic
-			register_uninstall_hook( $this->plugin_name, array('nggLoader', 'uninstall') );
+			register_uninstall_hook( $this->plugin_name, array(&$this, 'uninstall') );
 
 			// Start this plugin once all other plugins are fully loaded
 			add_action( 'plugins_loaded', array(&$this, 'start_plugin') );
@@ -434,7 +434,7 @@ if (!class_exists('nggLoader')) {
 		 * Removes all transients created by NextGEN. Called during activation
 		 * and deactivation routines
 		 */
-		function remove_transients()
+		static function remove_transients()
 		{
 			global $wpdb, $_wp_using_ext_object_cache;
 
@@ -471,7 +471,7 @@ if (!class_exists('nggLoader')) {
 			}
 
 			// Clean up transients
-			$this->remove_transients();
+			self::remove_transients();
 
 			include_once (dirname (__FILE__) . '/admin/install.php');
 
@@ -507,12 +507,12 @@ if (!class_exists('nggLoader')) {
 			delete_option( 'ngg_update_exists' );
 
 			// Clean up transients
-			$this->remove_transients();
+			self::remove_transients();
 		}
 
 		function uninstall() {
 			// Clean up transients
-			$this->remove_transients();
+			self::remove_transients();
 
 			include_once (dirname (__FILE__) . '/admin/install.php');
 			nggallery_uninstall();
