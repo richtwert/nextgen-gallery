@@ -13,7 +13,13 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     {
         $this->add_post_hook(
             'add_parameter',
-            'Make Wordpress specific URI adjustments',
+            'Make Wordpress specific add_parameter() result adjustments',
+            'Hook_Wordpress_URI_Params_Modifier'
+        );
+
+        $this->add_post_hook(
+            'get_parameter',
+            'Make Wordpress specific get_parameter() result adjustments',
             'Hook_Wordpress_URI_Params_Modifier'
         );
     }
@@ -193,22 +199,15 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
             }
         }
 
-        // after this is just $retval massage; if it's still null just leave now
-        if (is_null($retval))
-            return $retval;
-
-        // wordpress strips magic quotes but also then adds them right back
-        if (get_magic_quotes_gpc())
-            $retval = urldecode(stripslashes_deep($retval));
-
-        if ('null' == strtolower($retval))
-            $retval = NULL;
-
-        if ('false' == strtolower($retval))
-            $retval = FALSE;
-
-        if ('true' == strtolower($retval))
-            $retval = TRUE;
+        if (is_string($retval))
+        {
+            if ('null' == strtolower($retval))
+                $retval = NULL;
+            if ('false' == strtolower($retval))
+                $retval = FALSE;
+            if ('true' == strtolower($retval))
+                $retval = TRUE;
+        }
 
         return $retval;
     }
