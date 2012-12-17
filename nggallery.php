@@ -312,8 +312,6 @@ if (!class_exists('nggLoader')) {
 				if ( is_admin() ) {
 					require_once (dirname (__FILE__) . '/admin/admin.php');
 					require_once (dirname (__FILE__) . '/admin/media-upload.php');
-					if ( defined('IS_WP_3_3') )
-						require_once (dirname (__FILE__) . '/admin/pointer.php');
 					$this->nggAdminPanel = new nggAdminPanel();
 				}
 			}
