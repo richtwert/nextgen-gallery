@@ -269,12 +269,33 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
         return $string;
     }
 
+    public function assemble_final_string($permalink_params, $query_string_params)
+    {
+        $final_string = '';
+
+        if (!empty($permalink_params))
+        {
+            $permalink_string = '/' . implode('/', $permalink_params) . '/';
+            $final_string .= $permalink_string;
+        }
+
+        if (!empty($query_string_params))
+        {
+            $query_string_string = '?' . implode('&', $query_string_params);
+            $final_string .= $query_string_string;
+        }
+
+        return $final_string;
+    }
+
     /**
-     * Returns the current URL modified with the requested parameters
+     * Adds an URL parameter to the requested URL. If a variable of the same name already exists it's value will be
+     * updated in-place.
      *
      * @param string $name
      * @param string $val
      * @param string $prefix (optional)
+     * @param string $uri (optional)
      * @return string
      */
     public function add_parameter($name, $val, $prefix = NULL, $uri = NULL)
@@ -315,19 +336,47 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
                 $query_string_params[] = $this->object->create_parameter_string($name, $val, $prefix);
         }
 
-        $final_string = '';
+        $final_string = $this->object->assemble_final_string($permalink_params, $query_string_params);
 
-        if (!empty($permalink_params))
-        {
-            $permalink_string = '/' . implode('/', $permalink_params) . '/';
-            $final_string .= $permalink_string;
+        return $final_string;
+    }
+
+    /**
+     * Removes an URL parameter from the requested URL. This will not remove prefixed variables unless their
+     * prefix is part of the request, nor will it remove global variables if a prefix has been supplied.
+     *
+     * @param string $name
+     * @param string $val
+     * @param string $prefix (optional)
+     * @param string $uri (optional)
+     * @return string
+     */
+    public function del_parameter($name, $prefix = NULL, $uri = NULL)
+    {
+        $permalink_params = $this->object->get_permalink_parameters($uri);
+        $query_string_params = $this->object->get_query_string_parameters($uri);
+
+        foreach ($permalink_params as $key => &$parameter) {
+            $tmp = $this->object->is_segment_a_parameter($parameter);
+            if (!$tmp)
+                continue;
+            if (!$prefix && $tmp['name'] == $name && $tmp['id'] == '')
+                unset($query_string_params[$key]);
+            if ($prefix && $tmp['name'] == $name && $tmp['id'] == $prefix)
+                unset($query_string_params[$key]);
         }
 
-        if (!empty($query_string_params))
-        {
-            $query_string_string = '?' . implode('&', $query_string_params);
-            $final_string .= $query_string_string;
+        foreach ($query_string_params as $key => &$parameter) {
+            $tmp = $this->object->is_segment_a_parameter($parameter);
+            if (!$tmp)
+                continue;
+            if (!$prefix && $tmp['name'] == $name && $tmp['id'] == '')
+                unset($query_string_params[$key]);
+            if ($prefix && $tmp['name'] == $name && $tmp['id'] == $prefix)
+                unset($query_string_params[$key]);
         }
+
+        $final_string = $this->object->assemble_final_string($permalink_params, $query_string_params);
 
         return $final_string;
     }

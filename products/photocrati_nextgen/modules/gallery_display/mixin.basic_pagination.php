@@ -34,15 +34,12 @@ class Mixin_Basic_Pagination extends Mixin
             $r = '';
             if (1 < $page)
             {
-                $newpage = (1 == $page - 1) ? FALSE : $page - 1;
-                $previous = $newpage;
-                if (FALSE == $newpage)
-                    $previous = 1;
+                $newpage = (1 == $page - 1) ? 1 : $page - 1;
                 $return['prev'] = $controller->add_parameter('page', $newpage);
-                $r .=  '<a class="prev" id="ngg-prev-' . $previous . '" href="' . $return['prev'] . '">' . $prev_symbol . '</a>';
+                $r .=  '<a class="prev" id="ngg-prev-' . $newpage . '" href="' . $return['prev'] . '">' . $prev_symbol . '</a>';
             }
 
-            $total_pages = ceil( $total / $maxElement);
+            $total_pages = ceil($total / $maxElement);
 
             if ($total_pages > 1)
             {
@@ -54,7 +51,7 @@ class Mixin_Basic_Pagination extends Mixin
                     else {
                         if ($page_num < 3 || ($page_num >= $page - 3 && $page_num <= $page + 3) || $page_num > $total_pages - 3)
                         {
-                            $newpage = (1 == $page_num ) ? FALSE : $page_num;
+                            $newpage = (1 == $page_num ) ? 1 : $page_num;
                             $link = $controller->add_parameter('page', $newpage);
                             $r .= '<a class="page-numbers" href="' . $link . '">' . ($page_num) . '</a>';
                         }

@@ -106,7 +106,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         );
 
         // If pagination is not set, then set it to FALSE
-        if (!isset($params['pagination'])) $params['pagination'] = FALSE;
+        if (!isset($params['pagination']))
+            $params['pagination'] = FALSE;
 
         // Transform entities
         $params['galleries']    = $params['entities'];
@@ -126,9 +127,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             }
 
             // Get the page link
-            $uri = $_SERVER['REQUEST_URI'];
-            $uri = remove_query_arg('gallery', $uri);
-            $uri = urldecode(remove_query_arg('album', $uri));
             $id_field = $gallery->id_field;
             $gallery->pagelink = $this->object->add_parameter(
                 (empty($gallery->is_album) ? 'album' : 'gallery'),
