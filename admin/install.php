@@ -34,9 +34,6 @@ function nggallery_install () {
 	$role->add_cap('NextGEN Change style');
 	$role->add_cap('NextGEN Change options');
 
-	// upgrade function changed in WordPress 2.3
-	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
 	// add charset & collate like wp core
 	$charset_collate = '';
 
