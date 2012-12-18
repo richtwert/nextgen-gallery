@@ -342,8 +342,8 @@ class nggdb {
 
         // Unserialize the galleries inside the album
         if ( $album ) {
-				    // XXX nggdb is used statically, cannot inherit from Ngg_Serializable
-				    $serializer = new Ngg_Serializable();
+			// XXX nggdb is used statically, cannot inherit from Ngg_Serializable
+			$serializer = new Ngg_Serializable();
 
             if ( !empty( $album->sortorder ) )
                 $album->gallery_ids = $serializer->unserialize( $album->sortorder );
