@@ -23,6 +23,11 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         // Are we to display a gallery?
         if ($gallery = $this->param('gallery'))
         {
+            // basic albums only support one per post
+            if (isset($GLOBALS['nggShowGallery']))
+                return;
+            $GLOBALS['nggShowGallery'] = TRUE;
+
             if (!is_numeric($gallery))
             {
                 $mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
@@ -43,6 +48,11 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
         elseif (($album = $this->param('album')))
         {
+            // basic albums only support one per post
+            if (isset($GLOBALS['nggShowGallery']))
+                return;
+            $GLOBALS['nggShowGallery'] = TRUE;
+
             // Are we to display a sub-album?
             if (!is_numeric($album))
             {

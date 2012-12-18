@@ -14,7 +14,7 @@ class C_Legacy_Template_Locator extends C_Component
         $this->implement('I_Legacy_Template_Locator');
     }
 
-    function get_instance($context=FALSE)
+    static function get_instance($context=FALSE)
     {
         if (!isset(self::$_instances[$context])) {
             $klass = get_class();

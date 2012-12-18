@@ -35,9 +35,6 @@ class M_AutoUpdate_Admin extends C_Base_Module
     {
         $this->object->get_registry()->add_adapter('I_Component_Factory', 'A_AutoUpdate_Admin_Factory');
         $this->object->get_registry()->add_adapter('I_Ajax_Handler', 'A_AutoUpdate_Admin_Ajax');
-
-        $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-        $this->_controller = $factory->create('autoupdate_admin_controller');
     }
 
 
@@ -210,6 +207,9 @@ class M_AutoUpdate_Admin extends C_Base_Module
 
       if ($list != null)
       {
+        $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+        $this->_controller = $factory->create('autoupdate_admin_controller');
+        
 				add_submenu_page('index.php', __('Photocrati Updates'), __('Photocrati') . ' <span class="update-plugins"><span class="update-count">' . count($list) . '</span></span>', 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
       }
       else if (isset($_GET['page']) && $_GET['page'] == $this->module_id)

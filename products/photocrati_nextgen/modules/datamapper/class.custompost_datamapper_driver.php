@@ -433,7 +433,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		global $wpdb;
 		$key = $this->object->get_primary_key_column();
 		$sql = $wpdb->prepare(
-			"SELECT COUNT({$key}) FROM {$wpdb->posts} WHERE post_Type = %s",
+			"SELECT COUNT({$key}) FROM {$wpdb->posts} WHERE post_type = %s",
 			$this->object->get_object_name()
 		);
 		$results = $this->object->run_query($sql);

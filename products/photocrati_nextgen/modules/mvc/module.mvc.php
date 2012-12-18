@@ -76,7 +76,7 @@ class M_MVC extends C_Base_Module
 
 	function __destruct()
 	{
-		if ($this->rethrow) throw $this->rethrow;
+		if ($this->rethrow) die(print_r($this->rethrow));
 	}
 }
 

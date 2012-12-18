@@ -8,9 +8,11 @@ function close_attach_to_post_window()
 // the specified callback
 function adjust_height_for_frame(frame, callback)
 {
+	// Adjust height of the frame
+	var $frame			= jQuery(frame);
 	var new_height		= jQuery(frame.contentDocument).height();
-	var current_height	= jQuery(frame).height();
-	if (current_height < new_height) jQuery(frame).height(new_height);
+	var current_height	= $frame.height();
+	if (current_height < new_height) $frame.height(new_height);
 
 	if (callback != undefined)
 		return callback.call(frame, new_height);

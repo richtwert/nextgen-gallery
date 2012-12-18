@@ -674,7 +674,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 		// Get all term_ids for each image tag slug
 		$term_ids = array();
-		$query = $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$container_ids}) ORDER BY term_id ASC ");
+		$query = $wpdb->prepare("SELECT term_id FROM $wpdb->terms WHERE slug IN ({$container_ids}) ORDER BY term_id ASC ", NULL);
 		foreach ($wpdb->get_results($query) as $row) {
 			$term_ids[] = $row->term_id;
 		}

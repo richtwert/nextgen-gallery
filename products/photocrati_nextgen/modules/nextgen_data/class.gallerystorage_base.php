@@ -9,7 +9,7 @@ class C_GalleryStorage_Base extends C_Component
 	 */
 	function __call($method, $args)
 	{
-		if (preg_match("/^get_(\w+)_(abspath|url|dimensions|html)$/", $method, $match)) {
+		if (preg_match("/^get_(\w+)_(abspath|url|dimensions|html|size_params)$/", $method, $match)) {
 			if (isset($match[1]) && isset($match[2]) && !$this->has_method($method)) {
 				$method = 'get_image_'.$match[2];
 				$args[] = $match[1]; // array($image, $size)

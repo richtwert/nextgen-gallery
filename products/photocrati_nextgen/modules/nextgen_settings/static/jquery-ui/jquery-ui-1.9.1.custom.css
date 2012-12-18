@@ -1852,6 +1852,10 @@ body .ui-tooltip {
     border-bottom: 1px solid #dfdfdf;
 }
 
+.ui-tabs .ui-tabs-nav li.ui-tabs-active a {
+    color: #d54e21;
+}
+
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
     border-bottom: 1px solid #ffffff;
 }
