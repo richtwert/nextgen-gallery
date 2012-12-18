@@ -201,6 +201,7 @@ Yes, NextGEN Gallery has been translated into dozens of languages - <a href="htt
 * Fixed:   Deleted galleries within an album are handed gracefully without warning messages
 * Fixed:   Correct use of register_uninstall_hook
 * Fixed:   CSS and usability issues with the TinyMCE window used to display galleries
+* Fixed:   Inability to generate new image slugs
 
 * NEW:	   JW ImageRotator v3.17 is now bundled with the plugin and used by default.
 * Changed: Removed database upgrade code for versions of NextGEN Gallery earlier than 1.9.3
