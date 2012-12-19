@@ -41,7 +41,7 @@ jQuery(function($){
 		setTimeout(function(){
 			tab.css({
 				display:	'block',
-				position:	'relative',
+				position:	'static',
 				top:		0,
 				visibility: 'visible',
 				height:		'100%'
