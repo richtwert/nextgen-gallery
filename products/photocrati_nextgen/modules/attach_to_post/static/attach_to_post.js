@@ -46,9 +46,9 @@ jQuery(function($){
 		if ($(element).parent().hasClass('ui-state-active')) {
 			var iframe = $(element.hash+' iframe');
 			if (iframe.length > 0) {
-				if (iframe[0].contentDocument.location != iframe.attr('src')) {
-					iframe[0].contentDocument.location = iframe.attr('src');
-				}
+//				if (iframe[0].contentDocument.location != iframe.attr('src')) {
+//					iframe[0].contentDocument.location = iframe.attr('src');
+//				}
 			}
 		}
 	});

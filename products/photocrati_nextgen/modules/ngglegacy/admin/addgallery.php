@@ -127,14 +127,14 @@ class nggAddGallery {
 
         $this->defaultpath = $ngg->options['gallerypath'];
 
-        // link for the flash file
-		$swf_upload_link = admin_url('/?nggupload');
-
         // get list of tabs
         $tabs = $this->tabs_order();
 
         // with this filter you can add custom file types
         $file_types = apply_filters( 'ngg_swf_file_types', '*.jpg;*.jpeg;*.gif;*.png;*.JPG;*.JPEG;*.GIF;*.PNG' );
+
+		// default plupload runtimes supported
+		$runtimes = apply_filters('plupload_runtimes', 'html5,flash,silverlight,html4,');
 
         // Set the post params, which plupload will post back with the file, and pass them through a filter.
         $post_params = array(
@@ -143,207 +143,31 @@ class nggAddGallery {
         		"_wpnonce" => wp_create_nonce('ngg_swfupload'),
         		"galleryselect" => "0",
         );
-        $p = array();
 
-        foreach ( $post_params as $param => $val ) {
-        	$val = esc_js( $val );
-        	$p[] = "'$param' : '$val'";
-        }
-
-        $post_params_str = implode( ',', $p ). "\n";
-	?>
-
-	<?php //include('templates/social_media_buttons.php'); ?>
-
-	<div class='wrap'><h2 class='title'><?php echo_h(_("Add Gallery / Images"))?></h2>
-
-	<?php if($ngg->options['swfUpload'] && !empty ($this->gallerylist) ) { ?>
-
-    <!-- plupload script -->
-    <script type="text/javascript">
-    //<![CDATA[
-    var resize_height = <?php echo (int) $ngg->options['imgHeight']; ?>,
-    	resize_width = <?php echo (int) $ngg->options['imgWidth']; ?>;
-
-    jQuery(document).ready(function($) {
-		if ($(this).data('ready')) return;
-
-		// Listen for events emitted in other frames
-		if (window.Frame_Event_Publisher) {
-
-			// If a new gallery has been created, add it to the drop-downs of
-			// available galleries
-			Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(){
-				var gallery_id = data.gallery[data.gallery.id_field];
-				var gallery_title = data.gallery.title.replace(/\\&/, '&');
-				var option = $('<option/>').attr({
-					value:	gallery_id
-				});
-				option.html(gallery_id+' - '+gallery_title);
-				$('#galleryselect').append(option);
-				$('select[name="zipgalselect"]').append(option.clone());
-			});
-
-			// If a gallery has been deleted, remove it from the drop-downs of
-			// available galleries
-			Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries', function(){
-				window.location.reload(true);
-			});
-		}
-
-		window.uploader = new plupload.Uploader({
-    		runtimes: '<?php echo apply_filters('plupload_runtimes', 'html5,flash,silverlight,html4,'); ?>',
-    		browse_button: 'plupload-browse-button',
-    		container: 'plupload-upload-ui',
-    		drop_element: 'uploadimage',
-    		file_data_name: 'Filedata',
-    		max_file_size: '<?php echo round( (int) wp_max_upload_size() / 1024 ); ?>kb',
-    		url: '<?php echo esc_js( $swf_upload_link ); ?>',
-    		flash_swf_url: '<?php echo esc_js( includes_url('js/plupload/plupload.flash.swf') ); ?>',
-    		silverlight_xap_url: '<?php echo esc_js( includes_url('js/plupload/plupload.silverlight.xap') ); ?>',
-    		filters: [
-    			{title: '<?php echo esc_js( __('Image Files', 'nggallery') ); ?>', extensions: '<?php echo esc_js( str_replace( array('*.', ';'), array('', ','), $file_types)  ); ?>'}
-    		],
-    		multipart: true,
-    		urlstream_upload: true,
-    		multipart_params : {
-    			<?php echo $post_params_str; ?>
-    		},
-            debug: false,
-            preinit : {
-    			Init: function(up, info) {
-    				debug('[Init]', 'Info :', info,  'Features :', up.features);
-                    initUploader();
-    			}
-            },
-			i18n : {
-				'remove' : '<?php _e('remove', 'nggallery') ;?>',
-				'browse' : '<?php _e('Browse...', 'nggallery') ;?>',
-				'upload' : '<?php _e('Upload images', 'nggallery') ;?>'
-			}
-    	});
-
-    	uploader.bind('FilesAdded', function(up, files) {
-    		$.each(files, function(i, file) {
-    			fileQueued(file);
-    		});
-
-    		up.refresh();
-			var accordion_content = $('#uploadimage').next('div');
-			accordion_content[0].scrollTop = accordion_content.height();
-
-				// when loaded into an iframe ensure we update iframe height accordingly
-				if (top != window) {
-					if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {
-						parent.resize_attach_to_post_tab(window.frameElement, true);
-					}
-					else {
-						jQuery(parent.document).find('iframe.ngg-attach-to-post').each(function (i, elem) {
-							var jElem = jQuery(elem);
-							jElem.height(jElem.contents().height());
-						});
-					}
-				}
-    	});
-
-    	uploader.bind('BeforeUpload', function(up, file) {
-            uploadStart(file);
-    	});
-
-    	uploader.bind('UploadProgress', function(up, file) {
-    		uploadProgress(file, file.loaded, file.size);
-    	});
-
-    	uploader.bind('Error', function(up, err) {
-    		uploadError(err.file, err.code, err.message);
-
-    		up.refresh();
-    	});
-
-    	uploader.bind('FileUploaded', function(up, file, response) {
-            $('html, body').animate({
-                scrollTop: $('#' + file.id).position().top - 20
-            });
-    		uploadSuccess(file, response);
-    	});
-
-    	uploader.bind('UploadComplete', function(up, file) {
-    		uploadComplete(file);
-    	});
-
-		// on load change the upload to plupload
-		uploader.init();
-
-		nggAjaxOptions = {
-		  	header: "<?php _e('Upload images', 'nggallery') ;?>",
-		  	maxStep: 100
-		};
-
-		$(this).data('ready', true);
-    });
-    //]]>
-    </script>
-	<?php } else { ?>
-	<!-- MultiFile script -->
-	<script type="text/javascript">
-	/* <![CDATA[ */
-		jQuery(document).ready(function(){
-			jQuery('#imagefiles').MultiFile({
-				STRING: {
-			    	remove:'[<?php _e('remove', 'nggallery') ;?>]'
-  				}
-		 	});
-		});
-	/* ]]> */
-	</script>
-	<?php } ?>
-	<!-- jQuery Tabs script -->
-	<script type="text/javascript">
-	/* <![CDATA[ */
-		jQuery(document).ready(function(){
-            jQuery('html,body').scrollTop(0);
-			jQuery('#accordion').accordion({ clearStyle: true, autoHeight: false });
-		});
-
-		// File Tree implementation
-		jQuery(function() {
-		    jQuery("span.browsefiles").show().click(function(){
-    		    jQuery("#file_browser").fileTree({
-    		      script: "admin-ajax.php?action=ngg_file_browser&nonce=<?php echo wp_create_nonce( 'ngg-ajax' ) ;?>",
-                  root: jQuery("#galleryfolder").val()
-    		    }, function(folder) {
-    		        jQuery("#galleryfolder").val( folder );
-    		    });
-		    	jQuery("#file_browser").show('slide');
-				if (top != window) {
-					if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {
-						parent.resize_attach_to_post_tab(window.frameElement, true);
-					}
-				}
-		    });
-		});
-	/* ]]> */
-	</script>
-		<div id="accordion">
-			<?php foreach ($tabs as $tab_key => $tab_name): ?>
-			<h3 id="<?php echo esc_attr($tab_key) ?>">
-				<a href='#'><?php echo_h($tab_name)?></a>
-			</h3>
-			<div>
-				<?php
-					$method = 'tab_'.$tab_key;
-					if (method_exists($this, $method)) {
-						call_user_func(array(&$this, $method));
-					}
-					else do_action('ngg_tab_content_'.$tab_key);
-				?>
-			</div>
-			<?php endforeach; ?>
-		</div>
-</div> <!-- end of wrap-->
-    <?php
-
+		// Render template
+		$this->_render_template('templates/addgallery.php', array(
+			'gallerylist'			=>	$this->gallerylist,
+			'post_params'			=>	json_encode($post_params),
+			'image_height'			=>	$ngg->options['imgHeight'],
+			'image_width'			=>	$ngg->options['imgWidth'],
+			'plupload_runtimes'		=>	$ngg->options['swfUpload'] ? $runtimes : 'html5,html4,',
+			'max_filesize'			=>	strval(round( (int) wp_max_upload_size() / 1024 )).'kb',
+			'swf_upload_link'		=>	admin_url('/?nggupload'),
+			'flash_swf_url'			=>	includes_url('js/plupload/plupload.flash.swf'),
+			'silverlight_xap_url'	=>	includes_url('js/plupload/plupload.silverlight.xap'),
+			'file_types'			=>	$file_types,
+			'tabs'					=>	$tabs
+		));
     }
+
+	/*
+	 * Renders a PHP template
+	 */
+	function _render_template($__file, $__params)
+	{
+		extract($__params);
+		include($__file);
+	}
 
     /**
      * Create array for tabs and add a filter for other plugins to inject more tabs
@@ -466,7 +290,6 @@ class nggAddGallery {
 
 			<tr valign="top">
 				<th scope="row"><?php _e('Upload image', 'nggallery') ;?></th>
-                <?php if ($ngg->options['swfUpload']) { ?>
 				<td>
                 <div id="plupload-upload-ui">
                 	<div>
@@ -482,9 +305,6 @@ class nggAddGallery {
 
                  </div>
                 </td>
-                <?php } else { ?>
-				<td><span id='spanButtonPlaceholder'></span><input type="file" name="imagefiles[]" id="imagefiles" size="35" class="imagefiles"/></td>
-                <?php } ?>
             </tr>
 			<tr valign="top">
 				<th scope="row"><?php _e('in to', 'nggallery') ;?></th>
