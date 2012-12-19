@@ -163,13 +163,13 @@ class M_Gallery_Display extends C_Base_Module
 	 */
     function serve_alternative_view_request()
     {
-		if (isset($_SERVER['REQUEST_URI'])) {
-			$uri = $_SERVER['REQUEST_URI'];
-			if (preg_match("/nggallery\/([\w_-]+)$/", $uri, $match)) {
-				$_SERVER['REQUEST_URI'] = str_replace($match[0], '', $uri);
-				$_SERVER['NGGALLERY'] = $match[1];
-			}
-		}
+//		if (isset($_SERVER['REQUEST_URI'])) {
+//			$uri = $_SERVER['REQUEST_URI'];
+//			if (preg_match("/nggallery\/([\w_-]+)$/", $uri, $match)) {
+//				$_SERVER['REQUEST_URI'] = str_replace($match[0], '', $uri);
+//				$_SERVER['NGGALLERY'] = $match[1];
+//			}
+//		}
     }
 
 	/**
