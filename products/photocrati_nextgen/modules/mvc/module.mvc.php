@@ -53,6 +53,7 @@ class M_MVC extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Activator_Rendering');
+        $this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
 	}
 
     function _register_hooks()
@@ -60,23 +61,21 @@ class M_MVC extends C_Base_Module
         add_action('wp_loaded', array(&$this, 'route'), 99);
     }
 
-
 	function route()
 	{
-		$router = $this->get_registry()->get_utility('I_Router');
-		$router->route();
+		$this->get_registry()->get_utility('I_Router')->serve_request();
 	}
 
     function handle_exit($exception)
     {
-        if (!($exception instanceof E_Clean_Exit)) {
+        if (!($exception instanceof E_Clean_Exit))
 			$this->rethrow = $exception;
-        }
     }
 
 	function __destruct()
 	{
-		if ($this->rethrow) die(print_r($this->rethrow));
+		if ($this->rethrow)
+            die(print_r($this->rethrow));
 	}
 }
 

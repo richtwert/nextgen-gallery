@@ -37,6 +37,8 @@ class M_Ajax extends C_Base_Module
 	 */
 	function _add_routes()
 	{
+        return;
+
 		$router = $this->get_registry()->get_utility('I_Router');
 
         $url = $this->get_registry()
@@ -74,7 +76,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
+		// wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
 	}
 }
 

@@ -47,6 +47,8 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _add_routes()
 	{
+        return;
+
         $router   = $this->object->get_registry()->get_utility('I_Router');
         $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 

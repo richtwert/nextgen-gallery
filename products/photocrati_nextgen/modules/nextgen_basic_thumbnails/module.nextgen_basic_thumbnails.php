@@ -25,8 +25,13 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
+        $this->_add_routes();
 	}
 
+    public function initialize()
+    {
+        parent::initialize();
+    }
 
 	function _register_adapters()
 	{
@@ -66,6 +71,24 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
             'A_Ajax_Pagination_Actions'
         );
 	}
+
+    function _add_routes()
+    {
+        $router  = $this->get_registry()->get_utility('I_Router');
+        $app = $router->create_app();
+        $app->rewrite('/nggallery/page-{page}', '/page--{page}/');
+        $app->rewrite('/dog/page-{page}', '/page--{page}/');
+        $app->route(
+            array(),
+            array(
+                'controller' => 'C_Display_Type_Controller',
+                'action'  => 'index',
+                'context' => NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS,
+                'method'  => array('GET')
+            )
+        );
+        $router->add_app($app);
+    }
 }
 
 new M_NextGen_Basic_Thumbnails();
