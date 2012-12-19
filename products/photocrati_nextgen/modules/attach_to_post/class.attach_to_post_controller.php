@@ -63,6 +63,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue JQuery UI libraries
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
+		wp_enqueue_script('ngg_tabs', $this->static_url('ngg_tabs.js'));
 
 		// Enqueue chosen, a library to make our drop-downs look pretty
 //		wp_enqueue_style('chosen', $this->static_url('chosen.css'));

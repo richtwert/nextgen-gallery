@@ -23,7 +23,7 @@ function adjust_height_for_frame(frame, callback)
 // Activates the attach to post screen elements
 jQuery(function($){
 	// Activate horizontal tabs
-	$('#attach_to_post_tabs').tabs();
+	$('#attach_to_post_tabs').ngg_tabs();
 
 	// If the preview area is being displayed, emit an event for that
 	$('.accordion h3').bind('click', function(e){
@@ -46,9 +46,9 @@ jQuery(function($){
 		if ($(element).parent().hasClass('ui-state-active')) {
 			var iframe = $(element.hash+' iframe');
 			if (iframe.length > 0) {
-//				if (iframe[0].contentDocument.location != iframe.attr('src')) {
-//					iframe[0].contentDocument.location = iframe.attr('src');
-//				}
+				if (iframe[0].contentDocument.location != iframe.attr('src')) {
+					iframe[0].contentDocument.location = iframe.attr('src');
+				}
 			}
 		}
 	});
