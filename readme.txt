@@ -194,6 +194,11 @@ Yes, NextGEN Gallery has been translated into dozens of languages - <a href="htt
 
 == Changelog ==
 
+= V1.9.11 - 12.21.2012 =
+* Fixed:   Compatibility issues with PHP 5.4 on album page
+* Fixed:   Removed many E_NOTICE errors
+* Fixed:   Correct use of register_uninstall_hook across all PHP versions
+
 = V1.9.10 - 12.18.2012 =
 * Fixed:   XML-RPC error displayed when authenticating using WordPress 3.5
 * Fixed:   Restored compatibility with NextGEN Gallery Export Plugin
