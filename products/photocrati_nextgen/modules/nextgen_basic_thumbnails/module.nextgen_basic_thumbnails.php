@@ -77,7 +77,6 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         $router  = $this->get_registry()->get_utility('I_Router');
         $app = $router->create_app();
         $app->rewrite('/nggallery/page-{page}', '/page--{page}/');
-        $app->rewrite('/dog/page-{page}', '/page--{page}/');
         $app->route(
             array(),
             array(

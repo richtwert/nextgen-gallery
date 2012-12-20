@@ -90,6 +90,13 @@ class Mixin_Routing_App extends Mixin
                     }
                     $request_uri = $dst;
 
+                    // here is how to re-find posts AND pages
+                    $_SERVER['REQUEST_URI'] = '/waterloo/';
+                    rewind_posts();
+                    while (have_posts()) {
+                        the_post();
+                    }
+
                     var_dump($request_uri);
                     var_dump($_SERVER);
 
