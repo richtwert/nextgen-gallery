@@ -11,7 +11,7 @@ define('MVC_TEMPLATE_DIR', path_join(MVC_MODULE_DIR, 'templates'));
 require_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
 
 /**
- * Indicates that a clean exit occured. Handled by set_exception_handler
+ * Indicates that a clean exit occurred. Handled by set_exception_handler
  */
 if (!class_exists('E_Clean_Exit')) {
 	class E_Clean_Exit extends RuntimeException
@@ -58,7 +58,7 @@ class M_MVC extends C_Base_Module
 
     function _register_hooks()
     {
-        add_action('wp_loaded', array(&$this, 'route'), 99);
+        add_action('init', array(&$this, 'route'), 99);
     }
 
 	function route()

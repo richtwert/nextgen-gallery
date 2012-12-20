@@ -74,19 +74,10 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 
     function _add_routes()
     {
-        $router  = $this->get_registry()->get_utility('I_Router');
-        $app = $router->create_app();
-        $app->rewrite('/nggallery/page-{page}', '/page--{page}/');
-        $app->route(
-            array(),
-            array(
-                'controller' => 'C_Display_Type_Controller',
-                'action'  => 'index',
-                'context' => NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS,
-                'method'  => array('GET')
-            )
-        );
-        $router->add_app($app);
+        $this->get_registry()
+             ->get_utility('I_Router')
+             ->create_app()
+             ->rewrite('/nggallery/page-{page}', '/page--{page}/');
     }
 }
 

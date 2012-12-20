@@ -36,17 +36,16 @@ class Mixin_Router extends Mixin
         else
             $retval = $_SERVER['REQUEST_URI'];
 
-        if (substr($retval, -1) != '/')
-            $retval .= '/';
-
         return $retval;
     }
 
 
-    public function create_app($name = '/')
+    public function &create_app($name = '/')
     {
         $factory = $this->get_registry()->get_utility('I_Component_Factory');
-        return $factory->create('routing_app', $name);
+        $app = $factory->create('routing_app', $name);
+        $this->_apps[] = $app;
+        return $app;
     }
 
     public function add_app($app)

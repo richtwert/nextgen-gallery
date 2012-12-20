@@ -33,8 +33,7 @@ class M_MediaRss extends C_Base_Module
 	 */
 	function _add_routes()
 	{
-        $router  = $this->get_registry()->get_utility('I_Router');
-        $app = $router->create_app();
+        $app = $this->get_registry()->get_utility('I_Router')->create_app();
         $app->route(
             array('/mediarss'),
             array(
@@ -44,7 +43,6 @@ class M_MediaRss extends C_Base_Module
                 'method'  => array('GET')
             )
         );
-        $router->add_app($app);
 	}
 }
 

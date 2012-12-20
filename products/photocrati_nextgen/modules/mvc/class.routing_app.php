@@ -33,10 +33,7 @@ class Mixin_Routing_App extends Mixin
         $patterns = $this->object->_rewrite_patterns;
 
         // add the rewrite pattern
-        $patterns[$this->object->_route_to_regex($src)] = array(
-            'dst' => $dst,
-            $redirect => $redirect
-        );
+        $patterns[$this->object->_route_to_regex($src)] = array('dst' => $dst, $redirect => $redirect);
 
         // update rewrite patterns;
         $this->object->_rewrite_patterns = $patterns;
@@ -45,8 +42,6 @@ class Mixin_Routing_App extends Mixin
     function serve_request($request_uri = FALSE)
     {
         $served = FALSE;
-
-        var_dump($request_uri);
 
         // ensure that the routing patterns array exists
         if (!is_array($this->object->_routing_patterns))
@@ -76,29 +71,33 @@ class Mixin_Routing_App extends Mixin
             // start rewriting urls
             foreach ($this->object->_rewrite_patterns as $pattern => $details) {
 
+                var_dump($pattern, $request_uri);
+
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
                 {
-                    $dst = $details['dst'];
-
                     // perform substitutions
                     foreach ($matches as $match) {
                         foreach ($match as $key => $val) {
                             if (is_numeric($key))
                                 continue;
-                            $dst = str_replace("{{$key}}", $val, $dst);
+                            $dst = str_replace("{{$key}}", $val, $details['dst']);
                         }
                     }
-                    $request_uri = $dst;
 
-                    // here is how to re-find posts AND pages
-                    $_SERVER['REQUEST_URI'] = '/waterloo/';
-                    rewind_posts();
-                    while (have_posts()) {
-                        the_post();
-                    }
+                    var_dump(
+                        $dst,
+                        $matches
+                    );
 
-                    var_dump($request_uri);
-                    var_dump($_SERVER);
+                    $parsed_url = str_replace($matches[0], $dst, $request_uri);
+                    var_dump($parsed_url);
+
+                    // strip $matches[0] from $request_uri
+                    $url_without_routed_parameters = str_replace($matches[0], '', $request_uri);
+                    $_SERVER['REQUEST_URI'] = $url_without_routed_parameters;
+
+                    var_dump($_SERVER['REQUEST_URI']);
+                    exit;
 
                     // redirect now if we're to do so...
                     if (isset($details['redirect']))
