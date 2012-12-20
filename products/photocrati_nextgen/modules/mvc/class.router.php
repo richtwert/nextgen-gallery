@@ -2,13 +2,15 @@
 
 class Mixin_Router extends Mixin
 {
-    public $_apps;
-    
+    public $_apps = array();
+    public $_request_uri = '';
+
     public function initialize()
     {
         parent::initialize();
-        $this->request_uri = $this->get_request_uri();
-        $this->request_method = $_SERVER['REQUEST_METHOD'];
+
+        if (empty($this->_request_uri))
+            $this->object->set_request_uri($this->object->get_request_uri(FALSE), TRUE);
     }
 
     /**
@@ -29,12 +31,32 @@ class Mixin_Router extends Mixin
         }
     }
 
-    public function get_request_uri()
+    public function set_request_uri($uri, $internal = TRUE)
     {
-        if (isset($_SERVER['PATH_INFO']))
-            $retval = $_SERVER['PATH_INFO'];
-        else
-            $retval = $_SERVER['REQUEST_URI'];
+        if ($internal)
+        {
+            $this->_request_uri = $uri;
+        }
+        else {
+            if (isset($_SERVER['PATH_INFO']))
+                $_SERVER['PATH_INFO'] = $uri;
+            else
+                $_SERVER['REQUEST_URI'] = $uri;
+        }
+    }
+
+    public function get_request_uri($internal = TRUE)
+    {
+        if ($internal)
+        {
+            $retval = $this->_request_uri;
+        }
+        else {
+            if (isset($_SERVER['PATH_INFO']))
+                $retval = $_SERVER['PATH_INFO'];
+            else
+                $retval = $_SERVER['REQUEST_URI'];
+        }
 
         return $retval;
     }
@@ -48,11 +70,6 @@ class Mixin_Router extends Mixin
         return $app;
     }
 
-    public function add_app($app)
-    {
-        $this->_apps[] = $app;
-    }
-
     /**
      * Gets a list of apps registered for the router
      *
@@ -60,9 +77,6 @@ class Mixin_Router extends Mixin
      */
     public function get_apps()
     {
-        if (!is_array($this->_apps))
-            $this->_apps = array();
-
         return $this->_apps;
     }
 }

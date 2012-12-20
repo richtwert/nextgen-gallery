@@ -54,7 +54,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
             return array();
 
         if (is_null($uri))
-            $target = $_SERVER['REQUEST_URI'];
+            $target = $this->object->get_registry()->get_utility('I_Router')->get_request_uri();
         else
             $target = $uri;
 
@@ -92,7 +92,7 @@ class Mixin_MVC_Controller_URI_Params extends Mixin
     public function get_permalink_parameters($uri = NULL)
     {
         if (is_null($uri))
-            $target = $_SERVER['REQUEST_URI'];
+            $target = $this->object->get_registry()->get_utility('I_Router')->get_request_uri();
         else
             $target = $uri;
 

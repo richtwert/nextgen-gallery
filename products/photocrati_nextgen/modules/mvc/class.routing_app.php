@@ -1,7 +1,12 @@
 <?php
-
 class Mixin_Routing_App extends Mixin
 {
+    /**
+     * Creates a new route endpoint with the assigned handler
+     *
+     * @param array $routes URL to route, eg /page/{page}/
+     * @param array $handler Formatted array
+     */
     function route($routes, $handler)
     {
         // ensure that the routing patterns array exists
@@ -23,6 +28,13 @@ class Mixin_Routing_App extends Mixin
         $this->object->_routing_patterns = $patterns;
     }
 
+    /**
+     * Handles internal url rewriting with optional HTTP redirection,
+     *
+     * @param string $src Original URL
+     * @param string $dst Destination URL
+     * @param bool $redirect FALSE for internal handling, otherwise the HTTP code to send
+     */
     function rewrite($src, $dst, $redirect = FALSE)
     {
         // ensure that rewrite patterns array exists
@@ -33,12 +45,19 @@ class Mixin_Routing_App extends Mixin
         $patterns = $this->object->_rewrite_patterns;
 
         // add the rewrite pattern
-        $patterns[$this->object->_route_to_regex($src)] = array('dst' => $dst, $redirect => $redirect);
+        $patterns[$this->object->_route_to_regex($src)] = array('dst' => $dst, 'redirect' => $redirect);
 
         // update rewrite patterns;
         $this->object->_rewrite_patterns = $patterns;
     }
 
+    /**
+     * Determines if the current routing app meets our requirements and serves them
+     *
+     * @param string $request_uri (optional)
+     * @return bool
+     * @throws E_Clean_Exit
+     */
     function serve_request($request_uri = FALSE)
     {
         $served = FALSE;
@@ -58,6 +77,61 @@ class Mixin_Routing_App extends Mixin
         // if the application root matches, then we'll try to route the request
         if (preg_match(preg_quote('#' . $this->object->context . '#i'), $request_uri))
         {
+            // start rewriting urls
+            foreach ($this->object->_rewrite_patterns as $pattern => $details) {
+
+                if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
+                {
+                    // strip $matches[0] from $request_uri and rebuild the url without our parameters and with
+                    // the parameters having been substituted
+                    $url_without_routed_parameters = str_replace($matches[0], '', $request_uri);
+                    $url_with_routed_parameters = $url_without_routed_parameters;
+
+                    if (substr($url_without_routed_parameters, -1) != '/')
+                        $url_without_routed_parameters .= '/';
+
+                    // perform substitutions
+                    foreach ($matches as $match) {
+                        foreach ($match as $key => $val) {
+                            if (is_numeric($key))
+                                continue;
+                            $dst = str_replace("{{$key}}", $val, $details['dst']);
+                            $url_with_routed_parameters .= $dst;
+                        }
+                    }
+
+                    // strip our parameters from the super-global store, and set the rewritten url internally
+                    $this->object
+                         ->get_registry()
+                         ->get_utility('I_Router')
+                         ->set_request_uri($url_with_routed_parameters, TRUE);
+
+                    $this->object
+                         ->get_registry()
+                         ->get_utility('I_Router')
+                         ->set_request_uri($url_without_routed_parameters, FALSE);
+
+                    $served = TRUE;
+
+                    // redirect if we're to do so
+                    if ($details['redirect'])
+                    {
+                        switch (intval($details['redirect']))
+                        {
+                            case 1:
+                            case 301:
+                                header("HTTP/1.1 301 Moved Permanently");
+                                break;
+                            case 302:
+                                header("HTTP/1.1 302 302 Found");
+                                break;
+                        }
+                        header("Location: {$url_with_routed_parameters}");
+                    }
+                }
+            }
+
+            // finally handle routed endpoints
             foreach ($this->object->_routing_patterns as $pattern => $details) {
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
                 {
@@ -67,55 +141,8 @@ class Mixin_Routing_App extends Mixin
                     throw new E_Clean_Exit();
                 }
             }
-
-            // start rewriting urls
-            foreach ($this->object->_rewrite_patterns as $pattern => $details) {
-
-                var_dump($pattern, $request_uri);
-
-                if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
-                {
-                    // perform substitutions
-                    foreach ($matches as $match) {
-                        foreach ($match as $key => $val) {
-                            if (is_numeric($key))
-                                continue;
-                            $dst = str_replace("{{$key}}", $val, $details['dst']);
-                        }
-                    }
-
-                    var_dump(
-                        $dst,
-                        $matches
-                    );
-
-                    $parsed_url = str_replace($matches[0], $dst, $request_uri);
-                    var_dump($parsed_url);
-
-                    // strip $matches[0] from $request_uri
-                    $url_without_routed_parameters = str_replace($matches[0], '', $request_uri);
-                    $_SERVER['REQUEST_URI'] = $url_without_routed_parameters;
-
-                    var_dump($_SERVER['REQUEST_URI']);
-                    exit;
-
-                    // redirect now if we're to do so...
-                    if (isset($details['redirect']))
-                    {
-                        switch (intval($details['redirect']))
-                        {
-                            case 301:
-                                header("HTTP/1.1 301 Moved Permanently");
-                            case 302:
-                            case 1:
-                                header("Location: {need way to get app url}");
-                                break;
-                        }
-                        throw new E_Clean_Exit();
-                    }
-                }
-            }
         }
+
         return $served;
     }
 
