@@ -429,6 +429,7 @@ jQuery(function($){
 	 * Represents an individual display type
 	**/
 	Ngg.DisplayTab.Models.Display_Type			= Backbone.Model.extend({
+		idAttribute: 'name',
 		defaults: {
 			title: ''
 		},
@@ -633,23 +634,22 @@ jQuery(function($){
 			});
 
 			if (selected_type) {
-				var selected_source = this.sources.selected();
-				if (selected_source.length <= 0 || !selected_type.is_compatible_with_source(selected_source.pop())) {
-					var default_source = selected_type.get('default_source');
-					if (default_source) {
-						var sources = this.sources;
-						var select_source = null;
+				var selected_source = this.sources.selected_value();
+				var default_source = selected_type.get('default_source');
 
-						this.sources.each(function (source) {
-							if (source.get('name') == default_source) {
-								select_source = source.id;
-							}
-						});
+				// If the default source isn't selected, then select it
+				if (default_source && selected_source != default_source) {
 
-						if (select_source) {
-							this.sources.deselect_all();
-							this.sources.select(select_source);
-						}
+					// Get the default source object by name
+					default_source = this.sources.where({
+						name: default_source
+					});
+
+					// Does the default source exist ?
+					if (default_source.length > 0) {
+						default_source = default_source[0];
+						this.sources.deselect_all();
+						this.sources.select(default_source.id);
 					}
 				}
 			}
@@ -662,11 +662,18 @@ jQuery(function($){
 		},
 
 		render: function(){
+			var selected_source = this.sources.selected();
+			selected_source = selected_source.length > 0 ? selected_source[0] : false;
 			this.$el.empty();
 			this.display_types.each(function(item){
+				if (selected_source && !item.is_compatible_with_source(selected_source)) return;
 				var display_type = new this.DisplayType;
 				display_type.model = item;
 				display_type.on('selected', this.selection_changed, this);
+				if (!this.display_types.selected_value()) {
+					item.set('selected', true);
+					this.selection_changed(item.id);
+				}
 				this.$el.append(display_type.render().el);
 			}, this);
 			return this;
@@ -1442,8 +1449,19 @@ jQuery(function($){
 				this.galleries.deselect_all();
 				this.albums.deselect_all();
 				this.tags.deselect_all();
-				this.display_type_selector.render();
-				this.preview_area.render();
+
+				// If the selected source is incompatible with the current display type, then
+				// display a new list
+				var selected_display_type = this.display_types.selected();
+				var selected_source		  = this.sources.selected();
+				if (selected_display_type.length > 0 && selected_source.length > 0) {
+					selected_display_type = selected_display_type[0];
+					selected_source       = selected_source[0];
+					if (!selected_display_type.is_compatible_with_source(selected_source))
+						this.display_types.deselect_all();
+						if (this.display_type_selector) this.display_type_selector.render();
+				}
+				if (this.preview_area) this.preview_area.render();
 			}, this);
 
 			// Synchronize changes made to entities with the displayed gallery
@@ -1544,8 +1562,8 @@ jQuery(function($){
         },
 
         render: function(){
-			new Ngg.DisplayTab.Views.Source_Config();
 			this.display_type_selector = new Ngg.DisplayTab.Views.Display_Type_Selector();
+			new Ngg.DisplayTab.Views.Source_Config();
 			this.preview_area = new Ngg.DisplayTab.Views.Preview_Area();
 			new Ngg.DisplayTab.Views.SaveButton();
         }
