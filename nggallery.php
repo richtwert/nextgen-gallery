@@ -76,7 +76,7 @@ if (!class_exists('nggLoader')) {
 			register_deactivation_hook( $this->plugin_name, array(&$this, 'deactivate') );
 
 			// Register a uninstall hook to remove all tables & option automatic
-			register_uninstall_hook( $this->plugin_name, array(&$this, 'uninstall') );
+			register_uninstall_hook( $this->plugin_name, array(__CLASS__, 'uninstall') );
 
 			// Start this plugin once all other plugins are fully loaded
 			add_action( 'plugins_loaded', array(&$this, 'start_plugin') );

@@ -11,21 +11,21 @@ class nggGallery {
 	/**
 	* Show a error messages
 	*/
-	function show_error($message) {
+	static function show_error($message) {
 		echo '<div class="wrap"><h2></h2><div class="error" id="error"><p>' . $message . '</p></div></div>' . "\n";
 	}
 
 	/**
 	* Show a system messages
 	*/
-	function show_message($message) {
+	static function show_message($message) {
 		echo '<div class="wrap"><h2></h2><div class="updated fade" id="message"><p>' . $message . '</p></div></div>' . "\n";
 	}
 
 	/**
 	* get the thumbnail url to the image
 	*/
-	function get_thumbnail_url($imageID, $picturepath = '', $fileName = ''){
+	static function get_thumbnail_url($imageID, $picturepath = '', $fileName = ''){
 
 		// get the complete url to the thumbnail
 		global $wpdb;
@@ -52,7 +52,7 @@ class nggGallery {
 	/**
 	* get the complete url to the image
 	*/
-	function get_image_url($imageID, $picturepath = '', $fileName = '') {
+	static function get_image_url($imageID, $picturepath = '', $fileName = '') {
 		global $wpdb;
 
 		// safety first
@@ -80,7 +80,7 @@ class nggGallery {
 	* @param bool $include_Abspath
 	* @return string $foldername
 	*/
-	function create_thumbnail_folder($gallerypath, $include_Abspath = TRUE) {
+	static function create_thumbnail_folder($gallerypath, $include_Abspath = TRUE) {
 		if (!$include_Abspath) {
 			$gallerypath = WINABSPATH . $gallerypath;
 		}
@@ -119,7 +119,7 @@ class nggGallery {
 	* @deprecated use create_thumbnail_folder() if needed;
 	* @return string $foldername
 	*/
-	function get_thumbnail_folder($gallerypath, $include_Abspath = TRUE) {
+	static function get_thumbnail_folder($gallerypath, $include_Abspath = TRUE) {
 		return nggGallery::create_thumbnail_folder($gallerypath, $include_Abspath);
 	}
 
@@ -131,7 +131,7 @@ class nggGallery {
 	* @deprecated prefix is now fixed to "thumbs_";
 	* @return string  "thumbs_";
 	*/
-	function get_thumbnail_prefix($gallerypath, $include_Abspath = TRUE) {
+	static function get_thumbnail_prefix($gallerypath, $include_Abspath = TRUE) {
 		return 'thumbs_';
 	}
 
@@ -141,7 +141,7 @@ class nggGallery {
 	* @param string $key
 	* @return array $options
 	*/
-	function get_option($key) {
+	static function get_option($key) {
         global $post;
 
 		// get first the options from the database
@@ -225,7 +225,7 @@ class nggGallery {
 	* @param int $maxh -  max height
 	* @return array (width, heigth)
 	*/
-	function scale_image($location, $maxw = 0, $maxh = 0){
+	static function scale_image($location, $maxw = 0, $maxh = 0){
 		$img = @getimagesize($location);
 		if ($img){
 			$w = $img[0];
@@ -303,7 +303,7 @@ class nggGallery {
 	 *
 	 * @return path to the selected library
 	 */
-	function graphic_library() {
+	static function graphic_library() {
 
 		$ngg_options = get_option('ngg_options');
 
@@ -319,7 +319,7 @@ class nggGallery {
 	 *
 	 * @return string path to stylesheet
 	 */
-	function get_theme_css_file() {
+	static function get_theme_css_file() {
 
   		// allow other plugins to include a custom stylesheet
 		$stylesheet = apply_filters( 'ngg_load_stylesheet', false );
@@ -364,7 +364,7 @@ class nggGallery {
      * @param object $image
      * @return void
      */
-    function RegisterString($image) {
+    static function RegisterString($image) {
         if (function_exists('icl_register_string')) {
             global $wpdb;
             icl_register_string('plugin_ngg', 'pic_' . $image->pid . '_description', $image->description, TRUE);
@@ -378,7 +378,7 @@ class nggGallery {
 	 * @since V1.2.0
 	 * @return string message about recommended image size
 	 */
-	function check_memory_limit() {
+	static function check_memory_limit() {
 
 		if ( (function_exists('memory_get_usage')) && (ini_get('memory_limit')) ) {
 
@@ -418,7 +418,7 @@ class nggGallery {
 	 * @param string $name The name being checked.
 	 * @return array containing information about file
 	 */
-	function fileinfo( $name ) {
+	static function fileinfo( $name ) {
 
 		//Sanitizes a filename replacing whitespace with dashes
 		$name = sanitize_file_name($name);
@@ -451,7 +451,7 @@ class nggGallery {
 	 * @param string $capability
 	 * @return bool $result of capability check
 	 */
-	function current_user_can( $capability ) {
+	static function current_user_can( $capability ) {
 
 		global $_ngg_capabilites;
 
@@ -469,7 +469,7 @@ class nggGallery {
 	 * @param string $capability
 	 * @return void
 	 */
-	function current_user_can_form( $capability ) {
+	static function current_user_can_form( $capability ) {
 
 		if ( !nggGallery::current_user_can( $capability ))
 			echo 'disabled="disabled"';
@@ -483,7 +483,7 @@ class nggGallery {
 	 * @param bool $register the new capability automatic to the admin role
 	 * @return void
 	 */
-	function add_capabilites( $capability , $register = true ) {
+	static function add_capabilites( $capability , $register = true ) {
 		global $_ngg_capabilites;
 
 		if ( !is_array($_ngg_capabilites) )
@@ -506,7 +506,7 @@ class nggGallery {
      * @author Part taken from WPtouch plugin (http://www.bravenewcode.com)
      * @return bool $result of  check
      */
-    function detect_mobile_phone() {
+    static function detect_mobile_phone() {
 
         $useragents = array();
 
@@ -556,7 +556,7 @@ class nggGallery {
      * @param string $text
      * @return void
      */
-    function get_memory( $text = '' ) {
+    static function get_memory( $text = '' ) {
         global $memory;
 
         $memory_peak = memory_get_usage();
@@ -583,7 +583,7 @@ class nggGallery {
      *
      * @return void
      */
-    function nextgen_version() {
+    static function nextgen_version() {
         global $ngg;
         echo apply_filters('show_nextgen_version', '<!-- <meta name="NextGEN" version="'. $ngg->version . '" /> -->' . "\n");
     }
