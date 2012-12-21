@@ -17,6 +17,10 @@ class M_MediaRss extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
+
+        $this->get_registry()
+             ->get_utility('I_Router')
+             ->add_pre_hook('serve_request', 'Adds MediaRSS routes', 'Hook_MediaRSS_Routes', 'add_routes');
 	}
 
 	/**
@@ -25,25 +29,8 @@ class M_MediaRss extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-        $this->_add_routes();
 	}
 
-	/**
-	 * Adds a route for MediaRSS feeds
-	 */
-	function _add_routes()
-	{
-        $app = $this->get_registry()->get_utility('I_Router')->create_app();
-        $app->route(
-            array('/mediarss'),
-            array(
-                'controller' => 'C_MediaRSS_Controller',
-                'action'  => 'index',
-                'context' => FALSE,
-                'method'  => array('GET')
-            )
-        );
-	}
 }
 
 new M_MediaRss();
