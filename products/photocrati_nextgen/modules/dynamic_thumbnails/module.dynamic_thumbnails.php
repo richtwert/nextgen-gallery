@@ -45,13 +45,19 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 	 */
 	function _add_routes()
 	{
-        return;
-
-		$router = $this->get_registry()->get_utility('I_Router');
-		$dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-		$router->add_route(__CLASS__, 'C_Dynamic_Thumbnails_Controller', array(
-				'uri'=>$router->routing_pattern($dynthumbs->get_route_name(), '*')
-		));
+        // TODO: fix this for wordpress installations in a sub-folder
+        $router = $this->get_registry()->get_utility('I_Router');
+        $dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $app = $router->create_app();
+        $app->route(
+            array('/' . $dynthumbs->get_route_name()),
+            array(
+                'controller' => 'C_Dynamic_Thumbnails_Controller',
+                'action'  => 'index',
+                'context' => FALSE,
+                'method'  => array('GET')
+            )
+        );
 	}
 }
 

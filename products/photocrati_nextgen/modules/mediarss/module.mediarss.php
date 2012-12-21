@@ -17,7 +17,6 @@ class M_MediaRss extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-        $this->_add_routes();
 	}
 
 	/**
@@ -26,6 +25,7 @@ class M_MediaRss extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
+        $this->_add_routes();
 	}
 
 	/**

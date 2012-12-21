@@ -62,8 +62,6 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 			$uri .= 'reflection/';
 		}
 		
-		$uri = $router->routing_uri($uri, true);
-		
 		return $uri;
 	}
 	

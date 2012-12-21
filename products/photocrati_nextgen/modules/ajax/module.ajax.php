@@ -28,7 +28,7 @@ class M_Ajax extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->_add_routes();
+        $this->_add_routes();
 	}
 
 
@@ -37,28 +37,35 @@ class M_Ajax extends C_Base_Module
 	 */
 	function _add_routes()
 	{
-        return;
+        $router = $this->get_registry()->get_utility('I_Router');
+        $app = $router->create_app();
 
-		$router = $this->get_registry()->get_utility('I_Router');
+        // TODO: fix this for wordpress installations in a sub-folder
+        $ajax_url = '/photocrati_ajax';
+        $js_url = $ajax_url . '/js';
 
-        $url = $this->get_registry()
-                    ->get_utility('I_Display_Type_Controller')
-                    ->add_parameter('photocrati_ajax', TRUE, NULL, site_url());
+        define('NEXTGEN_GALLERY_AJAX_URL', $ajax_url);
+        define('NEXTGEN_GALLERY_AJAX_JS_URL', $js_url);
 
-        define('NEXTGEN_GALLERY_AJAX_URL', $url);
-
-        $router->add_route(
-            __CLASS__,
-            'C_Ajax_Controller',
-            array('uri' => $router->routing_pattern($url))
+        $app->route(
+            array($js_url),
+            array(
+                'controller' => 'C_Ajax_Controller',
+                'action'  => 'js',
+                'context' => FALSE,
+                'method'  => array('GET')
+            )
         );
 
-        // define ajax-js url
-        $url = $this->get_registry()
-                    ->get_utility('I_Display_Type_Controller')
-                    ->add_parameter('action', 'js', NULL, NEXTGEN_GALLERY_AJAX_URL);
-
-        define('NEXTGEN_GALLERY_AJAX_JS_URL', $url);
+        $app->route(
+            array($ajax_url),
+            array(
+                'controller' => 'C_Ajax_Controller',
+                'action'  => 'index',
+                'context' => FALSE,
+                'method'  => array('GET', 'POST')
+            )
+        );
 	}
 
 	/**
@@ -76,7 +83,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-		// wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
+        wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
 	}
 }
 
