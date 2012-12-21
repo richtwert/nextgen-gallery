@@ -19,6 +19,10 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
+
+        $this->get_registry()
+             ->get_utility('I_Router')
+             ->add_pre_hook('serve_request', 'Adds MediaRSS routes', 'Hook_Dynamic_Thumbnails_Routes', 'add_routes');
 	}
 
 	/**
@@ -27,7 +31,6 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->_add_routes();
 	}
 	
 	function _register_adapters()
@@ -37,28 +40,9 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 
 	function _register_utilities()
 	{
-  	$this->get_registry()->add_utility('I_Dynamic_Thumbnails_Manager', 'C_Dynamic_Thumbnails_Manager');
+        $this->get_registry()->add_utility('I_Dynamic_Thumbnails_Manager', 'C_Dynamic_Thumbnails_Manager');
 	}
 
-	/**
-	 * Adds a route for the AJAX controller
-	 */
-	function _add_routes()
-	{
-        // TODO: fix this for wordpress installations in a sub-folder
-        $router = $this->get_registry()->get_utility('I_Router');
-        $dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-        $app = $router->create_app();
-        $app->route(
-            array('/' . $dynthumbs->get_route_name()),
-            array(
-                'controller' => 'C_Dynamic_Thumbnails_Controller',
-                'action'  => 'index',
-                'context' => FALSE,
-                'method'  => array('GET')
-            )
-        );
-	}
 }
 
 new M_Dynamic_Thumbnails();

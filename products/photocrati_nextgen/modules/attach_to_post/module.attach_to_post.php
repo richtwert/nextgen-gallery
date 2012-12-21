@@ -27,6 +27,10 @@ class M_Attach_To_Post extends C_Base_Module
 		    $context
 		);
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
+
+        $this->get_registry()
+             ->get_utility('I_Router')
+             ->add_pre_hook('serve_request', 'Adds MediaRSS routes', 'Hook_Attach_To_Post_Routes', 'add_routes');
     }
 
 	/**
@@ -36,53 +40,9 @@ class M_Attach_To_Post extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-        $this->_add_routes();
 		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
 	}
-
-
-	/**
-	 * Registers routes with the MVC Router
-	 */
-	function _add_routes()
-	{
-        $router   = $this->object->get_registry()->get_utility('I_Router');
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-
-        $original_permalinks_setting = $settings->usePermalinks;
-        $settings->usePermalinks = FALSE;
-
-        $url = $this->get_registry()
-                    ->get_utility('I_Display_Type_Controller')
-                    ->add_parameter('attach_to_post', TRUE, NULL, admin_url());
-
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $url);
-
-        define(
-        'NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
-            NEXTGEN_GALLERY_ATTACH_TO_POST_URL . '/preview'
-        );
-
-        define(
-        'NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
-            NEXTGEN_GALLERY_ATTACH_TO_POST_URL . '/display_tab_js'
-        );
-
-        $app = $router->create_app();
-        $app->route(
-            array($url),
-            array(
-                'controller' => 'C_Attach_to_Post_Controller',
-                'action'  => 'index',
-                'context' => FALSE,
-                'method'  => array('GET')
-            )
-        );
-
-        $settings->usePermalinks = $original_permalinks_setting;
-	}
-
 
 	/**
 	 * Registers requires the utilites that this module provides
