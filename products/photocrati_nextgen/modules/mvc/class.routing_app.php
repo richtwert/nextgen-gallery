@@ -132,13 +132,24 @@ class Mixin_Routing_App extends Mixin
                 }
             }
 
+			// Collect all of the "specially formated parameters"
 			$this->object->cache_all_parameters();
 
             // finally handle routed endpoints
             foreach ($this->object->_routing_patterns as $pattern => $details) {
-                if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
+                if (preg_match($pattern, $request_uri, $matches))
                 {
-					die(print_r($matches));
+					// Add the matched parameter values to the _params array
+					foreach ($matches as $key => $value) {
+						if (is_numeric($key)) continue;
+						$this->object->_parameters['global'][] = array(
+							'id'	=>	'',
+							'name'	=>	$key,
+							'value'	=>	$value,
+							'source'=>  $matches[0]
+						);
+					}
+
 					$this->get_router()->set_routed_app($this);
                     $action = $details['action'] . '_action';
 					$controller = $this->object->get_registry()->get_utility(

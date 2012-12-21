@@ -7,7 +7,15 @@ class Mixin_Routing_App_Parameters extends Mixin
     public $_short_create_pattern = '%name%--%value%';
     public $_long_create_pattern  = '%id%--%name%--%value%';
 
-    public $_parameters = array('global' => array(), 'prefixed' => array());
+	function initialize()
+	{
+		if (!isset($this->object->_parameters)) {
+			$this->object->_parameters = array(
+				'global' => array(), 'prefixed' => array()
+			);
+		}
+	}
+
 
     /**
      * Starts a chain that will cache SEO/permalink style and query-string parameters into a formatted array
@@ -99,7 +107,7 @@ class Mixin_Routing_App_Parameters extends Mixin
      */
     public function get_global_parameters()
     {
-        return $this->_parameters['global'];
+        return $this->object->_parameters['global'];
     }
 
     /**
@@ -109,7 +117,7 @@ class Mixin_Routing_App_Parameters extends Mixin
      */
     public function get_prefixed_parameters()
     {
-        return $this->_parameters['prefixed'];
+        return $this->object->_parameters['prefixed'];
     }
 
     /**
@@ -126,10 +134,10 @@ class Mixin_Routing_App_Parameters extends Mixin
 
         if (!empty($tmp['id']))
         {
-            $this->_parameters['prefixed'][$tmp['id']][] = $tmp;
+            $this->object->_parameters['prefixed'][$tmp['id']][] = $tmp;
         }
         else {
-            $this->_parameters['global'][] = $tmp;
+            $this->object->_parameters['global'][] = $tmp;
         }
     }
 
