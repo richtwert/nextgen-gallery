@@ -138,6 +138,7 @@ class Mixin_Routing_App extends Mixin
             foreach ($this->object->_routing_patterns as $pattern => $details) {
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
                 {
+					die(print_r($matches));
 					$this->get_router()->set_routed_app($this);
                     $action = $details['action'] . '_action';
 					$controller = $this->object->get_registry()->get_utility(
@@ -169,7 +170,7 @@ class Mixin_Routing_App extends Mixin
             )
         );
 
-        $regex_pattern = '#' . $regex_pattern . '#i';
+        $regex_pattern = '#' . $regex_pattern . '$#i';
 
         // convert placeholders to regex as well
         return preg_replace('/~([^~]+)~/', '(?<\1>[^\/]+)', $regex_pattern);
