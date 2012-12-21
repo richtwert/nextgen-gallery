@@ -62,6 +62,8 @@ class Mixin_Routing_App extends Mixin
     {
         $served = FALSE;
 
+        $this->object->cache_all_parameters($request_uri);
+
         // ensure that the routing patterns array exists
         if (!is_array($this->object->_routing_patterns))
             $this->object->_routing_patterns = array();
@@ -99,17 +101,6 @@ class Mixin_Routing_App extends Mixin
                             $url_with_routed_parameters .= $dst;
                         }
                     }
-
-                    // strip our parameters from the super-global store, and set the rewritten url internally
-                    $this->object
-                         ->get_registry()
-                         ->get_utility('I_Router')
-                         ->set_request_uri($url_with_routed_parameters, TRUE);
-
-                    $this->object
-                         ->get_registry()
-                         ->get_utility('I_Router')
-                         ->set_request_uri($url_without_routed_parameters, FALSE);
 
                     $served = TRUE;
 
@@ -168,16 +159,26 @@ class Mixin_Routing_App extends Mixin
         // convert placeholders to regex as well
         return preg_replace('/~([^~]+)~/', '(?<\1>[^\/]+)', $regex_pattern);
     }
+
+    public function get_router()
+    {
+        return $this->_router;
+    }
 }
 
 class C_Routing_App extends C_Component
 {
     static $_instances = array();
+    public $_router = FALSE;
 
-    function define($context = FALSE)
+    function define($context = FALSE, $router = FALSE)
     {
-        parent::define($context);
+        parent::define($context, $router);
+
+        $this->_router = $router;
+
         $this->add_mixin('Mixin_Routing_App');
+        $this->add_mixin('Mixin_Routing_App_Parameters');
     }
 
     static function &get_instance($context = False)

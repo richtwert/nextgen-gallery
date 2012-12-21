@@ -4,6 +4,7 @@ class Mixin_Router extends Mixin
 {
     public $_apps = array();
     public $_request_uri = '';
+    public $_routed_app = NULL;
 
     public function initialize()
     {
@@ -11,6 +12,16 @@ class Mixin_Router extends Mixin
 
         if (empty($this->_request_uri))
             $this->object->set_request_uri($this->object->get_request_uri(FALSE), TRUE);
+    }
+
+    public function set_routed_app($app)
+    {
+        $this->_routed_app = $app;
+    }
+
+    public function get_routed_app()
+    {
+        return $this->_routed_app;
     }
 
     /**
@@ -27,6 +38,7 @@ class Mixin_Router extends Mixin
         // iterate over all apps, and serve the route
         foreach ($this->object->get_apps() as $app) {
             if ($app->serve_request($request_uri))
+                $this->object->set_routed_app($app);
                 break;
         }
     }
@@ -65,7 +77,7 @@ class Mixin_Router extends Mixin
     public function &create_app($name = '/')
     {
         $factory = $this->get_registry()->get_utility('I_Component_Factory');
-        $app = $factory->create('routing_app', $name);
+        $app = $factory->create('routing_app', $name, $this);
         $this->_apps[] = $app;
         return $app;
     }

@@ -33,7 +33,7 @@ abstract class C_MVC_Controller extends C_Component
         $this->add_mixin('Mixin_MVC_Controller_Defaults');
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
-        $this->add_mixin('Mixin_MVC_Controller_URI_Params');
+        $this->add_mixin('Mixin_MVC_Controller_Parameters');
         $this->implement('I_MVC_Controller');
     }
 
@@ -43,7 +43,6 @@ abstract class C_MVC_Controller extends C_Component
         $this->_request = function_exists('apache_request_headers') ? apache_request_headers() : array();
         $this->_params = $this->parse_params($_REQUEST);
         $this->_request_method = $_SERVER['REQUEST_METHOD'];
-        $this->object->cache_all_parameters();
     }
 
 
@@ -116,10 +115,10 @@ abstract class C_MVC_Controller extends C_Component
      * @param string $key
      * @return mixed
      */
-    function param($key, $default=NULL)
+    function param($key, $prefix = NULL, $default = NULL)
     {
         $retval = $default;
-        $result = $this->object->get_parameter($key);
+        $result = $this->object->get_parameter($key, $prefix);
         return (!is_null($result) ? $result : $retval);
     }
 
