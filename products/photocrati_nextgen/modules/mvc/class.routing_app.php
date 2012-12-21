@@ -132,6 +132,8 @@ class Mixin_Routing_App extends Mixin
                 }
             }
 
+			$this->object->cache_all_parameters();
+
             // finally handle routed endpoints
             foreach ($this->object->_routing_patterns as $pattern => $details) {
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))

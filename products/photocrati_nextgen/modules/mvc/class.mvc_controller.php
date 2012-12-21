@@ -36,36 +36,6 @@ abstract class C_MVC_Controller extends C_Component
         $this->implement('I_MVC_Controller');
     }
 
-    function initialize()
-    {
-        parent::initialize();
-        $this->_request = function_exists('apache_request_headers') ? apache_request_headers() : array();
-        $this->_params = $this->parse_params($_REQUEST);
-        $this->_request_method = $_SERVER['REQUEST_METHOD'];
-    }
-
-
-    function parse_params($arr)
-    {
-        $retval = array();
-
-        foreach ($arr as $key => $value) {
-            if (is_array($value)) {
-                $value = $this->parse_params($value);
-            }
-            elseif (is_string($value)) {
-                if ($value == 'true') $value = TRUE;
-                elseif ($value == 'false') $value = FALSE;
-                elseif ($value == 'null') $value = NULL;
-            }
-
-            // Update the value
-            $retval[$key] = $value;
-        }
-
-        return $retval;
-    }
-
 
     function show_error($message, $code=500)
     {
