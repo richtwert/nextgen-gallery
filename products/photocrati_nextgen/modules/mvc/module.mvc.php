@@ -47,6 +47,8 @@ class M_MVC extends C_Base_Module
 
     function _register_utilities()
     {
+		$this->get_registry()->add_utility('I_Test_Controller', 'C_Test_Controller');
+		$this->get_registry()->add_utility('I_Http_Response', 'C_Http_Response_Controller');
         $this->get_registry()->add_utility('I_Router', 'C_Router');
     }
 
@@ -65,6 +67,10 @@ class M_MVC extends C_Base_Module
 	{
         // TODO: get gallery stub from settings
         $app = $this->get_registry()->get_utility('I_Router')->create_app();
+		$app->route('/', array(
+			'controller'	=>	'I_Test_Controller',
+			'action'		=>	'index'
+		));
 
         $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');

@@ -51,6 +51,15 @@ class Mixin_Routing_App extends Mixin
         $this->object->_rewrite_patterns = $patterns;
     }
 
+	/**
+	 * Gets an instance of the router
+	 * @return type
+	 */
+	function get_router()
+	{
+		return $this->object->get_registry()->get_utility('I_Router');
+	}
+
     /**
      * Determines if the current routing app meets our requirements and serves them
      *
@@ -73,8 +82,7 @@ class Mixin_Routing_App extends Mixin
             $this->object->_rewrite_patterns = array();
 
         // get the request uri to match
-        if (!$request_uri)
-            $request_uri = $this->object->get_router()->get_request_uri();
+        if (!$request_uri) $request_uri = $this->object->get_router()->get_request_uri();
 
         // if the application root matches, then we'll try to route the request
         if (preg_match(preg_quote('#' . $this->object->context . '#i'), $request_uri))
@@ -84,6 +92,8 @@ class Mixin_Routing_App extends Mixin
 
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
                 {
+					die('here');
+
                     // strip $matches[0] from $request_uri and rebuild the url without our parameters and with
                     // the parameters having been substituted
                     $url_without_routed_parameters = str_replace($matches[0], '', $request_uri);
@@ -126,10 +136,13 @@ class Mixin_Routing_App extends Mixin
             foreach ($this->object->_routing_patterns as $pattern => $details) {
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
                 {
+					$this->get_router()->set_routed_app($this);
                     $action = $details['action'] . '_action';
-                    $controller = new $details['controller']($details['context']);
+					$controller = $this->object->get_registry()->get_utility(
+						$details['controller']
+					);
                     $controller->$action();
-                    throw new E_Clean_Exit();
+					throw new E_Clean_Exit;
                 }
             }
         }
@@ -159,23 +172,15 @@ class Mixin_Routing_App extends Mixin
         // convert placeholders to regex as well
         return preg_replace('/~([^~]+)~/', '(?<\1>[^\/]+)', $regex_pattern);
     }
-
-    public function get_router()
-    {
-        return $this->_router;
-    }
 }
 
 class C_Routing_App extends C_Component
 {
     static $_instances = array();
-    public $_router = FALSE;
 
-    function define($context = FALSE, $router = FALSE)
+    function define($context= FALSE)
     {
-        parent::define($context, $router);
-
-        $this->_router = $router;
+        parent::define($context);
 
         $this->add_mixin('Mixin_Routing_App');
         $this->add_mixin('Mixin_Routing_App_Parameters');

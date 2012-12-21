@@ -9,7 +9,7 @@ class Mixin_MVC_Controller_Defaults extends Mixin
     function index_action($return=FALSE)
     {
         $this->debug = TRUE;
-        return $this->render_partial('index', array(), $return);
+        return $this->render_view('index', array(), $return);
     }
 }
 
