@@ -105,6 +105,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     function prepare_legacy_album_params($params)
     {
         $image_mapper           = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $application            = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
         $storage                = $params['storage'];
         $image_gen              = $params['image_gen'];
 
@@ -138,7 +139,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
             // Get the page link
             $id_field = $gallery->id_field;
-            $gallery->pagelink = $this->object->add_parameter(
+            $gallery->pagelink = $application->add_parameter(
                 (empty($gallery->is_album) ? 'album' : 'gallery'),
                 $gallery->$id_field
             );

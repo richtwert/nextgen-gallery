@@ -33,7 +33,6 @@ abstract class C_MVC_Controller extends C_Component
         $this->add_mixin('Mixin_MVC_Controller_Defaults');
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
-        $this->add_mixin('Mixin_MVC_Controller_Parameters');
         $this->implement('I_MVC_Controller');
     }
 
@@ -118,10 +117,10 @@ abstract class C_MVC_Controller extends C_Component
     function param($key, $prefix = NULL, $default = NULL)
     {
         $retval = $default;
-        $result = $this->object->get_parameter($key, $prefix);
+        $router = $this->object->get_registry()->get_utility('I_Router');
+        $result = $router->get_routed_app()->get_parameter($key, $prefix);
         return (!is_null($result) ? $result : $retval);
     }
-
 
     // Validates the request before executing an action. If no action has
     // been defined, then return 404

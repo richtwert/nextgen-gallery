@@ -15,6 +15,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
     function index_action($displayed_gallery, $return = FALSE)
     {
         $display_settings = $displayed_gallery->display_settings;
+        $application = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
         $tag = $this->param('gallerytag');
 
         // we're looking at a tag, so show images w/that tag as a thumbnail gallery
@@ -56,7 +57,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         $tags = get_terms($args['taxonomy'], array_merge($args, array('orderby' => 'count', 'order' => 'DESC')));
 
         foreach ($tags as $key => $tag) {
-            $tags[$key]->link = $this->object->add_parameter('gallerytag', $tag->slug);
+            $tags[$key]->link = $application->add_parameter('gallerytag', $tag->slug);
             $tags[$key]->id = $tag->term_id;
         }
 

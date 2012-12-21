@@ -151,7 +151,8 @@ class A_Attach_To_Post_Ajax extends Mixin
 
 				// Get the thumbnail
 				$entity->thumb_html	= $storage->get_image_html($image, 'thumb');
-                $entity->thumb_url = $controller->add_parameter(
+                $application = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
+                $entity->thumb_url = $application->add_parameter(
                     'timestamp',
                     time(),
                     NULL,
