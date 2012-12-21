@@ -36,7 +36,7 @@ class Mixin_Routing_App_Parameters extends Mixin
     public function get_query_string_parameters($uri = NULL)
     {
         if (is_null($uri))
-            $uri = $this->object->get_router()->get_request_uri();
+            $uri = $this->object->get_router()->context;
 
         $string = parse_url($uri);
 

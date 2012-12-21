@@ -74,8 +74,8 @@ class C_Router extends C_Component
 
 	function initialize()
 	{
-		parent::initialize();
-		if (!$this->context) $context = $this->object->get_request_uri();
+		parent::initialize();;
+		if (!$this->context) $this->context = $this->object->get_request_uri();
 		$this->_request_method	= $_SERVER['REQUEST_METHOD'];
 	}
 
