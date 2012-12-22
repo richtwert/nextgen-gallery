@@ -20,6 +20,11 @@ class M_WordPress_Routing extends C_Base_Module
 			'http://www.photocrati.com'
 		);
 	}
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter('I_Router', 'A_WordPress_Router');
+	}
 }
 
 new M_WordPress_Routing();
