@@ -70,7 +70,8 @@ class M_MVC extends C_Base_Module
 		$app->route(
 			array(
 				'/',
-				'/{value}'
+				'/{value}',
+				'/{value}/{rubbish}'
 			),
 			array(
 				'controller'	=>	'I_Test_Controller',
@@ -78,6 +79,7 @@ class M_MVC extends C_Base_Module
 			)
 		);
 		$app->rewrite('/', '/foobar', true);
+		$app->rewrite('/foobar', '/foo/bar', true);
 
         $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');

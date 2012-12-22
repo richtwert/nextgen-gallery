@@ -79,7 +79,7 @@ class Mixin_Routing_App extends Mixin
 		$segments = func_get_args();
 		foreach ($segments as &$segment) {
 			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
-//			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
+			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
 		}
 		$retval = implode('/', $segments);
 		if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
@@ -334,11 +334,11 @@ class Mixin_Routing_App extends Mixin
                 $route
             )
         );
-
+		if (strpos($route, '/') === 0) $regex_pattern = '^'.$regex_pattern;
         $regex_pattern = '#' . $regex_pattern . '$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/', '(?<\1>[^\/]+)', $regex_pattern);
+        return preg_replace('/~([^~]+)~/', '(?<\1>[^/]+)/?', $regex_pattern);
     }
 }
 
