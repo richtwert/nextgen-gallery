@@ -146,7 +146,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 		// Bad request!
 		else {
-			$this->object->show_error("Displayed Gallery could not found.", 404);
+			$this->object->http_error("Displayed Gallery could not found.", 404);
 		}
 	}
 

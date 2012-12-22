@@ -24,7 +24,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 				$this->object->$method();
 			}
 		}
-		else $this->object->show_error("No source specified");
+		else $this->object->http_error("No source specified");
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Mixin_MediaRSS_Controller extends Mixin
 			));
 		}
 		else {
-			$this->object->show_error("Invalid ID", 404);
+			$this->object->http_error("Invalid ID", 404);
 		}
 	}
 

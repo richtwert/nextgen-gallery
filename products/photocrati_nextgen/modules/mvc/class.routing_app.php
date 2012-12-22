@@ -60,18 +60,71 @@ class Mixin_Routing_App extends Mixin
 		return $this->object->get_registry()->get_utility('I_Router');
 	}
 
+	function get_app_request_uri()
+	{
+		$retval = FALSE;
+
+		if ($this->object->_request_uri) $retval = $this->object->_request_uri;
+		else if (($match = $this->object->does_app_serve_request())) {
+			$retval = str_replace($match['match'], '', $match['request_uri']);
+			$this->object->set_app_request_uri($retval);
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Sets the application request uri
+	 * @param type $uri
+	 */
+	function set_app_request_uri($uri)
+	{
+		$this->object->_request_uri = $uri;
+	}
+
+	/**
+	 * Gets the application's routing regex pattern
+	 * @return string
+	 */
+	function get_app_routing_pattern()
+	{
+		$segment = $this->object->context;
+		$segment = (substr($this->object->context, 0) == '/' ? '^':'').$segment;
+		return preg_quote('#'.$segment.'#i');
+	}
+
+
+	/**
+	 * Determines whether this app serves the request
+	 * @return boolean|array
+	 */
+	function does_app_serve_request()
+	{
+		$retval = FALSE;
+
+		// get the request uri to match
+        $request_uri			= $this->object->get_router()->get_request_uri();
+		$app_routing_pattern	= $this->object->get_app_routing_pattern();
+
+		if (preg_match($app_routing_pattern, $request_uri, $matches)) {
+			$retval = array(
+				'match'			=>	array_pop($matches),
+				'request_uri'	=>	$request_uri
+			);
+		}
+
+		return $retval;
+	}
+
     /**
      * Determines if the current routing app meets our requirements and serves them
      *
-     * @param string $request_uri (optional)
      * @return bool
      * @throws E_Clean_Exit
      */
-    function serve_request($request_uri = FALSE)
+    function serve_request()
     {
         $served = FALSE;
-
-        $this->object->cache_all_parameters($request_uri);
 
         // ensure that the routing patterns array exists
         if (!is_array($this->object->_routing_patterns))
@@ -81,88 +134,161 @@ class Mixin_Routing_App extends Mixin
         if (!is_array($this->object->_rewrite_patterns))
             $this->object->_rewrite_patterns = array();
 
-        // get the request uri to match
-        if (!$request_uri) $request_uri = $this->object->get_router()->get_request_uri();
-
         // if the application root matches, then we'll try to route the request
-        if (preg_match(preg_quote('#' . $this->object->context . '#i'), $request_uri))
-        {
+        if (($request_uri = $this->object->get_app_request_uri())){
+			$served = TRUE;
+			$redirect = FALSE;
+
             // start rewriting urls
             foreach ($this->object->_rewrite_patterns as $pattern => $details) {
 
                 if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
-                {
-					die('here');
+				{
+					// Assign new request URI
+					$request_uri = $details['dst'];
 
-                    // strip $matches[0] from $request_uri and rebuild the url without our parameters and with
-                    // the parameters having been substituted
-                    $url_without_routed_parameters = str_replace($matches[0], '', $request_uri);
-                    $url_with_routed_parameters = $url_without_routed_parameters;
+					// Substitute placeholders
+					foreach ($matches as $match) {
+						if ($redirect) break;
+						foreach ($match as $key => $val) {
 
-                    if (substr($url_without_routed_parameters, -1) != '/')
-                        $url_without_routed_parameters .= '/';
+							// If we have a placeholder that needs swapped, swap
+							// it now
+							if (is_numeric($key)) continue;
+							$request_uri = str_replace("{{$key}}", $val, $request_uri);
+						}
+						// Set the redirect flag if we're to do so
+						if (isset($details['redirect']) && $details['redirect']) {
+							$redirect = $details['redirect'] === TRUE ?
+								302 : intval($details['redirect']);
+							break;
+						}
 
-                    // perform substitutions
-                    foreach ($matches as $match) {
-                        foreach ($match as $key => $val) {
-                            if (is_numeric($key))
-                                continue;
-                            $dst = str_replace("{{$key}}", $val, $details['dst']);
-                            $url_with_routed_parameters .= $dst;
-                        }
-                    }
-
-                    $served = TRUE;
-
-                    // redirect if we're to do so
-                    if ($details['redirect'])
-                    {
-                        switch (intval($details['redirect']))
-                        {
-                            case 1:
-                            case 301:
-                                header("HTTP/1.1 301 Moved Permanently");
-                                break;
-                            case 302:
-                                header("HTTP/1.1 302 302 Found");
-                                break;
-                        }
-                        header("Location: {$url_with_routed_parameters}");
-                    }
-                }
-            }
-
-			// Collect all of the "specially formated parameters"
-			$this->object->cache_all_parameters();
-
-            // finally handle routed endpoints
-            foreach ($this->object->_routing_patterns as $pattern => $details) {
-                if (preg_match($pattern, $request_uri, $matches))
-                {
-					// Add the matched parameter values to the _params array
-					foreach ($matches as $key => $value) {
-						if (is_numeric($key)) continue;
-						$this->object->_parameters['global'][] = array(
-							'id'	=>	'',
-							'name'	=>	$key,
-							'value'	=>	$value,
-							'source'=>  $matches[0]
-						);
 					}
-
-					$this->get_router()->set_routed_app($this);
-                    $action = $details['action'] . '_action';
-					$controller = $this->object->get_registry()->get_utility(
-						$details['controller']
-					);
-                    $controller->$action();
-					throw new E_Clean_Exit;
                 }
             }
+
+			// Cache all known data about the application request
+			$this->object->set_app_request_uri($request_uri);
+			$this->object->cache_all_parameters();
+			$this->object->get_router()->set_routed_app($this);
+
+			// Are we to perform a redirect?
+			if ($redirect) {
+				$this->object->execute_route_handler(
+					$this->object->parse_route_handler($redirect)
+				);
+			}
+
+			// Handle routed endpoints
+			else {
+				foreach ($this->object->_routing_patterns as $pattern => $handler) {
+					if (preg_match($pattern, $request_uri, $matches)) {
+						$this->object->add_placeholder_params_from_matches($matches);
+
+						// If a handler is attached to the route, execute it. A
+						// handler can be
+						// - FALSE, meaning don't do any post-processing to the route
+						// - A string, such as controller#action
+						// - An array: array(
+						//   'controller' => 'I_Test_Controller',
+						//   'action'	  => 'index',
+						//   'context'	  => 'all', (optional)
+						//   'method'	  => array('GET') (optional)
+						// )
+						if ($handler && $handler = $this->object->parse_route_handler($handler)) {
+
+							// Is this handler for the current HTTP request method?
+							if (isset($handler['method'])) {
+								if (!is_array($handler['method'])) $handler['$method'] = array($handler['method']);
+								if (in_array($this->object->get_router()->get_request_method(), $handler['method'])) {
+									$this->object->execute_route_handler($handler);
+								}
+							}
+
+							// This handler is for all request methods
+							else {
+								$this->object->execute_route_handler($handler);
+							}
+						}
+					}
+				}
+			}
         }
 
         return $served;
     }
+
+	/**
+	 * Executes an action of a particular controller
+	 * @param array $handler
+	 * @throws E_Clean_Exit
+	 */
+	function execute_route_handler($handler)
+	{
+		$action = $handler['action'] . '_action';
+		$context = isset($handler['context']) ? $handler['context'] : FALSE;
+		$controller = $this->object->get_registry()->get_utility(
+			$handler['controller'], $context
+		);
+		$controller->$action();
+		throw new E_Clean_Exit;
+	}
+
+	/**
+	 * Parses the route handler
+	 * @param mixed $handler
+	 * @return array
+	 */
+	function parse_route_handler($handler)
+	{
+		if (is_string($handler)) {
+			$handler = explode('#', $handler);
+			$handler['context'] = FALSE;
+		}
+		elseif (is_numeric($handler)) {
+			$handler = array(
+				'controller'	=>	'I_Http_Response',
+				'action'		=>	'http_'.$handler
+			);
+		}
+		return $handler;
+	}
+
+
+	function add_placeholder_params_from_matches($matches)
+	{
+		// Add the placeholder parameter values to the _params array
+		foreach ($matches as $key => $value) {
+			if (is_numeric($key)) continue;
+			$this->object->add_placeholder_param(
+				$key, $value, $matches[0]
+			);
+		}
+	}
+
+
+	/**
+	 * Adds a placeholder parameter
+	 * @param string $name
+	 * @param stirng $value
+	 * @param string $source
+	 */
+	function add_placeholder_param($name, $value, $source=NULL)
+	{
+		if (!is_array($this->object->_parameters)) {
+			$this->object->_parameters = array('global');
+		}
+		if (!isset($this->object->_parameters['global'])) {
+			$this->object->_parameters['global'] = array();
+		}
+		$this->object->_parameters['global'][] = array(
+			'id'	=>	'',
+			'name'	=>	$name,
+			'value'	=>	$value,
+			'source'=>	$source
+		);
+	}
 
     /**
      * Converts the route to the regex
@@ -190,7 +316,8 @@ class Mixin_Routing_App extends Mixin
 
 class C_Routing_App extends C_Component
 {
-    static $_instances = array();
+    static $_instances		= array();
+	var    $_request_uri	= FALSE;
 
     function define($context= FALSE)
     {

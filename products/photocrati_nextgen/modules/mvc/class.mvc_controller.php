@@ -19,12 +19,9 @@ class Mixin_MVC_Controller_Defaults extends Mixin
  */
 abstract class C_MVC_Controller extends C_Component
 {
-    var $_content_type = 'text/html';
-    var $_request = FALSE;
-    var $_params = array();
-    var $_request_method = "None";
-    var $debug = FALSE;
-	var $exit = FALSE;
+    var $_content_type	= 'text/html';
+	var $message		= '';
+    var $debug			= FALSE;
 
 
     function define($context=FALSE)
@@ -37,11 +34,11 @@ abstract class C_MVC_Controller extends C_Component
     }
 
 
-    function show_error($message, $code=500)
+    function http_error($message, $code=500)
     {
-        if (!headers_sent()) header("HTTP/1.0 {$code} {$message}");
-        $this->render_view($code, array('message' => $message));
-        if ($this->exit) throw new E_Clean_Exit();
+		$this->message = $message;
+		$method = "http_{$code}_action";
+		$this->$method();
     }
 
     function is_valid_request($method)
@@ -52,31 +49,31 @@ abstract class C_MVC_Controller extends C_Component
 
     function is_post_request()
     {
-        return "POST" == $this->_request_method;
+        return "POST" == $this->object->get_router()->get_request_method();
     }
 
 
     function is_get_request()
     {
-        return "GET" == $this->_request_method;
+        return "GET" == $this->object->get_router()->get_request_method();
     }
 
 
     function is_delete_request()
     {
-       return "DELETE" == $this->_request_method;
+       return "DELETE" == $this->object->get_router()->get_request_method();
     }
 
 
     function is_put_request()
     {
-        return "PUT" == $this->_request_method;
+        return "PUT" == $this->object->get_router()->get_request_method();
     }
 
 
     function is_custom_request($type)
     {
-        return strtolower($type) == strtolower($this->_request_method);
+        return strtolower($type) == strtolower($this->object->get_router()->get_request_method());
     }
 
     /**
@@ -103,7 +100,7 @@ abstract class C_MVC_Controller extends C_Component
 				if ($this->has_method($method) || method_exists($this, $method))
 					$retval = parent::__call ($method, $args);
 				else
-                    $retval = $this->show_error("Page Not Found", 404);
+                    $retval = $this->http_error("Page Not Found", 404);
                 $this->_throw_error = $throw;
             }
         }

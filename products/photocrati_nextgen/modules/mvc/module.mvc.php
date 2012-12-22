@@ -66,7 +66,7 @@ class M_MVC extends C_Base_Module
 	function route()
 	{
         // TODO: get gallery stub from settings
-        $app = $this->get_registry()->get_utility('I_Router')->create_app();
+        $app = $this->get_registry()->get_utility('I_Router')->create_app('/attach_to_post');
 		$app->route(
 			array(
 				'/',
@@ -77,6 +77,7 @@ class M_MVC extends C_Base_Module
 				'action'		=>	'index'
 			)
 		);
+		$app->rewrite('/', '/foobar', true);
 
         $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');
