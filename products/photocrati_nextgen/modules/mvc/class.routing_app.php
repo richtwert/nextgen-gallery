@@ -60,6 +60,33 @@ class Mixin_Routing_App extends Mixin
 		return $this->object->get_registry()->get_utility('I_Router');
 	}
 
+	function get_app_url($request_uri=FALSE)
+	{
+		return $this->object->get_router()->get_url($this->object->get_app_uri($request_uri));
+	}
+
+	function get_app_uri($request_uri=FALSE)
+	{
+		if (!$request_uri) $request_uri = $this->object->get_app_request_uri();
+		return $this->object->join_paths(
+			$this->object->context,
+			$request_uri
+		);
+	}
+
+	function join_paths()
+	{
+		$segments = func_get_args();
+		foreach ($segments as &$segment) {
+			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
+//			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
+		}
+		$retval = implode('/', $segments);
+		if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
+
+		return $retval;
+	}
+
 	function get_app_request_uri()
 	{
 		$retval = FALSE;
@@ -67,6 +94,7 @@ class Mixin_Routing_App extends Mixin
 		if ($this->object->_request_uri) $retval = $this->object->_request_uri;
 		else if (($match = $this->object->does_app_serve_request())) {
 			$retval = str_replace($match['match'], '', $match['request_uri']);
+			if (!$retval) $retval = '/';
 			$this->object->set_app_request_uri($retval);
 		}
 
@@ -322,7 +350,6 @@ class C_Routing_App extends C_Component
     function define($context= FALSE)
     {
         parent::define($context);
-
         $this->add_mixin('Mixin_Routing_App');
         $this->add_mixin('Mixin_Routing_App_Parameters');
     }

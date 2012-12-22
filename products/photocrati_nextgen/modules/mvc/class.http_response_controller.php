@@ -26,13 +26,13 @@ class Mixin_Http_Response_Actions extends Mixin
 	function http_301_action()
 	{
 		header('HTTP/1.1 301 Permanent Redirect');
-		header("Location: {$this->object->get_request_uri()}");
+		header("Location: {$this->object->get_routed_url()}");
 	}
 
 	function http_302_action()
 	{
 		header('HTTP/1.1 302 Temporary Redirect');
-		header("Location: {$this->object->get_request_uri()}");
+		header("Location: {$this->object->get_routed_url()}");
 	}
 
 	function http_500_action()

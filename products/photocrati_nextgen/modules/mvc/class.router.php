@@ -12,6 +12,64 @@ class Mixin_Router extends Mixin
         return $this->_routed_app;
     }
 
+	/**
+	 * Gets url for the router
+	 * @param string $uri
+	 * @return string
+	 */
+	function get_url($uri='/')
+	{
+		return $this->object->get_base_url().$uri;
+	}
+
+	/**
+	 * Gets the routed url
+	 * @returns string
+	 */
+	function get_routed_url()
+	{
+		$retval = $this->object->get_url($this->object->get_request_uri());
+
+		if (($app = $this->object->get_routed_app())) {
+			$retval = $this->object->get_url($app->get_app_uri());
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Gets the base url for the router
+	 * @return string
+	 */
+	function get_base_url()
+	{
+		$protocol = $this->object->is_https()? 'https://' : 'http://';
+		$retval = "{$protocol}{$_SERVER['SERVER_NAME']}{$this->object->context}";
+		if (substr($retval, -1) == '/') $retval = substr($retval, 0, -1);
+		return $retval;
+	}
+
+	function join_paths()
+	{
+		$segments = func_get_args();
+		foreach ($segments as &$segment) {
+			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
+		}
+		$retval = implode('/', $segments);
+		if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
+
+		return $retval;
+	}
+
+	/**
+	 * Determines if the current request is over HTTPs or not
+	 */
+	function is_https()
+	{
+		return isset($_SERVER['HTTPS']);
+	}
+
+
     /**
      * Serve request using defined Routing Apps
      *
@@ -26,6 +84,10 @@ class Mixin_Router extends Mixin
         }
     }
 
+	/**
+	 * Gets the request for the router
+	 * @return string
+	 */
     function get_request_uri()
     {
 		if (isset($_SERVER['PATH_INFO']))
@@ -33,7 +95,10 @@ class Mixin_Router extends Mixin
 		else
 			$retval = $_SERVER['REQUEST_URI'];
 
-        return $retval;
+		$retval = preg_replace('#^'.preg_quote($this->object->context).'#', '', $retval);
+		if (strpos($retval, '/') !== 0) $retval = "/{$retval}";
+
+		return $retval;
     }
 
 
@@ -66,7 +131,7 @@ class C_Router extends C_Component
 
     function define($context = FALSE)
     {
-		if ($context == 'all') $context = FALSE;
+		if (!context OR $context == 'all') $context = '/';
 		parent::define($context);
         $this->add_mixin('Mixin_Router');
 		$this->implement('I_Router');
@@ -74,8 +139,7 @@ class C_Router extends C_Component
 
 	function initialize()
 	{
-		parent::initialize();;
-		if (!$this->context) $this->context = $this->object->get_request_uri();
+		parent::initialize();
 		$this->_request_method	= $_SERVER['REQUEST_METHOD'];
 	}
 
