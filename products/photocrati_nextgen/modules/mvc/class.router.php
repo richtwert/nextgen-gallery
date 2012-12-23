@@ -4,13 +4,40 @@ class Mixin_Router extends Mixin
 {
 	function set_routed_app($app)
     {
-        $this->_routed_app = $app;
+        $this->object->_routed_app = $app;
     }
 
     function get_routed_app()
     {
-        return $this->_routed_app;
+        return $this->object->_routed_app ? $this->_routed_app : $this->object->get_default_app();
     }
+
+	function get_default_app()
+	{
+		if (is_null($this->object->_default_app))
+			$this->object->_default_app = $this->object->create_app();
+		return $this->object->_default_app;
+	}
+
+	function route($patterns, $handler=FALSE)
+	{
+		$this->object->get_default_app()->route($patterns, $handler);
+	}
+
+	function rewrite($src, $dst, $redirect=FALSE)
+	{
+		$this->object->get_default_app()->rewrite($src, $dst, $redirect);
+	}
+
+	function get_parameter($key, $prefix=NULL)
+	{
+		return $this->object->get_routed_app()->get_parameter($key, $prefix);
+	}
+
+	function param($key, $prefix=NULL)
+	{
+		return $this->object->get_parameter($key, $prefix);
+	}
 
 	/**
 	 * Gets url for the router
@@ -101,6 +128,15 @@ class Mixin_Router extends Mixin
 		return $retval;
     }
 
+	/**
+	 * Gets the method of the HTTP request
+	 * @return string
+	 */
+	function get_request_method()
+	{
+		return $this->object->_request_method;
+	}
+
 
     function &create_app($name = '/')
     {
@@ -126,8 +162,9 @@ class Mixin_Router extends Mixin
  */
 class C_Router extends C_Component
 {
-    static $_instances = array();
-	var $_apps = array();
+    static $_instances	= array();
+	var $_apps			= array();
+	var $_default_app	= NULL;
 
     function define($context = FALSE)
     {

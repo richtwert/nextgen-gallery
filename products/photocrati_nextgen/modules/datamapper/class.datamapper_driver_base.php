@@ -342,13 +342,14 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 		try {
 			$this->object->_convert_to_entity($stdObject);
-			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-			$stdObject->has_defaults = TRUE;
-			$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 		}
 		catch (Exception $ex) {
 			throw new E_InvalidEntityException($ex);
 		}
+
+		$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+		$stdObject->has_defaults = TRUE;
+		$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 
 		return $retval;
 	}

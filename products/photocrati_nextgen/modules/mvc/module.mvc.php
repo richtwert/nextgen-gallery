@@ -66,7 +66,7 @@ class M_MVC extends C_Base_Module
 	function route()
 	{
         // TODO: get gallery stub from setting
-		$app = $this->get_registry()->get_utility('I_Router')->create_app();
+		$app = $this->get_registry()->get_utility('I_Router');
         $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/slideshow/', '/album--{album}/gallery--{gallery}/page--{page}/show--slide/');
@@ -97,7 +97,8 @@ class M_MVC extends C_Base_Module
 	function __destruct()
 	{
 		if ($this->rethrow)
-            die(print_r($this->rethrow));
+			throw $this->rethrow;
+//            die(print_r($this->rethrow));
 	}
 }
 

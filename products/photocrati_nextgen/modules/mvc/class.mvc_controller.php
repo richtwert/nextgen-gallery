@@ -130,10 +130,8 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
      */
     function param($key, $prefix = NULL, $default = NULL)
     {
-        $retval = $default;
-
-        $result = $this->object->get_routed_app()->get_parameter($key, $prefix);
-        return (!is_null($result) ? $result : $retval);
+		$result = $this->object->get_router()->get_parameter($key, $prefix);
+        return (!is_null($result) ? $result : $default);
     }
 
 	/**

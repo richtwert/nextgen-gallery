@@ -65,6 +65,10 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Provides a mechanism for Frame Communication
 		$this->get_registry()->load_module('photocrati-frame_communication');
 
+		// Provides framework-wide support for thumbnail-like gallery types
+		$this->get_registry()->load_module('photocrati-thumbnails');
+		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
+
 		// Load the Gallery Display module, used to display galleries and albums
 		$this->get_registry()->load_module('photocrati-gallery_display');
 //		$this->get_registry()->load_module('photocrati-attach_to_post');
@@ -80,9 +84,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
 //		$this->get_registry()->load_module('photocrati-mediarss');
 //
-//		// Provides framework-wide support for thumbnail-like gallery types
-//		$this->get_registry()->load_module('photocrati-thumbnails');
-//		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
 //
 //		// Provides support for thumbnail basic templates
 //		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
