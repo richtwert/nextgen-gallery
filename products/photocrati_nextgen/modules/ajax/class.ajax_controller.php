@@ -2,6 +2,8 @@
 
 class C_Ajax_Controller extends C_MVC_Controller
 {
+	static $_instances = array();
+
 	function define($context=FALSE)
 	{
 		parent::define($context);
@@ -40,5 +42,20 @@ class C_Ajax_Controller extends C_MVC_Controller
 			'site_url'	=> real_site_url()
 		));
         throw new E_Clean_Exit();
+	}
+	
+
+	/**
+	 * Returns an instance of this class
+	 * @param string $context
+	 * @return C_Ajax_Controller
+	 */
+	static function get_instance($context=FALSE)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
 	}
 }

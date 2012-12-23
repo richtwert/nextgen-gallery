@@ -37,36 +37,36 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the WordPress Routing integration module
 		$this->get_registry()->load_module('photocrati-wordpress_routing');
 
-//		// The NextGEN Settings module provides uniform centralized management
-//		// of settings for the plugin.
-//		$this->get_registry()->load_module('photocrati-nextgen_settings');
-//
-//		// The datamapper is a library which is required by our data tier
-//		// components. This is the first module we load as in the future, the
-//		// plan is to refactor the photocrati-nextgen-legacy module to use it
-//		$this->get_registry()->load_module('photocrati-datamapper');
-//
-//		// We load the data tier module for NextGen. This is built on top of
-//		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
-//		// module, all other modules require this. Eventually, we will refactor
-//		// the photocrati-nextgen-legacy module to make use of this module as
-//		// well
-//		$this->get_registry()->load_module('photocrati-nextgen-data');
-//
-//		// This is Alex Rabe's version of NextGEN, which we built on top of.
-//		$this->get_registry()->load_module('photocrati-nextgen-legacy');
-//
-//		// This provides a general AJAX handler for all other modules to extend
-//		$this->get_registry()->load_module('photocrati-ajax');
-//
-//		// Load the Lazy Resource Loader
-//		$this->get_registry()->load_module('photocrati-lazy_resources');
-//
-//		// Provides a mechanism for Frame Communication
-//		$this->get_registry()->load_module('photocrati-frame_communication');
-//
-//		// Load the Gallery Display module, used to display galleries and albums
-//		$this->get_registry()->load_module('photocrati-gallery_display');
+		// The NextGEN Settings module provides uniform centralized management
+		// of settings for the plugin.
+		$this->get_registry()->load_module('photocrati-nextgen_settings');
+
+		// The datamapper is a library which is required by our data tier
+		// components. This is the first module we load as in the future, the
+		// plan is to refactor the photocrati-nextgen-legacy module to use it
+		$this->get_registry()->load_module('photocrati-datamapper');
+
+		// We load the data tier module for NextGen. This is built on top of
+		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
+		// module, all other modules require this. Eventually, we will refactor
+		// the photocrati-nextgen-legacy module to make use of this module as
+		// well
+		$this->get_registry()->load_module('photocrati-nextgen-data');
+
+		// This is Alex Rabe's version of NextGEN, which we built on top of.
+		$this->get_registry()->load_module('photocrati-nextgen-legacy');
+
+		// This provides a general AJAX handler for all other modules to extend
+		$this->get_registry()->load_module('photocrati-ajax');
+
+		// Load the Lazy Resource Loader
+		$this->get_registry()->load_module('photocrati-lazy_resources');
+
+		// Provides a mechanism for Frame Communication
+		$this->get_registry()->load_module('photocrati-frame_communication');
+
+		// Load the Gallery Display module, used to display galleries and albums
+		$this->get_registry()->load_module('photocrati-gallery_display');
 //		$this->get_registry()->load_module('photocrati-attach_to_post');
 //
 //		// Load various lightbox effect libraries

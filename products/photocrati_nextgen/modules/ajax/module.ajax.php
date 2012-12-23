@@ -32,6 +32,14 @@ class M_Ajax extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
+		$router = $this->get_registry()->get_utility('I_Router');
+		define('NEXTGEN_GALLERY_AJAX_URL', $router->get_url('/photocrati_ajax/'));
+		define('NEXTGEN_GALLERY_AJAX_JS_URL', $router->get_url('/photocrati_ajax/js'));
+	}
+
+	function _register_utilities()
+	{
+		$this->get_registry()->add_utility('I_Ajax_Controller', 'C_Ajax_Controller');
 	}
 
 	/**

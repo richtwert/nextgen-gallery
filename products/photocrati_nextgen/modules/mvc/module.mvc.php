@@ -42,7 +42,7 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
 		parent::initialize();
-//        set_exception_handler(array(&$this, 'handle_exit'));
+        set_exception_handler(array(&$this, 'handle_exit'));
     }
 
     function _register_utilities()
@@ -65,22 +65,8 @@ class M_MVC extends C_Base_Module
 
 	function route()
 	{
-        // TODO: get gallery stub from settings
-        $app = $this->get_registry()->get_utility('I_Router')->create_app('/attach_to_post');
-		$app->route(
-			array(
-				'/',
-				'/{value}',
-				'/{value}/{rubbish}'
-			),
-			array(
-				'controller'	=>	'I_Test_Controller',
-				'action'		=>	'index'
-			)
-		);
-		$app->rewrite('/', '/foobar', true);
-		$app->rewrite('/foobar', '/foo/bar', true);
-
+        // TODO: get gallery stub from setting
+		$app = $this->get_registry()->get_utility('I_Router')->create_app();
         $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');
         $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/slideshow/', '/album--{album}/gallery--{gallery}/page--{page}/show--slide/');

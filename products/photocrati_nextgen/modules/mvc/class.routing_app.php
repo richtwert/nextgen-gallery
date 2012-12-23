@@ -254,12 +254,18 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function execute_route_handler($handler)
 	{
-		$action = $handler['action'] . '_action';
-		$context = isset($handler['context']) ? $handler['context'] : FALSE;
+		// Get action
+		$action = $handler['action'];
+
+		// Get controller
 		$controller = $this->object->get_registry()->get_utility(
 			$handler['controller'], $context
 		);
+
+		// Call action
 		$controller->$action();
+
+		// Clean Exit (fastcgi safe)
 		throw new E_Clean_Exit;
 	}
 
@@ -271,15 +277,17 @@ class Mixin_Routing_App extends Mixin
 	function parse_route_handler($handler)
 	{
 		if (is_string($handler)) {
-			$handler = explode('#', $handler);
-			$handler['context'] = FALSE;
+			$handler = array_combine(array('controller', 'action'), explode('#', $handler));
 		}
 		elseif (is_numeric($handler)) {
 			$handler = array(
 				'controller'	=>	'I_Http_Response',
-				'action'		=>	'http_'.$handler
+				'action'		=>	'http_'.$handler,
 			);
 		}
+		if (!isset($handler['context'])) $handler['context'] = FALSE;
+		if (strpos($handler['action'], '_action') === FALSE) $handler['action'] .= '_action';
+
 		return $handler;
 	}
 
