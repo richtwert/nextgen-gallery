@@ -43,7 +43,7 @@ class C_Ajax_Controller extends C_MVC_Controller
 		));
         throw new E_Clean_Exit();
 	}
-	
+
 
 	/**
 	 * Returns an instance of this class

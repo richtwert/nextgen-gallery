@@ -130,9 +130,13 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
      */
     function param($key, $prefix = NULL, $default = NULL)
     {
-		$result = $this->object->get_router()->get_parameter($key, $prefix);
-        return (!is_null($result) ? $result : $default);
+		return $this->object->get_routed_app()->get_parameter($key, $prefix, $default);
     }
+
+	function set_param($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		return $this->object->get_routed_app()->set_parameter($key, $value, $id, $use_prefix);
+	}
 
 	/**
 	 * Gets the relative URL of the current request

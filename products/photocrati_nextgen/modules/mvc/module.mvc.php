@@ -6,8 +6,11 @@
 	}
 ***/
 
-define('MVC_MODULE_DIR', dirname(__FILE__));
-define('MVC_TEMPLATE_DIR', path_join(MVC_MODULE_DIR, 'templates'));
+define('MVC_MODULE_DIR',		dirname(__FILE__));
+define('MVC_TEMPLATE_DIR',		path_join(MVC_MODULE_DIR, 'templates'));
+define('MVC_PARAM_SEPARATOR',	'--');
+define('MVC_PARAM_PREFIX',		'ngg');
+define('MVC_PARAM_SLUG',		'nggallery');
 require_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
 
 /**

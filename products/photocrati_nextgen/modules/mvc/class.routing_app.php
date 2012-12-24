@@ -198,7 +198,6 @@ class Mixin_Routing_App extends Mixin
 
 			// Cache all known data about the application request
 			$this->object->set_app_request_uri($request_uri);
-			$this->object->cache_all_parameters();
 			$this->object->get_router()->set_routed_app($this);
 
 			// Are we to perform a redirect?
@@ -335,19 +334,206 @@ class Mixin_Routing_App extends Mixin
     function _route_to_regex($route)
     {
         // convert route to RegEx pattern
-        $regex_pattern = preg_quote(
+        $route_regex = preg_quote(
             str_replace(
                 array('{', '}'),
                 array('~', '~'),
                 $route
             )
         );
-		if (strpos($route, '/') === 0) $regex_pattern = '^'.$regex_pattern;
-        $regex_pattern = '#' . $regex_pattern . '$#i';
+		if (strpos($route, '/') === 0) $route_regex = '^'.$route_regex;
+
+		// A route can be followed by a list of parameters
+		$separator = preg_quote(MVC_PARAM_SEPARATOR);
+		$param_part_regex = "[^{$separator}]+";
+		$param_regex = "(({$param_part_regex}{$separator})?{$param_part_regex}{$separator}{$param_part_regex}\/?){0,}";
+
+        $route_regex = '#' . $route_regex . $param_regex . '$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/', '(?<\1>[^/]+)/?', $regex_pattern);
+        return preg_replace('/~([^~]+)~/', '(?<\1>[^/]+)/?', $route_regex);
     }
+
+	/**
+	 * Gets a request parameter from either the request uri or querystring
+	 * This method takes into consideration the values of the MVC_PARAM_PREFIX
+	 * and MVC_PARAM_SEPARATOR constants when searching for the parameter
+	 *
+	 * Parameter can take on the following forms:
+	 * /key--value
+	 * /[MVC_PARAM_PREFIX]key--value
+	 * /[MVC_PARAM_PREFIX]-key--value
+	 * /[MVC_PARAM_PREFIX]_key--value
+	 * /id--key--value
+	 * /id--[MVC_PARAM_PREFIX]key--value
+	 * /id--[MVC_PARAM_PREFIX]-key--value
+	 * /id--[MVC_PARAM_PREFIX]_key--value
+	 *
+	 * @param string $key
+	 * @param mixed $id
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE)
+	{
+		$retval				= $default;
+		$key				= preg_quote($key);
+		$id					= $id ? preg_quote($id) : "\d+";
+		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
+		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
+		$qs					= $this->object->get_formatted_querystring();
+		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#";
+
+		foreach ($this->object->get_parameter_sources() as $source_name => $source) {
+			if (preg_match($param_regex, $source, $matches)) {
+				if ($segment) $retval = array(
+					'segment'		=>	$matches[0],
+					'source'		=>	$source_name
+				);
+				else $retval = $matches['value'];
+				break;
+			}
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Sets the value of a particular parameter
+	 * @param string $key
+	 * @param mixed $value
+	 * @param mixed $id
+	 */
+	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		// Is the parameter already part of the request? If so, modify that
+		// parmaeter
+		if (($segment = $this->object->get_parameter_segment($key, $id))) {
+ 			extract($segment);
+
+			if ($source == 'querystring') {
+				$qs = $this->object->get_formatted_querystring();
+				$qs = str_replace($segment, '', $qs);
+				$this->object->get_router()->set_querystring($qs);
+			}
+			elseif ($source == 'request_uri') {
+				$uri = $this->object->get_app_request_uri();
+				$uri = str_replace($segment, '', $uri);
+				$this->object->set_app_request_uri($uri);
+			}
+		}
+
+		// This parameter is being appended to the current request uri
+		$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
+
+		return $this->object->get_app_url();
+	}
+
+	/**
+	 * Adds a parameter to the application's request URI
+	 * @param string $key
+	 * @param mixed $value
+	 * @param mixed $id
+	 */
+	function add_parameter_to_app_request_uri($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		$this->object->set_app_request_uri(
+			$this->object->join_paths(
+				$this->object->get_app_request_uri(),
+				$this->object->create_parameter_segment($key, $value, $id, $use_prefix)
+			)
+		);
+
+		return $this->object->get_app_request_uri();
+	}
+
+
+	/**
+	 * Creates a parameter segment
+	 * @param string $key
+	 * @param mixed $value
+	 * @param mixed $id
+	 * @return string
+	 */
+	function create_parameter_segment($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		if ($use_prefix) $key = MVC_PARAM_PREFIX.$key;
+		if ($value === TRUE) $value = 1;
+		elseif ($value == FALSE) $value = 0; // null and false values
+		$retval = $key . MVC_PARAM_SEPARATOR . $value;
+		if ($id) $retval = $id . MVC_PARAM_SEPARATOR . $retval;
+		return $retval;
+	}
+
+	/**
+	 * Alias for set_parameter_value
+	 * @param string $key
+	 * @param mixed $value
+	 * @param mixed $id
+	 */
+	function set_parameter($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		return $this->object->set_parameter_value($key, $value, $id, $use_prefix=FALSE);
+	}
+
+	/**
+	 * Alias for set_parameter_value
+	 * @param string $key
+	 * @param mixed $value
+	 * @param mixed $id
+	 */
+	function set_param($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		return $this->object->set_parameter_value($key, $value, $id, $use_prefix=FALSE);
+	}
+
+	/**
+	 * Gets a parameter's value
+	 * @param string $key
+	 * @param mixed $id
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	function get_parameter_value($key, $id=NULL, $default=NULL)
+	{
+		return $this->object->get_parameter($key, $id, $default);
+	}
+
+	/**
+	 * Gets a parameter's matching URI segment
+	 * @param string $key
+	 * @param mixed $id
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	function get_parameter_segment($key, $id=NULL, $default=NULL)
+	{
+		return $this->object->get_parameter($key, $id, $default, TRUE);
+	}
+
+	/**
+	 * Gets sources used for parsing and extracting parameters
+	 * @return array
+	 */
+	function get_parameter_sources()
+	{
+		return array(
+			'querystring'	=>	$this->object->get_formatted_querystring(),
+			'request_uri'	=>	$this->object->get_app_request_uri()
+		);
+	}
+
+	function get_formatted_querystring()
+	{
+		$retval = '/'.$this->object->get_router()->get_querystring();
+		$retval = str_replace(
+			array('&', '='),
+			array('/', MVC_PARAM_SEPARATOR),
+			$retval
+		);
+
+		return $retval;
+	}
 }
 
 class C_Routing_App extends C_Component
@@ -359,7 +545,6 @@ class C_Routing_App extends C_Component
     {
         parent::define($context);
         $this->add_mixin('Mixin_Routing_App');
-        $this->add_mixin('Mixin_Routing_App_Parameters');
     }
 
     static function &get_instance($context = False)

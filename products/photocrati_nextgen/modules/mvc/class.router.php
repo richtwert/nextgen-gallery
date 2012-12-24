@@ -29,14 +29,14 @@ class Mixin_Router extends Mixin
 		$this->object->get_default_app()->rewrite($src, $dst, $redirect);
 	}
 
-	function get_parameter($key, $prefix=NULL)
+	function get_parameter($key, $prefix=NULL, $default=NULL)
 	{
-		return $this->object->get_routed_app()->get_parameter($key, $prefix);
+		return $this->object->get_routed_app()->get_parameter($key, $prefix, $default);
 	}
 
-	function param($key, $prefix=NULL)
+	function param($key, $prefix=NULL, $default=NULL)
 	{
-		return $this->object->get_parameter($key, $prefix);
+		return $this->object->get_parameter($key, $prefix, $default);
 	}
 
 	/**
@@ -46,7 +46,11 @@ class Mixin_Router extends Mixin
 	 */
 	function get_url($uri='/')
 	{
-		return $this->object->get_base_url().$uri;
+		$retval = $this->object->get_base_url().$uri;
+		if (($qs = $this->object->get_querystring())) {
+			$retval .= '?'.$qs;
+		}
+		return $retval;
 	}
 
 	/**
@@ -110,6 +114,21 @@ class Mixin_Router extends Mixin
                 break;
         }
     }
+
+	/**
+	 * Gets the querystring of the current request
+	 * @return string
+	 */
+	function get_querystring()
+	{
+		return $_SERVER['QUERY_STRING'];
+	}
+
+
+	function set_querystring($value)
+	{
+		$_SERVER['QUERY_STRING'] = $value;
+	}
 
 	/**
 	 * Gets the request for the router

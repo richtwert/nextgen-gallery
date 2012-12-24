@@ -64,16 +64,12 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
 
-		// Enqueue chosen, a library to make our drop-downs look pretty
-//		wp_enqueue_style('chosen', $this->static_url('chosen.css'));
-//		wp_enqueue_script(
-//			'chosen', $this->static_url('chosen.js'), array('jquery')
-//		);
+		// Ensure select2
 		wp_enqueue_style('select2', $this->static_url('select2.css'));
 		wp_enqueue_script('select2', $this->static_url('select2.js'));
 
 		// Ensure we have the AJAX module ready
-		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_URL.'/js');
+		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
@@ -115,16 +111,25 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		);
 
 		// Enqueue the backbone app for the display tab
-		wp_enqueue_script(
-			'ngg_display_tab',
-            NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL . '/id--' . $this->_displayed_gallery->id(),
-			array('backbone', 'underscore.string')
-		);
-		wp_localize_script(
-			'ngg_display_tab',
-			'ngg_displayed_gallery_preview_url',
-			NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL
-		);
+		if ($this->object->_validate_request()) {
+			$display_tab_js_url = NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL;
+			$preview_url		= NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL;
+			if ($this->_displayed_gallery->id()) {
+				$display_tab_js_url .= '/id--'.$this->_displayed_gallery->id();
+				$preview_url .= '/id'.MVC_PARAM_SEPARATOR.$this->_displayed_gallery->id();
+			}
+
+			wp_enqueue_script(
+				'ngg_display_tab',
+				$display_tab_js_url,
+				array('backbone', 'underscore.string')
+			);
+			wp_localize_script(
+				'ngg_display_tab',
+				'ngg_displayed_gallery_preview_url',
+				$preview_url
+			);
+		}
 	}
 
 	/**

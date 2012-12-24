@@ -65,6 +65,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Provides a mechanism for Frame Communication
 		$this->get_registry()->load_module('photocrati-frame_communication');
 
+        // Provides cache clearing support
+        $this->get_registry()->load_module('photocrati-cache');
+
 		// Provides framework-wide support for thumbnail-like gallery types
 		$this->get_registry()->load_module('photocrati-thumbnails');
 		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
@@ -72,32 +75,28 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the Gallery Display module, used to display galleries and albums
 		$this->get_registry()->load_module('photocrati-gallery_display');
 		$this->get_registry()->load_module('photocrati-attach_to_post');
-//
-//		// Load various lightbox effect libraries
-//		$this->get_registry()->load_module('photocrati-thickbox');
-//        $this->get_registry()->load_module('photocrati-shutter');
-//		$this->get_registry()->load_module('photocrati-shutter_reloaded');
-//        $this->get_registry()->load_module('photocrati-highslide');
-//        $this->get_registry()->load_module('photocrati-lightbox');
-//        $this->get_registry()->load_module('photocrati-fancybox-1x');
-//
+
+		// Load various lightbox effect libraries
+		$this->get_registry()->load_module('photocrati-thickbox');
+        $this->get_registry()->load_module('photocrati-shutter');
+		$this->get_registry()->load_module('photocrati-shutter_reloaded');
+        $this->get_registry()->load_module('photocrati-highslide');
+        $this->get_registry()->load_module('photocrati-lightbox');
+        $this->get_registry()->load_module('photocrati-fancybox-1x');
+
 //		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
 //		$this->get_registry()->load_module('photocrati-mediarss');
-//
-//
-//		// Provides support for thumbnail basic templates
-//		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
-//
-//		// Load the NextGEN Basic display types
-//		$this->get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
-//		$this->get_registry()->load_module('photocrati-nextgen_basic_slideshow');
-//		$this->get_registry()->load_module('photocrati-nextgen_basic_imagebrowser');
-//        $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');
-//        $this->get_registry()->load_module('photocrati-nextgen_basic_tagcloud');
-//        $this->get_registry()->load_module('photocrati-nextgen_basic_album');
-//
-//        // Provides cache clearing support
-//        $this->get_registry()->load_module('photocrati-cache');
+
+		// Provides support for thumbnail basic templates
+		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
+
+		// Load the NextGEN Basic display types
+		$this->get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
+		$this->get_registry()->load_module('photocrati-nextgen_basic_slideshow');
+		$this->get_registry()->load_module('photocrati-nextgen_basic_imagebrowser');
+        $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');
+        $this->get_registry()->load_module('photocrati-nextgen_basic_tagcloud');
+        $this->get_registry()->load_module('photocrati-nextgen_basic_album');
 //
 //        // Provides sidebar widgets
 //        $this->get_registry()->load_module('photocrati-widget');
