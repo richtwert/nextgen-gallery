@@ -44,10 +44,10 @@ class Mixin_Router extends Mixin
 	 * @param string $uri
 	 * @return string
 	 */
-	function get_url($uri='/')
+	function get_url($uri='/', $with_qs=FALSE)
 	{
 		$retval = $this->object->get_base_url().$uri;
-		if (($qs = $this->object->get_querystring())) {
+		if ($with_qs && ($qs = $this->object->get_querystring())) {
 			$retval .= '?'.$qs;
 		}
 		return $retval;

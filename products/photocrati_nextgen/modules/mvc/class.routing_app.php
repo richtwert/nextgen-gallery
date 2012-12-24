@@ -60,9 +60,15 @@ class Mixin_Routing_App extends Mixin
 		return $this->object->get_registry()->get_utility('I_Router');
 	}
 
-	function get_app_url($request_uri=FALSE)
+	function get_app_url($request_uri=FALSE, $with_qs=FALSE)
 	{
-		return $this->object->get_router()->get_url($this->object->get_app_uri($request_uri));
+		return $this->object->get_router()->get_url($this->object->get_app_uri($request_uri), $with_qs);
+	}
+
+
+	function get_routed_url($with_qs=TRUE)
+	{
+		return $this->object->get_app_url(FALSE, $with_qs);
 	}
 
 	function get_app_uri($request_uri=FALSE)
@@ -382,6 +388,7 @@ class Mixin_Routing_App extends Mixin
 		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
 		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#i";
+		$found				= FALSE;
 
 		foreach ($this->object->get_parameter_sources() as $source_name => $source) {
 			if (preg_match($param_regex, $source, $matches)) {
@@ -390,9 +397,13 @@ class Mixin_Routing_App extends Mixin
 					'source'		=>	$source_name
 				);
 				else $retval = $matches['value'];
+				$found = TRUE;
 				break;
 			}
 		}
+
+		// Lastly, check the $_REQUEST
+		if (!$found && isset($_REQUEST[$key])) $retval = $_REQUEST[$key];
 
 		return $retval;
 	}
@@ -411,7 +422,7 @@ class Mixin_Routing_App extends Mixin
 		// This parameter is being appended to the current request uri
 		$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
 
-		return $this->object->get_app_url();
+		return $this->object->get_routed_url();
 	}
 
 	/**
@@ -460,7 +471,7 @@ class Mixin_Routing_App extends Mixin
 			}
 		}
 
-		return $this->object->get_app_url();
+		return $this->object->get_routed_url();
 	}
 
 
