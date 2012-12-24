@@ -20,10 +20,6 @@ class M_Ajax extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-
-        $this->get_registry()
-             ->get_utility('I_Router')
-             ->add_pre_hook('serve_request', 'Adds MediaRSS routes', 'Hook_AJAX_Routes', 'add_routes');
 	}
 
 	/**
@@ -35,6 +31,11 @@ class M_Ajax extends C_Base_Module
 		$router = $this->get_registry()->get_utility('I_Router');
 		define('NEXTGEN_GALLERY_AJAX_URL', $router->get_url('/photocrati_ajax/'));
 		define('NEXTGEN_GALLERY_AJAX_JS_URL', $router->get_url('/photocrati_ajax/js'));
+	}
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter('I_Router', 'A_Ajax_Routes');
 	}
 
 	function _register_utilities()

@@ -27,10 +27,6 @@ class M_Attach_To_Post extends C_Base_Module
 		    $context
 		);
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
-
-        $this->get_registry()
-             ->get_utility('I_Router')
-             ->add_pre_hook('serve_request', 'Adds MediaRSS routes', 'Hook_Attach_To_Post_Routes', 'add_routes');
     }
 
 	/**
@@ -42,6 +38,11 @@ class M_Attach_To_Post extends C_Base_Module
 		parent::initialize();
 		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
+
+		$router = $this->get_registry()->get_utility('I_Router');
+		define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $router->get_url('/attach_to_post'));
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL', $router->get_url('/attach_to_post/preview'));
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL', $router->get_url('/attach_to_post/display_tab_js'));
 	}
 
 	/**
@@ -62,6 +63,11 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
+		// Provides routing for the Attach To Post interface
+		$this->get_registry()->add_adapter(
+			'I_Router', 'A_Attach_To_Post_Routes'
+		);
+
 		// Provides AJAX actions for the Attach To Post interface
 		$this->get_registry()->add_adapter(
 			'I_Ajax_Controller',   'A_Attach_To_Post_Ajax'

@@ -71,7 +71,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load the Gallery Display module, used to display galleries and albums
 		$this->get_registry()->load_module('photocrati-gallery_display');
-//		$this->get_registry()->load_module('photocrati-attach_to_post');
+		$this->get_registry()->load_module('photocrati-attach_to_post');
 //
 //		// Load various lightbox effect libraries
 //		$this->get_registry()->load_module('photocrati-thickbox');
