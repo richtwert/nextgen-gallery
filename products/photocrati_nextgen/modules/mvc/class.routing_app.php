@@ -382,7 +382,7 @@ class Mixin_Routing_App extends Mixin
 		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
 		$qs					= $this->object->get_formatted_querystring();
-		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#";
+		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#i";
 
 		foreach ($this->object->get_parameter_sources() as $source_name => $source) {
 			if (preg_match($param_regex, $source, $matches)) {
@@ -406,14 +406,33 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
+		// Remove the parameter from both the querystring and request uri
+
+		// This parameter is being appended to the current request uri
+		$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
+
+		return $this->object->get_app_url();
+	}
+
+	function remove_parameter($key, $id=NULL)
+	{
+		$param_sep		= MVC_PARAM_SEPARATOR;
+		$param_prefix	= MVC_PARAM_PREFIX;
+
 		// Is the parameter already part of the request? If so, modify that
 		// parmaeter
 		if (($segment = $this->object->get_parameter_segment($key, $id))) {
  			extract($segment);
 
 			if ($source == 'querystring') {
-				$qs = $this->object->get_formatted_querystring();
-				$qs = str_replace($segment, '', $qs);
+				$preg_id	= $id ? '\d+' : preg_quote($id);
+				$preg_value	= preg_quote($key);
+				$regex = implode('', array(
+					'#',
+					$id ? "{$preg_id}{$param_sep}" : '',
+					"(({$param_prefix})?[-_]?)?{$key}({$param_sep}|=)[^\/&]+&?#i"
+				));
+				$qs = preg_replace($regex, '', $this->get_router()->get_querystring());
 				$this->object->get_router()->set_querystring($qs);
 			}
 			elseif ($source == 'request_uri') {
@@ -423,11 +442,9 @@ class Mixin_Routing_App extends Mixin
 			}
 		}
 
-		// This parameter is being appended to the current request uri
-		$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
-
 		return $this->object->get_app_url();
 	}
+
 
 	/**
 	 * Adds a parameter to the application's request URI
