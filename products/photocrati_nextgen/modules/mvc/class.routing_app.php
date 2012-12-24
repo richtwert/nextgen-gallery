@@ -381,7 +381,6 @@ class Mixin_Routing_App extends Mixin
 		$id					= $id ? preg_quote($id) : "\d+";
 		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
-		$qs					= $this->object->get_formatted_querystring();
 		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#i";
 
 		foreach ($this->object->get_parameter_sources() as $source_name => $source) {
@@ -407,6 +406,7 @@ class Mixin_Routing_App extends Mixin
 	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
 		// Remove the parameter from both the querystring and request uri
+		$this->remove_parameter($key, $id);
 
 		// This parameter is being appended to the current request uri
 		$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
@@ -414,6 +414,24 @@ class Mixin_Routing_App extends Mixin
 		return $this->object->get_app_url();
 	}
 
+	/**
+	 * Alias for remove_parameter()
+	 * @param string $key
+	 * @param mixed $id
+	 * @return string
+	 */
+	function remove_param($key, $id=NULL)
+	{
+		return $this->object->remove_parameter($key, $id);
+	}
+
+	/**
+	 * Removes a parameter from the querystring and application request URI
+	 * and returns the full application URL
+	 * @param string $key
+	 * @param mixed $id
+	 * @return string
+	 */
 	function remove_parameter($key, $id=NULL)
 	{
 		$param_sep		= MVC_PARAM_SEPARATOR;
@@ -426,11 +444,11 @@ class Mixin_Routing_App extends Mixin
 
 			if ($source == 'querystring') {
 				$preg_id	= $id ? '\d+' : preg_quote($id);
-				$preg_value	= preg_quote($key);
+				$preg_key	= preg_quote($key);
 				$regex = implode('', array(
 					'#',
 					$id ? "{$preg_id}{$param_sep}" : '',
-					"(({$param_prefix})?[-_]?)?{$key}({$param_sep}|=)[^\/&]+&?#i"
+					"(({$param_prefix})?[-_]?)?{$preg_key}({$param_sep}|=)[^\/&]+&?#i"
 				));
 				$qs = preg_replace($regex, '', $this->get_router()->get_querystring());
 				$this->object->get_router()->set_querystring($qs);
@@ -536,9 +554,23 @@ class Mixin_Routing_App extends Mixin
 	{
 		return array(
 			'querystring'	=>	$this->object->get_formatted_querystring(),
-			'request_uri'	=>	$this->object->get_app_request_uri()
+			'request_uri'	=>	$this->object->get_app_request_uri(),
+			'postdata'		=>	$this->object->get_postdata()
 		);
 	}
+
+	function get_postdata()
+	{
+		$retval = '/'.file_get_contents("php://input");
+		$retval = str_replace(
+			array('&', '='),
+			array('/', MVC_PARAM_SEPARATOR),
+			$retval
+		);
+
+		return $retval;
+	}
+
 
 	function get_formatted_querystring()
 	{

@@ -32,27 +32,6 @@ abstract class C_MVC_Controller extends C_Component
 		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
         $this->implement('I_MVC_Controller');
     }
-
-
-    // Validates the request before executing an action. If no action has
-    // been defined, then return 404
-    function __call($method, $args) {
-        $retval = '';
-		if (preg_match("/_action$/", $method)) {
-            if ($this->is_valid_request($method)) {
-                $throw = $this->_throw_error;
-                $this->_throw_error = FALSE;
-				if ($this->has_method($method) || method_exists($this, $method))
-					$retval = parent::__call ($method, $args);
-				else
-                    $retval = $this->http_error("Page Not Found", 404);
-                $this->_throw_error = $throw;
-            }
-        }
-        else $retval = parent::__call ($method, $args);
-
-        return $retval;
-    }
 }
 
 /**

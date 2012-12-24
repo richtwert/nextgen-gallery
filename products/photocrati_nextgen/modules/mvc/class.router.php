@@ -9,7 +9,7 @@ class Mixin_Router extends Mixin
 
     function get_routed_app()
     {
-        return $this->object->_routed_app ? $this->_routed_app : $this->object->get_default_app();
+        return $this->object->_routed_app ? $this->object->_routed_app : $this->object->get_default_app();
     }
 
 	function get_default_app()
