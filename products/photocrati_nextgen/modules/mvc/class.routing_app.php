@@ -88,7 +88,7 @@ class Mixin_Routing_App extends Mixin
 			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
 		}
 		$retval = implode('/', $segments);
-		if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
+		if (strpos($retval, '/') !== 0 && strpos($retval, 'http') === FALSE) $retval = '/'.$retval;
 
 		return $retval;
 	}
@@ -380,7 +380,7 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE)
+	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE, $url=FALSE)
 	{
 		$retval				= $default;
 		$key				= preg_quote($key);
@@ -389,8 +389,9 @@ class Mixin_Routing_App extends Mixin
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
 		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#i";
 		$found				= FALSE;
+		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
 
-		foreach ($this->object->get_parameter_sources() as $source_name => $source) {
+		foreach ($sources as $source_name => $source) {
 			if (preg_match($param_regex, $source, $matches)) {
 				if ($segment) $retval = array(
 					'segment'		=>	$matches[0],
@@ -403,7 +404,7 @@ class Mixin_Routing_App extends Mixin
 		}
 
 		// Lastly, check the $_REQUEST
-		if (!$found && isset($_REQUEST[$key])) $retval = $_REQUEST[$key];
+		if (!$found && !$url && isset($_REQUEST[$key])) $retval = $_REQUEST[$key];
 
 		return $retval;
 	}
@@ -414,15 +415,29 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $value
 	 * @param mixed $id
 	 */
-	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE)
+	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE)
 	{
 		// Remove the parameter from both the querystring and request uri
-		$this->remove_parameter($key, $id);
+		$retval = $this->object->remove_parameter($key, $id, $url);
 
-		// This parameter is being appended to the current request uri
-		$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
+		// We're modifying the current request
+		if ($url) {
+			$retval = $this->object->join_paths(
+				$retval,
+				$this->object->create_parameter_segment($key, $value, $id, $use_prefix)
+			);
+		}
 
-		return $this->object->get_routed_url();
+		// We're modifying the current request
+		else {
+			// This parameter is being appended to the current request uri
+			$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
+
+			// Return the new full url
+			$this->object->get_routed_url();
+		}
+
+		return $retval;
 	}
 
 	/**
@@ -431,9 +446,9 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $id
 	 * @return string
 	 */
-	function remove_param($key, $id=NULL)
+	function remove_param($key, $id=NULL, $url=FALSE)
 	{
-		return $this->object->remove_parameter($key, $id);
+		return $this->object->remove_parameter($key, $id, $url);
 	}
 
 	/**
@@ -443,14 +458,15 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $id
 	 * @return string
 	 */
-	function remove_parameter($key, $id=NULL)
+	function remove_parameter($key, $id=NULL, $url=FALSE)
 	{
+		$retval			= $url;
 		$param_sep		= MVC_PARAM_SEPARATOR;
 		$param_prefix	= MVC_PARAM_PREFIX;
 
 		// Is the parameter already part of the request? If so, modify that
 		// parmaeter
-		if (($segment = $this->object->get_parameter_segment($key, $id))) {
+		if (($segment = $this->object->get_parameter_segment($key, $id, $url))) {
  			extract($segment);
 
 			if ($source == 'querystring') {
@@ -463,15 +479,20 @@ class Mixin_Routing_App extends Mixin
 				));
 				$qs = preg_replace($regex, '', $this->get_router()->get_querystring());
 				$this->object->get_router()->set_querystring($qs);
+				$retval = $this->object->get_routed_url();
 			}
 			elseif ($source == 'request_uri') {
 				$uri = $this->object->get_app_request_uri();
 				$uri = str_replace($segment, '', $uri);
 				$this->object->set_app_request_uri($uri);
+				$retval = $this->object->get_routed_url();
+			}
+			else {
+				$retval = str_replace($segment, '', $retval);
 			}
 		}
 
-		return $this->object->get_routed_url();
+		return $retval;
 	}
 
 
@@ -517,9 +538,9 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $value
 	 * @param mixed $id
 	 */
-	function set_parameter($key, $value, $id=NULL, $use_prefix=FALSE)
+	function set_parameter($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE)
 	{
-		return $this->object->set_parameter_value($key, $value, $id, $use_prefix=FALSE);
+		return $this->object->set_parameter_value($key, $value, $id, $use_prefix, $url);
 	}
 
 	/**
@@ -528,9 +549,9 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $value
 	 * @param mixed $id
 	 */
-	function set_param($key, $value, $id=NULL, $use_prefix=FALSE)
+	function set_param($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE)
 	{
-		return $this->object->set_parameter_value($key, $value, $id, $use_prefix=FALSE);
+		return $this->object->set_parameter_value($key, $value, $id, $use_prefix=FALSE, $url);
 	}
 
 	/**
@@ -540,9 +561,9 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	function get_parameter_value($key, $id=NULL, $default=NULL)
+	function get_parameter_value($key, $id=NULL, $default=NULL, $url=FALSE)
 	{
-		return $this->object->get_parameter($key, $id, $default);
+		return $this->object->get_parameter($key, $id, $default, FALSE, $url);
 	}
 
 	/**
@@ -552,9 +573,9 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	function get_parameter_segment($key, $id=NULL, $default=NULL)
+	function get_parameter_segment($key, $id=NULL, $url=FALSE)
 	{
-		return $this->object->get_parameter($key, $id, $default, TRUE);
+		return $this->object->get_parameter($key, $id, NULL, TRUE, $url);
 	}
 
 	/**

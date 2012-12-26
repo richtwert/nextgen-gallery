@@ -46,6 +46,7 @@ class Mixin_Router extends Mixin
 	 */
 	function get_url($uri='/', $with_qs=FALSE)
 	{
+		if (strpos($uri, '/') !== 0) $uri = '/'.$uri;
 		$retval = $this->object->get_base_url().$uri;
 		if ($with_qs && ($qs = $this->object->get_querystring())) {
 			$retval .= '?'.$qs;
@@ -85,9 +86,10 @@ class Mixin_Router extends Mixin
 		$segments = func_get_args();
 		foreach ($segments as &$segment) {
 			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
+			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
 		}
 		$retval = implode('/', $segments);
-		if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
+		if (strpos($retval, '/') !== 0 && strpos($retval, 'http') === FALSE) $retval = '/'.$retval;
 
 		return $retval;
 	}

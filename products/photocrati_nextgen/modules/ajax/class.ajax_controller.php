@@ -39,7 +39,7 @@ class C_Ajax_Controller extends C_MVC_Controller
 		$this->set_content_type('javascript');
 		$this->render_view('ajax_js', array(
 			'ajax_url'	=>	NEXTGEN_GALLERY_AJAX_URL,
-			'site_url'	=> real_site_url()
+			'site_url'	=>  $this->get_router()->get_base_url()
 		));
         throw new E_Clean_Exit();
 	}

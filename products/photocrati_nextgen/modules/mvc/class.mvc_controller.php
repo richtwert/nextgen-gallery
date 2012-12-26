@@ -117,6 +117,11 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 		return $this->object->get_routed_app()->set_parameter($key, $value, $id, $use_prefix);
 	}
 
+	function set_param_for($url, $key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		return $this->object->get_routed_app()->set_parameter($key, $value, $id, $use_prefix, $url);
+	}
+
 	/**
 	 * Gets the relative URL of the current request
 	 * @return string
