@@ -1083,9 +1083,10 @@ jQuery(function($){
 				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
 				var alt_text = this.model.alttext().replace(/\\&/g, '&').replace(/\\'/g, "'");
+				var timestamp = new Date().getTime();
 				image_container.attr({
 					title: alt_text,
-					style: "background-image: url('"+this.model.get('thumb_url')+"')"
+					style: "background-image: url('"+this.model.get('thumb_url')+"?timestamp"+timestamp+"')"
 				}).css({
 					width:			this.model.get('max_width'),
 					height:			this.model.get('max_height'),

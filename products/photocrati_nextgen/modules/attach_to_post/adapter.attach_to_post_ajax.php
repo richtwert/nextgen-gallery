@@ -150,11 +150,7 @@ class A_Attach_To_Post_Ajax extends Mixin
                 }
 
 				// Get the thumbnail
-				$entity->thumb_url = $this->object->set_param_for(
-					$storage->get_image_url($image, 'thumb'),
-					'timestamp',
-					time()
-				);
+				$entity->thumb_url = $storage->get_image_url($image, 'thumb');
 				$entity->thumb_html	= $storage->get_image_html($image, 'thumb');
 				$entity->max_width  = $settings->thumbwidth;
 				$entity->max_height = $settings->thumbheight;
