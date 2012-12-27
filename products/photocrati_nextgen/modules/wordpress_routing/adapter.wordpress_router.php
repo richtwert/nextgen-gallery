@@ -26,7 +26,14 @@ class A_WordPress_Router extends Mixin
 		// If so, then we do NOT need /index.php as part of the url
 		$filename = str_replace($this->object->get_base_url().'/', ABSPATH, $retval);
 		if ($retval && file_exists($filename)) {
+
+			// Remove index.php from the url
 			$retval = str_replace('index.php/', '', $retval);
+
+			// Static urls don't end with a slash
+			if (substr($retval, -1) == '/') $retval = substr($retval, 0, -1);
+
+			// Set retval to the new url being returned
 			$this->object->set_method_property(
 				$this->method_called,
 				ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE,

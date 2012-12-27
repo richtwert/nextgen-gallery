@@ -687,7 +687,7 @@ jQuery(function($){
 				// Create all elements
 				var image_container = $('<div/>').addClass('image_container');
 				var img = $('<img/>').attr({
-					src: wp_site_url+'/'+this.model.get('preview_image_relpath'),
+					src: wp_site_static_url+'/'+this.model.get('preview_image_relpath'),
 					title: this.model.get('title'),
 					alt: this.model.get('alt')
 				});
