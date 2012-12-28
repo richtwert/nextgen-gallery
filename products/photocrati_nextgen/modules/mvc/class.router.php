@@ -81,19 +81,6 @@ class Mixin_Router extends Mixin
 		return $retval;
 	}
 
-	function join_paths()
-	{
-		$segments = func_get_args();
-		foreach ($segments as &$segment) {
-			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
-			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
-		}
-		$retval = implode('/', $segments);
-		if (strpos($retval, '/') !== 0 && strpos($retval, 'http') === FALSE) $retval = '/'.$retval;
-
-		return $retval;
-	}
-
 	/**
 	 * Determines if the current request is over HTTPs or not
 	 */
@@ -191,6 +178,7 @@ class C_Router extends C_Component
     {
 		if (!context OR $context == 'all') $context = '/';
 		parent::define($context);
+		$this->add_mixin('Mixin_Url_Manipulation');
         $this->add_mixin('Mixin_Router');
 		$this->implement('I_Router');
     }

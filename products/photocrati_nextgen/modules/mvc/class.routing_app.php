@@ -80,19 +80,6 @@ class Mixin_Routing_App extends Mixin
 		);
 	}
 
-	function join_paths()
-	{
-		$segments = func_get_args();
-		foreach ($segments as &$segment) {
-			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
-			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
-		}
-		$retval = implode('/', $segments);
-		if (strpos($retval, '/') !== 0 && strpos($retval, 'http') === FALSE) $retval = '/'.$retval;
-
-		return $retval;
-	}
-
 	function get_app_request_uri()
 	{
 		$retval = FALSE;
@@ -422,10 +409,10 @@ class Mixin_Routing_App extends Mixin
 
 		// We're modifying the current request
 		if ($url) {
-			$retval = $this->object->join_paths(
-				$retval,
-				$this->object->create_parameter_segment($key, $value, $id, $use_prefix)
-			);
+			$parts = array($url);
+			if (strpos($url, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
+			$parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
+			$retval = $this->object->join_paths($parts);
 		}
 
 		// We're modifying the current request
@@ -463,6 +450,7 @@ class Mixin_Routing_App extends Mixin
 		$retval			= $url;
 		$param_sep		= MVC_PARAM_SEPARATOR;
 		$param_prefix	= MVC_PARAM_PREFIX;
+		$param_slug		= preg_quote(MVC_PARAM_SLUG);
 
 		// Is the parameter already part of the request? If so, modify that
 		// parmaeter
@@ -484,11 +472,17 @@ class Mixin_Routing_App extends Mixin
 			elseif ($source == 'request_uri') {
 				$uri = $this->object->get_app_request_uri();
 				$uri = str_replace($segment, '', $uri);
+				if (preg_match("#{$param_slug}\/?$#", $uri, $match)) {
+					$uri = str_replace($match[0], '', $uri);
+				}
 				$this->object->set_app_request_uri($uri);
 				$retval = $this->object->get_routed_url();
 			}
 			else {
 				$retval = str_replace($segment, '', $retval);
+				if (preg_match("#{$param_slug}\/?$#", $retval, $match)) {
+					$retval = str_replace($match[0], '', $retval);
+				}
 			}
 		}
 
@@ -504,12 +498,11 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function add_parameter_to_app_request_uri($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		$this->object->set_app_request_uri(
-			$this->object->join_paths(
-				$this->object->get_app_request_uri(),
-				$this->object->create_parameter_segment($key, $value, $id, $use_prefix)
-			)
-		);
+		$uri = $this->object->get_app_request_uri();
+		$parts = array($uri);
+		if (strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
+		$parts[] = $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
+		$this->object->set_app_request_uri($this->object->join_paths($parts));
 
 		return $this->object->get_app_request_uri();
 	}
@@ -625,6 +618,7 @@ class C_Routing_App extends C_Component
     function define($context= FALSE)
     {
         parent::define($context);
+		$this->add_mixin('Mixin_Url_Manipulation');
         $this->add_mixin('Mixin_Routing_App');
     }
 
