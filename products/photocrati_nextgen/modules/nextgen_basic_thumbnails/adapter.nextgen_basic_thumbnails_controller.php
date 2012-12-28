@@ -20,7 +20,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function index_action($displayed_gallery, $return=FALSE)
 	{
         $display_settings = $displayed_gallery->display_settings;
-        $current_page = (int)$this->param('page', 1);
+        $current_page = (int)$this->param('page', $displayed_gallery->id(), 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $total = $displayed_gallery->get_entity_count();

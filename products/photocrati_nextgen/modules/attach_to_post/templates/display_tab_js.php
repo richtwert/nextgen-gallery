@@ -1301,7 +1301,7 @@ jQuery(function($){
 					var id = response.displayed_gallery[id_field];
 					self.displayed_gallery.set('id', id);
 					var editor = parent.tinyMCE.activeEditor;
-					var preview_url = ngg_displayed_gallery_preview_url + '?id='+id;
+					var preview_url = ngg_displayed_gallery_preview_url + '/id--'+id;
 					var snippet = "<img class='ngg_displayed_gallery mceItem' src='" + preview_url + "'/>";
 					if (editor.getContent().indexOf(preview_url) < 0)
 						editor.execCommand('mceInsertContent', false, snippet);
