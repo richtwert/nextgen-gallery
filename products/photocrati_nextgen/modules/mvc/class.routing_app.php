@@ -434,7 +434,7 @@ class Mixin_Routing_App extends Mixin
 			$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
 
 			// Return the new full url
-			$this->object->get_routed_url();
+			$retval = $this->object->get_routed_url();
 		}
 
 		return $retval;

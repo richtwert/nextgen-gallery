@@ -111,25 +111,23 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		);
 
 		// Enqueue the backbone app for the display tab
-		if ($this->object->_validate_request()) {
-			$display_tab_js_url = NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL;
-			$preview_url		= NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL;
-			if ($this->_displayed_gallery->id()) {
-				$display_tab_js_url .= '/id--'.$this->_displayed_gallery->id();
-				$preview_url .= '/id'.MVC_PARAM_SEPARATOR.$this->_displayed_gallery->id();
-			}
-
-			wp_enqueue_script(
-				'ngg_display_tab',
-				$display_tab_js_url,
-				array('backbone', 'underscore.string')
-			);
-			wp_localize_script(
-				'ngg_display_tab',
-				'ngg_displayed_gallery_preview_url',
-				$preview_url
-			);
+		$display_tab_js_url = NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL;
+		$preview_url		= NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL;
+		if ($this->object->_displayed_gallery->id()) {
+			$display_tab_js_url .= '/id--'.$this->object->_displayed_gallery->id();
+			$preview_url .= '/id'.MVC_PARAM_SEPARATOR.$this->object->_displayed_gallery->id();
 		}
+
+		wp_enqueue_script(
+			'ngg_display_tab',
+			$display_tab_js_url,
+			array('backbone', 'underscore.string')
+		);
+		wp_localize_script(
+			'ngg_display_tab',
+			'ngg_displayed_gallery_preview_url',
+			$preview_url
+		);
 	}
 
 	/**
