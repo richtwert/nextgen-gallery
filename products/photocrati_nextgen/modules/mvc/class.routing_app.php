@@ -410,7 +410,7 @@ class Mixin_Routing_App extends Mixin
 		// We're modifying the current request
 		if ($url) {
 			$parts = array($url);
-			if (strpos($url, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
+			if (MVC_PARAM_SLUG && strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
 			$parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
 			$retval = $this->object->join_paths($parts);
 		}
@@ -450,7 +450,7 @@ class Mixin_Routing_App extends Mixin
 		$retval			= $url;
 		$param_sep		= MVC_PARAM_SEPARATOR;
 		$param_prefix	= MVC_PARAM_PREFIX;
-		$param_slug		= preg_quote(MVC_PARAM_SLUG);
+		$param_slug		= MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG) : FALSE;
 
 		// Is the parameter already part of the request? If so, modify that
 		// parmaeter
@@ -472,7 +472,7 @@ class Mixin_Routing_App extends Mixin
 			elseif ($source == 'request_uri') {
 				$uri = $this->object->get_app_request_uri();
 				$uri = str_replace($segment, '', $uri);
-				if (preg_match("#{$param_slug}\/?$#", $uri, $match)) {
+				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#", $uri, $match)) {
 					$uri = str_replace($match[0], '', $uri);
 				}
 				$this->object->set_app_request_uri($uri);
@@ -480,7 +480,7 @@ class Mixin_Routing_App extends Mixin
 			}
 			else {
 				$retval = str_replace($segment, '', $retval);
-				if (preg_match("#{$param_slug}\/?$#", $retval, $match)) {
+				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#", $retval, $match)) {
 					$retval = str_replace($match[0], '', $retval);
 				}
 			}
@@ -500,7 +500,7 @@ class Mixin_Routing_App extends Mixin
 	{
 		$uri = $this->object->get_app_request_uri();
 		$parts = array($uri);
-		if (strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
+		if (MVC_PARAM_SLUG && strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
 		$parts[] = $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
 		$this->object->set_app_request_uri($this->object->join_paths($parts));
 
