@@ -25,4 +25,34 @@ class Mixin_Url_Manipulation extends Mixin
 		}
 		else $arr[] = $obj;
 	}
+
+	/**
+	 * Returns the request uri with the parameter segments stripped
+	 * @param string $request_uri
+	 * @return string
+	 */
+	function strip_param_segments($request_uri, $remove_slug=TRUE)
+	{
+		$retval		 = $request_uri ? $request_uri : '/';
+		$sep		 = preg_quote(MVC_PARAM_SEPARATOR);
+		$param_regex = "#((?<id>\w+){$sep})?(?<key>\w+){$sep}(?<value>\w+)/?$#";
+		$slug		 = MVC_PARAM_SLUG && $remove_slug? '/'.preg_quote(MVC_PARAM_SLUG) : '';
+		$slug_regex	 = '#'.$slug.'/?$#';
+
+		// Remove all parameters
+		while (preg_match($param_regex, $retval, $matches)) {
+			$match_regex = '#'.preg_quote(array_shift($matches)).'$#';
+			$retval = preg_replace($match_regex, '', $retval);
+		}
+
+		// Remove the slug or trailing slash
+		if (preg_match($slug_regex, $retval, $matches)) {
+			$match_regex = '#'.preg_quote(array_shift($matches)).'$#';
+			$retval = preg_replace($match_regex, '', $retval);
+		}
+
+		if (!$retval) $retval = '/';
+
+		return $retval;
+	}
 }

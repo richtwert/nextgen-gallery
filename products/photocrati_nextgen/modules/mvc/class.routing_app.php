@@ -80,14 +80,13 @@ class Mixin_Routing_App extends Mixin
 		);
 	}
 
-	function get_app_request_uri()
+	function get_app_request_uri($with_params=TRUE)
 	{
 		$retval = FALSE;
 
 		if ($this->object->_request_uri) $retval = $this->object->_request_uri;
-		else if (($match = $this->object->does_app_serve_request())) {
-			$retval = str_replace($match['match'], '', $match['request_uri']);
-			if (!$retval) $retval = '/';
+		else if (($retval = $this->object->does_app_serve_request())) {
+			if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
 			$this->object->set_app_request_uri($retval);
 		}
 
@@ -109,33 +108,38 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function get_app_routing_pattern()
 	{
-		$segment = $this->object->context;
-		$segment = (substr($this->object->context, 0) == '/' ? '^':'').$segment;
-		return preg_quote('#'.$segment.'#i');
+		return $this->object->_route_to_regex($this->object->context);
 	}
 
 
 	/**
 	 * Determines whether this app serves the request
-	 * @return boolean|array
+	 * @return boolean|string
 	 */
 	function does_app_serve_request()
 	{
 		$retval = FALSE;
+		$regex  = FALSE;
 
-		// get the request uri to match
-        $request_uri			= $this->object->get_router()->get_request_uri();
-		$app_routing_pattern	= $this->object->get_app_routing_pattern();
+		$request_uri = $this->object->get_router()->get_request_uri();
 
-		if (preg_match($app_routing_pattern, $request_uri, $matches)) {
-			$retval = array(
-				'match'			=>	array_pop($matches),
-				'request_uri'	=>	$request_uri
-			);
+		// Is the context present in the uri?
+		if (($index = strpos($request_uri, $this->object->context)) !== FALSE) {
+			$starts_with_slash = strpos($this->object->context, '/') === 0;
+			if (($starts_with_slash && $index === 0) OR (!$slarts_with_slash)) {
+				$regex = implode('', array(
+					'#',
+					($starts_with_slash ? '^':''),
+					preg_quote($this->object->context),
+					'#'
+				));
+				$retval = preg_replace($regex, '', $request_uri);
+			}
 		}
 
 		return $retval;
 	}
+
 
     /**
      * Determines if the current routing app meets our requirements and serves them
@@ -203,8 +207,13 @@ class Mixin_Routing_App extends Mixin
 			// Handle routed endpoints
 			else {
 				foreach ($this->object->_routing_patterns as $pattern => $handler) {
-					if (preg_match($pattern, $request_uri, $matches)) {
-						$this->object->add_placeholder_params_from_matches($matches);
+					if (preg_match($pattern, $this->object->get_app_request_uri(), $matches)) {
+
+						// Add placeholder parameters
+						foreach ($matches as $key => $value) {
+							if (is_numeric($key)) continue;
+							$this->object->set_parameter_value($key, $value, NULL);
+						}
 
 						// If a handler is attached to the route, execute it. A
 						// handler can be
@@ -230,6 +239,9 @@ class Mixin_Routing_App extends Mixin
 							else {
 								$this->object->execute_route_handler($handler);
 							}
+						}
+						else if (!$handler) {
+							$this->object->passthru();
 						}
 					}
 				}
@@ -295,6 +307,13 @@ class Mixin_Routing_App extends Mixin
 		}
 	}
 
+	/**
+	 * Used to pass execution to PHP and perhaps an above framework
+	 */
+	function passthru()
+	{
+	}
+
 
 	/**
 	 * Adds a placeholder parameter
@@ -334,17 +353,31 @@ class Mixin_Routing_App extends Mixin
                 $route
             )
         );
+
+		// Wrap the route
+		$route_regex = '('.$route_regex.')';
+
+		// If the route starts with a slash, then it must appear at the beginning
+		// of a request uri
 		if (strpos($route, '/') === 0) $route_regex = '^'.$route_regex;
 
-		// A route can be followed by a list of parameters
-		$separator = preg_quote(MVC_PARAM_SEPARATOR);
-		$param_part_regex = "[^{$separator}]+";
-		$param_regex = "(({$param_part_regex}{$separator})?{$param_part_regex}{$separator}{$param_part_regex}\/?){0,}";
+		// If the route is not /, and perhaps /foo, then we need to optionally
+		// look for a trailing slash as well
+		if ($route != '/') $route_regex .= '/?';
 
-        $route_regex = '#' . $route_regex . $param_regex . '$#i';
+		// If parameters come after a slug, it might appear as well
+		if (MVC_PARAM_SLUG) {
+			$route_regex .= "(".preg_quote(MVC_PARAM_SLUG).'/)?';
+		}
+
+		// Parameter might follow the request uri
+		$route_regex .= "(/?([^/]+\-\-)?[^/]+\-\-[^/]+/?){0,}";
+
+		// Create the regex
+        $route_regex = '#' . $route_regex . $param_regex . '/?$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/', '(?<\1>[^/]+)/?', $route_regex);
+        return preg_replace('/~([^~]+)~/i', '(?<\1>[^/]+)/?', $route_regex);
     }
 
 	/**
@@ -472,7 +505,7 @@ class Mixin_Routing_App extends Mixin
 			elseif ($source == 'request_uri') {
 				$uri = $this->object->get_app_request_uri();
 				$uri = str_replace($segment, '', $uri);
-				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#", $uri, $match)) {
+				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#i", $uri, $match)) {
 					$uri = str_replace($match[0], '', $uri);
 				}
 				$this->object->set_app_request_uri($uri);
@@ -480,7 +513,7 @@ class Mixin_Routing_App extends Mixin
 			}
 			else {
 				$retval = str_replace($segment, '', $retval);
-				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#", $retval, $match)) {
+				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#i", $retval, $match)) {
 					$retval = str_replace($match[0], '', $retval);
 				}
 			}
@@ -608,6 +641,19 @@ class Mixin_Routing_App extends Mixin
 
 		return $retval;
 	}
+
+	function has_parameter_segments()
+	{
+		$sep = preg_quote(MVC_PARAM_SEPARATOR);
+		$regex = implode('', array(
+			'#',
+			MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG).'/?' : '',
+			"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+){0,}",
+			'$#'
+		));
+
+		return preg_match($regex, $this->object->get_app_request_uri());
+	}
 }
 
 class C_Routing_App extends C_Component
@@ -620,6 +666,7 @@ class C_Routing_App extends C_Component
         parent::define($context);
 		$this->add_mixin('Mixin_Url_Manipulation');
         $this->add_mixin('Mixin_Routing_App');
+		$this->implement('I_Routing_App');
     }
 
     static function &get_instance($context = False)

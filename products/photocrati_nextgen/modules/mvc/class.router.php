@@ -39,6 +39,16 @@ class Mixin_Router extends Mixin
 		return $this->object->get_parameter($key, $prefix, $default);
 	}
 
+	function has_parameter_segments()
+	{
+		return $this->object->get_routed_app()->has_parameter_segments();
+	}
+
+	function passthru()
+	{
+		return $this->object->get_routed_app()->passthru();
+	}
+
 	/**
 	 * Gets url for the router
 	 * @param string $uri
@@ -123,14 +133,21 @@ class Mixin_Router extends Mixin
 	 * Gets the request for the router
 	 * @return string
 	 */
-    function get_request_uri()
+    function get_request_uri($with_params=TRUE)
     {
 		if (isset($_SERVER['PATH_INFO']))
 			$retval = $_SERVER['PATH_INFO'];
 		else
 			$retval = $_SERVER['REQUEST_URI'];
 
+		// Remove the router's context
 		$retval = preg_replace('#^'.preg_quote($this->object->context).'#', '', $retval);
+
+		// Remove the params
+		if (!$with_params)
+			$retval = $this->object->strip_param_segments($retval);
+
+		// Ensure that request uri starts with a slash
 		if (strpos($retval, '/') !== 0) $retval = "/{$retval}";
 
 		return $retval;
@@ -161,7 +178,8 @@ class Mixin_Router extends Mixin
      */
     function get_apps()
     {
-        return $this->object->_apps;
+        usort($this->object->_apps, array(&$this, '_sort_apps'));
+		return $this->object->_apps;
     }
 }
 

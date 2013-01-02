@@ -24,6 +24,7 @@ class M_WordPress_Routing extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Router', 'A_WordPress_Router');
+		$this->get_registry()->add_adapter('I_Routing_App', 'A_WordPress_Routing_App');
 	}
 }
 
