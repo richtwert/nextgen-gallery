@@ -36,6 +36,12 @@ class Hook_NextGen_Basic_Thumbnails_Defaults extends Hook
 			$this->object->_set_default_value($entity, 'settings', 'show_return_link', 1);
 			$this->object->_set_default_value($entity, 'settings', 'return_link_text', $settings->galTextGallery);
 
+            // override thumbnail settings
+            $this->object->_set_default_value($entity, 'settings', 'override_thumbnail_settings', 0);
+            $this->object->_set_default_value($entity, 'settings', 'thumbnail_quality', '100');
+            $this->object->_set_default_value($entity, 'settings', 'thumbnail_crop', 0);
+            $this->object->_set_default_value($entity, 'settings', 'thumbnail_watermark', 0);
+
 			// Show piclens link ?
 			$this->object->_set_default_value($entity, 'settings', 'piclens_link_text', _('[Show PicLens]'));
 			$this->object->_set_default_value($entity, 'settings', 'show_piclens_link',
