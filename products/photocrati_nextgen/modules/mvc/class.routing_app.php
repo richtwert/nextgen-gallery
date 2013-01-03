@@ -44,8 +44,20 @@ class Mixin_Routing_App extends Mixin
         // fetch all rewrite patterns
         $patterns = $this->object->_rewrite_patterns;
 
+		// Assign rewrite definition
+		$definition = array('dst' => $dst, 'redirect' => $redirect);
+
+		// We treat wildcards much differently then normal rewrites
+		if (strpos($src, '{*}') !== FALSE) {
+			$src = '#^'.str_replace('{*}', '(.*)', $src).'/?$#';
+			$definition['wildcards'] = TRUE;
+		}
+
+		// Normal rewrite
+		else $src = $this->object->_route_to_regex($src);
+
         // add the rewrite pattern
-        $patterns[$this->object->_route_to_regex($src)] = array('dst' => $dst, 'redirect' => $redirect);
+        $patterns[$src] = $definition;
 
         // update rewrite patterns;
         $this->object->_rewrite_patterns = $patterns;
@@ -80,7 +92,7 @@ class Mixin_Routing_App extends Mixin
 		);
 	}
 
-	function get_app_request_uri($with_params=TRUE)
+	function get_app_request_uri()
 	{
 		$retval = FALSE;
 
@@ -135,6 +147,8 @@ class Mixin_Routing_App extends Mixin
 				));
 				$retval = preg_replace($regex, '', $request_uri);
 				if (!$retval) $retval = '/';
+				if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
+				if (substr($retval, -1) != '/') $retval = $retval.'/';
 			}
 		}
 
@@ -167,7 +181,28 @@ class Mixin_Routing_App extends Mixin
             // start rewriting urls
             foreach ($this->object->_rewrite_patterns as $pattern => $details) {
 
-                if (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
+				// Wildcards are processed much differently
+				if (isset($details['wildcards']) && $details['wildcards']) {
+					if (preg_match($pattern, $request_uri, $matches)) {
+						$request_uri = $details['dst'];
+						foreach ($matches as $index => $match) {
+							if ($index == 0) continue;
+							$request_uri = str_replace(
+								"{{$index}}", $match, $request_uri
+							);
+						}
+
+						// Set the redirect flag if we're to do so
+						if (isset($details['redirect']) && $details['redirect']) {
+							$redirect = $details['redirect'] === TRUE ?
+								302 : intval($details['redirect']);
+							break;
+						}
+					}
+				}
+
+				// Normal rewrite pattern
+                elseif (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
 				{
 					// Assign new request URI
 					$request_uri = $details['dst'];
@@ -375,7 +410,7 @@ class Mixin_Routing_App extends Mixin
 		$route_regex .= "(/?([^/]+\-\-)?[^/]+\-\-[^/]+/?){0,}";
 
 		// Create the regex
-        $route_regex = '#' . $route_regex . $param_regex . '/?$#i';
+        $route_regex = '#' . $route_regex . '/?$#i';
 
         // convert placeholders to regex as well
         return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG).'\K' : '').'(?<\1>[^/]+)/?', $route_regex);

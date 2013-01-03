@@ -89,7 +89,7 @@ class M_MVC extends C_Base_Module
 //        $app->rewrite('/nggallery/page-{page}/',             '/page--{page}');
 
 		if (!$router->serve_request() && $router->has_parameter_segments()) {
-			$router->passthru();
+			return $router->passthru();
 		}
 	}
 

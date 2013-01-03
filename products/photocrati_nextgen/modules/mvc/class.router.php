@@ -7,16 +7,19 @@ class Mixin_Router extends Mixin
         $this->object->_routed_app = $app;
     }
 
-    function get_routed_app()
+    function &get_routed_app()
     {
-        return $this->object->_routed_app ? $this->object->_routed_app : $this->object->get_default_app();
+		$retval = $this->object->_routed_app ? $this->object->_routed_app : $this->object->get_default_app();
+        return $retval;
     }
 
-	function get_default_app()
+	function &get_default_app()
 	{
 		if (is_null($this->object->_default_app))
 			$this->object->_default_app = $this->object->create_app();
-		return $this->object->_default_app;
+		$retval = $this->object->_default_app;
+
+		return $retval;
 	}
 
 	function route($patterns, $handler=FALSE)
@@ -46,7 +49,7 @@ class Mixin_Router extends Mixin
 
 	function passthru()
 	{
-		return $this->object->get_routed_app()->passthru();
+		return $this->object->get_default_app()->passthru();
 	}
 
 	/**
@@ -170,7 +173,7 @@ class Mixin_Router extends Mixin
     function &create_app($name = '/')
     {
         $factory = $this->get_registry()->get_utility('I_Component_Factory');
-        $app = &$factory->create('routing_app', $name);
+        $app = $factory->create('routing_app', $name);
         $this->object->_apps[] = $app;
         return $app;
     }
