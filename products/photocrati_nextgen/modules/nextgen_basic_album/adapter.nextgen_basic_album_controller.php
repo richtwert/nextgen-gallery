@@ -139,10 +139,11 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
             // Get the page link
             $id_field = $gallery->id_field;
-            $gallery->pagelink = $application->add_parameter(
-                (empty($gallery->is_album) ? 'album' : 'gallery'),
-                $gallery->$id_field
-            );
+			$gallery->pagelink = $this->object->set_param_for(
+				$this->object->get_routed_url(),
+				$gallery->is_album ? 'album' : 'gallery',
+				$gallery->$id_field
+			);
 
             // Let plugins modify the gallery
             $gallery = apply_filters('ngg_album_galleryobject', $gallery);

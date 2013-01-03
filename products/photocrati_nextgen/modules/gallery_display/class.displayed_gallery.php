@@ -449,8 +449,8 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		$album_key		= $album_mapper->get_primary_key_column();
 		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$gallery_key	= $gallery_mapper->get_primary_key_column();
-		$album_select	= ($id_only ? $album_key : '*').", 1 AS is_album, name AS title, albumdesc AS galdesc";
-		$gallery_select = ($id_only ? $gallery_key : '*').", 1 AS is_gallery";
+		$album_select	= ($id_only ? $album_key : '*').", 1 AS is_album, 0 AS is_gallery, name AS title, albumdesc AS galdesc";
+		$gallery_select = ($id_only ? $gallery_key : '*').", 1 AS is_gallery, 0 AS is_album";
 
 		// Modify the sort order of the entities
 		if ($this->object->sortorder) {
