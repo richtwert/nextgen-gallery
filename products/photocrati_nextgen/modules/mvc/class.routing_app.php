@@ -134,6 +134,7 @@ class Mixin_Routing_App extends Mixin
 					'#'
 				));
 				$retval = preg_replace($regex, '', $request_uri);
+				if (!$retval) $retval = '/';
 			}
 		}
 
