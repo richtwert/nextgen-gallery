@@ -307,35 +307,32 @@ class Mixin_Display_Type_Controller extends Mixin
 	function set_alternative_view_links($displayed_gallery)
 	{
 		// Set some defaults
-		$params = &$displayed_gallery->display_settings;
-		$params['alternative_view_link_url']	= '';
-		$params['alternative_view_link']		= '';
-		$params['return_link_url']				= '';
-		$params['return_link']					= '';
+		$params								= &$displayed_gallery->display_settings;
+		$params['alternative_view_link_url']= '';
+		$params['alternative_view_link']	= '';
+		$params['return_link_url']			= '';
+		$params['return_link']				= '';
+		$current_url						= $this->object->get_routed_url();
 
 		// Add show alternative view link
         if ($params['show_alternative_view_link'] && $params['alternative_view'])
         {
-            if (($url = $this->object->get_absolute_url('nggallery/' . $params['alternative_view'])))
-            {
-				$params['alternative_view_link_url'] = $url;
-				$params['alternative_view_link'] = "<a href='".esc_attr($url)."'>".
-						htmlentities($params['alternative_view_link_text']).
-					'</a>';
-			}
+			$url = $this->object->set_param_for($current_url, 'show', $params['alternative_view'], $displayed_gallery->id());
+			$params['alternative_view_link_url'] = $url;
+			$params['alternative_view_link'] = "<a href='".esc_attr($url)."'>".
+					htmlentities($params['alternative_view_link_text']).
+				'</a>';
 		}
 
 		// If we're serving an alternative view, then we'll need to add
 		// a return link
 		if ($this->object->is_serving_alternative_view($displayed_gallery->get_display_type()) && $params['show_return_link']) {
-			if (($url = $this->object->get_absolute_url())) {
-				$url = urldecode(remove_query_arg('show', $url));
-				$params['return_link_url'] = $url;
-				$params['return_link'] =
-					"<a href='".esc_attr($url)."'>".
-						htmlentities($params['return_link_text']).
-					"</a>";
-			}
+			$url = $this->object->remove_param_for($current_url, 'show', $displayed_gallery->id());
+			$params['return_link_url'] = $url;
+			$params['return_link'] =
+				"<a href='".esc_attr($url)."'>".
+					htmlentities($params['return_link_text']).
+				"</a>";
 		}
 		return $displayed_gallery;
 	}

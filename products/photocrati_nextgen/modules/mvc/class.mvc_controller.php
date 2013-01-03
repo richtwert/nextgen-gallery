@@ -122,24 +122,14 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 		return $this->object->get_routed_app()->set_parameter($key, $value, $id, $use_prefix, $url);
 	}
 
-	/**
-	 * Gets the relative URL of the current request
-	 * @return string
-	 */
-	function get_relative_url($segment='')
+	function remove_param($key, $id=NULL)
 	{
-		return isset($_SERVER['REQUEST_URI']) ? path_join($_SERVER['REQUEST_URI'], $segment) : '';
+		return $this->object->get_routed_app()->remove_parameter($key, $id);
 	}
 
-
-	/**
-	 * Gets the absolute url of the current request
-	 * @return string
-	 */
-	function get_absolute_url($segment='')
+	function remove_param_for($url, $key, $id=NULL)
 	{
-		$url = $this->object->get_relative_url($segment);
-		return $url ? real_site_url($url) : '';
+		return $this->object->get_routed_app()->remove_parameter($key, $id, $url);
 	}
 
 	/**
