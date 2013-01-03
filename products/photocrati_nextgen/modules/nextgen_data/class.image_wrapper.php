@@ -247,7 +247,8 @@ class C_Image_Wrapper
 
             case 'pidlink':
                 $application = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
-                $this->_cache['pidlink'] = $application->add_parameter(
+                $this->_cache['pidlink'] = $application->set_param_for(
+                    $application->get_routed_url(),
                     'pid',
                     $this->get_settings()->usePermalinks ? $this->__get('image_slug') : $this->__get('id')
                 );
