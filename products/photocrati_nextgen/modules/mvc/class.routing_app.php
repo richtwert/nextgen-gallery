@@ -407,7 +407,7 @@ class Mixin_Routing_App extends Mixin
 		$id					= $id ? preg_quote($id) : "\d+";
 		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
-		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^\/]+)\/?#i";
+		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^/\?]+)\/?#i";
 		$found				= FALSE;
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
 
@@ -440,12 +440,14 @@ class Mixin_Routing_App extends Mixin
 		// Remove the parameter from both the querystring and request uri
 		$retval = $this->object->remove_parameter($key, $id, $url);
 
-		// We're modifying the current request
+		// We're modifying a url passed in
 		if ($url) {
-			$parts = array($url);
-			if (MVC_PARAM_SLUG && strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
+			list($retval, $qs) = explode('?', $retval);
+			$parts = array($retval);
+			if (MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
 			$parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
 			$retval = $this->object->join_paths($parts);
+			if ($qs) $retval .= "?{$qs}";
 		}
 
 		// We're modifying the current request
@@ -504,21 +506,20 @@ class Mixin_Routing_App extends Mixin
 			}
 			elseif ($source == 'request_uri') {
 				$uri = $this->object->get_app_request_uri();
-				$uri = str_replace($segment, '', $uri);
-				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#i", $uri, $match)) {
+				$uri = $this->object->join_paths(explode($segment, $uri));
+				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}/?$#i", $uri, $match)) {
 					$uri = str_replace($match[0], '', $uri);
 				}
 				$this->object->set_app_request_uri($uri);
 				$retval = $this->object->get_routed_url();
 			}
 			else {
-				$retval = str_replace($segment, '', $retval);
-				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}\/?$#i", $retval, $match)) {
+				$retval = $this->object->join_paths(explode($segment, $url));
+				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}/?$#i", $retval, $match)) {
 					$retval = str_replace($match[0], '', $retval);
 				}
 			}
 		}
-
 		return $retval;
 	}
 
