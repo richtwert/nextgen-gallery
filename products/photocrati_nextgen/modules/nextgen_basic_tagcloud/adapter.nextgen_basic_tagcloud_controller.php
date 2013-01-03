@@ -57,7 +57,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         $tags = get_terms($args['taxonomy'], array_merge($args, array('orderby' => 'count', 'order' => 'DESC')));
 
         foreach ($tags as $key => $tag) {
-            $tags[$key]->link = $application->set_parameter_value('gallerytag', $tag->slug, NULL, FALSE, FALSE, FALSE);
+            $tags[$key]->link = $application->add_parameter('gallerytag', $tag->slug);
             $tags[$key]->id = $tag->term_id;
         }
 

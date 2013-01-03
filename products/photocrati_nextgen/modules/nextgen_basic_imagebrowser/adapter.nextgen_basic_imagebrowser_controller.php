@@ -113,17 +113,15 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         // determine URI to the next & previous images
         $back_pid = ($key >= 1) ? $picture_array[$key - 1] : end($picture_array);
 
-        $prev_image_link = $application->set_parameter_value(
+        $prev_image_link = $application->add_parameter(
             'pid',
-            ($settings->usePermalinks) ? $picture_list[$back_pid]->image_slug : $back_pid,
-            NULL, FALSE, FALSE, FALSE
+            ($settings->usePermalinks) ? $picture_list[$back_pid]->image_slug : $back_pid
         );
 
         $next_pid = ($key < ($total - 1)) ? $picture_array[$key + 1] : reset($picture_array);
-        $next_image_link = $application->set_parameter_value(
+        $next_image_link = $application->add_parameter(
             'pid',
-            ($settings->usePermalinks) ? $picture_list[$next_pid]->image_slug : $next_pid,
-            NULL, FALSE, FALSE, FALSE
+            ($settings->usePermalinks) ? $picture_list[$next_pid]->image_slug : $next_pid
         );
 
         // css class
