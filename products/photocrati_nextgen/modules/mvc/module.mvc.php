@@ -69,7 +69,7 @@ class M_MVC extends C_Base_Module
 	function route()
 	{
         // TODO: get gallery stub from setting
-		$app = $this->get_registry()->get_utility('I_Router');
+		$router = $this->get_registry()->get_utility('I_Router');
 //        $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
 //        $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');
 //        $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/slideshow/', '/album--{album}/gallery--{gallery}/page--{page}/show--slide/');
@@ -87,9 +87,10 @@ class M_MVC extends C_Base_Module
 //        $app->rewrite('/nggallery/image/{pid}/page-{page}/', '/pid--{pid}/page--{page}/');
 //        $app->rewrite('/nggallery/image/{pid}/',             '/pid--{pid}');
 //        $app->rewrite('/nggallery/page-{page}/',             '/page--{page}');
-		if ($app->has_parameter_segments()) $app->passthru();
 
-		$this->get_registry()->get_utility('I_Router')->serve_request();
+		if (!$router->serve_request() && $router->has_parameter_segments()) {
+			$router->passthru();
+		}
 	}
 
     function handle_exit($exception)

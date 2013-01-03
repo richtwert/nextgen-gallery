@@ -107,11 +107,15 @@ class Mixin_Router extends Mixin
      */
     function serve_request()
     {
+		$served = FALSE;
+
         // iterate over all apps, and serve the route
         foreach ($this->object->get_apps() as $app) {
-            if ($app->serve_request($this->object->context))
+            if (($served = $app->serve_request($this->object->context)))
                 break;
         }
+
+		return $served;
     }
 
 	/**

@@ -161,7 +161,6 @@ class Mixin_Routing_App extends Mixin
 
         // if the application root matches, then we'll try to route the request
         if (($request_uri = $this->object->get_app_request_uri())){
-			$served = TRUE;
 			$redirect = FALSE;
 
             // start rewriting urls
@@ -208,6 +207,7 @@ class Mixin_Routing_App extends Mixin
 			else {
 				foreach ($this->object->_routing_patterns as $pattern => $handler) {
 					if (preg_match($pattern, $this->object->get_app_request_uri(), $matches)) {
+						$served = TRUE;
 
 						// Add placeholder parameters
 						foreach ($matches as $key => $value) {
