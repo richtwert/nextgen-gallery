@@ -377,7 +377,7 @@ class Mixin_Routing_App extends Mixin
         $route_regex = '#' . $route_regex . $param_regex . '/?$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/i', '(?<\1>[^/]+)/?', $route_regex);
+        return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG).'\K' : '').'(?<\1>[^/]+)/?', $route_regex);
     }
 
 	/**
@@ -404,10 +404,10 @@ class Mixin_Routing_App extends Mixin
 	{
 		$retval				= $default;
 		$key				= preg_quote($key);
-		$id					= $id ? preg_quote($id) : "\d+";
+		$id					= $id ? preg_quote($id) : "[^/]+";
 		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
-		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^/\?]+)\/?#i";
+		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^/\?]+)/?#i";
 		$found				= FALSE;
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
 

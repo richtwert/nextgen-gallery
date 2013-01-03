@@ -285,7 +285,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		$retval	= FALSE;
 
         // Let the request determine what display type or alternative view to render
-		if (($show = $this->param('show'))) {
+		if (($show = $this->param('show', $displayed_gallery->id()))) {
 			$retval = $this->_render_alternative_view($displayed_gallery, $show, $return);
 		}
 		elseif (isset($_SERVER['NGGALLERY']) && (($show = $_SERVER['NGGALLERY']))) {
