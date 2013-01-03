@@ -31,6 +31,14 @@ abstract class C_MVC_Controller extends C_Component
 		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
         $this->implement('I_MVC_Controller');
+
+        // TODO: this should be moved to a more appropriate place
+        $this->add_post_hook(
+            'set_param_for',
+            'Make Wordpress specific URI adjustments',
+            'Hook_Wordpress_URI_Params_Modifier',
+            'set_param_for'
+        );
     }
 }
 

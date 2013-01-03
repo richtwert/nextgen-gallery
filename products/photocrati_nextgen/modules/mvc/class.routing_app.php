@@ -138,7 +138,7 @@ class Mixin_Routing_App extends Mixin
 		// Is the context present in the uri?
 		if (($index = strpos($request_uri, $this->object->context)) !== FALSE) {
 			$starts_with_slash = strpos($this->object->context, '/') === 0;
-			if (($starts_with_slash && $index === 0) OR (!$slarts_with_slash)) {
+			if (($starts_with_slash && $index === 0) OR (!$starts_with_slash)) {
 				$regex = implode('', array(
 					'#',
 					($starts_with_slash ? '^':''),
@@ -478,7 +478,7 @@ class Mixin_Routing_App extends Mixin
 
 		// We're modifying a url passed in
 		if ($url) {
-			list($retval, $qs) = explode('?', $retval);
+			@list($retval, $qs) = explode('?', $retval);
 			$parts = array($retval);
 			if (MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
 			$parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
