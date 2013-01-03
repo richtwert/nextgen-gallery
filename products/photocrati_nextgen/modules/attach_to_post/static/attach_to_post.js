@@ -11,6 +11,7 @@ function adjust_height_for_frame(frame, callback)
 	// Adjust height of the frame
 	var $frame			= jQuery(frame);
 	var new_height		= jQuery(frame.contentDocument).height();
+	new_height += 60; // needed for IE8 and Firefox. Could probably be tweaked
 	var current_height	= $frame.height();
 	if (current_height < new_height) $frame.height(new_height);
 
@@ -23,7 +24,7 @@ function adjust_height_for_frame(frame, callback)
 // Activates the attach to post screen elements
 jQuery(function($){
 	// Activate horizontal tabs
-	$('#attach_to_post_tabs').tabs();
+	$('#attach_to_post_tabs').ngg_tabs();
 
 	// If the preview area is being displayed, emit an event for that
 	$('.accordion h3').bind('click', function(e){
@@ -62,7 +63,7 @@ jQuery(function($){
 	// Fade in now that all GUI elements are intact
 	$('body').css({
 		position: 'static',
-		visibility: 'visible'
+		visibility: 'visible',
 	}).animate({
 		opacity: 1.0
 	});

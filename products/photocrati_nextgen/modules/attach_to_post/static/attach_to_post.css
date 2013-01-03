@@ -54,10 +54,6 @@ iframe {
 	background: transparent;
 }
 
-#source_tab_content {
-	overflow: visible;
-}
-
 #displayed_gallery_source {
 	width: 400px;
 }
@@ -251,7 +247,9 @@ table {
 	position: absolute;
 	top: -5000px;
 }
-
+.ui-tabs .main_menu_tab {
+	overflow: scroll;
+}
 /**
  * Make the active tab still clickable
  **/

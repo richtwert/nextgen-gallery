@@ -519,6 +519,7 @@ function nggCreateAlbum( $galleriesID, $template = 'extend', $album = 0) {
                 continue;
 
             //populate the sub album values
+			if (!isset($galleries[$key])) $galleries[$key] = new stdClass;
             $galleries[$key]->counter = 0;
             $galleries[$key]->previewurl = '';
             // ensure that album contain a preview image

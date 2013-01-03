@@ -330,8 +330,7 @@ class M_Gallery_Display extends C_Base_Module
     function wrap_shortcode_singlepic($params, $inner_content=NULL)
     {
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
-        $params['image_id'] = $this->_get_param('id', NULL, $params);
-        $params['source'] = $this->_get_param('source', 'image', $params);
+        $params['image_ids'] = $this->_get_param('id', NULL, $params);
         unset($params['id']);
         return $this->renderer->display_images($params, $inner_content);
     }
@@ -363,7 +362,7 @@ class M_Gallery_Display extends C_Base_Module
     function wrap_shortcode_tagcloud($params, $inner_content=NULL)
     {
         $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
-        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['source']       = $this->_get_param('source', 'tags', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
         return $this->renderer->display_images($params, $inner_content);
     }

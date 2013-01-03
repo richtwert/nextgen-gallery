@@ -118,13 +118,16 @@
 			});
 
 			// Open a window, occupying 90% of the screen real estate
-			this.editor.windowManager.open({
-				file:	attach_to_post_url,
-				width:	1200,
-				height:	600,
-				inline: true,
-				title:	"NextGEN Gallery - Attach To Post"
+			var popup = this.editor.windowManager.open({
+				file:		attach_to_post_url,
+				width:		1200,
+				height:		600,
+				inline:		true,
+				title:		"NextGEN Gallery - Attach To Post"
 			});
+
+			// Ensure that the window cannot be scrolled
+			jQuery('#'+popup.id+'_ifr').css('overflow', 'hidden');
 		}
 	});
 

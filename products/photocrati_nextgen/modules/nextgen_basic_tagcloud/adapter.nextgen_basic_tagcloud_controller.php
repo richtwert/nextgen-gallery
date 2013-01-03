@@ -34,6 +34,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
             // and display it
             $dg = $factory->create('displayed_gallery', $mapper, $dg->get_entity());
             $controller = $this->object->get_registry()->get_utility('I_Display_Type_Controller', $dg->display_type);
+            $controller->set_alternative_view_links($displayed_gallery);
             $controller->enqueue_frontend_resources($dg);
             return $controller->index_action($dg, $return);
         }
