@@ -471,14 +471,14 @@ class Mixin_Routing_App extends Mixin
 	 * @param mixed $value
 	 * @param mixed $id
 	 */
-	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE)
+	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE, $modify = TRUE)
 	{
 		// Remove the parameter from both the querystring and request uri
 		$retval = $this->object->remove_parameter($key, $id, $url);
 
 		// We're modifying a url passed in
 		if ($url) {
-			list($retval, $qs) = explode('?', $retval);
+			@list($retval, $qs) = explode('?', $retval);
 			$parts = array($retval);
 			if (MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
 			$parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
@@ -489,10 +489,11 @@ class Mixin_Routing_App extends Mixin
 		// We're modifying the current request
 		else {
 			// This parameter is being appended to the current request uri
-			$this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix);
+			$retval = $this->object->add_parameter_to_app_request_uri($key, $value, $id, $use_prefix, $modify);
 
 			// Return the new full url
-			$retval = $this->object->get_routed_url();
+			if ($modify)
+                $retval = $this->object->get_routed_url();
 		}
 
 		return $retval;
@@ -562,19 +563,28 @@ class Mixin_Routing_App extends Mixin
 
 	/**
 	 * Adds a parameter to the application's request URI
+     *
 	 * @param string $key
 	 * @param mixed $value
 	 * @param mixed $id
+     * @param bool $use_prefix
+     * @param bool $modify Whether to call set_app_request_uri() with the resulting url
 	 */
-	function add_parameter_to_app_request_uri($key, $value, $id=NULL, $use_prefix=FALSE)
+	function add_parameter_to_app_request_uri($key, $value, $id=NULL, $use_prefix=FALSE, $modify = TRUE)
 	{
 		$uri = $this->object->get_app_request_uri();
 		$parts = array($uri);
 		if (MVC_PARAM_SLUG && strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
 		$parts[] = $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
-		$this->object->set_app_request_uri($this->object->join_paths($parts));
 
-		return $this->object->get_app_request_uri();
+        $retval = $this->object->join_paths($parts);
+        if ($modify)
+        {
+            $this->object->set_app_request_uri($retval);
+            $retval = $this->object->get_app_request_uri();
+        }
+
+		return $retval;
 	}
 
 
