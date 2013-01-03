@@ -650,7 +650,7 @@ class Mixin_Routing_App extends Mixin
 		$regex = implode('', array(
 			'#',
 			MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG).'/?' : '',
-			"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+){0,}",
+			"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+/?){0,}",
 			'$#'
 		));
 
