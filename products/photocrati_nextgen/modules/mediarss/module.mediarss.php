@@ -32,6 +32,13 @@ class M_MediaRss extends C_Base_Module
 		$this->get_registry()->add_adapter('I_Router', 'A_MediaRss_Routes');
 	}
 
+	function _register_utilities()
+	{
+		$this->get_registry()->add_utility(
+			'I_MediaRSS_Controller', 'C_MediaRSS_Controller'
+		);
+	}
+
 }
 
 new M_MediaRss();

@@ -18,10 +18,9 @@ class A_MediaRSS_Routes extends Mixin
         $app->route(
             '/',
             array(
-                'controller' => 'C_MediaRSS_Controller',
+                'controller' => 'I_MediaRSS_Controller',
                 'action'  => 'index',
-                'context' => FALSE,
-                'method'  => array('GET')
+                'context' => FALSE
             )
         );
 	}
