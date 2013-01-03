@@ -299,7 +299,7 @@ class Mixin_Routing_App extends Mixin
 
 		// Get controller
 		$controller = $this->object->get_registry()->get_utility(
-			$handler['controller'], $context
+			$handler['controller'], $handler['context']
 		);
 
 		// Call action

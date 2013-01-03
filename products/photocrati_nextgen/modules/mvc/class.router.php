@@ -201,7 +201,7 @@ class C_Router extends C_Component
 
     function define($context = FALSE)
     {
-		if (!context OR $context == 'all') $context = '/';
+		if (!$context OR $context == 'all') $context = '/';
 		parent::define($context);
 		$this->add_mixin('Mixin_Url_Manipulation');
         $this->add_mixin('Mixin_Router');

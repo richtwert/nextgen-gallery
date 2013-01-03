@@ -58,7 +58,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-        wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
+        wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL, array(), NULL);
 	}
 }
 
