@@ -225,7 +225,7 @@ class M_Gallery_Display extends C_Base_Module
      */
     function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
     {
-        $params['image_ids']    = $this->_get_param('id', NULL, $params);
+        $params['gallery_ids']  = $this->_get_param('id', NULL, $params);
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
         unset($params['id']);
