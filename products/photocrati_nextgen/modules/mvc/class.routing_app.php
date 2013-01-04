@@ -144,6 +144,7 @@ class Mixin_Routing_App extends Mixin
 					preg_quote($this->object->context),
 					'#'
 				));
+				$retval = preg_replace($regex, '', $request_uri);
 				if (!$retval) $retval = '/';
 				if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
 				if (substr($retval, -1) != '/') $retval = $retval.'/';

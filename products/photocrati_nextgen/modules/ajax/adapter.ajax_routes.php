@@ -16,7 +16,7 @@ class A_Ajax_Routes extends Mixin
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
 		$app	= $router->create_app('/photocrati_ajax');
-		$app->route('/',	'I_Ajax_Controller#index');
 		$app->route('/js',	'I_Ajax_Controller#js');
+		$app->route('/',	'I_Ajax_Controller#index');
 	}
 }

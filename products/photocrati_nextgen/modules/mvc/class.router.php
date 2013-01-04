@@ -186,8 +186,20 @@ class Mixin_Router extends Mixin
     function get_apps()
     {
         usort($this->object->_apps, array(&$this, '_sort_apps'));
-		return $this->object->_apps;
+		return array_reverse($this->object->_apps);
     }
+
+	/**
+	 * Sorts apps.This is needed because we want the most specific app to be
+	 * executed first
+	 * @param C_Routed_App $a
+	 * @param C_Routed_App $b
+	 * @return int
+	 */
+	function _sort_apps($a, $b)
+	{
+		return strnatcmp($a->context, $b->context);
+	}
 }
 
 /**
