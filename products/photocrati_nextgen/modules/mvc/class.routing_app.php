@@ -469,7 +469,7 @@ class Mixin_Routing_App extends Mixin
 
 		// Lastly, check the $_REQUEST
 		if (!$found && !$url && isset($_REQUEST[$key]))
-            $retval = $_REQUEST[$key];
+            $retval = $this->object->recursive_stripslashes($_REQUEST[$key]);
 
 		return $retval;
 	}
@@ -700,6 +700,33 @@ class Mixin_Routing_App extends Mixin
 
 		return preg_match($regex, $this->object->get_app_request_uri());
 	}
+
+    /**
+     * Recursively calls stripslashes() on strings, arrays, and objects
+     *
+     * @param mixed $value Value to be processed
+     * @return mixed Resulting value
+     */
+    function recursive_stripslashes($value)
+    {
+        if (is_string($value))
+        {
+            $value = stripslashes($value);
+        }
+        elseif (is_array($value)) {
+            foreach ($value as &$tmp) {
+                $tmp = $this->object->recursive_stripslashes($tmp);
+            }
+        }
+        elseif (is_object($value))
+        {
+            foreach (get_object_vars($value) as $key => $data) {
+                $value->{$key} = recursive_stripslashes($data);
+            }
+        }
+
+        return $value;
+    }
 }
 
 class C_Routing_App extends C_Component
