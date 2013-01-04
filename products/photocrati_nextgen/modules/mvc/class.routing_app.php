@@ -131,7 +131,6 @@ class Mixin_Routing_App extends Mixin
 	function does_app_serve_request()
 	{
 		$retval = FALSE;
-		$regex  = FALSE;
 
 		$request_uri = $this->object->get_router()->get_request_uri();
 
@@ -143,10 +142,8 @@ class Mixin_Routing_App extends Mixin
 					'#',
 					($starts_with_slash ? '^':''),
 					preg_quote($this->object->context),
-                    "(.+)",
 					'#'
 				));
-				$retval = preg_replace($regex, '\1', $request_uri);
 				if (!$retval) $retval = '/';
 				if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
 				if (substr($retval, -1) != '/') $retval = $retval.'/';
