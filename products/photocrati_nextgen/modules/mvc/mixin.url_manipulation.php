@@ -34,9 +34,9 @@ class Mixin_Url_Manipulation extends Mixin
 	function strip_param_segments($request_uri, $remove_slug=TRUE)
 	{
 		$retval		 = $request_uri ? $request_uri : '/';
-		$sep		 = preg_quote(MVC_PARAM_SEPARATOR);
-		$param_regex = "#((?<id>\w+){$sep})?(?<key>\w+){$sep}(?<value>\w+)/?$#";
-		$slug		 = MVC_PARAM_SLUG && $remove_slug? '/'.preg_quote(MVC_PARAM_SLUG) : '';
+		$sep		 = preg_quote(MVC_PARAM_SEPARATOR, '#');
+		$param_regex = "#((?<id>\w+){$sep})?(?<key>\w+){$sep}(?<value>.+)/?$#";
+		$slug		 = MVC_PARAM_SLUG && $remove_slug ? '/' . preg_quote(MVC_PARAM_SLUG) : '';
 		$slug_regex	 = '#'.$slug.'/?$#';
 
 		// Remove all parameters
