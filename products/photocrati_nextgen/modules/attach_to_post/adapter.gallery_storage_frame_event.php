@@ -18,12 +18,22 @@ class A_Gallery_Storage_Frame_Event extends Mixin
 		$events     = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
 		$mapper	    = $this->get_registry()->get_utility('I_Image_Mapper');
 		$storage    = $this->get_registry()->get_utility('I_Gallery_Storage');
+        $app        = $this->get_registry()->get_utility('I_Router')->get_routed_app();
 
 		$image	= $mapper->find($image);
-        $image->thumb_url = $controller->add_parameter('timestamp', time(), NULL, $storage->get_thumb_url($image));
-        $events->add_event(array(
-			'event'		=>	'thumbnail_modified',
-			'image'		=>	$image,
-		));
-	}
+        $image->thumb_url = $controller->set_param_for(
+            $app->get_routed_url(TRUE),
+            'timestamp',
+            time(),
+            NULL,
+            $storage->get_thumb_url($image)
+        );
+
+        $events->add_event(
+            array(
+                'event' => 'thumbnail_modified',
+                'image' => $image,
+            )
+        );
+    }
 }
