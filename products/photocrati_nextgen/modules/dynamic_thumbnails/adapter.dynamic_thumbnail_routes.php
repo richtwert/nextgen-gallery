@@ -16,7 +16,14 @@ class A_Dynamic_Thumbnail_Routes extends Mixin
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
         $app = $router->create_app('/nextgen_image');
-		$app->rewrite('/{\w}/{\w}/{\w}', '/nggallery/id--{1}/size--{2}/manip--{3}', FALSE, TRUE);
+
+		// The C_Dynamic_Thumbnails Controller was created before the new
+		// router implementation was conceptualized. It uses it's own mechanism
+		// to parse the REQUEST_URI. It should be refactored to use the router's
+		// parameter mechanism, but for now - we'll just removed the segments
+		// from the router's visibility, and let the Dynamic Thumbnails Controller
+		// do it's own parsing
+		$app->rewrite('/{*}', '/');
         $app->route('/', 'I_Dynamic_Thumbnails_Controller#index');
 	}
 }

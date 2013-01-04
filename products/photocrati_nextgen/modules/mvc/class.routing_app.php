@@ -185,6 +185,7 @@ class Mixin_Routing_App extends Mixin
 
             // start rewriting urls
             foreach ($this->object->_rewrite_patterns as $pattern => $details) {
+
 				// Wildcards are processed much differently
 				if (isset($details['wildcards']) && $details['wildcards']) {
 					if (preg_match($pattern, $request_uri, $matches)) {
