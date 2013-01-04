@@ -146,20 +146,28 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 	 */
 	function find_all($conditions=array(), $model=FALSE)
 	{
-		// Sometimes users will forget that the first parameter is conditions,
-		// and think it's $model instead
-		if ($conditions === TRUE) {
+		// Sometimes users will forget that the first parameter is conditions, and think it's $model instead
+		if ($conditions === TRUE)
+        {
 			$conditions = array();
 			$model = TRUE;
 		}
 
+        if ($conditions === FALSE)
+        {
+            $conditions = array();
+            $model = FALSE;
+        }
+
 		$results = $this->object->select()->where_and($conditions)->run_query();
-		if ($results && $model) {
+		if ($results && $model)
+        {
 			foreach ($results as &$r) {
 				$r = $this->object->convert_to_model($r);
 			}
 		}
-		return $results;
+
+        return $results;
 	}
 
 
