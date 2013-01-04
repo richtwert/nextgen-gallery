@@ -16,6 +16,7 @@ class A_Dynamic_Thumbnail_Routes extends Mixin
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
         $app = $router->create_app('/nextgen_image');
+		$app->rewrite('/{\w}/{\w}/{\w}', '/nggallery/id--{1}/size--{2}/manip--{3}', FALSE, TRUE);
         $app->route('/', 'I_Dynamic_Thumbnails_Controller#index');
 	}
 }

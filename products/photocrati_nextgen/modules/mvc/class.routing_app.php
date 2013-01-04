@@ -35,7 +35,7 @@ class Mixin_Routing_App extends Mixin
      * @param string $dst Destination URL
      * @param bool $redirect FALSE for internal handling, otherwise the HTTP code to send
      */
-    function rewrite($src, $dst, $redirect = FALSE)
+    function rewrite($src, $dst, $redirect = FALSE, $stop=FALSE)
     {
         // ensure that rewrite patterns array exists
         if (!is_array($this->object->_rewrite_patterns))
@@ -45,11 +45,17 @@ class Mixin_Routing_App extends Mixin
         $patterns = $this->object->_rewrite_patterns;
 
 		// Assign rewrite definition
-		$definition = array('dst' => $dst, 'redirect' => $redirect);
+		$definition = array(
+			'dst' => $dst, 'redirect' => $redirect, 'stop'	=> $stop
+		);
 
 		// We treat wildcards much differently then normal rewrites
-		if (strpos($src, '{*}') !== FALSE) {
-			$src = '#^'.str_replace('{*}', '(.*)', $src).'/?$#';
+		if (preg_match("/\{[\.\\\*]/", $src)) {
+			$pattern  = str_replace('{*}',	'(.*)',  $src);
+			$pattern  = str_replace('{.*}', '(.*)',	 $pattern);
+			$pattern  = str_replace('{\w}', '(\w*)', $pattern);
+			$pattern  = str_replace('{\d}', '(\d*)', $pattern);
+			$src = '#^'.$pattern.'/?$#';
 			$definition['wildcards'] = TRUE;
 		}
 
@@ -179,7 +185,6 @@ class Mixin_Routing_App extends Mixin
 
             // start rewriting urls
             foreach ($this->object->_rewrite_patterns as $pattern => $details) {
-
 				// Wildcards are processed much differently
 				if (isset($details['wildcards']) && $details['wildcards']) {
 					if (preg_match($pattern, $request_uri, $matches)) {
@@ -197,6 +202,9 @@ class Mixin_Routing_App extends Mixin
 								302 : intval($details['redirect']);
 							break;
 						}
+
+						// Stop processing rewrite patterns?
+						if ($details['stop']) break;
 					}
 				}
 
