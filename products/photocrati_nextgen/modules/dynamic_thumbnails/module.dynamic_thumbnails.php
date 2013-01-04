@@ -38,6 +38,7 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 	function _register_utilities()
 	{
         $this->get_registry()->add_utility('I_Dynamic_Thumbnails_Manager', 'C_Dynamic_Thumbnails_Manager');
+        $this->get_registry()->add_utility('I_Dynamic_Thumbnails_Controller', 'C_Dynamic_Thumbnails_Controller');
 	}
 
 }

@@ -143,6 +143,7 @@ class Mixin_Routing_App extends Mixin
 					'#',
 					($starts_with_slash ? '^':''),
 					preg_quote($this->object->context),
+                    "(.+)",
 					'#'
 				));
 				$retval = preg_replace($regex, '', $request_uri);

@@ -4,7 +4,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 {
 	function get_route_name()
 	{
-		return '/nextgen_image';
+		return 'nextgen_image';
 	}
 
 	function _get_params_sanitized($params)
@@ -92,10 +92,10 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$match = null;
 
 		// XXX move this URL clean up to I_Router?
-    $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
-    $uri = trim($uri, '/');
+        $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
+        $uri = trim($uri, '/');
 
-		if (preg_match($regex, $uri, $match) > 0)
+		if (@preg_match($regex, $uri, $match) > 0)
 		{
 			$image_id = $match[1];
 			$uri_args = isset($match[2]) ? explode('/', $match[2]) : array();
