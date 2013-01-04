@@ -12,16 +12,17 @@ class Hook_WordPress_Include_Post extends Hook
 		return $this->_modify_generated_url($url);
 	}
 
-
-	function _modify_generated_url($url)
+    /**
+     * Prefixes the Wordpress post permalink into the URL when the viewer is currently on the front page
+     */
+    function _modify_generated_url($url)
 	{
 		// Get the method's return value, which is the generated url
 		$retval = $this->object->get_method_property(
 			$this->method_called, ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
 		);
 
-		// Are we generating a custom url, and are we about to display it on the
-		// front page?
+		// Are we generating a custom url, and are we about to display it on the front page?
 		if (is_front_page() && $url) {
 			$url = post_permalink();
 			if (strpos($retval, $url) === FALSE) {
