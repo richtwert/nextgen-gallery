@@ -13,6 +13,12 @@ class A_WordPress_Routing_App extends Mixin
             'Make Wordpress specific URI adjustments',
             'Hook_WordPress_Include_Post'
         );
+
+        $this->add_post_hook(
+            'get_parameter',
+            "Call Wordpress' stripslashes_deep() on all returned results",
+            'Hook_WordPress_Stripslashes'
+        );
 	}
 
 
