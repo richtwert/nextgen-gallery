@@ -446,11 +446,11 @@ class Mixin_Routing_App extends Mixin
 	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE, $url=FALSE)
 	{
 		$retval				= $default;
-		$key				= preg_quote($key);
+		$quoted_key			= preg_quote($key);
 		$id					= $id ? preg_quote($id) : "[^/]+";
 		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
 		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
-		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$key}{$param_sep}(?<value>[^/\?]+)/?#i";
+		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$quoted_key}{$param_sep}(?<value>[^/\?]+)/?#i";
 		$found				= FALSE;
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
 
@@ -467,7 +467,8 @@ class Mixin_Routing_App extends Mixin
 		}
 
 		// Lastly, check the $_REQUEST
-		if (!$found && !$url && isset($_REQUEST[$key])) $retval = $_REQUEST[$key];
+		if (!$found && !$url && isset($_REQUEST[$key]))
+            $retval = $_REQUEST[$key];
 
 		return $retval;
 	}
