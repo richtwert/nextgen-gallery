@@ -27,7 +27,6 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 	}
 
 	function _register_adapters()

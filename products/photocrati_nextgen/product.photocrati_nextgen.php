@@ -84,7 +84,7 @@ class P_Photocrati_NextGen extends C_Base_Product
         $this->get_registry()->load_module('photocrati-lightbox');
         $this->get_registry()->load_module('photocrati-fancybox-1x');
 
-//		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
+		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
 		$this->get_registry()->load_module('photocrati-mediarss');
 
 		// Provides support for thumbnail basic templates

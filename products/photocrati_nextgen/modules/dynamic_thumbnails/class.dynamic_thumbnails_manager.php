@@ -4,7 +4,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 {
 	function get_route_name()
 	{
-		return 'nextgen_image';
+		return '/nextgen_image';
 	}
 
 	function _get_params_sanitized($params)

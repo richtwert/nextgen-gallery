@@ -8,15 +8,14 @@ class A_Dynamic_Thumbnail_Routes extends Mixin
 			'serve_request',
 			'Adds Dynamic Thumbnail routes',
 			get_class(),
-			'add_dynamic_thubmnail_routes'
+			'add_dynamic_thumbnail_routes'
 		);
 	}
 
 	function add_dynamic_thumbnail_routes()
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
-        $dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-        $app = $router->create_app($dynthumbs->get_route_name());
+        $app = $router->create_app('/nextgen_image');
         $app->route('/', 'I_Dynamic_Thumbnails_Controller#index');
 	}
 }
