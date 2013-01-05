@@ -26,9 +26,9 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 		// If we're viewing an album, rewrite the urls
 		$regex = "/photocrati-nextgen_basic_\w+_album/";
 		if (preg_match($regex, $display_type)) {
-			$app->rewrite('nggallery/{\w}',				'nggallery/album--{1}');
-			$app->rewrite('nggallery/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}');
-			$app->rewrite('nggallery/{\w}/{\w}/{\w}',	'nggallery/album--{1}/gallery--{2}/show--{3}');
+			$app->rewrite('nggallery/{\w}',					'nggallery/album--{1}');
+			$app->rewrite('nggallery/{\w}/{\w}',			'nggallery/album--{1}/gallery--{2}');
+			$app->rewrite('nggallery/{\w}/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}/{3}');
 		}
 		elseif (preg_match($regex, $original_display_type)) {
 			$displayed_gallery->id(NULL);
