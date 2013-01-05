@@ -21,14 +21,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     {
         $display_settings = $displayed_gallery->display_settings;
 
-		// 1) We need to do some late url rewriting
-		$app = $this->object->get_routed_app();
-		$app->rewrite('nggallery/{\w}',				'nggallery/album--{1}');
-		$app->rewrite('nggallery/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}');
-		$app->rewrite('nggallery/{\w}/{\w}/{\w}',	'nggallery/album--{1}/gallery--{2}/show--{3}');
-		$app->do_rewrites();
-
-		// 2) We need to fetch the album containers selected in the Attach
+		// We need to fetch the album containers selected in the Attach
 		// to Post interface. We need to do this, because once we fetch the
 		// included entities, we need to iterate over each entity and assign it
 		// a parent_id, which is the album that it belongs to. We need to do this
@@ -53,9 +46,10 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $renderer = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
             return $renderer->display_images(
                 array(
-                    'source'        => 'galleries',
-                    'container_ids' => array($gallery),
-                    'display_type'  => $display_settings['gallery_display_type']
+                    'source'				=> 'galleries',
+                    'container_ids'			=> array($gallery),
+                    'display_type'			=> $display_settings['gallery_display_type'],
+					'original_display_type'	=> $displayed_gallery->display_type
                 ),
                 $return
             );
