@@ -53,9 +53,9 @@ class Mixin_Routing_App extends Mixin
 		if (preg_match("/\{[\.\\\*]/", $src)) {
 			$pattern  = str_replace('{*}',	'(.*)',  $src);
 			$pattern  = str_replace('{.*}', '(.*)',	 $pattern);
-			$pattern  = str_replace('{\w}', '(\w*)', $pattern);
+			$pattern  = str_replace('{\w}', '([\w-_]*)', $pattern);
 			$pattern  = str_replace('{\d}', '(\d*)', $pattern);
-			$src = '#^'.$pattern.'/?$#';
+			$src = '#'.(strpos($src, '/') === 0 ? '^':'').$pattern.'/?$#';
 			$definition['wildcards'] = TRUE;
 		}
 
@@ -160,6 +160,86 @@ class Mixin_Routing_App extends Mixin
 		return $retval;
 	}
 
+	/**
+	 * Performs the url rewriting routines. Returns the HTTP status code used to
+	 * redirect, if we're to do so. Otherwise FALSE
+	 * @return int|bool
+	 */
+	function do_rewrites($request_uri=FALSE)
+	{
+		$redirect = FALSE;
+
+		// Get the request uri if not provided
+		if (!$request_uri) $request_uri = $this->object->get_app_request_uri();
+
+		// ensure that rewrite patterns array exists
+        if (!is_array($this->object->_rewrite_patterns))
+            $this->object->_rewrite_patterns = array();
+
+		// Process each rewrite rule
+		 // start rewriting urls
+		foreach ($this->object->_rewrite_patterns as $pattern => $details) {
+
+			// Remove this pattern from future processing for this request
+			unset($this->object->_rewrite_patterns[$pattern]);
+
+			// Wildcards are processed much differently
+			if (isset($details['wildcards']) && $details['wildcards']) {
+				if (preg_match($pattern, $request_uri, $matches)) {
+					$request_uri = $details['dst'];
+					foreach ($matches as $index => $match) {
+						if ($index == 0) continue;
+						$request_uri = str_replace(
+							"{{$index}}", $match, $request_uri
+						);
+					}
+
+					// Set the redirect flag if we're to do so
+					if (isset($details['redirect']) && $details['redirect']) {
+						$redirect = $details['redirect'] === TRUE ?
+							302 : intval($details['redirect']);
+						break;
+					}
+
+					// Stop processing rewrite patterns?
+					if ($details['stop']) break;
+				}
+			}
+
+			// Normal rewrite pattern
+			elseif (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
+			{
+				// Assign new request URI
+				$request_uri = $details['dst'];
+
+				// Substitute placeholders
+				foreach ($matches as $match) {
+					if ($redirect) break;
+					foreach ($match as $key => $val) {
+
+						// If we have a placeholder that needs swapped, swap
+						// it now
+						if (is_numeric($key)) continue;
+						$request_uri = str_replace("{{$key}}", $val, $request_uri);
+					}
+					// Set the redirect flag if we're to do so
+					if (isset($details['redirect']) && $details['redirect']) {
+						$redirect = $details['redirect'] === TRUE ?
+							302 : intval($details['redirect']);
+						break;
+					}
+
+				}
+			}
+		}
+
+		// Cache all known data about the application request
+		$this->object->set_app_request_uri($request_uri);
+		$this->object->get_router()->set_routed_app($this);
+
+		return $redirect;
+	}
+
 
     /**
      * Determines if the current routing app meets our requirements and serves them
@@ -175,70 +255,11 @@ class Mixin_Routing_App extends Mixin
         if (!is_array($this->object->_routing_patterns))
             $this->object->_routing_patterns = array();
 
-        // ensure that rewrite patterns array exists
-        if (!is_array($this->object->_rewrite_patterns))
-            $this->object->_rewrite_patterns = array();
-
         // if the application root matches, then we'll try to route the request
         if (($request_uri = $this->object->get_app_request_uri())){
-			$redirect = FALSE;
 
-            // start rewriting urls
-            foreach ($this->object->_rewrite_patterns as $pattern => $details) {
-
-				// Wildcards are processed much differently
-				if (isset($details['wildcards']) && $details['wildcards']) {
-					if (preg_match($pattern, $request_uri, $matches)) {
-						$request_uri = $details['dst'];
-						foreach ($matches as $index => $match) {
-							if ($index == 0) continue;
-							$request_uri = str_replace(
-								"{{$index}}", $match, $request_uri
-							);
-						}
-
-						// Set the redirect flag if we're to do so
-						if (isset($details['redirect']) && $details['redirect']) {
-							$redirect = $details['redirect'] === TRUE ?
-								302 : intval($details['redirect']);
-							break;
-						}
-
-						// Stop processing rewrite patterns?
-						if ($details['stop']) break;
-					}
-				}
-
-				// Normal rewrite pattern
-                elseif (preg_match_all($pattern, $request_uri, $matches, PREG_SET_ORDER))
-				{
-					// Assign new request URI
-					$request_uri = $details['dst'];
-
-					// Substitute placeholders
-					foreach ($matches as $match) {
-						if ($redirect) break;
-						foreach ($match as $key => $val) {
-
-							// If we have a placeholder that needs swapped, swap
-							// it now
-							if (is_numeric($key)) continue;
-							$request_uri = str_replace("{{$key}}", $val, $request_uri);
-						}
-						// Set the redirect flag if we're to do so
-						if (isset($details['redirect']) && $details['redirect']) {
-							$redirect = $details['redirect'] === TRUE ?
-								302 : intval($details['redirect']);
-							break;
-						}
-
-					}
-                }
-            }
-
-			// Cache all known data about the application request
-			$this->object->set_app_request_uri($request_uri);
-			$this->object->get_router()->set_routed_app($this);
+			// Perform URL rewrites
+			$redirect = $this->object->do_rewrites($request_uri);
 
 			// Are we to perform a redirect?
 			if ($redirect) {
@@ -690,15 +711,28 @@ class Mixin_Routing_App extends Mixin
 
 	function has_parameter_segments()
 	{
-		$sep = preg_quote(MVC_PARAM_SEPARATOR);
-		$regex = implode('', array(
-			'#',
-			MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG).'/?' : '',
-			"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+/?){0,}",
-			'$#'
-		));
+		$retval			= FALSE;
+		$request_uri	= $this->object->get_app_request_uri();
+		$sep			= preg_quote(MVC_PARAM_SEPARATOR);
 
-		return preg_match($regex, $this->object->get_app_request_uri());
+		// If we detect the MVC_PARAM_SLUG, then we assume that we have parameters
+		if (MVC_PARAM_SLUG && strpos($request_uri, '/'.MVC_PARAM_SLUG) !== FALSE) {
+			$retval = TRUE;
+		}
+
+		// If the above didn't pass, then we try finding parameters in our
+		// desired format
+		if (!$retval) {
+			$regex			= implode('', array(
+				'#',
+				MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG).'/?' : '',
+				"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+/?){0,}",
+				'$#'
+			));
+			$retval = preg_match($regex, $request_uri);
+		}
+
+		return $retval;
 	}
 }
 

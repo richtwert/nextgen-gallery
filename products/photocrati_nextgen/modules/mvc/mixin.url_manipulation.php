@@ -7,7 +7,7 @@ class Mixin_Url_Manipulation extends Mixin
 		$segments = array();
 		$params = func_get_args();
 		$this->_flatten_array($params, $segments);
-		
+
 		foreach ($segments as &$segment) {
 			if (strpos($segment, '/') === 0) $segment = substr($segment, 1);
 			if (substr($segment, -1) == '/') $segment = substr($segment, 0, -1);
@@ -50,6 +50,10 @@ class Mixin_Url_Manipulation extends Mixin
 			$match_regex = '#'.preg_quote(array_shift($matches)).'$#';
 			$retval = preg_replace($match_regex, '', $retval);
 		}
+
+		// If there's a slug, we can assume everything after is a parameter,
+		// even if it's not in our desired format.
+		$retval = preg_replace('#'.$slug.'.*$#', '', $retval);
 
 		if (!$retval) $retval = '/';
 

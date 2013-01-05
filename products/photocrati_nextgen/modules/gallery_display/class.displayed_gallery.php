@@ -756,7 +756,7 @@ class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 				$mapper		= $this->get_registry()->get_utility('I_Album_Mapper');
 				$album_key	= $mapper->get_primary_key_column();
 				if ($this->object->container_ids) {
-					$mapper->where(array("{$album_key} IN %s", $this->object->container_ids));
+					$mapper->select()->where(array("{$album_key} IN %s", $this->object->container_ids));
 				}
 				$retval		= $mapper->run_query();
 			}
