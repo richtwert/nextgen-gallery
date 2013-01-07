@@ -477,12 +477,12 @@ class Mixin_Routing_App extends Mixin
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
 
 		foreach ($sources as $source_name => $source) {
-			if (preg_match($param_regex, $source, $matches)) {
-				if ($segment) $retval = array(
-					'segment'		=>	$matches[0],
-					'source'		=>	$source_name
-				);
-				else $retval = $matches['value'];
+			if (preg_match($param_regex, $source, $matches))
+            {
+				if ($segment)
+                    $retval = array('segment' => $matches[0], 'source' => $source_name);
+				else
+                    $retval = $matches['value'];
 				$found = TRUE;
 				break;
 			}
@@ -686,7 +686,8 @@ class Mixin_Routing_App extends Mixin
 
 	function get_postdata()
 	{
-		$retval = '/'.file_get_contents("php://input");
+		$retval = '/' . urldecode(file_get_contents("php://input"));
+
 		$retval = str_replace(
 			array('&', '='),
 			array('/', MVC_PARAM_SEPARATOR),
