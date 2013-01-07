@@ -638,8 +638,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	function _save_stylesheet_contents($css_file)
 	{
 		// Need to verify role
-		if (($contents = $this->object->param('cssfile_contents'))) {
-
+		if (($contents = $this->object->param('cssfile_contents')))
+        {
 			// Find filename
 			$filename = path_join(TEMPLATEPATH, $css_file);
 			$alt_filename = path_join(
@@ -655,7 +655,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			}
 
 			// Write file contents
-			if ($found) {
+			if ($found)
+            {
 				$fp = fopen($found, 'w');
 				fwrite($fp, $contents);
 				fclose($fp);
