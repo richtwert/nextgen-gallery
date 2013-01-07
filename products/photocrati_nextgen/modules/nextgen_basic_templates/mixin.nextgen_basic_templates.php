@@ -196,7 +196,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 
         if (is_integer($gallery->ID))
         {
-            if (!empty($displayed_gallery->display_settings['show_slideshow_link'])) {
+            if (!empty($displayed_gallery->display_settings['alternative_view'])) {
                 $gallery->show_slideshow = TRUE;
                 $gallery->slideshow_link = $params['alternative_view_link_url'];
                 $gallery->slideshow_link_text = $displayed_gallery->display_settings['alternative_view_link_text'];

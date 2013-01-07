@@ -138,7 +138,7 @@ class Mixin_Routing_App extends Mixin
 	{
 		$retval = FALSE;
 
-		$request_uri = $this->object->get_router()->get_request_uri();
+		$request_uri = $this->object->get_router()->get_request_uri(TRUE);
 
 		// Is the context present in the uri?
 		if (($index = strpos($request_uri, $this->object->context)) !== FALSE) {
@@ -477,8 +477,7 @@ class Mixin_Routing_App extends Mixin
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
 
 		foreach ($sources as $source_name => $source) {
-			if (preg_match($param_regex, $source, $matches))
-            {
+			if (preg_match($param_regex, $source, $matches)) {
 				if ($segment)
                     $retval = array('segment' => $matches[0], 'source' => $source_name);
 				else

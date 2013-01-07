@@ -312,12 +312,12 @@ class Mixin_Display_Type_Controller extends Mixin
 		$params['alternative_view_link']	= '';
 		$params['return_link_url']			= '';
 		$params['return_link']				= '';
-		$current_url						= $this->object->get_routed_url(TRUE);
+		$current_url						= $this->object->get_routed_url(FALSE);
 
 		// Add show alternative view link
         if ($params['show_alternative_view_link'] && $params['alternative_view'])
         {
-			$url = $this->object->set_param_for($current_url, 'show', $params['alternative_view'], $displayed_gallery->id());
+			$url = $this->object->set_param_for($current_url, 'show', $params['alternative_view'], $displayed_gallery->id());;
 			$params['alternative_view_link_url'] = $url;
 			$params['alternative_view_link'] = "<a href='".esc_attr($url)."'>".
 					htmlentities($params['alternative_view_link_text']).

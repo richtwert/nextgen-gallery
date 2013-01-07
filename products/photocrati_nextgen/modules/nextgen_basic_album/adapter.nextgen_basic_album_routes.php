@@ -29,6 +29,8 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 			$app->rewrite('nggallery/{\w}',					'nggallery/album--{1}');
 			$app->rewrite('nggallery/{\w}/{\w}',			'nggallery/album--{1}/gallery--{2}');
 			$app->rewrite('nggallery/{\w}/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}/{3}');
+			$app->rewrite('nggallery/{\w}/{\w}/page/{\d}',		'nggallery/album--{1}/gallery--{2}/{3}/{4}', FALSE, TRUE);
+			$app->rewrite('nggallery/{\w}/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}/{3}');
 		}
 		elseif (preg_match($regex, $original_display_type)) {
 			$displayed_gallery->id(NULL);
