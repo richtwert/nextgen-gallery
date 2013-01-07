@@ -15,8 +15,9 @@ class A_NextGen_Basic_Thumbnail_Routes extends Mixin
 	function _add_nextgen_basic_thumbnail_routes()
 	{
 		$router = $this->object->get_registry()->get_utility('I_Router');
-		$router->rewrite("/nggallery{*}/slideshow{*}", "/nggallery{1}/show--photocrati-nextgen_basic_slideshow{2}");
-		$router->rewrite("/nggallery{*}/show--slide/{*}", "/nggallery{1}/show--photocrati-nextgen_basic_slideshow/{2}");
+		$router->rewrite("/nggallery{*}/slideshow{*}", "/nggallery{1}/show--".NEXTGEN_GALLERY_BASIC_SLIDESHOW."{2}");
+		$router->rewrite("/nggallery{*}/show--slide/{*}", "/nggallery{1}/show--".NEXTGEN_GALLERY_BASIC_SLIDESHOW."/{2}");
+		$router->rewrite("/nggallery{*}/show--gallery/{*}", "/nggallery{1}/show--".NEXTGEN_GALLERY_BASIC_THUMBNAILS."/{2}");
 		$router->rewrite("/nggallery{*}/page/{\d}{*}", "/nggallery/{1}/page--{2}{3}");
 	}
 }

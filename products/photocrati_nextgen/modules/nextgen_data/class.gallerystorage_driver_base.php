@@ -249,7 +249,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
      */
     function get_image_dimensions($image, $size='full')
     {
-        $retval = NULL;
+		$retval = NULL;
 
         // If an image id was provided, get the entity
         if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
@@ -275,6 +275,18 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             if (isset($image->meta_data) && isset($image->meta_data[$size])) {
                 $retval = $image->meta_data[$size];
             }
+
+			// Didn't exist for meta data. We'll have to compute
+			// TODO: Is this required? If so, should be somehow cache the
+			// dimensions in the meta_data after computing?
+			else {
+				error_log("ATTENTION: Image dimensions for {$size} weren't in image meta_data");
+				$size = getimagesize($this->object->get_image_abspath($image));
+				if ($size) {
+					$retval['width']	= $size[0];
+					$retval['height']	= $size[1];
+				}
+			}
         }
 
         return $retval;
@@ -486,11 +498,11 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 		return $retval;
 	}
-	
+
 	function get_image_format_list()
 	{
 		$format_list = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png');
-		
+
 		return $format_list;
 	}
 
@@ -634,7 +646,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				// Something went wrong...
 				return null;
 			}
-			
+
 			$result['clone_path'] = $clone_path;
 			$result['clone_directory'] = $clone_dir;
 			$result['clone_suffix'] = $clone_suffix;
@@ -650,12 +662,12 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height) && $clone_suffix != null)
 			{
 				$result['method'] = 'wordpress';
-				
+
 				$new_dims = image_resize_dimensions($dimensions[0], $dimensions[1], $width, $height, $crop);
-				
+
 				if ($new_dims) {
 					list($dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h) = $new_dims;
-				
+
 					$width = $dst_w;
 					$height = $dst_h;
 				}
@@ -666,7 +678,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			else
 			{
 				$result['method'] = 'nextgen';
-				
+
 				$original_width = $dimensions[0];
 				$original_height = $dimensions[1];
 				$original_ratio = $original_width / $original_height;
@@ -783,7 +795,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 						$crop_x = (int) round(($original_width - $crop_width) / 2);
 						$crop_y = (int) round(($original_height - $crop_height) / 2);
 					}
-					
+
 					$result['crop_area'] = array('x' => $crop_x, 'y' => $crop_y, 'width' => $crop_width, 'height' => $crop_height);
 				}
 				else {
@@ -791,14 +803,14 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					list($width, $height) = wp_constrain_dimensions($original_width, $original_height, $width, $height);
 				}
 			}
-			
+
 			$result['width'] = $width;
 			$result['height'] = $height;
 			$result['quality'] = $quality;
-			
+
 			$real_width = $width;
 			$real_height = $height;
-			
+
 			if ($reflection)
 			{
 				// default for nextgen was 40%, this is used in generate_image_clone as well
@@ -807,14 +819,14 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
         $reflection_height = intval($real_height * ($reflection_amount / 100));
         $real_height = $real_height + $reflection_height;
 			}
-			
+
 			$result['real_width'] = $real_width;
 			$result['real_height'] = $real_height;
 		}
 
 		return $result;
 	}
-	
+
 	/**
 	 * Returns an array of dimensional properties (width, height, real_width, real_height) of a resulting clone image if and when generated
 	 * @param string $image_path
@@ -826,19 +838,19 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	{
 		$retval = null;
 		$result = $this->object->calculate_image_clone_result($image_path, $clone_path, $params);
-		
+
 		if ($result != null) {
 			$retval = array(
-				'width' => $result['width'], 
-				'height' => $result['height'], 
-				'real_width' => $result['real_width'], 
+				'width' => $result['width'],
+				'height' => $result['height'],
+				'real_width' => $result['real_width'],
 				'real_height' => $result['real_height']
 			);
 		}
-		
+
 		return $retval;
 	}
-	
+
 	/**
 	 * Generates a "clone" for an existing image, the clone can be altered using the $params array
 	 * @param string $image_path
@@ -860,13 +872,13 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		$thumbnail  = NULL;
 
 		$result = $this->object->calculate_image_clone_result($image_path, $clone_path, $params);
-		
+
 		// XXX this should maybe be removed and extra settings go into $params?
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
 		// Ensure we have a valid image
 		if ($image_path && file_exists($image_path) && $result != null && !isset($result['error']))
-		{			
+		{
 			$image_dir = dirname($image_path);
 			$clone_path = $result['clone_path'];
 			$clone_dir = $result['clone_directory'];
@@ -885,7 +897,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					}
 				}
 			}
-			
+
 			$method = $result['method'];
 			$width = $result['width'];
 			$height = $result['height'];

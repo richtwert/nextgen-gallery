@@ -16,7 +16,7 @@ class Hook_NextGen_Basic_Thumbnails_Defaults extends Hook
 {
 	function set_defaults($entity)
 	{
-		if ($entity->name == NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS) {
+		if ($entity->name == NEXTGEN_GALLERY_BASIC_THUMBNAILS) {
 			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 			$this->object->_set_default_value($entity, 'settings', 'images_per_page', $settings->galImages);
 			$this->object->_set_default_value($entity, 'settings', 'number_of_columns', $settings->galColumns);

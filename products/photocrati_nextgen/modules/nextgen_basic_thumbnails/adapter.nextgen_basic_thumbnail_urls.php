@@ -1,22 +1,29 @@
 <?php
 
-class Mixin_NextGen_Basic_Thumbnail_Urls extends Mixin
+class A_NextGen_Basic_Thumbnail_Urls extends Mixin
 {
 	function initialize()
 	{
 		$this->object->add_post_hook(
 			'set_parameter_value',
-			'Ensure that the /page/2 parameter segment is always used',
+			get_class(),
 			get_class(),
 			'_set_ngglegacy_page_parameter'
 		);
+		$this->object->add_post_hook(
+			'remove_parameter',
+			get_class(),
+			get_class(),
+			'_set_ngglegacy_page_parameter'
+		);
+
 	}
 
 
 	function create_parameter_segment($key, $value, $id, $use_prefix)
 	{
 		if ($key == 'page') {
-			return 'page/'.$value;
+			return '/page/'.$value.'/';
 		}
 		else
 			return $this->call_parent('create_parameter_segment', $key, $value, $id, $use_prefix);
@@ -34,7 +41,7 @@ class Mixin_NextGen_Basic_Thumbnail_Urls extends Mixin
 		if ($id)$id = preg_quote($id, '#').$sep;
 		$prefix		= preg_quote(MVC_PARAM_PREFIX, '#');
 		$regex		= implode('', array(
-			'#/?/',
+			'#//?',
 			$id ? "({$id})?" : '',
 			"($prefix)?page{$sep}(\d+)/?#"
 		));
