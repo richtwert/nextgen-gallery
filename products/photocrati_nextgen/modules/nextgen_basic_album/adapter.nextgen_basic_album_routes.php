@@ -34,6 +34,7 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 			$displayed_gallery->id(NULL);
 			$app->rewrite('nggallery/album--{\w}',		'nggallery/{1}');
 			$app->rewrite('nggallery/album--{\w}/gallery--{\w}', 'nggallery/{1}/{2}');
+			$app->rewrite('nggallery/album--{\w}/gallery--{\w}/{\w}', 'nggallery/{1}/{2}/{3}');
 		}
 
 		// Perform rewrites
