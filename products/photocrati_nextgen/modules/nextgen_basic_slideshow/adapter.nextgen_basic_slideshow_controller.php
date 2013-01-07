@@ -78,7 +78,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-		return NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow.js';
+		return NEXTGEN_GALLERY_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow.js';
 	}
 
 	/**
@@ -88,7 +88,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
+		return NEXTGEN_GALLERY_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
 	}
 
 

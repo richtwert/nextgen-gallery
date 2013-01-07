@@ -21,9 +21,9 @@ class A_NextGen_Basic_Slideshow_Activation extends Mixin
 	function install_nextgen_basic_slideshow()
 	{
 		$mapper			= $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-		$display_type	= $mapper->find_by_name(NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW, TRUE);
+		$display_type	= $mapper->find_by_name(NEXTGEN_GALLERY_BASIC_SLIDESHOW, TRUE);
 		if (!$display_type) $display_type = new stdClass();
-		$display_type->name						= NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW;
+		$display_type->name						= NEXTGEN_GALLERY_BASIC_SLIDESHOW;
 		$display_type->title					= "NextGEN Basic Slideshow";
 		$display_type->entity_types				= array('image');
 		$display_type->preview_image_relpath	= $this->find_static_file('preview.gif', TRUE);
