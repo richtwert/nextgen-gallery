@@ -28,15 +28,13 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 		if (preg_match($regex, $display_type)) {
 			$app->rewrite('nggallery/{\w}',					'nggallery/album--{1}');
 			$app->rewrite('nggallery/{\w}/{\w}',			'nggallery/album--{1}/gallery--{2}');
-			$app->rewrite('nggallery/{\w}/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}/{3}');
-			$app->rewrite('nggallery/{\w}/{\w}/page/{\d}',		'nggallery/album--{1}/gallery--{2}/{3}/{4}', FALSE, TRUE);
-			$app->rewrite('nggallery/{\w}/{\w}/{\w}',		'nggallery/album--{1}/gallery--{2}/{3}');
+			$app->rewrite('nggallery/{\w}/{\w}/{\w}{*}',		'nggallery/album--{1}/gallery--{2}/{3}{4}');
 		}
 		elseif (preg_match($regex, $original_display_type)) {
 			$displayed_gallery->id(NULL);
 			$app->rewrite('nggallery/album--{\w}',		'nggallery/{1}');
 			$app->rewrite('nggallery/album--{\w}/gallery--{\w}', 'nggallery/{1}/{2}');
-			$app->rewrite('nggallery/album--{\w}/gallery--{\w}/{\w}', 'nggallery/{1}/{2}/{3}');
+			$app->rewrite('nggallery/album--{\w}/gallery--{\w}/{*}', 'nggallery/{1}/{2}/{3}');
 		}
 
 		// Perform rewrites
