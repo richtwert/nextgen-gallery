@@ -10,6 +10,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->add_mixin('Mixin_Basic_Pagination');
+
+		// At this point, we need to get an instance of the routing app and
+		// apply a mixin which provides custom parameters for ngglegacy support
+		$this->object->get_registry()->
+				get_utility('I_Router')->
+				get_routed_app()->
+				add_mixin('Mixin_NextGen_Basic_Thumbnail_Urls');
 	}
 
 	/**

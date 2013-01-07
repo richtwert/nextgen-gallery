@@ -35,7 +35,10 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 	function _register_adapters()
 	{
 		// Provides additional routing
-		$this->get_registry()->add_adapter('I_Router', 'A_NextGen_Basic_Thumbnail_Routes');
+		$this->get_registry()->add_adapter(
+			'I_Router',
+			'A_NextGen_Basic_Thumbnail_Routes'
+		);
 
 		// Installs the display type
 		$this->get_registry()->add_adapter(
