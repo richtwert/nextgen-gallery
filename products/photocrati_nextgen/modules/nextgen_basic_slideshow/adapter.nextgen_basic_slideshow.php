@@ -4,7 +4,7 @@ class A_NextGen_Basic_Slideshow extends Mixin
 {
 	function initialize()
 	{
-		if ($this->object->name == NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW) {
+		if ($this->object->name == NEXTGEN_GALLERY_BASIC_SLIDESHOW) {
 			$this->object->add_pre_hook(
 				'set_defaults',
 				get_class(),

@@ -5,6 +5,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
     function initialize()
     {
+		$this->albums = array();
         $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->object->add_mixin('Mixin_NextGen_Basic_Album_Settings');
         $this->object->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
@@ -20,7 +21,14 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     {
         $display_settings = $displayed_gallery->display_settings;
 
-        // Are we to display a gallery?
+		// We need to fetch the album containers selected in the Attach
+		// to Post interface. We need to do this, because once we fetch the
+		// included entities, we need to iterate over each entity and assign it
+		// a parent_id, which is the album that it belongs to. We need to do this
+		// because the link to the gallery, is not /nggallery/gallery--id, but
+		// /nggallery/album--id/gallery--id
+
+		// Are we to display a gallery?
         if ($gallery = $this->param('gallery'))
         {
             // basic albums only support one per post
@@ -38,53 +46,41 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $renderer = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
             return $renderer->display_images(
                 array(
-                    'source'        => 'galleries',
-                    'container_ids' => array($gallery),
-                    'display_type'  => $display_settings['gallery_display_type']
+                    'source'				=> 'galleries',
+                    'container_ids'			=> array($gallery),
+                    'display_type'			=> $display_settings['gallery_display_type'],
+					'original_display_type'	=> $displayed_gallery->display_type
                 ),
                 $return
             );
         }
 
-        elseif (($album = $this->param('album')))
-        {
-            // basic albums only support one per post
-            if (isset($GLOBALS['nggShowGallery']))
-                return;
-            $GLOBALS['nggShowGallery'] = TRUE;
-
-            // Are we to display a sub-album?
+		// If we're viewing a sub-album, then we use that album as a container instead
+		else if (($album = $this->param('album'))) {
+			// Are we to display a sub-album?
             if (!is_numeric($album))
             {
                 $mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
-                $result = reset($mapper->select()->where(array('slug = %s', $album))->limit(1)->run_query());
-                $album = $result->{$result->id_field};
+                $result = array_pop($mapper->select()->where(array('slug = %s', $album))->limit(1)->run_query());
+				$album = $result->{$result->id_field};
             }
-
             $displayed_gallery->entity_ids = array();
+			$displayed_gallery->sortorder = array();
             $displayed_gallery->container_ids = ($album === '0' OR $album === 'all') ? array() : array($album);
-        }
+			$displayed_gallery->debug = TRUE;
+		}
+
+		// Get the albums
+		$this->albums = $displayed_gallery->get_albums();
 
         // None of the above: Display the main album. Get the settings required for display
         $current_page = (int)$this->param('page', 1);
         $offset = $display_settings['galleries_per_page'] * ($current_page - 1);
-        $total = $displayed_gallery->get_entity_count();
         $entities = $displayed_gallery->get_included_entities($display_settings['galleries_per_page'], $offset);
 
         // If there are entities to be displayed
         if ($entities)
         {
-            //  Create pagination
-            if ($display_settings['galleries_per_page'] && !$display_settings['disable_pagination'])
-            {
-                $pagination_result = $this->object->create_pagination(
-                    $current_page,
-                    $total,
-                    $display_settings['images_per_page']
-                );
-                $display_settings['pagination'] = $pagination_result['output'];
-            }
-
             // Add additional parameters
             $display_settings['image_gen']    = &$this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
             $display_settings['current_page'] = $current_page;
@@ -100,6 +96,25 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             return $this->object->render_partial('no_images_found');
         }
     }
+
+	/**
+	 * Gets the parent album for the entity being displayed
+	 * @param int $entity_id
+	 * @return stdClass (album)
+	 */
+	function get_parent_album_for($entity_id)
+	{
+		$retval = NULL;
+
+		foreach ($this->albums as $album) {
+			if (in_array($entity_id, $album->sortorder)) {
+				$retval = $album;
+				break;
+			}
+		}
+
+		return $retval;
+	}
 
 
     function prepare_legacy_album_params($params)
@@ -124,9 +139,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         $params['galleries']    = $params['entities'];
         unset($params['entities']);
         foreach ($params['galleries'] as &$gallery) {
-			$gallery->title		= stripslashes($gallery->title);
-			$gallery->name		= stripslashes($gallery->name);
-			$gallery->galdesc	= stripslashes($gallery->galdesc);
 
             // Get the preview image url
            $gallery->previewurl = '';
@@ -137,13 +149,40 @@ class A_NextGen_Basic_Album_Controller extends Mixin
                 }
             }
 
-            // Get the page link
+            // Get the page link. If the entity is an album, then the url will
+			// look like /nggallery/album--slug.
             $id_field = $gallery->id_field;
-			$gallery->pagelink = $this->object->set_param_for(
-				$this->object->get_routed_url(),
-				$gallery->is_album ? 'album' : 'gallery',
-				$gallery->$id_field
-			);
+			if ($gallery->is_album) {
+				$gallery->pagelink = $this->object->set_param_for(
+					$this->object->get_routed_url(TRUE),
+					'album',
+					$gallery->slug
+				);
+			}
+
+			// Otherwise, if it's a gallery then it will look like
+			// /nggallery/album--slug/gallery--slug
+			else {
+				$pagelink = $this->object->get_routed_url(TRUE);
+				$parent_album = $this->object->get_parent_album_for($gallery->$id_field);
+				if ($parent_album) {
+					$pagelink = $this->object->set_param_for(
+						$pagelink,
+						'album',
+						$parent_album->slug
+					);
+				}
+				$gallery->pagelink = $this->object->set_param_for(
+					$pagelink,
+					'gallery',
+					$gallery->slug
+				);
+			}
+
+			// The router by default will generate param segments that look like,
+			// /gallery--foobar. We need to convert these to the admittingly
+			// nicer links that ngglegacy uses
+			$gallery->pagelink = $this->object->prettify_pagelink($gallery->pagelink);
 
             // Let plugins modify the gallery
             $gallery = apply_filters('ngg_album_galleryobject', $gallery);
@@ -157,4 +196,18 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
         return $params;
     }
+
+
+	function prettify_pagelink($pagelink)
+	{
+		$regex = implode('', array(
+			'#',
+			'/(gallery|album)',
+			preg_quote(MVC_PARAM_SEPARATOR),
+			'([^/?]+)',
+			'#'
+		));
+
+		return preg_replace($regex, '/\2', $pagelink);
+	}
 }
