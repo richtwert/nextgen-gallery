@@ -55,6 +55,8 @@ class nggAdminPanel{
 			elseif (isset($_REQUEST['act_album']) && $_REQUEST['act_album']) {
 				$event['album_id']		= $_REQUEST['act_album'];
 			}
+			if (strpos($event, '_') === 0) $event = substr($event, 1);
+
 			do_action('ngg_page_event', $event);
 		}
 		ob_start();
