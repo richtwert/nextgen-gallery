@@ -540,11 +540,11 @@ function showDialog() {
 			// for speed reason we limit it to 50
 			if ( $this->num_albums < 50 ) {
 				$thumbURL = "";
-				if ($gallery->previewpic) {
-					$image = $nggdb->find_image( $gallery->previewpic );
+				if ($album->previewpic) {
+					$image = $nggdb->find_image( $album->previewpic );
 					$thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
 				}
-				$preview_image = ( !is_null($thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$gallery->previewpic.'" src="' . esc_url( $thumbURL ). '" /></div>' : '';
+				$preview_image = ( !is_null($thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$album->previewpic.'" src="' . esc_url( $thumbURL ). '" /></div>' : '';
 			}
 
 			// this indicates that we have a album container
