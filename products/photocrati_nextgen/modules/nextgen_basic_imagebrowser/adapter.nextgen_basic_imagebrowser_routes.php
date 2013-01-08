@@ -14,6 +14,6 @@ class A_NextGen_Basic_ImageBrowser_Routes extends Mixin
 
 	function _add_nextgen_basic_imagebrowser_routes()
 	{
-		$this->object->rewrite('nggallery{*}/image/{\d}', 'nggallery{1}/pid--{2}');
+		$this->object->rewrite('nggallery{*}/image/{\w}', 'nggallery{1}/pid--{2}');
 	}
 }

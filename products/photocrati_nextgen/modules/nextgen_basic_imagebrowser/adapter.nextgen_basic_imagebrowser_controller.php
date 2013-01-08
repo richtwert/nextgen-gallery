@@ -116,14 +116,14 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         $prev_image_link = $this->object->set_param_for(
             $application->get_routed_url(TRUE),
             'pid',
-            ($settings->usePermalinks) ? $picture_list[$back_pid]->image_slug : $back_pid
+            $picture_list[$back_pid]->image_slug
         );
 
         $next_pid = ($key < ($total - 1)) ? $picture_array[$key + 1] : reset($picture_array);
         $next_image_link = $this->object->set_param_for(
             $application->get_routed_url(TRUE),
             'pid',
-            ($settings->usePermalinks) ? $picture_list[$next_pid]->image_slug : $next_pid
+            $picture_list[$next_pid]->image_slug
         );
 
         // css class
