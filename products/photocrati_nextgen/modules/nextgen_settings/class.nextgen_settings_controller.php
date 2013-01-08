@@ -173,7 +173,6 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			_('Watermarks')				=> $this->object->_render_watermarks_tab($settings),
 			_('Styles')					=> $this->object->_render_styling_tab($settings),
 			_('Roles / Capabilities')	=> $this->object->_render_roles_tab($settings),
-            _('Permalinks')             => $this->object->_render_permalinks_tab($settings),
 			_('Miscellaneous')			=> $this->object->_render_misc_tab($settings),
             _('Cache')                  => $this->object->_render_cache_tab($settings),
             _('Reset / Uninstall')      => $this->object->_render_reset_tab($settings)
@@ -243,28 +242,6 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'mediarss_activated_yes'	=>		_('Yes'),
 		), TRUE);
 	}
-
-    function _render_permalinks_tab($settings)
-    {
-        return $this->object->render_partial(
-            'permalinks_tab',
-            array(
-                'permalinks_activated'       => $settings->usePermalinks,
-                'permalinks_activated_label' => _('Activate permalinks'),
-                'permalinks_activated_help'  => _('After activating this option you must update your permalink structure once.'),
-                'permalinks_activated_no'    => _('No'),
-                'permalinks_activated_yes'   => _('Yes'),
-                'permalinks_slug'            => $settings->permalinkSlug,
-                'permalinks_slug_label'      => _('Gallery slug name'),
-                'permalinks_slug_tooltip'    => _('Separates the current page from the NextGEN url parameters; for example /2012/10/sample-post/nggallery/page-1/ if your slug is "nggallery"'),
-                'process_label'              => _('Create new URL friendly image slugs'),
-                'process_value'              => _('Proceed now'),
-                'process_tooltip'            => _('Slugs are stored in the image meta information. If you change the slug name you must also update the image meta information with the new name'),
-                'hidden'                     => !(bool)$settings->usePermalinks
-            ),
-            TRUE
-        );
-    }
 
     function _render_reset_tab($settings)
     {
