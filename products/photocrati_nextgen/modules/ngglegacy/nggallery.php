@@ -62,7 +62,7 @@ if (!class_exists('nggLoader')) {
 				return;
 
 			// Set error handler
-			set_exception_handler(array(&$this, 'exception_handler'));
+            set_exception_handler(array(&$this, 'exception_handler'));
 
 			// Determine plugin basename based on whether NGG is being used in
 			// it's legacy form, or as a Photocrati Gallery
@@ -81,7 +81,7 @@ if (!class_exists('nggLoader')) {
 			register_deactivation_hook( $this->plugin_name, array(&$this, 'deactivate') );
 
 			// Register a uninstall hook to remove all tables & option automatic
-			register_uninstall_hook( $this->plugin_name, array(&$this, 'uninstall') );
+			// register_uninstall_hook( $this->plugin_name, array(&$this, 'uninstall') );
 
 			// Start this plugin once all other plugins are fully loaded
 			add_action( 'plugins_loaded', array(&$this, 'start_plugin') );
@@ -396,10 +396,9 @@ if (!class_exists('nggLoader')) {
 
 		// Add rewrite rules
 		function start_rewrite_module() {
-			global $nggRewrite;
-
-			if ( class_exists('nggRewrite') )
-				$nggRewrite = new nggRewrite();
+			// global $nggRewrite;
+			// if (class_exists('nggRewrite'))
+			//	$nggRewrite = new nggRewrite();
 		}
 
 		// THX to Shiba for the code

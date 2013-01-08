@@ -694,7 +694,7 @@ jQuery(function($){
 				// Create all elements
 				var image_container = $('<div/>').addClass('image_container');
 				var img = $('<img/>').attr({
-					src: wp_site_url+'/'+this.model.get('preview_image_relpath'),
+					src: wp_site_static_url+'/'+this.model.get('preview_image_relpath'),
 					title: this.model.get('title'),
 					alt: this.model.get('alt')
 				});
@@ -1090,9 +1090,10 @@ jQuery(function($){
 				this.$el.empty();
 				var image_container = $('<div/>').addClass('image_container');
 				var alt_text = this.model.alttext().replace(/\\&/g, '&').replace(/\\'/g, "'");
+				var timestamp = new Date().getTime();
 				image_container.attr({
 					title: alt_text,
-					style: "background-image: url('"+this.model.get('thumb_url')+"')"
+					style: "background-image: url('"+this.model.get('thumb_url')+"?timestamp"+timestamp+"')"
 				}).css({
 					width:			this.model.get('max_width'),
 					height:			this.model.get('max_height'),
@@ -1307,7 +1308,7 @@ jQuery(function($){
 					var id = response.displayed_gallery[id_field];
 					self.displayed_gallery.set('id', id);
 					var editor = parent.tinyMCE.activeEditor;
-					var preview_url = ngg_displayed_gallery_preview_url + '?id='+id;
+					var preview_url = ngg_displayed_gallery_preview_url + '/id--'+id;
 					var snippet = "<img class='ngg_displayed_gallery mceItem' src='" + preview_url + "'/>";
 					if (editor.getContent().indexOf(preview_url) < 0)
 						editor.execCommand('mceInsertContent', false, snippet);

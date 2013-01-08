@@ -11,7 +11,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
  */
 
 /**
- * NextGEN is built on top of the Photocrati Pope Framework:
+ * NextGEN Gallery is built on top of the Photocrati Pope Framework:
  * https://bitbucket.org/photocrati/pope-framework
  *
  * Pope constructs applications by assembling modules.

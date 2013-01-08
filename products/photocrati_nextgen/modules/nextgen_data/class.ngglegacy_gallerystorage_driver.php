@@ -153,11 +153,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 */
 	function get_image_url($image, $size='full')
 	{
-		return str_replace(
-			ABSPATH,
-			site_url().'/',
-			$this->object->get_image_abspath($image, $size)
+		$router = $this->get_registry()->get_utility('I_Router');
+		$request_uri = str_replace(
+			ABSPATH, '', $this->object->get_image_abspath($image, $size)
 		);
+		return $router->get_url($request_uri);
 	}
 
 	/**
@@ -200,7 +200,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $retval;
 	}
-	
+
 	function get_image_size_params($image, $size, $params = null, $skip_defaults = false)
 	{
 		// Get the image entity
@@ -279,11 +279,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 			if (!isset($params['crop_frame'])) {
 				$crop_frame_size_name = 'thumbnail';
-				
+
 				if (isset($image->meta_data[$size]['crop_frame'])) {
 					$crop_frame_size_name = $size;
 				}
-				
+
 				if (isset($image->meta_data[$crop_frame_size_name]['crop_frame'])) {
 					$params['crop_frame'] = $image->meta_data[$crop_frame_size_name]['crop_frame'];
 
@@ -309,7 +309,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 
 		return $params;
 	}
-	
+
 	/**
 	 * Returns an array of dimensional properties (width, height, real_width, real_height) of a resulting clone image if and when generated
 	 * @param string $image_path
@@ -334,10 +334,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			// Get the image filename
 			$image_path = $this->object->get_original_abspath($image, 'original');
 			$clone_path = $this->object->get_image_abspath($image, $size);
-			
+
 			$retval = $this->object->calculate_image_clone_dimensions($image_path, $clone_path, $params);
 		}
-		
+
 		return $retval;
 	}
 
@@ -420,7 +420,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 				}
 
 				$image->meta_data[$size] = $size_meta;
-				
+
 				if ($size == 'full')
 				{
 					$image->meta_data['width'] = $size_meta['width'];
@@ -474,11 +474,11 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		if ($abspath == null)
 		{
 			$thumbnail = $this->object->generate_image_size($image, $size);
-			
+
 			if ($thumbnail != null)
 			{
 				$abspath = $thumbnail->fileName;
-				
+
 				$thumbnail->destruct();
 			}
 		}
@@ -487,20 +487,20 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		{
 			$data = @getimagesize($abspath);
 			$format = 'jpg';
-			
-			if ($data != null && is_array($data) && isset($format_list[$data[2]])) 
+
+			if ($data != null && is_array($data) && isset($format_list[$data[2]]))
 			{
 				$format = $format_list[$data[2]];
 			}
-			
+
 			// Clear output
 			while (ob_get_level() > 0)
 			{
 				ob_end_clean();
 			}
-			
+
 			$format = strtolower($format);
-			
+
 			// output image and headers
 			header('Content-type: image/' . $format);
 			readfile($abspath);

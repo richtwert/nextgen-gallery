@@ -9,7 +9,7 @@ class Mixin_MVC_Controller_Defaults extends Mixin
     function index_action($return=FALSE)
     {
         $this->debug = TRUE;
-        return $this->render_partial('index', array(), $return);
+        return $this->render_view('index', array(), $return);
     }
 }
 
@@ -19,12 +19,9 @@ class Mixin_MVC_Controller_Defaults extends Mixin
  */
 abstract class C_MVC_Controller extends C_Component
 {
-    var $_content_type = 'text/html';
-    var $_request = FALSE;
-    var $_params = array();
-    var $_request_method = "None";
-    var $debug = FALSE;
-	var $exit = FALSE;
+    var $_content_type	= 'text/html';
+	var $message		= '';
+    var $debug			= FALSE;
 
 
     function define($context=FALSE)
@@ -35,147 +32,6 @@ abstract class C_MVC_Controller extends C_Component
 		$this->add_mixin('Mixin_MVC_Controller_Instance_Methods');
         $this->implement('I_MVC_Controller');
     }
-
-    function initialize()
-    {
-        parent::initialize();
-        $this->_request = function_exists('apache_request_headers') ?
-            apache_request_headers() : array();
-        $this->_params = $this->parse_params($_REQUEST);
-        $this->_request_method = $_SERVER['REQUEST_METHOD'];
-    }
-
-
-    function parse_params($arr)
-    {
-        $retval = array();
-
-        foreach ($arr as $key => $value) {
-            if (is_array($value)) {
-                $value = $this->parse_params($value);
-            }
-            elseif (is_string($value)) {
-                if ($value == 'true') $value = TRUE;
-                elseif ($value == 'false') $value = FALSE;
-                elseif ($value == 'null') $value = NULL;
-            }
-
-            // Update the value
-            $retval[$key] = $value;
-        }
-
-        return $retval;
-    }
-
-
-    function show_error($message, $code=500)
-    {
-        if (!headers_sent()) header("HTTP/1.0 {$code} {$message}");
-        $this->render_view($code, array('message' => $message));
-        if ($this->exit) throw new E_Clean_Exit();
-    }
-
-    function is_valid_request($method)
-    {
-        return TRUE;
-    }
-
-
-    function is_post_request()
-    {
-        return "POST" == $this->_request_method;
-    }
-
-
-    function is_get_request()
-    {
-        return "GET" == $this->_request_method;
-    }
-
-
-    function is_delete_request()
-    {
-       return "DELETE" == $this->_request_method;
-    }
-
-
-    function is_put_request()
-    {
-        return "PUT" == $this->_request_method;
-    }
-
-
-    function is_custom_request($type)
-    {
-        return strtolower($type) == strtolower($this->_request_method);
-    }
-
-    /**
-     * Returns the value of a parameters
-     * @param string $key
-     * @return mixed
-     */
-    function &param($key, $default=NULL)
-    {
-        $retval = $default;
-
-        if (isset($this->_params[$key]))
-        {
-            $val = &$this->_params[$key];
-
-            // wordpress strips magic quotes but it also then adds them right back again
-            if (get_magic_quotes_gpc())
-                $val = stripslashes_deep($val);
-
-            if (is_array($val))
-                $retval = &$val;
-            elseif (is_string($val) && !in_array(strtolower($val), array('null','false')))
-                $retval = &$val;
-        }
-
-        return $retval;
-    }
-
-
-    // Validates the request before executing an action. If no action has
-    // been defined, then return 404
-    function __call($method, $args) {
-        $retval = '';
-		if (preg_match("/_action$/", $method)) {
-            if ($this->is_valid_request($method)) {
-                $throw = $this->_throw_error;
-                $this->_throw_error = FALSE;
-				if ($this->has_method($method) || method_exists($this, $method))
-					$retval = parent::__call ($method, $args);
-				else
-                    $retval = $this->show_error("Page Not Found", 404);
-                $this->_throw_error = $throw;
-            }
-        }
-        else $retval = parent::__call ($method, $args);
-
-        return $retval;
-    }
-
-	/**
-	 * Gets the relative URL of the current request
-	 * @return string
-	 */
-	function get_relative_url($segment='')
-	{
-		return isset($_SERVER['REQUEST_URI']) ? path_join($_SERVER['REQUEST_URI'], $segment) : '';
-	}
-
-
-	/**
-	 * Gets the absolute url of the current request
-	 * @return string
-	 */
-	function get_absolute_url($segment='')
-	{
-		$url = $this->object->get_relative_url($segment);
-		return $url ? real_site_url($url) : '';
-	}
 }
 
 /**
@@ -189,5 +45,103 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 			header('Cache-Control: no-cache');
 			header('Pragma: no-cache');
 		}
+	}
+
+
+
+    function http_error($message, $code=500)
+    {
+		$this->message = $message;
+		$method = "http_{$code}_action";
+		$this->$method();
+    }
+
+    function is_valid_request($method)
+    {
+        return TRUE;
+    }
+
+
+    function is_post_request()
+    {
+        return "POST" == $this->object->get_router()->get_request_method();
+    }
+
+
+    function is_get_request()
+    {
+        return "GET" == $this->object->get_router()->get_request_method();
+    }
+
+
+    function is_delete_request()
+    {
+       return "DELETE" == $this->object->get_router()->get_request_method();
+    }
+
+
+    function is_put_request()
+    {
+        return "PUT" == $this->object->get_router()->get_request_method();
+    }
+
+
+    function is_custom_request($type)
+    {
+        return strtolower($type) == strtolower($this->object->get_router()->get_request_method());
+    }
+
+
+	function get_router()
+	{
+		return $this->object->get_registry()->get_utility('I_Router');
+	}
+
+	function get_routed_app()
+	{
+		return $this->object->get_router()->get_routed_app();
+	}
+
+    /**
+     * Returns the value of a parameters
+     * @param string $key
+     * @return mixed
+     */
+    function param($key, $prefix = NULL, $default = NULL)
+    {
+		return $this->object->get_routed_app()->get_parameter($key, $prefix, $default);
+    }
+
+	function set_param($key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		return $this->object->get_routed_app()->set_parameter($key, $value, $id, $use_prefix);
+	}
+
+	function set_param_for($url, $key, $value, $id=NULL, $use_prefix=FALSE)
+	{
+		return $this->object->get_routed_app()->set_parameter($key, $value, $id, $use_prefix, $url);
+	}
+
+	function remove_param($key, $id=NULL)
+	{
+		return $this->object->get_routed_app()->remove_parameter($key, $id);
+	}
+
+	function remove_param_for($url, $key, $id=NULL)
+	{
+		xdebug_start_trace();
+		$app = $this->object->get_routed_app();
+		$retval = $app->remove_parameter($key, $id, $url);
+		xdebug_stop_trace();
+		return $retval;
+	}
+
+	/**
+	 * Gets the routed url, generated by the Routing App
+	 * @return string
+	 */
+	function get_routed_url($with_qs=FALSE)
+	{
+		return $this->object->get_routed_app()->get_app_url(FALSE, $with_qs);
 	}
 }

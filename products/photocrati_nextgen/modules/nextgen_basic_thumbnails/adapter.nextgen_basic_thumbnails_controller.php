@@ -9,6 +9,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	{
 		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
+        $this->add_mixin('Mixin_Basic_Pagination');
 	}
 
 	/**
@@ -19,7 +20,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	function index_action($displayed_gallery, $return=FALSE)
 	{
         $display_settings = $displayed_gallery->display_settings;
-		$current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+        $current_page = (int)$this->param('page', $displayed_gallery->id(), 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $total = $displayed_gallery->get_entity_count();
@@ -59,14 +60,16 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 			// Create pagination
 			if ($display_settings['images_per_page'] && !$display_settings['disable_pagination']) {
-				$nggNav = new nggNavigation;
-				$pagination = $nggNav->create_navigation(
+                $pagination_result = $this->object->create_pagination(
                     $current_page,
                     $total,
                     $display_settings['images_per_page']
                 );
+                $pagination_prev = $pagination_result['prev'];
+                $pagination_next = $pagination_result['next'];
+                $pagination      = $pagination_result['output'];
 			} else {
-                $pagination = NULL;
+                list($pagination_prev, $pagination_next, $pagination) = array(NULL, NULL, NULL);
             }
 
             if ($display_settings['show_piclens_link'] || $display_settings['ajax_pagination'])
@@ -74,38 +77,36 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 
 			$thumbnail_size_name = 'thumbnail';
 
-			if ($display_settings['override_thumbnail_settings']) {
-        $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+			if ($display_settings['override_thumbnail_settings'])
+            {
+                $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
-        if ($dynthumbs != null)
-        {
-        	$dyn_params = array(
-        		'width' => $display_settings['thumbnail_width'],
-        		'height' => $display_settings['thumbnail_height'],
-        	);
+                if ($dynthumbs != null)
+                {
+                    $dyn_params = array(
+                        'width' => $display_settings['thumbnail_width'],
+                        'height' => $display_settings['thumbnail_height'],
+                    );
 
-        	if ($display_settings['thumbnail_quality']) {
-        		$dyn_params['quality'] = $display_settings['thumbnail_quality'];
-        	}
+                    if ($display_settings['thumbnail_quality'])
+                        $dyn_params['quality'] = $display_settings['thumbnail_quality'];
 
-        	if ($display_settings['thumbnail_crop']) {
-        		$dyn_params['crop'] = true;
-        	}
+                    if ($display_settings['thumbnail_crop'])
+                        $dyn_params['crop'] = true;
 
-        	if ($display_settings['thumbnail_watermark']) {
-        		$dyn_params['watermark'] = true;
-        	}
+                    if ($display_settings['thumbnail_watermark'])
+                        $dyn_params['watermark'] = true;
 
-          $thumbnail_size_name = $dynthumbs->get_size_name($dyn_params);
-        }
-			}
+                    $thumbnail_size_name = $dynthumbs->get_size_name($dyn_params);
+                }
+            }
 
-			// Determine what the piclens link would be
-			$piclens_link = '';
-			if ($display_settings['show_piclens_link']) {
-                $mediarss_link = real_site_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
-				$piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
-			}
+            // Determine what the piclens link would be
+            $piclens_link = '';
+            if ($display_settings['show_piclens_link']) {
+				$mediarss_link = $this->object->get_router()->get_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
+                $piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
+            }
 
             // The render functions require different processing
             if (!empty($display_settings['template']))
@@ -114,8 +115,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                     $images,
                     $displayed_gallery,
                     array(
-                        'next' => (empty($nggNav->next)) ? FALSE : $nggNav->next,
-                        'prev' => (empty($nggNav->prev)) ? FALSE : $nggNav->prev,
+                        'next' => (empty($pagination_next)) ? FALSE : $pagination_next,
+                        'prev' => (empty($pagination_prev)) ? FALSE : $pagination_prev,
                         'pagination' => $pagination,
                         'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
                         'piclens_link' => $piclens_link

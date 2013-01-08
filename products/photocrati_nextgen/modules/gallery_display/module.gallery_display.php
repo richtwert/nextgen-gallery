@@ -34,6 +34,7 @@ class M_Gallery_Display extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
+		$this->renderer     = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->controller   = $this->get_registry()->get_utility('I_Display_Settings_Controller');
 	}
 
@@ -130,8 +131,7 @@ class M_Gallery_Display extends C_Base_Module
 		}
 
 		// Add a shortcode for displaying galleries
-        $this->renderer     = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
-		add_shortcode('ngg_images', array(&$this->renderer, 'display_images'));
+		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
         // wrap the old nextgen tags to call our display_images()
         add_shortcode('imagebrowser', array(&$this, 'wrap_shortcode_imagebrowser'));
@@ -144,33 +144,8 @@ class M_Gallery_Display extends C_Base_Module
         add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
         add_shortcode('album',        array(&$this, 'wrap_shortcode_album'));
         add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
-
-        add_action('init', array(&$this, 'serve_alternative_view_request'));
 	}
 
-
-	/**
-	 * A display type can be forced for all galleries by specifying the
-	 * display type to use in the url segment. We call these 'alternative views'.
-	 *
-	 * To force a particular display type to be used for the current request,
-	 * the following url segment must be appended: /nggallery/[display_type_name]
-	 *
-	 * This functionality is required to maintain the integration between the
-	 * NextGen Basic Slideshow and NextGen Basic Thumbnails display types, that
-	 * NextGen Legacy introduced.
-	 * @return null
-	 */
-    function serve_alternative_view_request()
-    {
-		if (isset($_SERVER['REQUEST_URI'])) {
-			$uri = $_SERVER['REQUEST_URI'];
-			if (preg_match("/nggallery\/([\w_-]+)$/", $uri, $match)) {
-				$_SERVER['REQUEST_URI'] = str_replace($match[0], '', $uri);
-				$_SERVER['NGGALLERY'] = $match[1];
-			}
-		}
-    }
 
 	/**
 	 * Adds the display settings page to wp-admin
@@ -201,6 +176,18 @@ class M_Gallery_Display extends C_Base_Module
 	}
 
 
+	/**
+	 * Provides the [display_images] shortcode
+	 * @param array $params
+	 * @param string $inner_content
+	 * @return string
+	 */
+	function display_images($params, $inner_content=NULL)
+	{
+		return $this->renderer->display_images($params, $inner_content);
+	}
+
+
     /**
      * Short-cut for rendering an album
      * @param array $params
@@ -225,7 +212,7 @@ class M_Gallery_Display extends C_Base_Module
      */
     function wrap_shortcode_imagebrowser($params, $inner_content=NULL)
     {
-        $params['image_ids']    = $this->_get_param('id', NULL, $params);
+        $params['gallery_ids']  = $this->_get_param('id', NULL, $params);
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_imagebrowser', $params);
         unset($params['id']);

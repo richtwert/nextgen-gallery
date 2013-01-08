@@ -8,12 +8,12 @@
  ***/
 
 define(
-	'NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL',
+	'NEXTGEN_GALLERY_BASIC_SLIDESHOW_JS_URL',
 	NEXTGEN_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
 );
 
 define(
-	'NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW',
+	'NEXTGEN_GALLERY_BASIC_SLIDESHOW',
 	'photocrati-nextgen_basic_slideshow'
 );
 
@@ -22,7 +22,7 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW,
+			NEXTGEN_GALLERY_BASIC_SLIDESHOW,
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
 			'1.9.5',
@@ -60,13 +60,10 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 			'A_NextGen_Basic_Slideshow_Mapper'
 		);
 
-		// Provides alternative views for this display type
-		// TODO: This needs to be moved to something more global in nature:
-		// https://www.wrike.com/open.htm?id=8219830
-//		$this->get_registry()->add_adapter(
-//			'I_Display_Type_Controller',
-//			'A_NextGen_Basic_Slideshow_Alternative_Views'
-//		);
+		$this->get_registry()->add_adapter(
+			'I_Routing_App',
+			'A_NextGen_Basic_Slideshow_Urls'
+		);
 	}
 
 

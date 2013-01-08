@@ -94,7 +94,7 @@
 		render_attach_to_post_interface:	function(id) {
 
 			// Determine the attach to post url
-			var attach_to_post_url = this.plugin.siteurl+'/wp-admin/attach_to_post';
+			var attach_to_post_url = nextgen_gallery_attach_to_post_url;
 			if (typeof(this.id) != 'undefined') {
 				attach_to_post_url += "?id="+this.id;
 			}

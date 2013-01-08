@@ -21,7 +21,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	{
 		// Get the images to be displayed
 		$retval = '';
-        $current_page = get_query_var('nggpage') ? get_query_var('nggpage') : (isset($_GET['nggpage']) ? intval($_GET['nggpage']) : 1);
+        $current_page = (int)$this->param('page', 1);
 
 		if (($images = $displayed_gallery->get_included_entities())) {
 
@@ -78,7 +78,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-		return NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow.js';
+		return NEXTGEN_GALLERY_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow.js';
 	}
 
 	/**
@@ -88,7 +88,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return NEXTGEN_GALLERY_NEXTGEN_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
+		return NEXTGEN_GALLERY_BASIC_SLIDESHOW_JS_URL . '/nextgen_basic_slideshow_init.js';
 	}
 
 

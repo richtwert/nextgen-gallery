@@ -59,7 +59,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 			'show_alt_view_link_label'	=>	_('Alternative view link'),
 			'tooltip'					=>	_('Show a link that allows end-users to change how a gallery is displayed'),
 			'alternative_view'			=>	$display_type->settings['alternative_view'],
-			'altviews'					=>	$this->object->_get_alternative_views()
+			'altviews'					=>	$this->object->_get_alternative_views($display_type)
 		);
 
 		// Apply overrides

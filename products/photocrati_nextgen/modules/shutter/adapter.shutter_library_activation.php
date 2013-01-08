@@ -17,7 +17,7 @@ class A_Shutter_Library_Activation extends Mixin
     {
         $mapper = $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
         $mapper->save((object)array(
-            'name' =>  'shutter 1.3.3',
+            'name' =>  'shutter',
             'code' =>  'class="shutterset_%GALLERY_NAME%"',
             'css_stylesheets' =>  NGGALLERY_URLPATH . 'shutter/shutter-reloaded.css',
             'scripts' => NGGALLERY_URLPATH . 'shutter/shutter-reloaded.js' . "\n"

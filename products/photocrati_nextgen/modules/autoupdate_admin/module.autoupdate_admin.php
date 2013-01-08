@@ -41,8 +41,8 @@ class M_AutoUpdate_Admin extends C_Base_Module
     function _register_hooks()
     {
         add_action('admin_init', array($this, 'admin_init'));
-				add_action('admin_menu', array($this, 'admin_menu'));
-				add_action('wp_dashboard_setup', array($this, 'dashboard_setup'));
+		add_action('admin_menu', array($this, 'admin_menu'));
+		add_action('wp_dashboard_setup', array($this, 'dashboard_setup'));
 
         if (is_admin())
         {
@@ -209,7 +209,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
       {
         $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
         $this->_controller = $factory->create('autoupdate_admin_controller');
-        
+
 				add_submenu_page('index.php', __('Photocrati Updates'), __('Photocrati') . ' <span class="update-plugins"><span class="update-count">' . count($list) . '</span></span>', 'update_plugins', $this->module_id, array($this->_controller, 'admin_page'));
       }
       else if (isset($_GET['page']) && $_GET['page'] == $this->module_id)

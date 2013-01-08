@@ -14,12 +14,12 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
      */
     function index_action($displayed_gallery, $return = FALSE)
     {
-        global $nggRewrite;
         $display_settings = $displayed_gallery->display_settings;
-        $tag = get_query_var('gallerytag');
+        $application = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
+        $tag = $this->param('gallerytag');
 
         // we're looking at a tag, so show images w/that tag as a thumbnail gallery
-        if ((get_query_var('pageid') == get_the_ID() || !is_home()) && !empty($tag))
+        if (($this->param('pageid') == get_the_ID() || !is_home()) && !empty($tag))
         {
             $mapper  = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
             $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
@@ -58,7 +58,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         $tags = get_terms($args['taxonomy'], array_merge($args, array('orderby' => 'count', 'order' => 'DESC')));
 
         foreach ($tags as $key => $tag) {
-            $tags[$key]->link = $nggRewrite->get_permalink(array('gallerytag' => $tag->slug));
+            $tags[$key]->link = $this->object->set_param_for($application->get_routed_url(TRUE), 'gallerytag', $tag->slug);
             $tags[$key]->id = $tag->term_id;
         }
 

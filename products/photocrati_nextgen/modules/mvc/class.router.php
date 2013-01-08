@@ -1,331 +1,236 @@
 <?php
 
-/**
- * Provides a means for persisting the route cache
- */
-class Mixin_Route_Persistence extends Mixin
-{
-
-}
-
-//class Mixin_Router extends Mixin
-//{
-//	function initialize()
-//	{
-//		parent::initialize();
-//		$this->request_uri =	$this->get_request_uri();
-//		$this->request_method = $_SERVER['REQUEST_METHOD'];
-//	}
-//
-//	function get_request_uri()
-//	{
-//		$retval = '';
-//		if (isset($_SERVER['PATH_INFO']))
-//			$retval = $_SERVER['PATH_INFO'];
-//		else {
-//			$retval = $_SERVER['REQUEST_URI'];
-//		}
-//
-//		if (substr($retval, -1) != '/') $retval .= '/';
-//
-//		return $retval;
-//	}
-//
-//
-//	function app($name)
-//	{
-//		$factory = $this->get_registry()-get_utility('I_Component_Factory');
-//		$app = $this->object->get_apps();
-//		$retval = $factory->create('routing_app', $name);
-//		$apps[] = $retval;
-//		return $retval;
-//	}
-//
-//	/**
-//	 * Gets a list of apps registered for the router
-//	 * @return array
-//	 */
-//	function get_apps()
-//	{
-//		if (!isset($this->object->_apps) OR !is_array($this->object->_apps))
-//			$this->object->_apps = array();
-//
-//		return $this->object->_apps;
-//	}
-//}
-
-
-/**
- * Provides routing pattern methods
- */
-class Mixin_Route_Patterns extends Mixin
-{
-	function routing_uri($route = null, $only_path = null, $use_pathinfo = null, $add_trailing_slash=FALSE)
-	{
-		if ($use_pathinfo === null) {
-			$permalink_struct = get_option('permalink_structure');
-
-			if ($permalink_struct == null) {
-				$use_pathinfo = true;
-			}
-			else {
-				$use_pathinfo = preg_match('/^\\/?index\\.php\\//i', $permalink_struct);
-			}
-		}
-
-		$uri = '/' . ltrim($route, '/');
-
-		if ($add_trailing_slash) {
-			$uri .= '/';
-		}
-
-		if ($use_pathinfo) {
-			$uri = '/index.php' . $uri;
-		}
-
-		if ($only_path) {
-			return $uri;
-		}
-
-		return site_url($uri);
-	}
-
-	function routing_pattern($route = null, $pattern = null)
-	{
-		if ($pattern == null) {
-			$pattern = '(\\w*)';
-		}
-
-		$uri = $this->object->routing_uri($route, TRUE, FALSE, FALSE);
-
-		$pattern = '/' . preg_quote($uri, '/') . '(\/'.$pattern . ')?/';
-
-		return $pattern;
-	}
-}
-
-/**
- * Provides a means for adding/removing routes
- */
 class Mixin_Router extends Mixin
 {
-    /**
-     * Adds a named route, matching a pattern to a controller
-     * @param string $name
-     * @param array $pattern
-     * @param string $controller_klass
-     */
-    function add_route($name, $controller_klass, $pattern, $singleton=FALSE)
+	function set_routed_app($app)
     {
-        $this->object->_routes[$name] = array($pattern, $controller_klass, $singleton);
-        array_unshift($this->object->_route_priorities, $name);
+        $this->object->_routed_app = $app;
     }
 
-    /**
-     * Removes a named route
-    **/
-    function remove_route($name)
+    function &get_routed_app()
     {
-        unset($this->object->_routes[$name]);
+		$retval = $this->object->_routed_app ? $this->object->_routed_app : $this->object->get_default_app();
+        return $retval;
     }
 
+	function &get_default_app()
+	{
+		if (is_null($this->object->_default_app))
+			$this->object->_default_app = $this->object->create_app();
+		$retval = $this->object->_default_app;
+
+		return $retval;
+	}
+
+	function route($patterns, $handler=FALSE)
+	{
+		$this->object->get_default_app()->route($patterns, $handler);
+	}
+
+	function rewrite($src, $dst, $redirect=FALSE)
+	{
+		$this->object->get_default_app()->rewrite($src, $dst, $redirect);
+	}
+
+	function get_parameter($key, $prefix=NULL, $default=NULL)
+	{
+		return $this->object->get_routed_app()->get_parameter($key, $prefix, $default);
+	}
+
+	function param($key, $prefix=NULL, $default=NULL)
+	{
+		return $this->object->get_parameter($key, $prefix, $default);
+	}
+
+	function has_parameter_segments()
+	{
+		return $this->object->get_routed_app()->has_parameter_segments();
+	}
+
+	function passthru()
+	{
+		return $this->object->get_default_app()->passthru();
+	}
 
 	/**
-	 * Gets all registered named routes
-	 * @param string $name	optionally specify which named route to retrieve
+	 * Gets url for the router
+	 * @param string $uri
+	 * @return string
 	 */
-	function get_routes($name=FALSE)
+	function get_url($uri='/', $with_qs=FALSE)
 	{
-		$retval = $this->object->_routes;
-		if ($name) {
-			$retval = isset($retval[$name]) ? $retval[$name] : NULL;
+		if (strpos($uri, '/') !== 0) $uri = '/'.$uri;
+		$retval = $this->object->get_base_url().$uri;
+		if ($with_qs && ($qs = $this->object->get_querystring())) {
+			$retval .= '?'.$qs;
+		}
+		return $retval;
+	}
+
+	/**
+	 * Gets the routed url
+	 * @returns string
+	 */
+	function get_routed_url()
+	{
+		$retval = $this->object->get_url($this->object->get_request_uri());
+
+		if (($app = $this->object->get_routed_app())) {
+			$retval = $this->object->get_url($app->get_app_uri());
 		}
 
 		return $retval;
 	}
 
 	/**
-	 * Gets the metadata associated with a named route
-	 * @param string $name
-	 * @return array
+	 * Gets the base url for the router
+	 * @return string
 	 */
-	function get_named_route($name)
+	function get_base_url()
 	{
-		return $this->object->get_routes($name);
+		$protocol = $this->object->is_https()? 'https://' : 'http://';
+		$retval = "{$protocol}{$_SERVER['SERVER_NAME']}{$this->object->context}";
+		if (substr($retval, -1) == '/') $retval = substr($retval, 0, -1);
+		return $retval;
+	}
+
+	/**
+	 * Determines if the current request is over HTTPs or not
+	 */
+	function is_https()
+	{
+		return isset($_SERVER['HTTPS']);
 	}
 
 
-    function route($exit=TRUE)
+    /**
+     * Serve request using defined Routing Apps
+     *
+     * @param string|FALSE $request_uri
+     */
+    function serve_request()
     {
-        $domain = $_SERVER['SERVER_NAME'];
-        $uri    = $_SERVER['REQUEST_URI'];
-        $https  = isset($_SERVER['HTTPS']) ? TRUE: FALSE;
-        $protocol = $https ? 'https' : 'http';
+		$served = FALSE;
 
-        $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
-
-        if ($this->object->is_cached($domain, $uri, $protocol)) {
-            $this->object->call_cached_route($domain, $uri, $protocol, $exit);
+        // iterate over all apps, and serve the route
+        foreach ($this->object->get_apps() as $app) {
+            if (($served = $app->serve_request($this->object->context)))
+                break;
         }
 
-        foreach ($this->object->_route_priorities as $route_name) {
-            $continue = TRUE;
-            $config = $this->object->_routes[$route_name];
-            $pattern = $config[0];
-            $klass = $config[1];
-            $singleton = $config[2];
+		return $served;
+    }
 
-            // The pattern is specified about HTTPS being on or off
-            if (isset($pattern['https'])) {
-                if ($pattern['https'] == FALSE && $https == TRUE) $continue = FALSE;
-                elseif ($pattern['https'] == TRUE && $https == FALSE) $continue = FALSE;
-            }
+	/**
+	 * Gets the querystring of the current request
+	 * @return string
+	 */
+	function get_querystring()
+	{
+		return $_SERVER['QUERY_STRING'];
+	}
 
-            // The pattern is specified about a domain requirement
-            if ($continue && isset($pattern['domain'])) {
-                if (!preg_match($pattern['domain'], $domain)) $continue = FALSE;
-			}
 
-            // Every pattern must specify a uri pattern
-            if ($continue && preg_match($pattern['uri'], $uri, $match)) {
-                // We've found a matching pattern!!!
+	function set_querystring($value)
+	{
+		$_SERVER['QUERY_STRING'] = $value;
+	}
 
-                // A pattern can specify which matched set is the name of the action
-                // Otherwise, we assume it's match[1]
-                $action = isset($pattern['action']) ?
-                    $match[$pattern['action']] :
-                        (isset($match[2]) && trim(str_replace('&','',$match[2])) ?
-                            $match[2] : 'index');
+	/**
+	 * Gets the request for the router
+	 * @return string
+	 */
+    function get_request_uri($with_params=TRUE)
+    {
+		if (isset($_SERVER['PATH_INFO']))
+			$retval = $_SERVER['PATH_INFO'];
+		else
+			$retval = $_SERVER['REQUEST_URI'];
 
-                // Cache the route for next time
-                $this->object->cache_route(
-                    $domain,
-                    $uri,
-                    $protocol,
-                    $klass,
-                    $action,
-                    $singleton
-                );
+		// Remove the router's context
+		$retval = preg_replace('#^'.preg_quote($this->object->context).'#', '', $retval);
 
-                // Call the action
-                $this->object->call_cached_route($domain, $uri, $protocol, $exit);
-				break;
-            }
-        }
+		// Remove the params
+		if (!$with_params)
+			$retval = $this->object->strip_param_segments($retval);
+
+		// Ensure that request uri starts with a slash
+		if (strpos($retval, '/') !== 0) $retval = "/{$retval}";
+
+		return $retval;
+    }
+
+	/**
+	 * Gets the method of the HTTP request
+	 * @return string
+	 */
+	function get_request_method()
+	{
+		return $this->object->_request_method;
+	}
+
+
+    function &create_app($name = '/')
+    {
+        $factory = $this->get_registry()->get_utility('I_Component_Factory');
+        $app = $factory->create('routing_app', $name);
+        $this->object->_apps[] = $app;
+        return $app;
     }
 
     /**
-     * Caches a route for faster look up next time
+     * Gets a list of apps registered for the router
+     *
+     * @return array
      */
-    function cache_route($domain, $uri, $protocol, $controller, $action, $singleton=FALSE)
+    function get_apps()
     {
-        if (!isset($this->object->_route_cache[$domain])) $this->object->_route_cache[$domain] = array();
-        if (!isset($this->object->_route_cache[$domain][$protocol])) $this->object->_route_cache[$domain][$protocol] = array();
-
-        $this->object->_route_cache[$domain][$protocol][$uri] = array($controller, $action, $singleton);
+        usort($this->object->_apps, array(&$this, '_sort_apps'));
+		return array_reverse($this->object->_apps);
     }
 
-    /**
-     * Returns TRUE if the route is cached
-     */
-    function is_cached($domain, $uri, $protocol)
-    {
-        $retval = FALSE;
-
-        if (isset($this->object->_route_cache[$domain])) {
-            if (isset($this->object->_route_cache[$domain][$protocol])) {
-                if (isset($this->object->_route_cache[$domain][$protocol][$uri])) $retval = TRUE;
-            }
-        }
-
-        return $retval;
-    }
-
-    /**
-     * Returns the cached route
-     */
-    function call_cached_route($domain, $uri, $protocol, $exit=TRUE)
-    {
-        $config = $this->object->_route_cache[$domain][$protocol][$uri];
-        $klass = $config[0];
-        $action = $config[1];
-        $singleton = $config[2];
-
-        // Each component has a context. For a controller, a context will
-        // most likely we based on the request, so we'll let hooks figure it out
-        $context = $this->object->get_context($domain, $uri, $protocol, $klass, $action);
-
-        // TODO: We should probably be using a factory method here
-        $controller = $singleton ?
-            eval('return '.$klass.'::get_instance($context);') :
-            new $klass($context);
-
-        // Call the controller method
-        $this->object->call_action($controller, $action.'_action', $exit);
-
-        // If debug, show some debugging information
-        if ($controller->debug) {
-            echo implode("\n", array(
-                '<pre>',
-                'Execution Time: '.(microtime() - NEXTGEN_GALLERY_PLUGIN_STARTED_AT),
-                'Memory Consumption: '.(memory_get_usage(TRUE)/1000/1000).'MB',
-                'Peaked Memory Consumption: '.(memory_get_peak_usage(TRUE)/100/1000).'MB',
-                '</pre>'
-            ));
-        }
-
-        // We've finished routing the request.
-        // Since the plugin is currently routed within WordPress, we need to
-        // tell WordPress that we're finished as well. In the past, I've been
-        // calling exit() but that isn't recommended to do in FastCGI
-        // environments. See http://serverfault.com/questions/84962/php-via-fastcgi-terminated-by-calling-exit
-        //
-        if ($exit) throw new E_Clean_Exit();
-    }
-
-    /**
-     * Returns the context for the controller
-     * Hooks should extend this
-     */
-    function get_context($domain, $uri, $protocol, $class, $action)
-    {
-        return FALSE;
-    }
-
-    /**
-     * Calls an action of a controller
-     * Hooks should extend this
-     */
-    function call_action($controller, $action, $exit=FALSE)
-    {
-		$controller->exit = $exit;
-        call_user_func(array($controller, $action));
-    }
+	/**
+	 * Sorts apps.This is needed because we want the most specific app to be
+	 * executed first
+	 * @param C_Routed_App $a
+	 * @param C_Routed_App $b
+	 * @return int
+	 */
+	function _sort_apps($a, $b)
+	{
+		return strnatcmp($a->context, $b->context);
+	}
 }
 
 /**
- * A router is configured to match patterns against a url
- * and route the request to a particular controller and action
+ * A router is configured to match patterns against a url and route the request to a particular controller and action
  */
 class C_Router extends C_Component
 {
-    static $_instances = array();
-    var $_routes = array();
-    var $_route_priorities = array();
-    var $_route_cache = array();
+    static $_instances	= array();
+	var $_apps			= array();
+	var $_default_app	= NULL;
 
-    function define($context=FALSE)
+    function define($context = FALSE)
     {
+		if (!$context OR $context == 'all') $context = '/';
 		parent::define($context);
+		$this->add_mixin('Mixin_Url_Manipulation');
         $this->add_mixin('Mixin_Router');
-		$this->add_mixin('Mixin_Route_Patterns');
 		$this->implement('I_Router');
     }
+
+	function initialize()
+	{
+		parent::initialize();
+		$this->_request_method	= $_SERVER['REQUEST_METHOD'];
+	}
 
     static function &get_instance($context = False)
     {
 		if (!isset(self::$_instances[$context])) {
-			self::$_instances[$context] = new C_Router($context);
+			$klass = get_class();
+			self::$_instances[$context] = new $klass($context);
 		}
 		return self::$_instances[$context];
     }

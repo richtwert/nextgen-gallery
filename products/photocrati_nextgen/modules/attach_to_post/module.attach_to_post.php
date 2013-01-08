@@ -6,19 +6,8 @@
  }
  */
 
-define(
-	'NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL',
-	real_admin_url('/attach_to_post/preview')
-);
-
-define(
-	'NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL',
-	real_admin_url('/attach_to_post/display_tab_js')
-);
-
 class M_Attach_To_Post extends C_Base_Module
 {
-	var $attach_to_post_route           = 'wp-admin/attach_to_post';
 	var $attach_to_post_tinymce_plugin  = 'NextGEN_AttachToPost';
 
 	/**
@@ -47,26 +36,14 @@ class M_Attach_To_Post extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->_add_routes();
 		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
-	}
 
-
-	/**
-	 * Registers routes with the MVC Router
-	 */
-	function _add_routes()
-	{
 		$router = $this->get_registry()->get_utility('I_Router');
-
-		$router->add_route(
-			__CLASS__ . '_Attach_to_Post',
-			'C_Attach_to_Post_Controller',
-			array('uri'=>$router->routing_pattern($this->attach_to_post_route))
-		);
+		define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $router->get_url('/attach_to_post'));
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL', $router->get_url('/attach_to_post/preview'));
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL', $router->get_url('/attach_to_post/display_tab_js'));
 	}
-
 
 	/**
 	 * Registers requires the utilites that this module provides
@@ -86,6 +63,11 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
+		// Provides routing for the Attach To Post interface
+		$this->get_registry()->add_adapter(
+			'I_Router', 'A_Attach_To_Post_Routes'
+		);
+
 		// Provides AJAX actions for the Attach To Post interface
 		$this->get_registry()->add_adapter(
 			'I_Ajax_Controller',   'A_Attach_To_Post_Ajax'
@@ -147,8 +129,8 @@ class M_Attach_To_Post extends C_Base_Module
                 foreach ($imgs as $img) {
 
                     // The placeholder MUST have a gallery instance id
-                    $preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
-                    if (preg_match("/{$preview_url}\?id=(\d+)/", $img->src, $match)) {
+                    $preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
+                    if (preg_match("#{$preview_url}/id--(\d+)#", $img->src, $match)) {
 
                         // Find the displayed gallery
                         $displayed_gallery_id = $match[1];
@@ -207,6 +189,8 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _enqueue_tinymce_resources()
 	{
+        wp_localize_script('jquery', 'nextgen_gallery_attach_to_post_url', NEXTGEN_GALLERY_ATTACH_TO_POST_URL);
+
 		// Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
             if (get_user_option('rich_editing') == 'true') {
@@ -241,10 +225,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
-		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url(
-			'ngg_attach_to_post_tinymce_plugin.js'
-		);
-
+		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url('ngg_attach_to_post_tinymce_plugin.js');
 		return $plugins;
 	}
 
@@ -260,8 +241,8 @@ class M_Attach_To_Post extends C_Base_Module
 		global $displayed_galleries_to_cleanup;
 		$displayed_galleries_to_cleanup = array();
 		$post = get_post($post_id);
-		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '/');
-		if (preg_match_all("/{$preview_url}\?id=(\d+)/", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
+		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
+		if (preg_match_all("#{$preview_url}/id--(\d+)#", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');
 				// The post was edited, and the displayed gallery placeholder was removed

@@ -25,19 +25,20 @@ class M_MediaRss extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->_add_routes();
 	}
 
-	/**
-	 * Adds a route for MediaRSS feeds
-	 */
-	function _add_routes()
+	function _register_adapters()
 	{
-		$router = $this->get_registry()->get_utility('I_Router');
-		$router->add_route(__CLASS__, 'C_MediaRSS_Controller', array(
-            'uri'=>$router->routing_pattern('mediarss')
-        ));
+		$this->get_registry()->add_adapter('I_Router', 'A_MediaRss_Routes');
 	}
+
+	function _register_utilities()
+	{
+		$this->get_registry()->add_utility(
+			'I_MediaRSS_Controller', 'C_MediaRSS_Controller'
+		);
+	}
+
 }
 
 new M_MediaRss();

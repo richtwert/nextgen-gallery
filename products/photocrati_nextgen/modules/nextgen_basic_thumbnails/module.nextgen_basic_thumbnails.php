@@ -8,7 +8,7 @@
  ***/
 
 define(
-	'NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS',
+	'NEXTGEN_GALLERY_BASIC_THUMBNAILS',
 	'photocrati-nextgen_basic_thumbnails'
 );
 
@@ -17,7 +17,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			NEXTGEN_GALLERY_NEXTGEN_BASIC_THUMBNAILS,
+			NEXTGEN_GALLERY_BASIC_THUMBNAILS,
 			'NextGen Basic Thumbnails',
 			'Provides a thumbnail gallery for NextGEN Gallery',
 			'1.9.6',
@@ -27,9 +27,25 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 		);
 	}
 
+    public function initialize()
+    {
+        parent::initialize();
+    }
 
 	function _register_adapters()
 	{
+		// Provides additional routing
+		$this->get_registry()->add_adapter(
+			'I_Router',
+			'A_NextGen_Basic_Thumbnail_Routes'
+		);
+
+		// Provides NextGen Basic Thumbnail URLs
+		$this->get_registry()->add_adapter(
+			'I_Routing_App',
+			'A_NextGen_Basic_Thumbnail_Urls'
+		);
+
 		// Installs the display type
 		$this->get_registry()->add_adapter(
 			'I_NextGen_Activator',
@@ -54,7 +70,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			'I_Display_Type_Mapper',
 			'A_NextGen_Basic_Thumbnails_Mapper'
 		);
-		
+
 		$this->get_registry()->add_adapter(
 			'I_NextGen_Backend_Controller',
 			'A_NextGen_Basic_Thumbnails_Resources'

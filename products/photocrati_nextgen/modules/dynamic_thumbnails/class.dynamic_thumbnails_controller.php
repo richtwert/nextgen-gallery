@@ -2,10 +2,28 @@
 
 class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 {
+    static $_instances = array();
+
 	function define($context=FALSE)
 	{
 		parent::define($context);
+        $this->implement('I_Dynamic_Thumbnails_Controller');
 	}
+
+    /**
+     * Returns an instance of this class
+     *
+     * @param string $context
+     * @return C_Dynamic_Thumbnails_Controller
+     */
+    static function get_instance($context=FALSE)
+    {
+        if (!isset(self::$_instances[$context])) {
+            $klass = get_class();
+            self::$_instances[$context] = new $klass($context);
+        }
+        return self::$_instances[$context];
+    }
 
 	function index_action()
 	{
@@ -14,7 +32,7 @@ class C_Dynamic_Thumbnails_Controller extends C_MVC_Controller
 		$uri = $_SERVER['REQUEST_URI'];
 		$params = $dynthumbs->get_params_from_uri($uri);
 		$request_params = $params;
-		
+
 		if ($params != null)
 		{
 			$storage = $this->get_registry()->get_utility('I_Gallery_Storage');

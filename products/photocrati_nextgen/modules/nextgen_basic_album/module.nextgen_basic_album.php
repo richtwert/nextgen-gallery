@@ -30,8 +30,19 @@ class M_NextGen_Basic_Album extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->get_registry()->add_adapter('I_Display_Type',            'A_NextGen_Basic_Album');
-        $this->get_registry()->add_adapter('I_NextGen_Activator',       'A_NextGen_Basic_Album_Activator');
+		// Add module activation
+        $this->get_registry()->add_adapter(
+			'I_NextGen_Activator',
+			'A_NextGen_Basic_Album_Activator'
+		);
+
+		// Add validation for album display settings
+        $this->get_registry()->add_adapter(
+			'I_Display_Type',
+			'A_NextGen_Basic_Album'
+		);
+
+		// Add a controller for displaying albums on the front-end
         $this->get_registry()->add_adapter(
 			'I_Display_Type_Controller',
 			'A_NextGen_Basic_Album_Controller',
@@ -41,7 +52,18 @@ class M_NextGen_Basic_Album extends C_Base_Module
 				$this->module_id
 			)
 		);
-        $this->get_registry()->add_adapter('I_Display_Type_Mapper',     'A_NextGen_Basic_Album_Mapper');
+
+		// Add a mapper for setting the defaults for the album
+        $this->get_registry()->add_adapter(
+			'I_Display_Type_Mapper',
+			'A_NextGen_Basic_Album_Mapper'
+		);
+
+		// Add a generic adapter for display types to do late url rewriting
+		$this->get_registry()->add_adapter(
+			'I_Displayed_Gallery_Renderer',
+			'A_NextGen_Basic_Album_Routes'
+		);
     }
 }
 

@@ -138,7 +138,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 		$gallery_map  = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
 		$image_key	  = $image_map->get_primary_key_column();
 		$gallery_key  = $gallery_map->get_primary_key_column();
-        $pid          = get_query_var('pid');
+        $pid          = (int)$this->param('pid');
 
         // because picture_list implements ArrayAccess any array-specific actions must be taken on
         // $picture_list->container or they won't do anything
@@ -196,7 +196,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
 
         if (is_integer($gallery->ID))
         {
-            if (!empty($displayed_gallery->display_settings['show_slideshow_link'])) {
+            if (!empty($displayed_gallery->display_settings['alternative_view'])) {
                 $gallery->show_slideshow = TRUE;
                 $gallery->slideshow_link = $params['alternative_view_link_url'];
                 $gallery->slideshow_link_text = $displayed_gallery->display_settings['alternative_view_link_text'];

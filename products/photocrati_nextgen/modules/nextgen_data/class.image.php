@@ -34,7 +34,7 @@ class C_Image extends C_DataMapper_Model
 	 * @param C_DataMapper $mapper
 	 * @param string $context
 	 */
-	function initialize($properties = FALSE, $mapper=FALSE, $context) {
+	function initialize($properties = FALSE, $mapper=FALSE, $context=FALSE) {
 
 		// Get the mapper is not specified
 		if (!$mapper) {

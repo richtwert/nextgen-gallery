@@ -55,15 +55,14 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
      */
     function render_image_browser($displayed_gallery, $picture_list)
     {
-        global $nggRewrite;
-
         $display_settings = $displayed_gallery->display_settings;
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
-        $storage  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        $imap     = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $settings    = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $storage     = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        $imap        = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $application = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
 
         // the pid may be a slug so we must track it & the slug target's database id
-        $pid = get_query_var('pid');
+        $pid = $this->object->param('pid');
         $numeric_pid = NULL;
 
         // makes the upcoming which-image-am-I loop easier
@@ -113,13 +112,18 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 
         // determine URI to the next & previous images
         $back_pid = ($key >= 1) ? $picture_array[$key - 1] : end($picture_array);
-        $prev_image_link = $nggRewrite->get_permalink(
-            array('pid' => ($settings->usePermalinks) ? $picture_list[$back_pid]->image_slug : $back_pid)
+
+        $prev_image_link = $this->object->set_param_for(
+            $application->get_routed_url(TRUE),
+            'pid',
+            ($settings->usePermalinks) ? $picture_list[$back_pid]->image_slug : $back_pid
         );
 
         $next_pid = ($key < ($total - 1)) ? $picture_array[$key + 1] : reset($picture_array);
-        $next_image_link = $nggRewrite->get_permalink(
-            array('pid' => ($settings->usePermalinks) ? $picture_list[$next_pid]->image_slug : $next_pid)
+        $next_image_link = $this->object->set_param_for(
+            $application->get_routed_url(TRUE),
+            'pid',
+            ($settings->usePermalinks) ? $picture_list[$next_pid]->image_slug : $next_pid
         );
 
         // css class
