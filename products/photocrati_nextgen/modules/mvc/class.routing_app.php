@@ -186,9 +186,11 @@ class Mixin_Routing_App extends Mixin
 			// Wildcards are processed much differently
 			if (isset($details['wildcards']) && $details['wildcards']) {
 				if (preg_match($pattern, $request_uri, $matches)) {
-					$request_uri = $details['dst'];
 					foreach ($matches as $index => $match) {
-						if ($index == 0) continue;
+						if ($index == 0) {
+							$request_uri = str_replace($match, $details['dst'], $request_uri);
+							continue;
+						}
 						$request_uri = str_replace(
 							"{{$index}}", $match, $request_uri
 						);
