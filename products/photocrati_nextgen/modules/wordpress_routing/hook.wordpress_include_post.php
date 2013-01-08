@@ -23,7 +23,7 @@ class Hook_WordPress_Include_Post extends Hook
 		);
 
 		// Are we generating a custom url, and are we about to display it on the front page?
-		if (is_front_page() && $url) {
+		if ((is_front_page() OR is_home()) && $url) {
 			$url = rtrim(post_permalink(), '/');
 			if (strpos($retval, $url) === FALSE) {
 				$retval = str_replace(site_url(), $url, $retval);
