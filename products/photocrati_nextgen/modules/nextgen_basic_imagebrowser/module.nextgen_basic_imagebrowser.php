@@ -50,6 +50,16 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 		  'I_Display_Type_Controller', 'A_NextGen_Basic_ImageBrowser_Controller',
 		  $this->module_id
 		);
+
+		// Add imagebrowser routes
+		$this->get_registry()->add_adapter(
+			'I_Routing_App',			'A_NextGen_Basic_ImageBrowser_Routes'
+		);
+
+		// Add imagebrowser ngglegacy-compatible urls
+		$this->get_registry()->add_adapter(
+			'I_Routing_App',			'A_NextGen_Basic_ImageBrowser_Urls'
+		);
 	}
 }
 
