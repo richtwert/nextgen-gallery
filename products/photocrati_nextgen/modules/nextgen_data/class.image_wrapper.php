@@ -250,7 +250,7 @@ class C_Image_Wrapper
                 $this->_cache['pidlink'] = $application->set_param_for(
                     $application->get_routed_url(TRUE),
                     'pid',
-                    $this->get_settings()->usePermalinks ? $this->__get('image_slug') : $this->__get('id')
+                    $this->__get('image_slug')
                 );
                 return $this->_cache['pidlink'];
 
