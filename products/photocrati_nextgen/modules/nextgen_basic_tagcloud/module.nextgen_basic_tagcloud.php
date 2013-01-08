@@ -51,6 +51,18 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 			'I_Display_Type_Mapper',
 			'A_NextGen_Basic_TagCloud_Mapper'
 		);
+
+		// Add routing for ngglegacy routes
+		$this->get_registry()->add_adapter(
+			'I_Routing_App',
+			'A_NextGen_Basic_TagCloud_Routes'
+		);
+
+		// Add legacy urls
+		$this->get_registry()->add_adapter(
+			'I_Routing_App',
+			'A_NextGen_Basic_TagCloud_Urls'
+		);
     }
 }
 
