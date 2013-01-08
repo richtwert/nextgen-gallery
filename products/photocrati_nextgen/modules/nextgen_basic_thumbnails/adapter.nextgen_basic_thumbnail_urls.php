@@ -8,13 +8,13 @@ class A_NextGen_Basic_Thumbnail_Urls extends Mixin
 			'set_parameter_value',
 			get_class(),
 			get_class(),
-			'_set_ngglegacy_page_parameter'
+			'_set_nextgen_basic_thumbnail_parameter'
 		);
 		$this->object->add_post_hook(
 			'remove_parameter',
 			get_class(),
 			get_class(),
-			'_set_ngglegacy_page_parameter'
+			'_remove_nextgen_basic_thumbnail_parameter'
 		);
 
 	}
@@ -29,7 +29,20 @@ class A_NextGen_Basic_Thumbnail_Urls extends Mixin
 			return $this->call_parent('create_parameter_segment', $key, $value, $id, $use_prefix);
 	}
 
-	function _set_ngglegacy_page_parameter()
+
+	function _set_nextgen_basic_thumbnail_parameter($key, $value, $id=NULL, $use_prefix=NULL)
+	{
+		$this->_set_ngglegacy_page_parameter($key, $id);
+	}
+
+
+	function _remove_nextgen_basic_thumbnail_parameter($key, $id=NULL, $url=FALSE)
+	{
+		$this->_set_ngglegacy_page_parameter($key, $id);
+	}
+
+
+	function _set_ngglegacy_page_parameter($key, $id=NULL)
 	{
 		// Get the returned url
 		$retval		= $this->object->get_method_property(
