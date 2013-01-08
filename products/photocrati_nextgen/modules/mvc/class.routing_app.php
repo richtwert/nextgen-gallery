@@ -510,11 +510,13 @@ class Mixin_Routing_App extends Mixin
 		// We're modifying a url passed in
 		if ($url) {
 			@list($retval, $qs) = explode('?', $retval);
-			$parts = array($retval);
-			if (MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
-			$parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
-			$retval = $this->object->join_paths($parts);
-			if ($qs) $retval .= "?{$qs}";
+            $parts = array($retval);
+            if (MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE)
+                $parts[] = MVC_PARAM_SLUG;
+            $parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
+            $retval = $this->object->join_paths($parts);
+			if ($qs)
+                $retval .= "?{$qs}";
 		}
 
 		// We're modifying the current request
@@ -582,9 +584,6 @@ class Mixin_Routing_App extends Mixin
 			}
 			else {
 				$retval = $this->object->join_paths(explode($segment, $url));
-				if (MVC_PARAM_SLUG && preg_match("#/{$param_slug}/?#i", $retval, $match)) {
-					$retval = str_replace($match[0], '', $retval);
-				}
 			}
 		}
 		return $retval;
