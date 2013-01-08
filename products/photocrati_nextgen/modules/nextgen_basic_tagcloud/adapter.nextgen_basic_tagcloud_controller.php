@@ -19,7 +19,7 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         $tag = $this->param('gallerytag');
 
         // we're looking at a tag, so show images w/that tag as a thumbnail gallery
-        if (($this->param('pageid') == get_the_ID() || !is_home()) && !empty($tag))
+        if (!is_home() && !empty($tag))
         {
             $mapper  = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
             $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
