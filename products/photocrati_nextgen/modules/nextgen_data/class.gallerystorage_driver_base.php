@@ -910,7 +910,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			//   also suffix cannot be null as that will make WordPress use a default suffix...we could use an object that returns empty string from __toString() but for now just fallback to ngg generator
 			if ($method == 'wordpress')
 			{
-				$destpath = image_resize(
+				$destpath = @image_resize(
 						$image_path,
 						$width, $height, $crop,
 						$clone_suffix, // filename suffix
