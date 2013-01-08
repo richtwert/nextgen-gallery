@@ -666,7 +666,14 @@ jQuery(function($){
 			selected_source = selected_source.length > 0 ? selected_source[0] : false;
 			this.$el.empty();
 			this.display_types.each(function(item){
-				if (selected_source && !item.is_compatible_with_source(selected_source)) return;
+				if (selected_source && !item.is_compatible_with_source(selected_source)) {
+
+				    // Show all display types if we're viewing the display type
+					// selector tab
+					var display_tab =  $('#display_type_tab_content:visible');
+					if (display_tab.length == 0) return;
+					else if (display_tab.css('visibility') == 'hidden') return;
+				}
 				var display_type = new this.DisplayType;
 				display_type.model = item;
 				display_type.on('selected', this.selection_changed, this);
