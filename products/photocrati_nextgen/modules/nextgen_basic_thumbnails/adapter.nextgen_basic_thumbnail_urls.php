@@ -55,13 +55,13 @@ class A_NextGen_Basic_Thumbnail_Urls extends Mixin
 		$prefix		= preg_quote(MVC_PARAM_PREFIX, '#');
 		$regex		= implode('', array(
 			'#//?',
-			$id ? "({$id})?" : '',
+			$id ? "({$id})?" : "(\w+{$sep})?",
 			"($prefix)?page{$sep}(\d+)/?#"
 		));
 
 		// Replace any page parameters with the ngglegacy equivalent
 		if (preg_match($regex, $retval, $matches)) {
-			$retval = str_replace($matches[0], "/page/{$matches[2]}/", $retval);
+			$retval = str_replace($matches[0], "/page/{$matches[3]}/", $retval);
 			$this->object->set_method_property(
 				$this->method_called,
 				ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE,

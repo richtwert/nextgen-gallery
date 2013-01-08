@@ -9,7 +9,7 @@ class A_WordPress_Routing_App extends Mixin
 		// on the front-page, the link must to be the post/page itself. We use
 		// the 'Hook_WordPress_Include_Post' to achieve that
         $this->add_post_hook(
-            'set_parameter_value',
+            'remove_parameter',
             'Make Wordpress specific URI adjustments',
             'Hook_WordPress_Include_Post'
         );

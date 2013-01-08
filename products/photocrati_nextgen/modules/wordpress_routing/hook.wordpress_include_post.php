@@ -2,11 +2,6 @@
 
 class Hook_WordPress_Include_Post extends Hook
 {
-	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE)
-	{
-		return $this->_modify_generated_url($url);
-	}
-
 	function remove_parameter($key, $id=NULL, $url=FALSE)
 	{
 		return $this->_modify_generated_url($url);
@@ -27,6 +22,8 @@ class Hook_WordPress_Include_Post extends Hook
 			$url = rtrim(post_permalink(), '/');
 			if (strpos($retval, $url) === FALSE) {
 				$retval = str_replace(site_url(), $url, $retval);
+				if (strpos($retval, 'index.php') === FALSE)
+					$retval = str_replace(site_url(), $this->get_router()->get_base_url(), $retval);
 				$this->object->set_method_property(
 					$this->method_called,
 					ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE,

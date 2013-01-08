@@ -552,7 +552,7 @@ class Mixin_Routing_App extends Mixin
 		$retval			= $url;
 		$param_sep		= MVC_PARAM_SEPARATOR;
 		$param_prefix	= MVC_PARAM_PREFIX;
-		$param_slug		= MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG) : FALSE;
+		$param_slug		= MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG, '#') : FALSE;
 
 		// Is the parameter already part of the request? If so, modify that
 		// parmaeter
@@ -561,7 +561,7 @@ class Mixin_Routing_App extends Mixin
 
 			if ($source == 'querystring') {
 				$preg_id	= $id ? '\d+' : preg_quote($id);
-				$preg_key	= preg_quote($key);
+				$preg_key	= preg_quote($key, '#');
 				$regex = implode('', array(
 					'#',
 					$id ? "{$preg_id}{$param_sep}" : '',
@@ -582,7 +582,7 @@ class Mixin_Routing_App extends Mixin
 			}
 			else {
 				$retval = $this->object->join_paths(explode($segment, $url));
-				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}/?$#i", $retval, $match)) {
+				if (MVC_PARAM_SLUG && preg_match("#/{$param_slug}/?#i", $retval, $match)) {
 					$retval = str_replace($match[0], '', $retval);
 				}
 			}
