@@ -259,6 +259,7 @@ jQuery(function($){
 	**/
 	Ngg.Models.Remote_Collection			= Ngg.Models.SelectableItems.extend({
 		fetch_limit: 50,
+		in_progress: false,
 		fetch_url:   photocrati_ajax_url,
 		action: 	 '',
 		extra_data:  {},
@@ -290,6 +291,7 @@ jQuery(function($){
 		fetch: 	function(limit, offset){
 			// Request the entities from the server
 			var self = this;
+			this.in_progress = true;
 			$.post(this.fetch_url, this._create_request(limit, offset), function(response){
 				if (!_.isObject(response)) response = JSON.parse(response);
 
@@ -302,7 +304,10 @@ jQuery(function($){
 					if (response.total >= response.limit+response.offset) {
 						self.fetch(response.limit, response.offset+response.limit);
 					}
-					else self.trigger('finished_fetching');
+					else {
+						self.in_progress = false;
+						self.trigger('finished_fetching');
+					}
 				}
 			});
 		}
@@ -763,7 +768,7 @@ jQuery(function($){
 		entities_reset: function(e){
 			this.entities.reset(null, {silent: true});
 			this.entity_list.empty().append('<li class="clear"/>');
-			this.entities.fetch();
+			if (!this.entities.in_progress) this.entities.fetch();
 		},
 
 		render_entity: function(model){
