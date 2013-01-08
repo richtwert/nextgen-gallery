@@ -129,10 +129,8 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 
 	function remove_param_for($url, $key, $id=NULL)
 	{
-		xdebug_start_trace();
 		$app = $this->object->get_routed_app();
 		$retval = $app->remove_parameter($key, $id, $url);
-		xdebug_stop_trace();
 		return $retval;
 	}
 
