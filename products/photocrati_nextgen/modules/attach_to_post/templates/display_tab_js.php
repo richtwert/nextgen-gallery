@@ -1511,7 +1511,7 @@ jQuery(function($){
 				});
 
 				// A change has been made using the "Manage Albums" page
-				Frame_Event_Publisher.listen_for('attach_to_post:manage_albums', function(data){
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_album', function(data){
 					// Refresh the list of albums
 					app.albums.reset();
 					app.albums.fetch();
