@@ -21,8 +21,8 @@ class Hook_WordPress_Include_Post extends Hook
 		if ((is_front_page() OR is_home()) && $url) {
 			$url_parts	= parse_url($retval);
 			$perm_parts = parse_url($this->get_post_permalink());
-			if (!isset($url_parts['path']))		$url_parts['path'] = '/';
-			if (!isset($perm_parts['path']))	$perm_parts['path']= '/';
+			if (!isset($url_parts['path']))		$url_parts['path'] = '';
+			if (!isset($perm_parts['path']))	$perm_parts['path']= '';
 			if (!isset($url_parts['query']))	$url_parts['query'] = '';
 			if (!isset($perm_parts['query']))	$perm_parts['query']= '';
 
