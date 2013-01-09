@@ -44,7 +44,7 @@ class Mixin_Url_Manipulation extends Mixin
 
 		// If the url has a path, then we can remove a segment
 		if (isset($parts['path'])) {
-			if (substr($segment, -1) == '/') $segment .= '?';
+			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
 			if (preg_match("#{$segment}#", $parts['path'], $matches)) {
 				$parts['path'] = str_replace(
 					'//',

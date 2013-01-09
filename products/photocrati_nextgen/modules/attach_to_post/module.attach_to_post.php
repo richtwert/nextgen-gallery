@@ -122,18 +122,22 @@ class M_Attach_To_Post extends C_Base_Module
             $imgs = $doc->find("img[class='ngg_displayed_gallery']");
             if ($imgs) {
 
-                // Get the displayed gallery mapper
+                // Get some utilities
                 $mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+				$router	= $this->get_registry()->get_utility('I_Router');
+
+				// Set some parameters
+				$preview_url	 = preg_quote($router->get_url('/attach_to_post/preview'), '#');
+				$alt_preview_url = preg_quote($router->join_paths($router->get_base_url(), 'index.php/attach_to_post/preview'), '#');
 
                 // Substitute each image for the gallery type frontent content
                 foreach ($imgs as $img) {
 
                     // The placeholder MUST have a gallery instance id
-                    $preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
-                    if (preg_match("#{$preview_url}/id--(\d+)#", $img->src, $match)) {
+                    if (preg_match("#({$preview_url}|$alt_preview_url)/id--(\d+)#", $img->src, $match)) {
 
                         // Find the displayed gallery
-                        $displayed_gallery_id = $match[1];
+                        $displayed_gallery_id = $match[2];
                         $displayed_gallery = $mapper->find($displayed_gallery_id, TRUE);
 
                         // Get the content for the displayed gallery

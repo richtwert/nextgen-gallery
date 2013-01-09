@@ -27,12 +27,8 @@ class Hook_WordPress_Include_Post extends Hook
 			if (!isset($perm_parts['query']))	$perm_parts['query']= '';
 
 			// Ensure that the path is set correctly
-			$perm_path	= preg_quote($perm_parts['path'], '#');
-			if (!preg_match("#^{$perm_path}#", $url_parts['path'])) {
-				$url_parts['path'] = $this->object->join_paths(
-					$perm_parts['path'],
-					$url_parts['path']
-				);
+			if (isset($perm_parts['path'])) {
+				 $url_parts['path'] = $perm_parts['path'];
 			}
 
 			// Ensure that the querystring is set correctly
@@ -56,7 +52,13 @@ class Hook_WordPress_Include_Post extends Hook
 		$retval = post_permalink();
 		$perm_parts = parse_url($retval);
 		$base_parts = parse_url($this->object->get_router()->get_base_url());
-		$perm_parts['path']		= $base_parts['path'];
+		if (!isset($perm_parts['query'])) $perm_parts['query'] = '';
+		if (!isset($base_parts['query'])) $base_parts['query'] = '';
+		if ($base_parts['path'] != $perm_parts['path']) {
+			if (strpos($base_parts['path'], 'index.php') !== false) {
+				$perm_parts['path'] = $base_parts['path'];
+			}
+		}
 		$perm_parts['query']	= $this->object->join_querystrings(
 			$perm_parts['query'], $base_parts['query']
 		);
