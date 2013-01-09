@@ -40,9 +40,9 @@ class M_Attach_To_Post extends C_Base_Module
 		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
 
 		$router = $this->get_registry()->get_utility('I_Router');
-		define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $router->get_url('/attach_to_post'));
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL', $router->get_url('/attach_to_post/preview'));
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL', $router->get_url('/attach_to_post/display_tab_js'));
+		define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $router->get_url('/attach_to_post', FALSE));
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL', $router->get_url('/attach_to_post/preview', FALSE));
+        define('NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL', $router->get_url('/attach_to_post/display_tab_js', FALSE));
 	}
 
 	/**

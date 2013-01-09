@@ -157,7 +157,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		$request_uri = str_replace(
 			ABSPATH, '', $this->object->get_image_abspath($image, $size)
 		);
-		return $router->get_url($request_uri);
+		return $router->get_url($request_uri, FALSE);
 	}
 
 	/**

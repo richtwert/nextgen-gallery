@@ -481,7 +481,7 @@ class Mixin_Routing_App extends Mixin
 		foreach ($sources as $source_name => $source) {
 			if (preg_match($param_regex, $source, $matches)) {
 				if ($segment)
-                    $retval = array('segment' => $matches[0], 'source' => $source_name);
+					$retval = array('segment' => $matches[0], 'source' => $source_name);
 				else
                     $retval = $matches['value'];
 				$found = TRUE;
@@ -509,14 +509,15 @@ class Mixin_Routing_App extends Mixin
 
 		// We're modifying a url passed in
 		if ($url) {
-			@list($retval, $qs) = explode('?', $retval);
-            $parts = array($retval);
-            if (MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE)
-                $parts[] = MVC_PARAM_SLUG;
-            $parts[]= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
-            $retval = $this->object->join_paths($parts);
-			if ($qs)
-                $retval .= "?{$qs}";
+			$parts = parse_url($retval);
+			if (!isset($parts['path'])) $parts['path'] = '';
+			$parts['path'] = $this->object->join_paths(
+				$parts['path'],
+				MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE ?
+					MVC_PARAM_SLUG : '',
+				$this->object->create_parameter_segment($key, $value, $id, $use_prefix)
+			);
+			$retval = $this->object->construct_url_from_parts($parts);
 		}
 
 		// We're modifying the current request
@@ -577,13 +578,16 @@ class Mixin_Routing_App extends Mixin
 				$uri = $this->object->get_app_request_uri();
 				$uri = $this->object->join_paths(explode($segment, $uri));
 				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}/?$#i", $uri, $match)) {
-					$uri = str_replace($match[0], '', $uri);
+					$retval = $this->object->remove_url_segment($match[0], $retval);
 				}
 				$this->object->set_app_request_uri($uri);
 				$retval = $this->object->get_routed_url();
 			}
 			else {
 				$retval = $this->object->join_paths(explode($segment, $url));
+				if (MVC_PARAM_SLUG && preg_match("#/{$param_slug}$#i", $retval, $match)) {
+					$retval = $this->object->remove_url_segment($match[0], $retval);
+				}
 			}
 		}
 		return $retval;

@@ -25,10 +25,10 @@ class A_WordPress_Router extends Mixin
 		// Determine whether the url is a directory or file on the filesystem
 		// If so, then we do NOT need /index.php as part of the url
 		$filename = str_replace($this->object->get_base_url(), ABSPATH, $retval);
-		if ($retval && file_exists($filename)) {
+		if ($retval && file_exists($filename) && $retval != $this->object->get_base_url()) {
 
 			// Remove index.php from the url
-			$retval = str_replace('index.php/', '', $retval);
+			$retval = $this->object->remove_url_segment('/index.php/', $retval);
 
 			// Static urls don't end with a slash
 			if (substr($retval, -1) == '/') $retval = substr($retval, 0, -1);
@@ -50,10 +50,9 @@ class A_WordPress_Router extends Mixin
 		if (!$this->_site_url) {
 			$this->_site_url = site_url();
 			if (!get_option('permalink_structure')) {
-				if (substr($this->_site_url, -1) == '/')
-					$this->_site_url .= 'index.php/';
-				else
-					$this->_site_url .= '/index.php/';
+				$this->_site_url = $this->object->join_paths(
+					$this->_site_url, '/index.php/'
+				);
 			}
 		}
 

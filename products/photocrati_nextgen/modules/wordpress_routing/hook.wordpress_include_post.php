@@ -36,21 +36,15 @@ class Hook_WordPress_Include_Post extends Hook
 			}
 
 			// Ensure that the querystring is set correctly
-			$perm_qs	= preg_quote($perm_parts['query'], '#');
-			if (!preg_match("#&?{$perm_qs}#", $url_parts['query'])) {
-				if ($url_parts['query']) $url_parts['query'] .= '&'.$perm_parts['query'];
-				else $url_parts['query'] = $perm_parts['query'];
-			}
+			$url_parts['query'] = $this->object->join_querystrings(
+				$url_parts['query'], $perm_parts['query']
+			);
 
 			// Rebuild the url
 			$this->object->set_method_property(
 				$this->method_called,
 				ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE,
-				($retval = $this->object->join_paths(
-					"{$url_parts['scheme']}://{$url_parts['host']}",
-					$url_parts['path'],
-					'?'.$url_parts['query']
-				))
+				($retval = $this->object->construct_url_from_parts($url_parts))
 			);
 		}
 
@@ -60,8 +54,13 @@ class Hook_WordPress_Include_Post extends Hook
 	function get_post_permalink()
 	{
 		$retval = post_permalink();
-		if (strpos($retval, 'index.php') === FALSE)
-			$retval = str_replace(site_url(), $this->get_router()->get_base_url(), $retval);
+		$perm_parts = parse_url($retval);
+		$base_parts = parse_url($this->object->get_router()->get_base_url());
+		$perm_parts['path']		= $base_parts['path'];
+		$perm_parts['query']	= $this->object->join_querystrings(
+			$perm_parts['query'], $base_parts['query']
+		);
+		$retval = $this->object->construct_url_from_parts($perm_parts);
 		return $retval;
 	}
 }

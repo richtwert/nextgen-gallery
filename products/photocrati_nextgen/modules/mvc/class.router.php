@@ -57,12 +57,20 @@ class Mixin_Router extends Mixin
 	 * @param string $uri
 	 * @return string
 	 */
-	function get_url($uri='/', $with_qs=FALSE)
+	function get_url($uri='/', $with_qs=TRUE)
 	{
-		if (strpos($uri, '/') !== 0) $uri = '/'.$uri;
-		$retval = $this->object->get_base_url().$uri;
-		if ($with_qs && ($qs = $this->object->get_querystring())) {
-			$retval .= '?'.$qs;
+		$retval = $this->object->join_paths(
+			$this->object->get_base_url(),
+			$uri
+		);
+		if ($with_qs) {
+			$parts = parse_url($retval);
+			if (!isset($parts['query']))
+				$parts['query'] = $this->object->get_querystring();
+			else
+				$parts['query'] = $this->object->join_querystrings($parts['query'], $this->object->get_querystring());
+			$retval = $this->object->construct_url_from_parts($parts);
+
 		}
 		return $retval;
 	}

@@ -83,7 +83,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	function get_image_url($image, $params)
 	{
 		$router		= $this->get_registry()->get_utility('I_Router');
-		return $router->get_url($this->object->get_image_uri($image, $params));
+		return $router->get_url($this->object->get_image_uri($image, $params), FALSE);
 	}
 
 	function get_params_from_uri($uri)
