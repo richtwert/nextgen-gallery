@@ -6,6 +6,10 @@ class A_WordPress_Router extends Mixin
 
 	function initialize()
 	{
+		// Set context to path if subdirectory install
+		$parts = parse_url($this->object->get_base_url());
+		if (isset($parts['path'])) $this->object->context = $parts['path'];
+
 		$this->object->add_post_hook(
 			'get_url',
 			'Construct url for WordPress, considering permalinks',
