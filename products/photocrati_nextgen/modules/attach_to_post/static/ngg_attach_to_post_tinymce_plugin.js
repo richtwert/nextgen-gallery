@@ -106,6 +106,25 @@
 			// We also make the parent window unscrollable, to avoid
 			// multiple scrollbars
 			this.editor.windowManager.onOpen.add(function(win){
+
+				// Assign the window the "ngg_attach_to_post_window" so that
+				// we can style it
+				var window_selector = '#'+win.params.mce_window_id;
+				var callback = function(selector, callback){
+					var obj = jQuery(selector);
+					if (obj.length == 0) {
+						setTimeout(function(){
+							callback.call(null, selector, callback);
+						}, 5);
+					}
+					else {
+						obj.addClass('ngg_attach_to_post_window');
+					}
+				}
+				setTimeout(function(){
+					callback.call(null, window_selector, callback);
+				},5);
+
 				jQuery('html,body').css('overflow', 'hidden');
 			});
 
