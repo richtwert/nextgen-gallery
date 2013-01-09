@@ -155,6 +155,11 @@ class Mixin_Router extends Mixin
 		else
 			$retval = $_SERVER['REQUEST_URI'];
 
+		// Remove the querystring
+		if (($index = strpos($retval, '?')) !== FALSE) {
+			$retval = substr($retval, 0, $index);
+		}
+
 		// Remove the router's context
 		$retval = preg_replace('#^'.preg_quote($this->object->context).'#', '', $retval);
 
