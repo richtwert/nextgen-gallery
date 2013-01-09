@@ -116,7 +116,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$preview_url		= NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL;
 		if ($this->object->_displayed_gallery->id()) {
 			$display_tab_js_url .= '/id--'.$this->object->_displayed_gallery->id();
-			$preview_url .= '/id'.MVC_PARAM_SEPARATOR.$this->object->_displayed_gallery->id();
 		}
 
 		wp_enqueue_script(
