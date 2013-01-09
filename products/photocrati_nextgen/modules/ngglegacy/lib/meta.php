@@ -505,16 +505,13 @@ class nggMeta{
 		if ( isset( $this->exif_data['EXIF']) ) {
 
             // try to read the date / time from the exif
-			if ( empty($this->exif_data['EXIF']['DateTimeDigitized']) )
-                $date_time = $this->exif_data['EXIF']['DateTimeOriginal'];
-            else
-                $date_time = $this->exif_data['EXIF']['DateTimeDigitized'];
+			foreach (array('DateTimeDigitized', 'DateTimeOriginal', 'FileDateTime') as $key) {
+				if (isset($this->exif_data['EXIF'][$key])) {
+					$date_time = $this->exif_data['EXIF'][$key];
+				}
+			}
 
-			// if we didn't get the correct exif value we take filetime
-			if ($date_time == null)
-				$date_time = $this->exif_data['FILE']['FileDateTime'];
-			else
-				$date_time = $this->exif_date2ts($date_time);
+			if (!$date_time) $date_time = $this->exif_date2ts($date_time);
 
 		} else {
 			// if no other date available, get the filetime

@@ -1,30 +1,4 @@
 <?php
-/*
-Plugin Name: NextGEN Gallery
-Plugin URI: http://www.nextgen-gallery.com/
-Description: A NextGENeration Photo Gallery for WordPress
-Author: Photocrati
-Author URI: http://www.photocrati.com/
-Version: 1.9.10
-
-Copyright (c) 2007-2011 by Alex Rabe & NextGEN DEV-Team
-Copyright (c) 2012 Photocrati Media
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
 // Stop direct call
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
@@ -45,7 +19,7 @@ if (!class_exists('E_Clean_Exit')) {
 if (!class_exists('nggLoader')) {
 	class nggLoader {
 
-		var $version     = '1.9.10';
+		var $version     = '1.9.11';
 		var $dbversion   = '1.8.1';
 		var $minimum_WP  = '3.4';
 		var $donators    = 'http://www.nextgen-gallery.com/donators.php';
@@ -81,7 +55,7 @@ if (!class_exists('nggLoader')) {
 			register_deactivation_hook( $this->plugin_name, array(&$this, 'deactivate') );
 
 			// Register a uninstall hook to remove all tables & option automatic
-			// register_uninstall_hook( $this->plugin_name, array(&$this, 'uninstall') );
+			register_uninstall_hook( $this->plugin_name, array(__CLASS__, 'uninstall') );
 
 			// Start this plugin once all other plugins are fully loaded
 			add_action( 'plugins_loaded', array(&$this, 'start_plugin') );
