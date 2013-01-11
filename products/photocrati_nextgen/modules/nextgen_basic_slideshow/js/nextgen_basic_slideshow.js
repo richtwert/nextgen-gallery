@@ -25,11 +25,13 @@ jQuery.fn.nggShowSlideshow = function(args) {
 
         self.show();
 
-        self.cycle( {
-            fx: s.fx,
-            containerResize: 1,
-            fit: 1,
-            timeout: s.timeout
-        });
+        if (self.children().length > 1) {
+            self.cycle({
+                fx: s.fx,
+                containerResize: 1,
+                fit: 1,
+                timeout: s.timeout
+            });
+        }
     });
 };
