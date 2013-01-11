@@ -19,6 +19,8 @@ jQuery(function($){
               var params = self.get_querystring_params_from_url($this.attr('href'));
               params['action']                  = 'get_displayed_gallery_page';
               params['displayed_gallery_id']    = gallery_id;
+              params['page'] = $this.data('pageid');
+
               $.get(photocrati_ajax_url, params, function(response){
 
                   // Ensure that the server returned JSON
