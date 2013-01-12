@@ -14,11 +14,13 @@ class Mixin_Basic_Pagination extends Mixin
      * @param int $maxElement
      * @return array Of data holding prev & next url locations and a formatted HTML string
      */
-    public function create_pagination($page, $totalElement, $maxElement = 0)
+    public function create_pagination($page, $totalElement, $maxElement = 0, $current_url = NULL)
     {
         $prev_symbol = apply_filters('ngg_prev_symbol', '&#9668;');
         $next_symbol = apply_filters('ngg_prev_symbol', '&#9658;');
-		$current_url = $this->object->get_routed_url(TRUE);
+
+        if (empty($current_url))
+            $current_url = $this->object->get_routed_url(TRUE);
 
         $return = array('prev' => '', 'next' => '', 'output' => '');
 

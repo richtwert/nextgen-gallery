@@ -9,11 +9,6 @@ class A_Ajax_Pagination_Actions extends Mixin
 
         if (($id = $this->object->param('displayed_gallery_id')))
         {
-            $app = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
-            $app->remove_parameter('action');
-            $app->remove_parameter('displayed_gallery_id');
-            $app->remove_parameter('page');
-
             // retrieve by transient id
             $factory           = $this->object->get_registry()->get_utility('I_Component_Factory');
             $displayed_gallery = $factory->create('displayed_gallery', $mapper);
