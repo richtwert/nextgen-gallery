@@ -127,8 +127,13 @@ class M_Attach_To_Post extends C_Base_Module
 				$router	= $this->get_registry()->get_utility('I_Router');
 
 				// Set some parameters
-				$preview_url	 = preg_quote($router->get_url('/attach_to_post/preview'), '#');
-				$alt_preview_url = preg_quote($router->join_paths($router->get_base_url(), 'index.php/attach_to_post/preview'), '#');
+				$preview_url	 = preg_quote($router->get_url('/attach_to_post/preview', FALSE), '#');
+				$alt_preview_url = preg_quote(
+						$router->join_paths(
+							$router->remove_url_segment('index.php', $router->get_base_url()),
+							'index.php/attach_to_post/preview'
+						),
+				'#');
 
                 // Substitute each image for the gallery type frontent content
                 foreach ($imgs as $img) {
