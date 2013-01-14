@@ -39,7 +39,7 @@ class M_JsConsole extends C_Base_Module
 	function enqueue_jsconsole()
 	{
 		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
-		if ($settings->jsconsole_enabled && $settings->jsconsole_session_key) {
+		if ($settings->jsconsole_enabled && $settings->jsconsole_session_key && !is_admin()) {
 			wp_register_script(
 				'jsconsole-remote',
 				'http://jsconsole.com/remote.js?'.$settings->jsconsole_session_key,
