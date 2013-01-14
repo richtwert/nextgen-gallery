@@ -61,7 +61,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	function index_action()
 	{
 		// Enqueue resources
-		$this->enqueue_backend_resources();
+		$this->object->enqueue_backend_resources();
 
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 

@@ -295,13 +295,15 @@ class Mixin_NextGen_Settings extends Mixin
 	 * @param string $option_name
 	 * @return mixed
 	 */
-	function &get($option_name)
+	function &get($option_name, $default=NULL)
 	{
 		$retval = Null;
 
         if (isset($this->object->_options[$option_name])) {
             $retval = &$this->object->_options[$option_name];
         }
+
+		if (!$retval) $retval = $default;
 
 		return $retval;
 	}
@@ -421,13 +423,15 @@ class Mixin_NextGen_Multisite_Settings extends Mixin
      * @param string $option_name
      * @return mixed
      */
-    function &get($option_name)
+    function &get($option_name, $default=NULL)
     {
         $retval = Null;
 
         if (isset($this->object->_global_options[$option_name])) {
             $retval = &$this->object->_global_options[$option_name];
         }
+
+		if ($retval) $retval = $default;
 
         return $retval;
     }

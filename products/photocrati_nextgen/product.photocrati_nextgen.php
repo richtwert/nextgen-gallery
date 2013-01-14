@@ -100,6 +100,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
         // Provides sidebar widgets
         $this->get_registry()->load_module('photocrati-widget');
+
+		// Provides jsconsole remote debugging support
+		$this->get_registry()->load_module('photocrati-jsconsole');
 	}
 }
 
