@@ -118,32 +118,35 @@ if (!class_exists('nggLoader')) {
 			}
 		}
 
-		function check_request( $wp ) {
+        /**
+         * Checks the 'callback' parameter for possible ajax-like actions to take
+         *
+         * @param $wp
+         * @throws E_Clean_Exit
+         */
+        function check_request($wp)
+        {
+            $app = C_Component_Registry::get_instance()->get_utility('I_Router')->get_routed_app();
 
-			if ( !array_key_exists('callback', $wp->query_vars) )
-				return;
+			if (!$app->get_parameter('callback'))
+                return;
 
-			if ( $wp->query_vars['callback'] == 'imagerotator') {
-				require_once (dirname (__FILE__) . '/xml/imagerotator.php');
-				exit();
-			}
+            switch ($app->get_parameter('callback')) {
+                case 'imagerotator':
+                    require_once (dirname (__FILE__) . '/xml/imagerotator.php');
+                    break;
+                case 'json':
+                    require_once (dirname (__FILE__) . '/xml/json.php');
+                    break;
+                case 'image':
+                    require_once (dirname (__FILE__) . '/nggshow.php');
+                    break;
+                case 'ngg-ajax':
+                    require_once (dirname (__FILE__) . '/xml/ajax.php');
+                    break;
+            }
 
-			if ( $wp->query_vars['callback'] == 'json') {
-				require_once (dirname (__FILE__) . '/xml/json.php');
-				exit();
-			}
-
-			if ( $wp->query_vars['callback'] == 'image') {
-				require_once (dirname (__FILE__) . '/nggshow.php');
-				exit();
-			}
-
-			//TODO:see trac #12400 could be an option for WP3.0
-			if ( $wp->query_vars['callback'] == 'ngg-ajax') {
-				require_once (dirname (__FILE__) . '/xml/ajax.php');
-				exit();
-			}
-
+            throw new E_Clean_Exit();
 		}
 
 		function required_version() {

@@ -63,8 +63,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $pagination_result = $this->object->create_pagination(
                     $current_page,
                     $total,
-                    $display_settings['images_per_page']
+                    $display_settings['images_per_page'],
+                    urldecode($this->object->param('ajax_pagination_referrer'))
                 );
+                $this->object->remove_param('ajax_pagination_referrer');
                 $pagination_prev = $pagination_result['prev'];
                 $pagination_next = $pagination_result['next'];
                 $pagination      = $pagination_result['output'];

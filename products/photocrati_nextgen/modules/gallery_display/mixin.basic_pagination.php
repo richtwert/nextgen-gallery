@@ -14,11 +14,13 @@ class Mixin_Basic_Pagination extends Mixin
      * @param int $maxElement
      * @return array Of data holding prev & next url locations and a formatted HTML string
      */
-    public function create_pagination($page, $totalElement, $maxElement = 0)
+    public function create_pagination($page, $totalElement, $maxElement = 0, $current_url = NULL)
     {
         $prev_symbol = apply_filters('ngg_prev_symbol', '&#9668;');
         $next_symbol = apply_filters('ngg_prev_symbol', '&#9658;');
-		$current_url = $this->object->get_routed_url(TRUE);
+
+        if (empty($current_url))
+            $current_url = $this->object->get_routed_url(TRUE);
 
         $return = array('prev' => '', 'next' => '', 'output' => '');
 
@@ -35,7 +37,7 @@ class Mixin_Basic_Pagination extends Mixin
             {
                 $newpage = (1 == $page - 1) ? 1 : $page - 1;
 				$return['prev'] = $this->object->set_param_for($current_url, 'page', $newpage);
-                $r .=  '<a class="prev" id="ngg-prev-' . $newpage . '" href="' . $return['prev'] . '">' . $prev_symbol . '</a>';
+                $r .=  '<a class="prev" data-pageid="' . $newpage . '" id="ngg-prev-' . $newpage . '" href="' . $return['prev'] . '">' . $prev_symbol . '</a>';
             }
 
             $total_pages = ceil($total / $maxElement);
@@ -52,7 +54,7 @@ class Mixin_Basic_Pagination extends Mixin
                         {
                             $newpage = (1 == $page_num ) ? 1 : $page_num;
 							$link = $this->object->set_param_for($current_url, 'page', $newpage);
-                            $r .= '<a class="page-numbers" href="' . $link . '">' . ($page_num) . '</a>';
+                            $r .= '<a class="page-numbers" data-pageid="' . $newpage . '" href="' . $link . '">' . ($page_num) . '</a>';
                         }
                     }
                 }
@@ -62,7 +64,7 @@ class Mixin_Basic_Pagination extends Mixin
             {
                 $newpage = $page + 1;
 				$return['next'] = $this->object->set_param_for($current_url, 'page', $newpage);
-                $r .=  '<a class="next" id="ngg-next-' . $newpage . '" href="' . $return['next'] . '">' . $next_symbol . '</a>';
+                $r .=  '<a class="next" data-pageid="' . $newpage . '" id="ngg-next-' . $newpage . '" href="' . $return['next'] . '">' . $next_symbol . '</a>';
             }
 
             $return['output'] = "<div class='ngg-navigation'>{$r}</div>";

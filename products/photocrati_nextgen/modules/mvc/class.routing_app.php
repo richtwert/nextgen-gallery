@@ -590,6 +590,9 @@ class Mixin_Routing_App extends Mixin
 				}
 			}
 		}
+
+        $retval = rtrim($retval, ' ?&');
+
 		return $retval;
 	}
 

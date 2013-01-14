@@ -35,7 +35,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			$params['displayed_gallery_id'] = $displayed_gallery->id();
 			$params['current_page']			= $current_page;
 			$params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
-			$params['anchor']				= 'ngg-slideshow-'.$displayed_gallery->id().'-'.$current_page;
+			$params['anchor']				= 'ngg-slideshow-' . $displayed_gallery->id() . '-' . rand(1, getrandmax()) . $current_page;
 			$gallery_width					= $displayed_gallery->display_settings['gallery_width'];
 			$gallery_height					= $displayed_gallery->display_settings['gallery_height'];
 			$params['aspect_ratio']			= $gallery_width/$gallery_height;

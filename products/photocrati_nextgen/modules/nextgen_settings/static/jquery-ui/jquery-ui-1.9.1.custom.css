@@ -1823,41 +1823,28 @@ body .ui-tooltip {
 
 /* Tabs: remove background, change text color, and add :hover state */
 .ui-tabs .ui-tabs-nav li {
-    background: none;
+    background: white;
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", sans-serif;
-}
-
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
-    background: none;
+    margin-bottom: -1px;
+    margin-right: .5em;
 }
 
 .ui-tabs .ui-tabs-nav li a {
     color: #aaa;
+    outline: none;
+    font-size: 120%;
 }
 
 .ui-tabs .ui-tabs-nav li a:hover {
-    color: #5e9d2b;
-}
-
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
-    color: #464646;
-}
-
-.ui-tabs .ui-tabs-nav li {
-    margin-bottom: -1px;
-}
-
-.ui-tabs .ui-tabs-nav li a {
-    outline: none;
-    border-bottom: 1px solid #dfdfdf;
-}
-
-.ui-tabs .ui-tabs-nav li.ui-tabs-active a {
     color: #d54e21;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
-    border-bottom: 1px solid #ffffff;
+.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+    padding-bottom: -1px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-active a {
+    color: #464646;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
@@ -1876,10 +1863,16 @@ body .ui-tooltip {
 
 .ui-tabs-icon {
     float: left;
-    background-image: url('images/ui-icons-photocrati.png');
-    margin: 12px 6px 0 4px;
-    height: 14px;
-    width: 14px;
+    background: url('images/ui-icons-photocrati.png') no-repeat center center;
+    margin: 9px 6px 0 4px;
+    height: 24px;
+    width: 28px;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/ui-icons-photocrati.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/ui-icons-photocrati.png', sizingMethod='scale')";
 }
 
 /** Fix overlays in IE8 **/
