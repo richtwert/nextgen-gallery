@@ -117,6 +117,9 @@ class M_NextGen_Settings extends C_Base_Module
 
         // plugin deactivation routine
         $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
+
+        // adds some AJAX-support routes like updating watermark previews
+        $this->get_registry()->add_adapter('I_Router', 'A_NextGen_Settings_Routes');
 	}
 
 	/**

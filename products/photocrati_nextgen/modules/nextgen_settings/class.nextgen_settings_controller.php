@@ -78,6 +78,61 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		$this->render_partial('nextgen_settings_page', $view_params);
 	}
 
+    /**
+     * Saves a new settings array, refreshes the available watermark, and reverts the settings changes
+     */
+    function watermark_update_action()
+    {
+        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $original_settings = $settings->to_array();
+
+        if (($params = $this->object->param('settings')))
+        {
+            // Try saving the settings
+            foreach ($params as $k => $v) {
+                $settings->$k = $v;
+            }
+
+            if ($settings->is_valid())
+            {
+                $settings->save();
+
+                // generate new watermark preview
+                $thumbnail_url = $this->object->refresh_watermark_preview();
+
+                // and quickly revert back to the original settings..
+                foreach ($original_settings as $k => $v) {
+                    $settings->$k = $v;
+                }
+                $settings->save();
+            }
+        }
+
+        print json_encode(array('thumbnail_url' => $thumbnail_url));
+    }
+
+    /**
+     * Refreshes (or creates) a new watermark preview.
+     *
+     * @return string File URL
+     */
+    function refresh_watermark_preview()
+    {
+        $dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $imap      = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $storage   = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+
+        $image = $imap->find_first();
+        $parameters = array(
+            'quality'   => 100,
+            'height'    => 250,
+            'crop'      => FALSE,
+            'watermark' => TRUE
+        );
+        $size = $dynthumbs->get_size_name($parameters);
+        $image = $storage->generate_image_size($image, $size, $parameters);
+        return str_replace(ABSPATH, site_url() . '/', $image->fileName);
+    }
 
 	/**
 	 * Processes the POST request
@@ -91,8 +146,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
         // WARNING: this will reset all options in I_NextGen_Settings to their defaults
         if (!empty($_POST['resetdefault']))
         {
-            $new_settings = $this->object->get_registry()
-                                         ->get_utility('I_NextGen_Settings');
+            $new_settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
 
             if ($new_settings->is_multisite())
             {
@@ -103,24 +157,25 @@ class Mixin_NextGen_Settings_Controller extends Mixin
             $single = $new_settings->reset(TRUE);
 
             if ($single || $multi)
-            {
                 $retval['message'] = $this->object->show_success_for($settings, 'NextGEN Gallery Settings', TRUE);
-            }
-            else {
+            else
                 $retval['message'] = $this->object->show_errors_for($settings, TRUE);
-            }
 
             return $retval;
         }
 
 		// Do we have sufficient data to continue?
-		if (($params = $this->object->param('settings'))) {
+		if (($params = $this->object->param('settings')))
+        {
 
 			// Try saving the settings
-			foreach ($params as $k=>$v) $settings->$k = $v;
+			foreach ($params as $k => $v) {
+                $settings->$k = $v;
+            }
 
 			// Save lightbox effects settings
-			if ($settings->is_valid()) {
+			if ($settings->is_valid())
+            {
 				$this->object->_save_lightbox_library($settings);
 				$this->object->_save_stylesheet_contents($settings->CSSfile);
                 $this->object->_save_image_slugs($settings);
@@ -128,20 +183,15 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			}
 
 			// Save the changes made to the settings
-			if ($settings->save()) {
-				$retval['message'] = $this->object->show_success_for(
-					$settings, 'NextGEN Gallery Settings', TRUE
-				);
+			if ($settings->save())
+            {
+				$retval['message'] = $this->object->show_success_for($settings, 'NextGEN Gallery Settings', TRUE);
 			}
-
 			// Save failed. Display validation errors
 			else {
-				$retval['message'] = $this->object->show_errors_for(
-					$settings, TRUE
-				);
+				$retval['message'] = $this->object->show_errors_for($settings, TRUE);
 			}
  		}
-
 		// Insufficient data - illegal request
 		else {
 			$error_msg = _("Invalid request");
@@ -282,22 +332,21 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 
 	function _render_watermarks_tab($settings)
 	{
-        $thumbs  = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $imap    = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $router  = $this->object->get_registry()->get_utility('I_Router');
+        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        $thumbs  = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
-        $thumbnail_url = $imap->find_first();
-        if (!is_null($thumbnail_url))
-            $thumbnail_url = $storage->get_image_url(
-                $imap->find_first(),
-                $thumbs->get_size_name(
-                    array(
-                        'height' => 250,
-                        'crop' => FALSE,
-                        'watermark' => TRUE
-                    )
+        $thumbnail_url = $storage->get_image_url(
+            $imap->find_first(),
+            $thumbs->get_size_name(
+                array(
+                    'height' => 250,
+                    'crop' => FALSE,
+                    'watermark' => TRUE
                 )
-            );
+            )
+        );
 
 		return $this->render_partial('watermarks_tab', array(
 			'notice'					=>	_('Please note : You can only activate the watermark under -> Manage Gallery . This action cannot be undone.'),
@@ -314,7 +363,8 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			'active_label'				=>	_('(Hide Customization Options)'),
             'thumbnail_url'             => $thumbnail_url,
             'preview_label'             => _('Preview of saved settings:'),
-            'refresh_label'             => _('Refresh preview image')
+            'refresh_label'             => _('Refresh preview image'),
+            'refresh_url'               => $router->get_url('/nextgen_settings/update_watermark_preview', FALSE)
 		), TRUE);
 	}
 
