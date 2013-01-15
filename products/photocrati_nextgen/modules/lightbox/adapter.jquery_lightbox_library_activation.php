@@ -28,7 +28,7 @@ class A_JQuery_Lightbox_Library_Activation extends Mixin
         $lightbox->scripts = implode(
             "\n",
             array(
-                $this->static_url('/js/jquery.lightbox-0.5.pack.js'),
+                $this->static_url('/js/jquery.lightbox-0.5.min.js'),
                 $this->static_url('/js/nextgen_lightbox_init.js')
             )
         );
