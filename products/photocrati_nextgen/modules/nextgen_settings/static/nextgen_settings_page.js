@@ -33,8 +33,14 @@ jQuery(function($){
     // to the old settings. this submits the form and forces a refresh of the image through the time parameter
     $('#nextgen_settings_preview_refresh').click(function(event) {
         event.preventDefault();
+
         var form = $(this).parents('form:first');
         var self = $(this);
+        var orig_html = $(self).html();
+
+        $(self).attr('disabled', 'disabled').html('Processing...');
+        $('body').css('cursor', 'wait');
+
         $.ajax({
             type: form.attr('method'),
             url: $(this).data('refresh-url'),
@@ -49,6 +55,8 @@ jQuery(function($){
                 }
 
                 img.attr('src', src + '?' + new Date().getTime());
+                $(self).removeAttr('disabled').html(orig_html);
+                $('body').css('cursor', 'default');
             }
         });
     });
