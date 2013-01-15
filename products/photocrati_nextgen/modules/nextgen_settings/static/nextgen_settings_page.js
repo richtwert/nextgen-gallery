@@ -29,17 +29,28 @@ jQuery(function($){
 		$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source').click();
 	});
 
+    // sends the current settings to a special ajax endpoint which saves them, regenerates the url, and then reverts
+    // to the old settings. this submits the form and forces a refresh of the image through the time parameter
     $('#nextgen_settings_preview_refresh').click(function(event) {
         event.preventDefault();
-        var img = $(this).prev();
-        var src = img.attr('src');
+        var form = $(this).parents('form:first');
+        var self = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: $(this).data('refresh-url'),
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(data) {
+                var img = self.prev();
+                var src = data.thumbnail_url;
+                queryPos = src.indexOf('?');
+                if (queryPos != -1) {
+                    src = src.substring(0, queryPos);
+                }
 
-        queryPos = src.indexOf('?');
-        if (queryPos != -1) {
-            src = src.substring(0, queryPos);
-        }
-
-        img.attr('src', src + '?' + new Date().getTime());
+                img.attr('src', src + '?' + new Date().getTime());
+            }
+        });
     });
 	/**** STYLES TAB ****/
 
