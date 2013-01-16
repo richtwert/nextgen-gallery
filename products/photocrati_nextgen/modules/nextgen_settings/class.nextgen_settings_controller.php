@@ -167,6 +167,10 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		// Do we have sufficient data to continue?
 		if (($params = $this->object->param('settings')))
         {
+            // if the provided gallery-path has problems we must bail before saving our other settings
+            $result = $this->object->_save_gallery_path($settings, $params);
+            if (!is_null($result))
+                return $result;
 
 			// Try saving the settings
 			foreach ($params as $k => $v) {
@@ -377,7 +381,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	{
 		return $this->render_partial('image_options_tab', array(
 			'gallery_path_label'			=>	_('Where would you like galleries stored?'),
-			'gallery_path_help'				=>	_('This is the default path for all galleries'),
+			'gallery_path_help'				=>	_('Where galleries and their images are stored'),
 			'gallery_path'					=>	$settings->gallerypath,
 			'delete_image_files_label'		=>	_('Delete Image Files?'),
 			'delete_image_files_help'		=>	_('When enabled, image files will be removed after a Gallery has been deleted'),
@@ -540,6 +544,52 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			}
 		}
 	}
+
+    /**
+     * Handles changes required when the gallerypath setting changes: moves existing files & updates cached paths
+     *
+     * @param C_NextGen_Settings $settings
+     * @param array $params
+     * @return mixed
+     */
+    function _save_gallery_path($settings, $params)
+    {
+        if ($params['gallerypath'] !== $settings->gallerypath)
+        {
+            $params['gallerypath'] = trailingslashit($params['gallerypath']);
+            $dir = ABSPATH . $params['gallerypath'];
+
+            if (file_exists($dir) && !is_dir($dir))
+            {
+                $error_msg = _('Your gallery path directory must not exist already');
+                return array('message' => "<div class='error entity_errors'>{$error_msg}</div>");
+            }
+
+            // determine the parent directory so that we can make sure it exists
+            $folders = explode(DIRECTORY_SEPARATOR, trim($dir, DIRECTORY_SEPARATOR));
+            array_pop($folders);
+            $parent = DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $folders) . DIRECTORY_SEPARATOR;
+
+            if (file_exists($dir) && !is_dir($dir))
+            {
+                $error_msg = _('Your gallery path must be in a directory');
+                return array('message' => "<div class='error entity_errors'>{$error_msg}</div>");
+            }
+
+            // the 3rd mkdir() param makes it recursive
+            if (!is_dir($parent))
+                mkdir($parent, 0777, TRUE);
+
+            // move our old directory under the new $parent
+            rename (ABSPATH . $settings->gallerypath, $dir);
+
+            // update galleries with their new path
+            $settings->gallerypath = $params['gallerypath'];
+            foreach ($this->get_registry()->get_utility('I_Gallery_Mapper')->find_all(TRUE) as $gallery) {
+                $gallery->save();
+            }
+        }
+    }
 
 	/**
 	 * Returns the options available for sorting images

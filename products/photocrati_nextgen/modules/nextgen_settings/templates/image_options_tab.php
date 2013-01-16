@@ -9,7 +9,8 @@
 			<input
 				id="gallery_path"
 				type="text"
-				name="settings[galleryPath]"
+				name="settings[gallerypath]"
+                data-original-value='<?php echo esc_attr($gallery_path); ?>'
 				value="<?php echo esc_attr($gallery_path) ?>"
 			/>
 			<p class="description">

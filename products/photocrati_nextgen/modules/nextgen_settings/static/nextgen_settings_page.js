@@ -2,6 +2,19 @@ jQuery(function($){
 	// Activate accordions
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 
+    $('#nextgen_other_options').submit(function(event) {
+        event.preventDefault();
+        var confirmed = true;
+
+        if ($('#gallery_path').val() !== $('#gallery_path').data('original-value')) {
+            confirmed = confirm('This will move the entire gallery folder and its contents to your new location. Proceed?');
+        }
+
+        if (confirmed == true) {
+            $(this).off('submit').submit();
+        }
+    });
+
 	/**** LIGHTBOX EFFECT TAB ****/
 
 	// When the lightbox library is changed, display it's properties
