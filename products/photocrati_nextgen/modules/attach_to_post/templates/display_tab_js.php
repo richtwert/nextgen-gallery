@@ -1339,7 +1339,7 @@ jQuery(function($){
 				var form = $("form[rel='"+display_type+"']");
 				var display_settings	= (function(item){
 					var obj = {};
-					item.serializeArray().forEach(function(item){
+                    $.each(item.serializeArray(), function(key, item) {
 						var parts = item.name.split('[');
 						var current_obj = obj;
 						for (var i=0; i<parts.length; i++) {
