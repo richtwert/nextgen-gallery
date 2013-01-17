@@ -724,8 +724,17 @@ class C_NggLegacy_Thumbnail {
 	 * @param string $direction could be CW or CCW
 	 */
 	function rotateImage( $dir = 'CW' ) {
-		
 		$angle = ($dir == 'CW') ? 90 : -90;
+		
+		return $this->rotateImageAngle($angle);
+	}
+		
+	/**
+	 * Rotate an image clockwise or counter clockwise
+	 *
+	 * @param string $direction could be CW or CCW
+	 */
+	function rotateImageAngle( $angle = 90 ) {
 		
 		if ( function_exists('imagerotate') ) {
 	        $this->workingImage = imagerotate($this->oldImage, 360 - $angle, 0); // imagerotate() rotates CCW 

@@ -9,12 +9,48 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 
 	function _get_params_sanitized($params)
 	{
+		if (isset($params['rotation']))
+		{
+			$rotation = intval($params['rotation']);
+			
+			if ($rotation && in_array(abs($rotation), array(90, 180, 270)))
+			{
+				$rotation = $rotation % 360;
+				
+				if ($rotation < 0)
+				{
+					$rotation = 360 - $rotation;
+				}
+				
+				$params['rotation'] = $rotation;
+			}
+			else
+			{
+				unset($params['rotation']);
+			}
+		}
+		
+		if (isset($params['flip']))
+		{
+			$flip = strtolower($params['flip']);
+			
+			if (in_array($flip, array('h', 'v', 'hv')))
+			{
+				$params['flip'] = $flip;
+			}
+			else
+			{
+				unset($params['flip']);
+			}
+		}
+		
 		return $params;
 	}
 
 	function get_uri_from_params($params)
 	{
 		$params = $this->object->_get_params_sanitized($params);
+		
 		$image = isset($params['image']) ? $params['image'] : null;
 		$image_id = is_scalar($image) ? ((int)$image) : $image->pid;
 		$image_width = isset($params['width']) ? $params['width'] : null;
@@ -23,6 +59,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$image_type = isset($params['type']) ? $params['type'] : null;
 		$image_crop = isset($params['crop']) ? $params['crop'] : null;
 		$image_watermark = isset($params['watermark']) ? $params['watermark'] : null;
+		$image_rotation = isset($params['rotation']) ? $params['rotation'] : null;
+		$image_flip = isset($params['flip']) ? $params['flip'] : null;
 		$image_reflection = isset($params['reflection']) ? $params['reflection'] : null;
 
 		$router = $this->get_registry()->get_utility('I_Router');
@@ -56,6 +94,16 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		{
 			$uri .= 'watermark/';
 		}
+		
+		if ($image_rotation)
+		{
+			$uri .= 'rotation-' . $image_rotation . '/';
+		}
+		
+		if ($image_flip)
+		{
+			$uri .= 'flip-' . $image_flip . '/';
+		}
 
 		if ($image_reflection)
 		{
@@ -82,7 +130,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 
 	function get_image_url($image, $params)
 	{
-		$router		= $this->get_registry()->get_utility('I_Router');
+		$router = $this->get_registry()->get_utility('I_Router');
+		
 		return $router->get_url($this->object->get_image_uri($image, $params), FALSE);
 	}
 
@@ -92,8 +141,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		$match = null;
 
 		// XXX move this URL clean up to I_Router?
-        $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
-        $uri = trim($uri, '/');
+    $uri = preg_replace('/\\/index.php\\//', '/', $uri, 1);
+    $uri = trim($uri, '/');
 
 		if (@preg_match($regex, $uri, $match) > 0)
 		{
@@ -105,11 +154,22 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 
 			foreach ($uri_args as $uri_arg)
 			{
+				$uri_arg_set = explode('-', $uri_arg);
+				$uri_arg_name = array_shift($uri_arg_set);
+				$uri_arg_value = $uri_arg_set ? array_shift($uri_arg_set) : null;
 				$size_match = null;
 
 				if ($uri_arg == 'watermark')
 				{
 					$params['watermark'] = true;
+				}
+				else if ($uri_arg_name == 'rotation')
+				{
+					$params['rotation'] = $uri_arg_value;
+				}
+				else if ($uri_arg_name == 'flip')
+				{
+					$params['flip'] = $uri_arg_value;
 				}
 				else if ($uri_arg == 'reflection')
 				{
@@ -147,7 +207,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 			'id' => 'nggid0',
 			'size' => 'ngg0dyn-',
 			'flags' => '00f0',
-			'flag' => array('w0' => 'watermark', 'c0' => 'crop', 'r0' => 'reflection', 't0' => 'type'),
+			'flag' => array('w0' => 'watermark', 'c0' => 'crop', 'r1' => 'rotation', 'f1' => 'flip', 'r0' => 'reflection', 't0' => 'type'),
 			'flag_len' => 2,
 			'max_value_length' => 15, // Note: this can't be increased beyond 15, as a single hexadecimal character is used to encode the value length in names. Increasing it over 15 requires changing the algorithm to use an arbitrary letter instead of a hexadecimal digit (this would bump max length to 35, 9 numbers + 26 letters)
 		);
