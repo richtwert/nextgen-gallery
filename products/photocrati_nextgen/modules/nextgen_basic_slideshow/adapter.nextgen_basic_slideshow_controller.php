@@ -39,6 +39,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			$gallery_width					= $displayed_gallery->display_settings['gallery_width'];
 			$gallery_height					= $displayed_gallery->display_settings['gallery_height'];
 			$params['aspect_ratio']			= $gallery_width/$gallery_height;
+			$params['flash_path']			= $this->object->static_url('imagerotator.swf');
 
 			// Are we displayed a flash slideshow?
 			if ($displayed_gallery->display_settings['flash_enabled']) {
@@ -141,11 +142,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
                 $label = __('Enable flash slideshow', 'nggallery');
                 $text = __('Integrate the flash based slideshow for all flash supported devices', 'nggallery');
                 break;
-            case 'flash_path':
-                // XXX button search
-                $label = __('Path to the imagerotator (url)', 'nggallery');
-                $attr = array('placeholder' => 'http://...', 'class' => 'url_field');
-                break;
             case 'flash_shuffle':
                 $type = 'radio';
                 $label = __('Shuffle?', 'nggallery');
@@ -237,7 +233,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
         $special_fields = array(
             'flash_enabled',
-            'flash_path',
             'flash_stretch_image',
             'flash_transition_effect',
         );
@@ -276,51 +271,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
 	function _render_nextgen_basic_slideshow_flash_enabled_field($display_type)
 	{
-		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
-	}
-
-	// XXX I've put this here to remove dependency on ngglegacy (also the settings.php file is not included at this point)
-	function _search_image_rotator()
-	{
-		global $wpdb;
-
-		$upload = wp_upload_dir();
-
-		// look first at the old place and move it to wp-content/uploads
-		if ( file_exists( NGGALLERY_ABSPATH . 'imagerotator.swf' ) )
-			@rename(NGGALLERY_ABSPATH . 'imagerotator.swf', $upload['basedir'] . '/imagerotator.swf');
-
-		// This should be the new place
-		if ( file_exists( $upload['basedir'] . '/imagerotator.swf' ) )
-			return $upload['baseurl'] . '/imagerotator.swf';
-
-		// Find the path to the imagerotator via the media library
-		if ( $path = $wpdb->get_var( "SELECT guid FROM {$wpdb->posts} WHERE guid LIKE '%imagerotator.swf%'" ) )
-			return $path;
-
-		// maybe it's located at wp-content
-		if ( file_exists( WP_CONTENT_DIR . '/imagerotator.swf' ) )
-			return WP_CONTENT_URL . '/imagerotator.swf';
-
-		// or in the plugin folder
-		if ( file_exists( WP_PLUGIN_DIR . '/imagerotator.swf' ) )
-			return WP_PLUGIN_URL . '/imagerotator.swf';
-
-		// this is deprecated and will be ereased during a automatic upgrade
-		if ( file_exists( NGGALLERY_ABSPATH . 'imagerotator.swf' ) )
-			return NGGALLERY_URLPATH . 'imagerotator.swf';
-
-		return '';
-	}
-
-	function _render_nextgen_basic_slideshow_flash_path_field($display_type)
-	{
-		// XXX move this?
-		if ($this->object->param('irDetect') != null)
-		{
-			$display_type->settings['flash_path'] = $this->object->_search_image_rotator();
-		}
-
 		return $this->_render_nextgen_basic_slideshow_field_quick_render($display_type, __FUNCTION__);
 	}
 
@@ -408,7 +358,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			'nextgen_basic_slideshow_cycle_interval',
 			'nextgen_basic_slideshow_cycle_effect',
 			'nextgen_basic_slideshow_flash_enabled',
-			'nextgen_basic_slideshow_flash_path',
             'nextgen_basic_slideshow_flash_background_music',
             'nextgen_basic_slideshow_flash_stretch_image',
             'nextgen_basic_slideshow_flash_transition_effect',
