@@ -300,8 +300,8 @@ class nggAdmin{
 	 * @param integer $height optional
 	 * @return string result code
 	 */
-	function resize_image($image, $width = 0, $height = 0) {
-		
+	function resize_image($image, $width = 0, $height = 0) 
+	{
 		if (is_object($image)) {
 			if (isset($image->id)) {
 				$image = $image->id;
@@ -353,45 +353,55 @@ class nggAdmin{
 	 * @param string (optional)  $flip, could be either false | V (flip vertical) | H (flip horizontal)
 	 * @return string result code
 	 */
-	function rotate_image($image, $dir = false, $flip = false) {
+	function rotate_image($image, $dir = false, $flip = false) 
+	{
+		if (is_object($image)) {
+			if (isset($image->id)) {
+				$image = $image->id;
+			}
+			elseif (isset($image->pid)) {
+				$image = $image->pid;
+			}
+		}
 
-		global $ngg;
+		$registry = C_Component_Registry::get_instance();
+    $storage  = $registry->get_utility('I_Gallery_Storage');
+    // XXX maybe get rid of this...it's needed to get width/height defaults, placing these directly in generate_image_size could have unwanted consequences
+		$settings = $registry->get_utility('I_NextGen_Settings');
 
-		if(! class_exists('ngg_Thumbnail'))
-			require_once( nggGallery::graphic_library() );
+		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
+		$params = array('watermark' => false, 'reflection' => false);
+		$rotation = null;
 
-		if ( is_numeric($image) )
-			$image = nggdb::find_image( $image );
-
-		if ( !is_object($image) )
-			return __('Object didn\'t contain correct data','nggallery');
-
-		if (!is_writable($image->imagePath))
-			return ' <strong>' . esc_html( $image->filename ) . __(' is not writeable','nggallery') . '</strong>';
-
+		if ($dir === 'CW') {
+			$rotation = 90;
+		}
+		else if ($dir === 'CCW') {
+			$rotation = -90;
+		}
 		// if you didn't define a rotation, we look for the orientation flag in EXIF
-		if ( $dir === false ) {
+		else if ($dir === false) {
 			$meta = new nggMeta( $image->pid );
 			$exif = $meta->get_EXIF();
 
 			if (isset($exif['Orientation'])) {
-
+				
 				switch ($exif['Orientation']) {
 					case 5 : // vertical flip + 90 rotate right
 						$flip = 'V';
 					case 6 : // 90 rotate right
-						$dir = 'CW';
+						$rotation = 90;
 						break;
 					case 7 : // horizontal flip + 90 rotate right
 						$flip = 'H';
 					case 8 : // 90 rotate left
-						$dir = 'CCW';
+						$rotation = -90;
 						break;
 					case 4 : // vertical flip
 						$flip = 'V';
 						break;
 					case 3 : // 180 rotate left
-						$dir = 180;
+						$rotation = -180;
 						break;
 					case 2 : // horizontal flip
 						$flip = 'H';
@@ -404,43 +414,25 @@ class nggAdmin{
 			} else
                 return '0';
 		}
-		$file = new ngg_Thumbnail( $image->imagePath, TRUE );
 
-		// skip if file is not there
-		if (!$file->error) {
+		if ($rotation != null) {
+			$params['rotation'] = $rotation;
+		}
+		
+		if ($flip != null) {
+			$params['flip'] = $flip;
+		}
+		
+		$result = $storage->generate_image_size($image, 'full', $params);
 
-			// If required save a backup copy of the file
-			if ( ($ngg->options['imgBackup'] == 1) && (!file_exists($image->imagePath . '_backup')) )
-				@copy ($image->imagePath, $image->imagePath . '_backup');
-
-			// before we start we import the meta data to database (required for uploads before V1.4.X)
-			nggAdmin::maybe_import_meta( $image->pid );
-
-			if ( $dir !== 0 )
-				$file->rotateImage( $dir );
-			if ( $dir === 180)
-				$file->rotateImage( 'CCW' ); // very special case, we rotate the image two times
-			if ( $flip == 'H')
-				$file->flipImage(true, false);
-			if ( $flip == 'V')
-				$file->flipImage(false, true);
-
-			$file->save($image->imagePath, $ngg->options['imgQuality']);
-
-			// read the new sizes
-			$size = @getimagesize ( $image->imagePath );
-			// add them to the database
-			nggdb::update_image_meta($image->pid, array( 'width' => $size[0], 'height' => $size[1] ) );
-
+		if (!$result)
+		{
+			// XXX there isn't any error handling unfortunately at the moment in the generate_thumbnail functions, need a way to return proper error status
+			return __('Error while rotating image.', 'nggallery');
 		}
 
-		$file->destruct();
-
-		if ( !empty($file->errmsg) )
-			return ' <strong>' . esc_html( $image->filename ) . ' (Error : '.$file->errmsg .')</strong>';
-
+		// success
 		return '1';
-
 	}
 
 	/**

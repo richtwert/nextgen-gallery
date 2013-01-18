@@ -238,7 +238,7 @@ if ($nb_tags < $tag_count && $offset>0) {
 					<table class="form-table">
 						<tr valign="top">
 							<td colspan="2">
-								<p><?php _e('Enter the tag name to edit and its new slug. <a href="http://codex.wordpress.org/Glossary#Slug">Slug definition</a>', 'nggallery'); ?></p>
+								<p><?php _e('Enter the tag name to edit and its new slug. This will be used in tagcloud links. <a href="http://codex.wordpress.org/Glossary#Slug" target="_blank">Slug definition</a>', 'nggallery'); ?></p>
 								<p><?php _e('You can specify multiple tags to rename by separating them with commas.', 'nggallery'); ?></p>
 							</td>
 						</tr>

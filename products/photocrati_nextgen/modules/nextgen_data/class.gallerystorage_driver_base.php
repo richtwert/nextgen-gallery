@@ -521,6 +521,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		$type       = isset($params['type'])       ? $params['type']       : NULL;
 		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
 		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
+		$rotation   = isset($params['rotation'])   ? $params['rotation']   : NULL;
 		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
 		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : NULL;
 		$result  = NULL;
@@ -811,6 +812,12 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$real_width = $width;
 			$real_height = $height;
 
+			if ($rotation && in_array(abs($rotation), array(90, 270)))
+			{
+				$real_width = $height;
+				$real_height = $width;
+			}
+
 			if ($reflection)
 			{
 				// default for nextgen was 40%, this is used in generate_image_clone as well
@@ -867,6 +874,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		$crop       = isset($params['crop'])       ? $params['crop']       : NULL;
 		$watermark  = isset($params['watermark'])  ? $params['watermark']  : NULL;
 		$reflection = isset($params['reflection']) ? $params['reflection'] : NULL;
+		$rotation   = isset($params['rotation']) ? $params['rotation'] : NULL;
+		$flip   = isset($params['flip']) ? $params['flip'] : NULL;
 		$crop_frame = isset($params['crop_frame']) ? $params['crop_frame'] : NULL;
 		$destpath   = NULL;
 		$thumbnail  = NULL;
@@ -1012,6 +1021,21 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					$thumbnail->watermarkText = $settings['wmText'];
 					$thumbnail->watermarkCreateText($settings['wmColor'], $settings['wmFont'], $settings['wmSize'], $settings['wmOpaque']);
 					$thumbnail->watermarkImage($settings['wmPos'], $settings['wmXpos'], $settings['wmYpos']);
+				}
+
+				if ($rotation && in_array(abs($rotation), array(90, 180, 270)))
+				{
+					$thumbnail->rotateImageAngle($rotation);
+				}
+				
+				$flip = strtolower($flip);
+				
+				if ($flip && in_array($flip, array('h', 'v', 'hv')))
+				{
+					$flip_h = in_array($flip, array('h', 'hv'));
+					$flip_v = in_array($flip, array('v', 'hv'));
+					
+					$thumbnail->flipImage($flip_h, $flip_v);
 				}
 
 				if ($reflection)

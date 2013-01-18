@@ -2,6 +2,19 @@ jQuery(function($){
 	// Activate accordions
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 
+    $('#nextgen_other_options').submit(function(event) {
+        event.preventDefault();
+        var confirmed = true;
+
+        if ($('#gallery_path').val() !== $('#gallery_path').data('original-value')) {
+            confirmed = confirm('This will move the entire gallery folder and its contents to your new location. Proceed?');
+        }
+
+        if (confirmed == true) {
+            $(this).off('submit').submit();
+        }
+    });
+
 	/**** LIGHTBOX EFFECT TAB ****/
 
 	// When the lightbox library is changed, display it's properties
@@ -33,8 +46,14 @@ jQuery(function($){
     // to the old settings. this submits the form and forces a refresh of the image through the time parameter
     $('#nextgen_settings_preview_refresh').click(function(event) {
         event.preventDefault();
+
         var form = $(this).parents('form:first');
         var self = $(this);
+        var orig_html = $(self).html();
+
+        $(self).attr('disabled', 'disabled').html('Processing...');
+        $('body').css('cursor', 'wait');
+
         $.ajax({
             type: form.attr('method'),
             url: $(this).data('refresh-url'),
@@ -49,6 +68,8 @@ jQuery(function($){
                 }
 
                 img.attr('src', src + '?' + new Date().getTime());
+                $(self).removeAttr('disabled').html(orig_html);
+                $('body').css('cursor', 'default');
             }
         });
     });
