@@ -92,7 +92,7 @@ class Mixin_Album_Mapper extends Mixin
     {
         $this->object->_set_default_value($entity, 'name', '');
         $this->object->_set_default_value($entity, 'albumdesc', '');
-        $this->object->_set_default_value($entity, 'sortorder', '');
+        $this->object->_set_default_value($entity, 'sortorder', array());
         $this->object->_set_default_value($entity, 'previewpic', 0);
 		$this->object->_set_default_value($entity, 'exclude', 0);
         $this->object->_set_default_value(

@@ -58,6 +58,32 @@ class nggManageAlbum {
 	}
 
 	/**
+	 * Gets the Pope component registry
+	 * @return C_Component_Registry
+	 */
+	function get_registry()
+	{
+		if (!isset($this->_registry)) {
+			$this->_registry = C_Component_Registry::get_instance();
+		}
+
+		return $this->_registry;
+	}
+
+	/**
+	 * Gets the album mapper
+	 * @return C_Album_Mapper
+	 */
+	function get_album_mapper()
+	{
+		if (!isset($this->_album_mapper)) {
+			$this->_album_mapper = $this->get_registry()->get_utility('I_Album_Mapper');
+		}
+
+		return $this->_album_mapper;
+	}
+
+	/**
 	 * Init the album output
 	 *
 	 */
@@ -85,18 +111,60 @@ class nggManageAlbum {
 
 	}
 
+	/**
+	 * Finds a suitable preview pic for the album if one hasn't been set
+	 * already
+	 * @param stdClass|C_Album $album
+	 * @return stdClass|C_Album
+	 */
+	function _set_album_preview_pic($album)
+	{
+		$set_previewpic = FALSE;
+		$sortorder		= $album->sortorder;
+
+		while(!$album->previewpic) {
+			// If the album is missing a preview pic, set one!
+			if (($first_entity = array_shift($sortorder))) {
+
+				// Is the first entity a gallery or album
+				if (substr($first_entity, 0, 1) == 'a') {
+					$subalbum = $mapper->find(substr($first_entity, 1));
+					if ($subalbum->previewpic) {
+						$album->previewpic = $subalbum->previewpic;
+						$set_previewpic = TRUE;
+					}
+				}
+				else {
+					$gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+					$gallery = $gallery_mapper->find($first_entity);
+					if ($gallery->previewpic) {
+						$album->previewpic = $gallery->previewpic;
+						$set_previewpic = TRUE;
+					}
+				}
+			}
+			else break;
+		}
+
+		return $album;
+	}
+
 	function processor() {
 		global $wpdb;
 
 		check_admin_referer('ngg_album');
 
+		// Create album
 		if ( isset($_POST['add']) && isset ($_POST['newalbum']) ) {
 
 			if (!nggGallery::current_user_can( 'NextGEN Add/Delete album' ))
 				wp_die(__('Cheatin&#8217; uh?'));
 
-			$result = nggdb::add_album( $_POST['newalbum'] );
-            $this->currentID = ($result) ? $result : 0 ;
+			$album = new stdClass();
+			$album->name = $_POST['newalbum'];
+			$this->get_album_mapper()->save($album);
+            $this->currentID = $album->{$album->id_field};
+			if (!$this->currentID) $this->currentID = 0;
 
             //hook for other plugins
             do_action('ngg_add_album', $this->currentID);
@@ -107,16 +175,22 @@ class nggManageAlbum {
 
 		if ( isset($_POST['update']) && ($this->currentID > 0) ) {
 
-            $gid = '';
+            $gid = array();
 
-			// get variable galleryContainer
-			parse_str($_POST['sortorder']);
-			if ( is_array($gid) ){
-				$serial_sort = serialize($gid);
-				$wpdb->query("UPDATE $wpdb->nggalbum SET sortorder = '$serial_sort' WHERE id = $this->currentID ");
-			} else {
-				$wpdb->query("UPDATE $wpdb->nggalbum SET sortorder = '0' WHERE id = $this->currentID ");
-			}
+			// Get the current album being updated
+			$album = $this->get_album_mapper()->find($this->currentID);
+
+			// Get the list of galleries/sub-albums to be added to this album
+			parse_str($_REQUEST['sortorder']);
+
+			// Set the new sortorder
+			$album->sortorder = $gid;
+
+			// Ensure that a preview pic has been sent
+			$this->_set_album_preview_pic($album);
+
+			// Save the changes
+			$this->get_album_mapper()->save($album);
 
             //hook for other plugins
             do_action('ngg_update_album_sortorder', $this->currentID);
@@ -152,15 +226,12 @@ class nggManageAlbum {
 		if (!nggGallery::current_user_can( 'NextGEN Edit album settings' ))
 			wp_die(__('Cheatin&#8217; uh?'));
 
-		$name = $_POST['album_name'];
-		$desc = $_POST['album_desc'];
-		$prev = (int) $_POST['previewpic'];
-		$link = (int) $_POST['pageid'];
-
-		// slug must be unique, we use the title for that
-        $slug = nggdb::get_unique_slug( sanitize_title( $name ), 'album', $this->currentID );
-
-		$result = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->nggalbum SET slug= '%s', name= '%s', albumdesc= '%s', previewpic= %d, pageid= %d WHERE id = '%d'" , $slug, $name, $desc, $prev, $link, $this->currentID ) );
+		$album = $this->get_album_mapper()->find($this->currentID, TRUE);
+		$album->name		= $_POST['album_name'];
+		$album->albumdesc	= $_POST['album_desc'];
+		$album->previewpic	= (int)$_POST['previewpic'];
+		$album->pageid		= (int)$_POST['pageid'];
+		$result = $album->save();
 
 		//hook for other plugin to update the fields
 		do_action('ngg_update_album', $this->currentID, $_POST);
@@ -293,6 +364,7 @@ function ngg_serialize(s)
 	//serial = jQuery.SortSerialize(s);
 	serial = jQuery('#galleryContainer').sortable('serialize');
 	jQuery('input[name=sortorder]').val(serial);
+	return serial;
 }
 
 function showDialog() {

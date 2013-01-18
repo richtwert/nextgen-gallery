@@ -160,7 +160,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	 * @param $sql optionally run the specified SQL insteads
 	 * return
 	 */
-	function run_query($sql=FALSE)
+	function run_query($sql=FALSE, $no_entities=FALSE)
 	{
 		$retval = array();
 
@@ -176,7 +176,8 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 
 				// For each row, create an entity, update it's properties, and
 				// add it to the result set
-				foreach ($this->_wpdb()->last_result as $row) {
+				if ($no_entities) $retval = $this->_wpdb()->last_result;
+				else foreach ($this->_wpdb()->last_result as $row) {
 					$retval[] = $this->_convert_to_entity($row);
 				}
 			}
@@ -325,7 +326,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	{
 		$this->object->_columns = array();
 		$sql = "SHOW COLUMNS FROM `{$this->object->get_table_name()}`";
-		foreach ($this->object->run_query($sql) as $row) {
+		foreach ($this->object->run_query($sql, TRUE) as $row) {
 			$this->object->_columns[] = $row->Field;
 		}
 		return $this->object->_columns;

@@ -50,7 +50,6 @@ class Mixin_NextGen_Album_Instance_Methods extends Mixin
     {
         $this->validates_presence_of('name');
         $this->validates_numericality_of('previewpic');
-        $this->validates_presence_of('sortorder');
         return $this->object->is_valid();
     }
 

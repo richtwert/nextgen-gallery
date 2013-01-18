@@ -32,7 +32,7 @@ class Ngg_Serializable
 				$retval = json_decode(base64_decode($retval), TRUE);
 
 				// JSON Decoding failed. Perhaps it's PHP serialized data?
-				if ($retval == NULL) {
+				if ($retval === NULL) {
 					$er = error_reporting(0);
 					$retval = unserialize($value);
 					error_reporting($er);

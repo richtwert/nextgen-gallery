@@ -69,12 +69,13 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 
 
 	/**
-	 * Unserializes data using our propriotory format
+	 * Unserializes data using our proprietary format
 	 * @param string $value
 	 * @return mixed
 	 */
 	function unserialize($value)
 	{
+		$retval = NULL;
 		if (is_string($value))
 		{
 			$retval = stripcslashes($value);
@@ -85,7 +86,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 				$retval = json_decode(base64_decode($retval), TRUE);
 
 				// JSON Decoding failed. Perhaps it's PHP serialized data?
-				if ($retval == NULL) {
+				if ($retval === NULL) {
 					$er = error_reporting(0);
 					$retval = unserialize($value);
 					error_reporting($er);
@@ -341,7 +342,10 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		}
 
 		// Set defaults for this entity
-		$this->object->set_defaults($stdObject);
+		if (!$stdObject->has_defaults) {
+			$this->object->set_defaults($stdObject);
+			$stdObject->has_defaults = TRUE;
+		}
 
 		return $stdObject;
 	}
@@ -363,7 +367,6 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		}
 
 		$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-		$stdObject->has_defaults = TRUE;
 		$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
 
 		return $retval;
