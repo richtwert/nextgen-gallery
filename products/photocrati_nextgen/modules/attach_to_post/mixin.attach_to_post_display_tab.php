@@ -29,6 +29,9 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 						SELECT term_id FROM {$wpdb->term_taxonomy}
 						WHERE taxonomy = 'ngg_tag'
 					)");
+			$all_tags = new stdClass;
+			$all_tags->name = "All";
+			array_unshift($tags, $all_tags);
 
 			$this->object->render_view('display_tab_js', array(
 				'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),

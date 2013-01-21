@@ -158,13 +158,19 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			$sortorder_set	= $this->object->sortorder ? $this->object->sortorder :  $excluded_set;
 
 			// Add sortorder column
-			$select = $this->object->_add_find_in_set_column(
-				$select,
-				$image_key,
-				$sortorder_set,
-				'sortorder',
-				TRUE
-			);
+			if ($sortorder_set) {
+				$select = $this->object->_add_find_in_set_column(
+					$select,
+					$image_key,
+					$sortorder_set,
+					'sortorder',
+					TRUE
+				);
+				// A user might want to sort the results by the order of
+				// images that they specified to be included. For that,
+				// we need some trickery by reversing the order direction
+				$sort_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
+			}
 
 			// Add exclude column
 			$select = $this->object->_add_find_in_set_column(
@@ -177,11 +183,6 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 			// Select what we want
 			$mapper->select($select);
-
-			// A user might want to sort the results by the order of
-			// images that they specified to be included. For that,
-			// we need some trickery by reversing the order direction
-			$sort_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
 		}
 
 		// When returns is "included", the query is relatively simple. We
