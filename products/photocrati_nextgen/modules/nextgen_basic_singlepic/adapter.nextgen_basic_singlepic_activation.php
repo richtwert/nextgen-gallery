@@ -21,10 +21,10 @@ class A_NextGen_Basic_Singlepic_Activation extends Mixin
     function install_nextgen_basic_singlepic()
     {
         $mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper');
-        $display_type = $mapper->find_by_name('photocrati-nextgen_basic_singlepic', TRUE);
+        $display_type = $mapper->find_by_name(NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME, TRUE);
         if (!$display_type)
             $display_type = new stdClass();
-        $display_type->name                  = 'photocrati-nextgen_basic_singlepic';
+        $display_type->name                  = NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME;
         $display_type->title                 = 'NextGEN Basic Singlepic';
         $display_type->entity_types          = array('image');
         $display_type->preview_image_relpath = $this->find_static_file('preview.gif', TRUE);

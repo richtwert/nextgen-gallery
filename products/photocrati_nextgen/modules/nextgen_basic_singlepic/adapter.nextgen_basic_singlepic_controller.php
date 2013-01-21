@@ -16,12 +16,9 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
     function index_action($displayed_gallery, $return = FALSE)
     {
         $storage   = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        $imap      = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-
         $display_settings = $displayed_gallery->display_settings;
-
-        $image = $imap->find(reset($displayed_gallery->entity_ids));
+		$image = array_shift($displayed_gallery->get_included_entities(1));
 
         if (!$image)
             return $this->object->render_partial("no_images_found", array(), $return);
@@ -55,7 +52,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         // legacy assumed no width/height meant full size unlike generate_thumbnail: force a full resolution
         if (empty($display_settings['width']))
             $display_settings['width'] = $image->meta_data['width'];
-        // XXX setting both width and height can cause distortions for themes that have set max-width on images 
+        // XXX setting both width and height can cause distortions for themes that have set max-width on images
         //if (empty($display_settings['height']))
         //    $display_settings['height'] = $image->meta_data['height'];
 
@@ -65,10 +62,10 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
         $params['crop'] = $display_settings['crop'];
         $params['watermark'] = $display_settings['display_watermark'];
         $params['reflection'] = $display_settings['display_reflection'];
-				
+
         // Fall back to full in case dynamic images aren't available
         $size = 'full';
-				
+
         if ($dynthumbs != null)
             $size = $dynthumbs->get_size_name($params);
 
@@ -95,7 +92,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $params['inner_content'] = $displayed_gallery->inner_content;
             $params['settings']      = $display_settings;
             $params['thumbnail_url'] = $thumbnail_url;
-            
+
             return $this->object->render_partial('nextgen_basic_singlepic', $params, $return);
         }
     }

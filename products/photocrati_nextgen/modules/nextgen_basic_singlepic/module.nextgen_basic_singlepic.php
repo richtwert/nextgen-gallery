@@ -41,10 +41,10 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
         );
 
         // Provides validation for the display type
-#        $this->get_registry()->add_adapter(
-#            'I_Display_Type',
-#            'A_NextGen_Basic_Singlepic'
-#        );
+//        $this->get_registry()->add_adapter(
+//            'I_Display_Type',
+//            'A_NextGen_Basic_Singlepic'
+//       );
 
 		// Provides default values for the display type
 		$this->get_registry()->add_adapter(

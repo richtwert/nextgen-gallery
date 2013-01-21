@@ -15,10 +15,11 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			$this->object->set_content_type('javascript');
 
 			// Get all entities used by the display tab
-			$gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper');
-			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper');
-			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper');
-			$source_mapper		= $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper');
+			$context = 'attach_to_post';
+			$gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper',		$context);
+			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper',			$context);
+			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper',	$context);
+			$source_mapper		= $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper', $context);
 
 			// Get the nextgen tags
 			global $wpdb;
