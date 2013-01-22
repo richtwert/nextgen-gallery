@@ -22,7 +22,10 @@ Released under the GPL, http://www.gnu.org/copyleft/gpl.html
 
 // Compute path to images
 var imagePath = jQuery('script[src*="/shutter.js"]').attr('src').replace(/shutter\.js\?.*$/, 'images/');
-console.log(imagePath);
+
+if (window.console && console.log) {
+	console.log(imagePath);
+}
 
 shutterReloaded = {
 

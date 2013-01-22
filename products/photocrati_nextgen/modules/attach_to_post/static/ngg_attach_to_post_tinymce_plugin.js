@@ -145,8 +145,9 @@
 				title:		"NextGEN Gallery - Attach To Post"
 			});
 
-			// Ensure that the window cannot be scrolled
-			jQuery('#'+popup.id+'_ifr').css('overflow', 'hidden');
+			// Ensure that the window cannot be scrolled - XXX actually allow scrolling in the main window and disable it for the inner-windows/frames/elements as to create a single scrollbar
+			jQuery('#'+popup.id+'_ifr').css('overflow-y', 'auto');
+			jQuery('#'+popup.id+'_ifr').css('overflow-x', 'hidden');
 		}
 	});
 

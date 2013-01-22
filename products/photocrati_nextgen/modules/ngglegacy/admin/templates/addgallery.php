@@ -75,8 +75,8 @@
 
 							// when loaded into an iframe ensure we update iframe height accordingly
 							if (top != window) {
-								if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {
-									parent.resize_attach_to_post_tab(window.frameElement, true);
+								if (typeof(parent.adjust_height_for_frame) != 'undefined') {
+									parent.adjust_height_for_frame(window.frameElement);
 								}
 								else {
 									jQuery(parent.document).find('iframe.ngg-attach-to-post').each(function (i, elem) {
@@ -139,8 +139,8 @@
 					});
 					jQuery("#file_browser").show('slide');
 					if (top != window) {
-						if (typeof(parent.resize_attach_to_post_tab) != 'undefined') {
-							parent.resize_attach_to_post_tab(window.frameElement, true);
+						if (typeof(parent.adjust_height_for_frame) != 'undefined') {
+							parent.adjust_height_for_frame(window.frameElement);
 						}
 					}
 				});
