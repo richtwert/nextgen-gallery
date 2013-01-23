@@ -27,7 +27,7 @@ class C_DataMapper_Model extends C_Component
 		$this->_mapper = $mapper;
 		$this->_stdObject = $properties ? (object)$properties  : new stdClass();
 		parent::initialize();
-		if (!isset($this->has_defaults)) $this->set_defaults();
+		$this->set_defaults();
 	}
 
 	/**

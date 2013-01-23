@@ -195,8 +195,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		$retval = FALSE;
 
 		unset($entity->id_field);
-		$has_defaults = property_exists($entity, 'has_defaults') ? $entity->has_defaults : FALSE;
-		unset($entity->has_defaults);
 		$primary_key = $this->object->get_primary_key_column();
 		if (isset($entity->$primary_key)) {
 			if($this->object->_update($entity)) $retval = intval($entity->$primary_key);
@@ -209,7 +207,6 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 			}
 		}
 		$entity->id_field = $primary_key;
-		$entity->has_defaults = $has_defaults;
 
 		return $retval;
 	}
