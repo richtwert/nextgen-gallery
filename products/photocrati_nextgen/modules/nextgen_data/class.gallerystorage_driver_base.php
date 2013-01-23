@@ -777,20 +777,21 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 							$crop_width = $original_width;
 							$crop_height = (int) round($height * $orig_ratio_x);
 
-							if ($crop_height == ($height - 1))
-							{
-								$crop_height = $height;
-							}
 						}
 						else
 						{
 							$crop_height = $original_height;
 							$crop_width = (int) round($width * $orig_ratio_y);
+						}
 
-							if ($crop_width == ($width - 1))
-							{
-								$crop_width = $width;
-							}
+						if ($crop_width == ($width - 1))
+						{
+							$crop_width = $width;
+						}
+						
+						if ($crop_height == ($height - 1))
+						{
+							$crop_height = $height;
 						}
 
 						$crop_x = (int) round(($original_width - $crop_width) / 2);
