@@ -444,7 +444,7 @@ class Mixin_Routing_App extends Mixin
         $route_regex = '#' . $route_regex . '/?$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG).'\K' : '').'(?<\1>[^/]+)/?', $route_regex);
+        return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? '('.preg_quote(MVC_PARAM_SLUG).'\K)?' : '').'(?<\1>[^/]+)/?', $route_regex);
     }
 
 	/**
