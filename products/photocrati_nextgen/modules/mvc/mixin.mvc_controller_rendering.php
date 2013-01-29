@@ -188,7 +188,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
      */
     function static_url($resource)
     {
-        $path = $this->find_static_file($resource);
+        $path = $this->object->find_static_file($resource);
         return str_replace(
             realpath(NEXTGEN_GALLERY_PLUGIN_DIR),
             NEXTGEN_GALLERY_PLUGIN_URL,

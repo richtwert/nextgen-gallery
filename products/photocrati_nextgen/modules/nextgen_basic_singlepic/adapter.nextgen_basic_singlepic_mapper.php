@@ -56,7 +56,7 @@ class A_NextGen_Basic_SinglePic_Mapper extends Mixin
 	 * Sets default values for SinglePic settings
 	 * @param stdClass|C_DataMapper_Model $entity
 	 */
-	function set_singlepic_defaults($entity)
+	function _set_singlepic_defaults($entity)
 	{
 		if ($entity->name == NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME) {
 			$this->object->_set_default_value($entity, 'settings', 'width', '');

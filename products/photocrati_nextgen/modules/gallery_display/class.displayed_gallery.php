@@ -702,6 +702,34 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
  */
 class Mixin_Displayed_Gallery_Instance_Methods extends Mixin
 {
+	function get_entity()
+	{
+		$entity = $this->call_parent('get_entity');
+		unset($entity->post_author);
+		unset($entity->post_date);
+		unset($entity->post_date_gmt);
+		unset($entity->post_title);
+		unset($entity->post_excerpt);
+		unset($entity->post_status);
+		unset($entity->comment_status);
+		unset($entity->ping_status);
+		unset($entity->post_name);
+		unset($entity->to_ping);
+		unset($entity->pinged);
+		unset($entity->post_modified);
+		unset($entity->post_modified_gmt);
+		unset($entity->post_parent);
+		unset($entity->guid);
+		unset($entity->post_type);
+		unset($entity->post_mime_type);
+		unset($entity->comment_count);
+		unset($entity->filter);
+		unset($entity->post_content_filtered);
+
+		return $entity;
+	}
+
+
 	/**
 	 * Gets the display type object used in this displayed gallery
 	 * @return C_Display_Type

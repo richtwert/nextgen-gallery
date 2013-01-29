@@ -84,7 +84,7 @@ class Mixin_Url_Manipulation extends Mixin
 		$retval =  $this->object->join_paths(
 			isset($parts['scheme']) && $parts['host'] ?
 				"{$parts['scheme']}://{$parts['host']}" : '',
-			$parts['path']
+			isset($parts['path']) ? $parts['path'] : ''
 		);
 		if (isset($parts['query']) && $parts['query']) $retval .= "?{$parts['query']}";
 

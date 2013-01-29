@@ -4,6 +4,7 @@ class C_DataMapper_Model extends C_Component
 {
 	var $_mapper;
 	var $_stdObject;
+	var $_errors = array();
 
 	/**
 	 * Define the model
@@ -11,6 +12,7 @@ class C_DataMapper_Model extends C_Component
 	function define($mapper, $properties, $context=FALSE)
 	{
 		parent::define($context);
+		$this->add_mixin('Mixin_DataMapper_Model_Instance_Methods');
 		$this->add_mixin('Mixin_Validation');
 		$this->add_mixin('Mixin_DataMapper_Model_Validation');
 		$this->implement('I_DataMapper_Model');
@@ -31,30 +33,13 @@ class C_DataMapper_Model extends C_Component
 	}
 
 	/**
-	 * Gets the data mapper for the entity
-	 * @return C_DataMapper_Driver_Base
-	 */
-	function get_mapper()
-	{
-		return $this->_mapper;
-	}
-
-	/**
-	 * Returns the associated entity
-	 */
-	function &get_entity()
-	{
-		return $this->_stdObject;
-	}
-
-
-	/**
 	 * Gets a property of the model
 	 */
 	function &__get($property_name)
 	{
-		if (isset($this->_stdObject->$property_name)) {
-			$retval = &$this->_stdObject->$property_name;
+		$entity = $this->get_entity();
+		if (isset($entity->$property_name)) {
+			$retval = &$entity->$property_name;
 			return $retval;
 		}
 		else {
@@ -70,51 +55,33 @@ class C_DataMapper_Model extends C_Component
 	 */
 	function __set($property_name, $value)
 	{
-		return $this->_stdObject->$property_name = $value;
+		$entity = $this->get_entity();
+		return $entity->$property_name = $value;
 	}
 
 
 	function __isset($property_name)
 	{
-		return isset($this->_stdObject->$property_name);
+		return isset($this->get_entity()->$property_name);
 	}
+}
 
-
+class Mixin_DataMapper_Model_Instance_Methods extends Mixin
+{
 	/**
-	 * Saves the entity
-	 * @param type $updated_attributes
+	 * Gets/sets the primary key
 	 */
-	function save($updated_attributes=array())
+	function id()
 	{
-		$this->update_attributes($updated_attributes);
-		return $this->get_mapper()->save($this->get_entity());
+		$key = $this->object->get_mapper()->get_primary_key_column();
+		$args = func_get_args();
+		if ($args) {
+			return $this->object->__set($key, $args[0]);
+		}
+		else {
+			return $this->object->__get($key);
+		}
 	}
-
-	/**
-	 * Updates the attributes for an object
-	 */
-	function update_attributes($array=array())
-	{
-		foreach ($array as $key => $value) $this->_stdObject->$key = $value;
-	}
-
-
-	/**
-	 * Sets the default values for this model
-	 */
-	function set_defaults()
-	{
-		$this->get_mapper()->set_defaults($this);
-	}
-
-	/**
-	 * Destroys or deletes the entity
-	 */
-	function destroy()
-	{
-		$this->get_mapper()->destroy($this->_stdObject);
-	}
-
 
 	/**
 	 * Determines whether the object is new or existing
@@ -122,22 +89,63 @@ class C_DataMapper_Model extends C_Component
 	 */
 	function is_new()
 	{
-		return $this->id() ? FALSE: TRUE;
+		return $this->object->id() ? FALSE: TRUE;
 	}
 
 	/**
-	 * Gets/sets the primary key
+	 * Destroys or deletes the entity
 	 */
-	function id()
+	function destroy()
 	{
-		$key = $this->get_mapper()->get_primary_key_column();
-		$args = func_get_args();
-		if ($args) {
-			return $this->__set($key, $args[0]);
-		}
-		else {
-			return $this->__get($key);
-		}
+		$this->object->get_mapper()->destroy($this->object->get_entity());
+	}
+
+	/**
+	 * Sets the default values for this model
+	 */
+	function set_defaults()
+	{
+		$this->object->get_mapper()->set_defaults($this);
+	}
+
+
+	/**
+	 * Updates the attributes for an object
+	 */
+	function update_attributes($array=array())
+	{
+		$entity = $this->object->get_entity();
+		foreach ($array as $key => $value) $entity->$key = $value;
+		$this->object->_stdObject = $entity;
+		return $this->object;
+	}
+
+	/**
+	 * Saves the entity
+	 * @param type $updated_attributes
+	 */
+	function save($updated_attributes=array())
+	{
+		$this->object->update_attributes($updated_attributes);
+		return $this->object->get_mapper()->save($this->object->get_entity());
+	}
+
+
+	/**
+	 * Returns the associated entity
+	 */
+	function &get_entity()
+	{
+		return $this->object->_stdObject;
+	}
+
+	/**
+	 * Gets the data mapper for the entity
+	 * @return C_DataMapper_Driver_Base
+	 */
+	function get_mapper()
+	{
+		return $this->object->_mapper;
 	}
 }
 
