@@ -70,24 +70,6 @@ class M_MVC extends C_Base_Module
 	{
         // TODO: get gallery stub from setting
 		$router = $this->get_registry()->get_utility('I_Router');
-//        $app->rewrite('/nggallery/{album}/{gallery}/image/{pid}/',           '/album--{album}/gallery--{gallery}/pid--{pid}/');
-//        $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/images/',    '/album--{album}/gallery--{gallery}/page--{page}/show--gallery/');
-//        $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/slideshow/', '/album--{album}/gallery--{gallery}/page--{page}/show--slide/');
-//        $app->rewrite('/nggallery/{album}/{gallery}/page-{page}/',           '/album--{album}/gallery--{gallery}/page--{page}/');
-//        $app->rewrite('/nggallery/{album}/{gallery}/images/',                '/album--{album}/gallery--{gallery}/show--gallery/');
-//        $app->rewrite('/nggallery/{album}/{gallery}/slideshow/',             '/album--{album}/gallery--{gallery}/show--slide/');
-//        $app->rewrite('/nggallery/{album}/{gallery}/',                       '/album--{album}/gallery--{gallery}/');
-//        $app->rewrite('/nggallery/{album}/page-{page}/',                     '/album--{album}/page--{page}');
-//        $app->rewrite('/nggallery/{album}/',                                 '/album--{album}/');
-//
-//        $app->rewrite('/nggallery/tags/{tag}/page-{page}/',  '/gallerytag--{tag}/page--{page}/');
-//        $app->rewrite('/nggallery/tags/{tag}/',              '/gallerytag--{tag}/');
-//        $app->rewrite('/nggallery/images/',                  '/show--gallery/');
-//        $app->rewrite('/nggallery/slideshow/',               '/show--slide/');
-//        $app->rewrite('/nggallery/image/{pid}/page-{page}/', '/pid--{pid}/page--{page}/');
-//        $app->rewrite('/nggallery/image/{pid}/',             '/pid--{pid}');
-//        $app->rewrite('/nggallery/page-{page}/',             '/page--{page}');
-
 		if (!$router->serve_request() && $router->has_parameter_segments()) {
 			return $router->passthru();
 		}
@@ -103,7 +85,6 @@ class M_MVC extends C_Base_Module
 	{
 		if ($this->rethrow)
 			throw $this->rethrow;
-//            die(print_r($this->rethrow));
 	}
 }
 

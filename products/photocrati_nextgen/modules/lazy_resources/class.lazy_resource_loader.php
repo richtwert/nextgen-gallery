@@ -24,6 +24,7 @@ class C_Lazy_Resource_Loader extends C_Component
 	function define($context=FALSE)
 	{
 		parent::define($context);
+		$this->add_mixin('Mixin_Lazy_Resource_Loader');
 		$this->implement('I_Lazy_Resource_Loader');
 	}
 
@@ -44,7 +45,6 @@ class C_Lazy_Resource_Loader extends C_Component
 		ob_end_clean();
 	}
 
-
 	/**
 	 * Parses HTML for urls of static resources
 	 */
@@ -60,7 +60,10 @@ class C_Lazy_Resource_Loader extends C_Component
 		}
 		return $urls;
 	}
+}
 
+class Mixin_Lazy_Resource_Loader extends Mixin
+{
 	/**
 	 * Enqueue the scripts and styles using lazy loader
 	 * @param type $return

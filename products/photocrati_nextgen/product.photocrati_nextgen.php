@@ -37,6 +37,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the WordPress Routing integration module
 		$this->get_registry()->load_module('photocrati-wordpress_routing');
 
+		// Load the LZW compression module, a useful utility
+		$this->get_registry()->load_module('photocrati-lzw');
+
 		// The NextGEN Settings module provides uniform centralized management
 		// of settings for the plugin.
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
@@ -61,6 +64,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load the Lazy Resource Loader
 		$this->get_registry()->load_module('photocrati-lazy_resources');
+
+		// Load the dynamic stylesheet utility
+		$this->get_registry()->load_module('photocrati-dynamic_stylesheet');
 
 		// Provides a mechanism for Frame Communication
 		$this->get_registry()->load_module('photocrati-frame_communication');
@@ -92,7 +98,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load the NextGEN Basic display types
 		$this->get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
-		$this->get_registry()->load_module('photocrati-nextgen_basic_slideshow');
+//		$this->get_registry()->load_module('photocrati-nextgen_basic_slideshow');
+		define('NEXTGEN_GALLERY_BASIC_SLIDESHOW', 'photocrati-nextgen_basic_slideshow');
 		$this->get_registry()->load_module('photocrati-nextgen_basic_imagebrowser');
         $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');
         $this->get_registry()->load_module('photocrati-nextgen_basic_tagcloud');

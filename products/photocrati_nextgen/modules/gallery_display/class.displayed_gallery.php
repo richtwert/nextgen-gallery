@@ -173,13 +173,15 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 			}
 
 			// Add exclude column
-			$select = $this->object->_add_find_in_set_column(
-				$select,
-				$image_key,
-				$excluded_set,
-				'exclude'
-			);
-			$select .= ", IF (exclude = 0 AND @exclude = 0, $if_true, $if_false) AS 'exclude'";
+			if ($excluded_set) {
+				$select = $this->object->_add_find_in_set_column(
+					$select,
+					$image_key,
+					$excluded_set,
+					'exclude'
+				);
+				$select .= ", IF (exclude = 0 AND @exclude = 0, $if_true, $if_false) AS 'exclude'";
+			}
 
 			// Select what we want
 			$mapper->select($select);
@@ -294,7 +296,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		}
 
 		// Apply a sorting order
-		$mapper->order_by($sort_by, $sort_direction);
+		if ($sort_by) $mapper->order_by($sort_by, $sort_direction);
 
 		// Apply a limit
 		if ($limit) {
