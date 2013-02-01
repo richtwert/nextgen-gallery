@@ -349,6 +349,7 @@ if (!class_exists('nggLoader')) {
 		}
 
 		function load_styles() {
+            wp_enqueue_style('NextGEN-Defaults', NGGALLERY_URLPATH . 'css/default.css', false, '1.0.0', 'screen');
 
 			// check first the theme folder for a nggallery.css
 			if ( nggGallery::get_theme_css_file() )

@@ -769,6 +769,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 						}
 					}
 				} else {
+                    if ($file === 'default.css') { continue; }
 					if (preg_match('|\.css$|', $file))
 						$plugin_files[] = $file;
 				}

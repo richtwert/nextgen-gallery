@@ -292,6 +292,10 @@ class C_NggLegacy_Thumbnail {
     function calcWidth($width,$height) {
         $newWp = (100 * $this->maxWidth) / $width;
         $newHeight = ($height * $newWp) / 100;
+        
+        if (intval($newHeight) == $this->maxHeight - 1)
+        	$newHeight = $this->maxHeight;
+        	
         return array('newWidth'=>intval($this->maxWidth),'newHeight'=>intval($newHeight));
     }
 
@@ -305,6 +309,10 @@ class C_NggLegacy_Thumbnail {
     function calcHeight($width,$height) {
         $newHp = (100 * $this->maxHeight) / $height;
         $newWidth = ($width * $newHp) / 100;
+        
+        if (intval($newWidth) == $this->maxWidth - 1)
+        	$newWidth = $this->maxWidth;
+        	
         return array('newWidth'=>intval($newWidth),'newHeight'=>intval($this->maxHeight));
     }
 

@@ -10,15 +10,59 @@ function adjust_height_for_frame(frame, callback)
 {
 	// Adjust height of the frame
 	var $frame			= jQuery(frame);
-	var new_height		= jQuery(frame.contentDocument).height();
-	new_height += 60; // needed for IE8 and Firefox. Could probably be tweaked
+	var new_height		= $frame.contents().find('#wpbody').height();
+	//new_height += 60; // needed for IE8 and Firefox. Could probably be tweaked
 	var current_height	= $frame.height();
-	if (current_height < new_height) $frame.height(new_height);
+	if (current_height != new_height) {
+		var frame_id = $frame.attr('id');
+		
+		$frame.height(new_height);
+		
+		if (frame_id && frame_id.indexOf('ngg-iframe-') == 0) {
+			var tab_id = frame_id.substr(11);
+			
+			if (tab_id) {
+				jQuery('#' + tab_id).height(new_height);
+			}
+		}
+	} 
 
 	if (callback != undefined)
 		return callback.call(frame, new_height);
 	else
 		return true;
+}
+
+function ngg_get_measures_for_frame(frame)
+{
+	var $frame			= jQuery(frame);
+	var frame_id = $frame.attr('id');
+	var measures = {};
+
+	if (frame_id && frame_id.indexOf('ngg-iframe-') == 0) {
+		var tab_id = frame_id.substr(11);
+		
+		if (tab_id) {
+			var jDoc = jQuery(document);
+			
+			measures.scrollTop = jDoc.scrollTop() - 40; // remove around 40 for tabs and padding
+			
+			if (window.parent) {
+				var jparDoc = jQuery(window.parent.document);
+				
+				measures.scrollHeight = jparDoc.find('.ngg_attach_to_post_window').height() - 40; // remove around 40 for tabs and padding
+			}
+			else {
+				measures.scrollHeight = jDoc.height();
+			}
+			
+			if (window.console && console.log) {
+				console.log(measures);
+			}
+		}
+	}
+	
+	return measures;
 }
 
 // Activates the attach to post screen elements
@@ -63,7 +107,7 @@ jQuery(function($){
 	// Fade in now that all GUI elements are intact
 	$('body').css({
 		position: 'static',
-		visibility: 'visible',
+		visibility: 'visible'
 	}).animate({
 		opacity: 1.0
 	});

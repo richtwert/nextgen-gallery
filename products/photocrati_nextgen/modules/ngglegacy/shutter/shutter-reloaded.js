@@ -75,6 +75,18 @@ shutterReloaded = {
 			if ( typeof window.pageYOffset != 'undefined' ) t.Top = window.pageYOffset;
 			else t.Top = (document.documentElement.scrollTop > 0) ? document.documentElement.scrollTop : document.body.scrollTop;
 		}
+		
+		if (window.parent) {
+			// XXX exception test attach to post tabs
+			var container = window.parent;
+			
+			if (typeof(container.ngg_get_measures_for_frame) != 'undefined') {
+				var measures = container.ngg_get_measures_for_frame(window.frameElement);
+				
+				t.Top = t.Top + measures.scrollTop;
+				//t.pgHeight = measures.scrollHeight;
+			}
+		}
 
 		if ( typeof t.pgHeight == 'undefined' )
 			t.pgHeight = Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);
@@ -208,6 +220,17 @@ shutterReloaded = {
 		T.style.width = (TI.width - 4) + 'px';
 
 		shHeight = t.wHeight - 50;
+			
+		if (window.parent) {
+			// XXX exception test attach to post tabs
+			var container = window.parent;
+			
+			if (typeof(container.ngg_get_measures_for_frame) != 'undefined') {
+				var measures = container.ngg_get_measures_for_frame(window.frameElement);
+				
+				shHeight = measures.scrollHeight - 50;
+			}
+		}
 
 		if ( t.FS ) {
 			if ( TI.width > (t.wWidth - 10) )

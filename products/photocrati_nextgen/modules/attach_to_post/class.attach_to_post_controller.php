@@ -284,12 +284,16 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 * @param string $page
 	 * @return string
 	 */
-	function _render_ngg_page_in_frame($page)
+	function _render_ngg_page_in_frame($page, $tab_id = null)
 	{
 		$frame_url = real_site_url("/wp-admin/admin.php?page={$page}&attach_to_post");
 		$frame_url = esc_url($frame_url);
+		
+		if ($tab_id) {
+			$tab_id = " id='ngg-iframe-{$tab_id}'";
+		}
 
-		return "<iframe name='{$page}' frameBorder='0' class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
+		return "<iframe name='{$page}' frameBorder='0'{$tab_id} class='ngg-attach-to-post ngg-iframe-page-{$page}' scrolling='no' src='{$frame_url}'></iframe>";
 	}
 
 	/**
@@ -312,7 +316,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function _render_create_tab()
 	{
-		return $this->object->_render_ngg_page_in_frame('nggallery-add-gallery');
+		return $this->object->_render_ngg_page_in_frame('nggallery-add-gallery', 'create_tab');
 	}
 
 
@@ -322,7 +326,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function _render_galleries_tab()
 	{
-		return $this->object->_render_ngg_page_in_frame('nggallery-manage-gallery');
+		return $this->object->_render_ngg_page_in_frame('nggallery-manage-gallery', 'galleries_tab');
 	}
 
 
@@ -331,7 +335,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function _render_albums_tab()
 	{
-		return $this->object->_render_ngg_page_in_frame('nggallery-manage-album');
+		return $this->object->_render_ngg_page_in_frame('nggallery-manage-album', 'albums_tab');
 	}
 
 
@@ -341,6 +345,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function _render_tags_tab()
 	{
-		return $this->object->_render_ngg_page_in_frame('nggallery-tags');
+		return $this->object->_render_ngg_page_in_frame('nggallery-tags', 'tags_tab');
 	}
 }

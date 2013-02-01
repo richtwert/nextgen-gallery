@@ -132,7 +132,9 @@ class nggAdminPanel{
 				$html = implode('', array(
 					"<script type='text/javascript' src='{$jquery_url}'></script>\n",
 					"<script type='text/javascript'>window.onerror = function(msg, url, line){
-						console.log(msg);
+						if (window.console && console.log) {
+							console.log(msg);
+						}
 						if (window.location.search.length > 0) {
 							window.location.search += '&skipjs[{$skipjs_count}]='+url;
 						}
