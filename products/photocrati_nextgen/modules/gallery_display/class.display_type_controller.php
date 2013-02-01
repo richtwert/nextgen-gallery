@@ -113,17 +113,16 @@ class Mixin_Display_Type_Controller extends Mixin
 			$displayed_gallery->display_type,
 			$this->object->_get_js_lib_url()
 		);
-		$this->object->_add_script_data(
-			$displayed_gallery->display_type,
-			'galleries',
-			new stdClass()
-		);
 
 		// Enqueue the display type initialization routine
 		wp_enqueue_script(
 			$displayed_gallery->display_type.'_init',
-			$this->object->_get_js_init_url(),
-			array($displayed_gallery->display_type)
+			$this->object->_get_js_init_url()
+		);
+		$this->object->_add_script_data(
+			$displayed_gallery->display_type.'_init',
+			'galleries',
+			new stdClass()
 		);
 		$this->object->_add_script_data(
 			$displayed_gallery->display_type.'_init',

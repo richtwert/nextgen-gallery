@@ -147,7 +147,7 @@ class Mixin_Routing_App extends Mixin
 				$regex = implode('', array(
 					'#',
 					($starts_with_slash ? '^':''),
-					preg_quote($this->object->context),
+					preg_quote($this->object->context, '#'),
 					'#'
 				));
 				$retval = preg_replace($regex, '', $request_uri);
@@ -293,7 +293,6 @@ class Mixin_Routing_App extends Mixin
 						//   'method'	  => array('GET') (optional)
 						// )
 						if ($handler && $handler = $this->object->parse_route_handler($handler)) {
-
 							// Is this handler for the current HTTP request method?
 							if (isset($handler['method'])) {
 								if (!is_array($handler['method'])) $handler['$method'] = array($handler['method']);
@@ -418,7 +417,7 @@ class Mixin_Routing_App extends Mixin
                 array('{', '}'),
                 array('~', '~'),
                 $route
-            )
+            ), '#'
         );
 
 		// Wrap the route
@@ -434,7 +433,7 @@ class Mixin_Routing_App extends Mixin
 
 		// If parameters come after a slug, it might appear as well
 		if (MVC_PARAM_SLUG) {
-			$route_regex .= "(".preg_quote(MVC_PARAM_SLUG).'/)?';
+			$route_regex .= "(".preg_quote(MVC_PARAM_SLUG, '#').'/)?';
 		}
 
 		// Parameter might follow the request uri
@@ -444,7 +443,7 @@ class Mixin_Routing_App extends Mixin
         $route_regex = '#' . $route_regex . '/?$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG).'\K' : '').'(?<\1>[^/]+)/?', $route_regex);
+        return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? '('.preg_quote(MVC_PARAM_SLUG,'#').'\K)?' : '').'(?<\1>[^/]+)/?', $route_regex);
     }
 
 	/**
@@ -470,10 +469,10 @@ class Mixin_Routing_App extends Mixin
 	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE, $url=FALSE)
 	{
 		$retval				= $default;
-		$quoted_key			= preg_quote($key);
-		$id					= $id ? preg_quote($id) : "[^/]+";
-		$param_prefix		= preg_quote(MVC_PARAM_PREFIX);
-		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR);
+		$quoted_key			= preg_quote($key,'#');
+		$id					= $id ? preg_quote($id,'#') : "[^/]+";
+		$param_prefix		= preg_quote(MVC_PARAM_PREFIX,'#');
+		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR,'#');
 		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$quoted_key}{$param_sep}(?<value>[^/\?]+)/?#i";
 		$found				= FALSE;
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
@@ -554,7 +553,7 @@ class Mixin_Routing_App extends Mixin
 	{
 		$retval			= $url;
 		$param_sep		= MVC_PARAM_SEPARATOR;
-		$param_prefix	= MVC_PARAM_PREFIX;
+		$param_prefix	= MVC_PARAM_PREFIX ? preg_quote(MVC_PARAM_PREFIX, '#') : '';
 		$param_slug		= MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG, '#') : FALSE;
 
 		// Is the parameter already part of the request? If so, modify that
@@ -563,7 +562,7 @@ class Mixin_Routing_App extends Mixin
  			extract($segment);
 
 			if ($source == 'querystring') {
-				$preg_id	= $id ? '\d+' : preg_quote($id);
+				$preg_id	= $id ? '\d+' : preg_quote($id,'#');
 				$preg_key	= preg_quote($key, '#');
 				$regex = implode('', array(
 					'#',
@@ -721,7 +720,7 @@ class Mixin_Routing_App extends Mixin
 	{
 		$retval			= FALSE;
 		$request_uri	= $this->object->get_app_request_uri();
-		$sep			= preg_quote(MVC_PARAM_SEPARATOR);
+		$sep			= preg_quote(MVC_PARAM_SEPARATOR,'#');
 
 		// If we detect the MVC_PARAM_SLUG, then we assume that we have parameters
 		if (MVC_PARAM_SLUG && strpos($request_uri, '/'.MVC_PARAM_SLUG) !== FALSE) {
@@ -733,7 +732,7 @@ class Mixin_Routing_App extends Mixin
 		if (!$retval) {
 			$regex			= implode('', array(
 				'#',
-				MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG).'/?' : '',
+				MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG,'#').'/?' : '',
 				"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+/?){0,}",
 				'$#'
 			));

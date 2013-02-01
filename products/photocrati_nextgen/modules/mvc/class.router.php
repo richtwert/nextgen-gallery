@@ -161,7 +161,7 @@ class Mixin_Router extends Mixin
 		}
 
 		// Remove the router's context
-		$retval = preg_replace('#^'.preg_quote($this->object->context).'#', '', $retval);
+		$retval = preg_replace('#^'.preg_quote($this->object->context, '#').'#', '', $retval);
 
 		// Remove the params
 		if (!$with_params)

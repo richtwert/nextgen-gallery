@@ -40,11 +40,11 @@ class Mixin_Url_Manipulation extends Mixin
 	{
 		$retval = $url;
 		$parts	= parse_url($url);
-		$segment= preg_quote($segment, '#');
 
 		// If the url has a path, then we can remove a segment
 		if (isset($parts['path'])) {
 			if (substr($segment, -1) == '/') $segment = substr($segment, -1);
+			$segment = preg_quote($segment, '#');
 			if (preg_match("#{$segment}#", $parts['path'], $matches)) {
 				$parts['path'] = str_replace(
 					'//',
@@ -84,7 +84,7 @@ class Mixin_Url_Manipulation extends Mixin
 		$retval =  $this->object->join_paths(
 			isset($parts['scheme']) && $parts['host'] ?
 				"{$parts['scheme']}://{$parts['host']}" : '',
-			$parts['path']
+			isset($parts['path']) ? $parts['path'] : ''
 		);
 		if (isset($parts['query']) && $parts['query']) $retval .= "?{$parts['query']}";
 
@@ -101,18 +101,18 @@ class Mixin_Url_Manipulation extends Mixin
 		$retval		 = $request_uri ? $request_uri : '/';
 		$sep		 = preg_quote(MVC_PARAM_SEPARATOR, '#');
 		$param_regex = "#((?<id>\w+){$sep})?(?<key>\w+){$sep}(?<value>.+)/?$#";
-		$slug		 = MVC_PARAM_SLUG && $remove_slug ? '/' . preg_quote(MVC_PARAM_SLUG) : '';
+		$slug		 = MVC_PARAM_SLUG && $remove_slug ? '/' . preg_quote(MVC_PARAM_SLUG,'#') : '';
 		$slug_regex	 = '#'.$slug.'/?$#';
 
 		// Remove all parameters
 		while (preg_match($param_regex, $retval, $matches)) {
-			$match_regex = '#'.preg_quote(array_shift($matches)).'$#';
+			$match_regex = '#'.preg_quote(array_shift($matches),'#').'$#';
 			$retval = preg_replace($match_regex, '', $retval);
 		}
 
 		// Remove the slug or trailing slash
 		if (preg_match($slug_regex, $retval, $matches)) {
-			$match_regex = '#'.preg_quote(array_shift($matches)).'$#';
+			$match_regex = '#'.preg_quote(array_shift($matches),'#').'$#';
 			$retval = preg_replace($match_regex, '', $retval);
 		}
 

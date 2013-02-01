@@ -87,7 +87,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         $__filename = (strpos($__name, '/') === 0) ?
             $__name: $this->object->find_template($__name);
         ob_start();
-        extract($__vars);
+        extract((array)$__vars);
         include($__filename);
         $__content = ob_get_clean();
 
@@ -188,7 +188,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
      */
     function static_url($resource)
     {
-        $path = $this->find_static_file($resource);
+        $path = $this->object->find_static_file($resource);
         return str_replace(
             realpath(NEXTGEN_GALLERY_PLUGIN_DIR),
             NEXTGEN_GALLERY_PLUGIN_URL,
