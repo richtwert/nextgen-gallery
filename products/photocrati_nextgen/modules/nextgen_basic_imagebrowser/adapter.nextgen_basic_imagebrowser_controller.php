@@ -195,4 +195,15 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         return array('nextgen_basic_templates_template');
     }
 
+    /**
+     * Enqueues all static resources required by this display type
+     *
+     * @param C_Displayed_Gallery $displayed_gallery
+     */
+    function enqueue_frontend_resources($displayed_gallery)
+    {
+        wp_enqueue_style('nextgen_basic_imagebrowser_style', $this->static_url('nextgen_basic_imagebrowser.css'));
+        $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
+    }
+
 }

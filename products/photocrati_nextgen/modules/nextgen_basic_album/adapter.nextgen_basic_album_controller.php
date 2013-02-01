@@ -210,4 +210,16 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
 		return preg_replace($regex, '/\2', $pagelink);
 	}
+
+    /**
+     * Enqueues all static resources required by this display type
+     *
+     * @param C_Displayed_Gallery $displayed_gallery
+     */
+    function enqueue_frontend_resources($displayed_gallery)
+    {
+        wp_enqueue_style('nextgen_basic_album_style', $this->static_url('nextgen_basic_album.css'));
+        $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
+    }
+
 }
