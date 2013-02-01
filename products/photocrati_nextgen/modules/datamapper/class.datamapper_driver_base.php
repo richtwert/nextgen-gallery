@@ -342,7 +342,7 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		}
 
 		// Set defaults for this entity
-		if (!$stdObject->has_defaults) {
+		if (empty($stdObject->has_defaults)) {
 			$this->object->set_defaults($stdObject);
 			$stdObject->has_defaults = TRUE;
 		}
