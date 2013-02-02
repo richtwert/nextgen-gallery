@@ -1,0 +1,43 @@
+body {
+    overflow-x: hidden;
+}
+
+#page {
+    overflow: visible;
+}
+
+/* ----------- Slideshow -------------*/
+
+.slideshow {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    outline: none;
+}
+
+.slideshowlink {
+}
+
+/* ----------- JS Slideshow -------------*/
+
+.ngg-slideshow {
+    overflow: hidden;
+    position: relative;
+}
+
+.ngg-slideshow * {
+    vertical-align: middle;
+}
+
+/* See also : http://www.brunildo.org/test/img_center.html */
+.ngg-slideshow-loader {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.ngg-slideshow-loader img {
+    background: none !important;
+    border: 0 none !important;
+    margin: auto !important;
+}

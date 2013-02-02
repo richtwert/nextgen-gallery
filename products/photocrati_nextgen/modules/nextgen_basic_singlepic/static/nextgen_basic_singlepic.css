@@ -1,0 +1,22 @@
+/* ----------- Single picture -------------*/
+
+.ngg-singlepic {
+    background-color: #FFFFFF;
+    display: block;
+    padding: 4px;
+}
+
+.ngg-left {
+    float: left;
+    margin-right: 10px;
+}
+
+.ngg-right {
+    float: right;
+    margin-left: 10px;
+}
+
+.ngg-center {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}

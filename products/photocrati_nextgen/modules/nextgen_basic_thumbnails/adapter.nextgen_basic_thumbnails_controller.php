@@ -150,6 +150,8 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
+        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->static_url('nextgen_basic_thumbnails.css'));
+
 		if ($displayed_gallery->display_settings['show_piclens_link'])
 			wp_enqueue_script('piclens', $this->static_url('piclens/lite/piclens.js'));
 
