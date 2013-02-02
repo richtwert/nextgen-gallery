@@ -100,6 +100,7 @@ class Mixin_Dynamic_Stylesheet_Actions extends Mixin
 	function index_action()
 	{
 		$this->set_content_type('css');
+		$this->expires("1 year");
 
 		if (($data = $this->param('data')) !== FALSE && ($index = $this->param('index')) !== FALSE) {
 			$data = $this->object->decode($data);

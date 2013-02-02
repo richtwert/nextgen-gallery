@@ -47,7 +47,13 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 		}
 	}
 
-
+	function expires($time)
+	{
+		$time = strtotime($time);
+		if (!headers_sent()) {
+			header('Expires: '.strftime("%a, %d %b %Y %T %Z", $time));
+		}
+	}
 
     function http_error($message, $code=500)
     {
