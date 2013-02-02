@@ -35,10 +35,7 @@ class C_Lazy_Resource_Loader extends C_Component
 	function initialize()
 	{
 		parent::initialize();
-		ob_start();
 		wp_print_scripts();
-		$this->script_urls = $this->_parse_resource_urls(ob_get_contents());
-		ob_end_clean();
 		ob_start();
 		wp_print_styles();
 		$this->style_urls = $this->_parse_resource_urls(ob_get_contents());

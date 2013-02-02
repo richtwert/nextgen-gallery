@@ -82,7 +82,6 @@ class M_Lazy_Resources extends C_Base_Module
 	 */
 	function print_footer_scripts()
 	{
-		wp_print_scripts();
 		$loader = $this->get_registry()->get_utility('I_Lazy_Resource_Loader');
 		$loader->enqueue();
 	}

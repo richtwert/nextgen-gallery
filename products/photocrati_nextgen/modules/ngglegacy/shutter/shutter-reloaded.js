@@ -9,14 +9,6 @@ Acknowledgement: some ideas are from: Shutter by Andrew Sutherland - http://code
 
 */
 
-shutterOnload = function(){shutterReloaded.init('sh');}
-
-if (typeof shutterOnload == 'function') {
-	if ('undefined' != typeof jQuery) jQuery(document).ready(function(){shutterOnload();});
-	else if( typeof window.onload != 'function' ) window.onload = shutterOnload;
-	else {oldonld = window.onload;window.onload = function(){if(oldonld){oldonld();};shutterOnload();}};
-}
-
 shutterReloaded = {
 
 	I : function (a) {
@@ -35,10 +27,10 @@ shutterReloaded = {
 		var t = this, L, T, ext, i, m, setid, inset, shfile, shMenuPre, k, img;
 		shutterLinks = {}, shutterSets = {};
 		if ( 'object' != typeof shutterSettings ) shutterSettings = {};
-        
+
         // If the screen orientation is defined we are in a modern mobile OS
         t.mobileOS = typeof orientation != 'undefined' ? true : false;
-                
+
 		for ( i = 0; i < document.links.length; i++ ) {
 			L = document.links[i];
 			ext = ( L.href.indexOf('?') == -1 ) ? L.href.slice(-4).toLowerCase() : L.href.substring( 0, L.href.indexOf('?') ).slice(-4).toLowerCase();
@@ -47,19 +39,19 @@ shutterReloaded = {
 			if ( a == 'lb' && L.rel.toLowerCase().indexOf('lightbox') == -1 ) continue;
 
 			if ( L.className.toLowerCase().indexOf('shutterset') != -1 )
-			setid = L.className.replace(/\s/g, '_');			
+			setid = L.className.replace(/\s/g, '_');
 			else if ( L.rel.toLowerCase().indexOf('lightbox[') != -1 )
 			setid = L.rel.replace(/\s/g, '_');
 			else setid = 0, inset = -1;
-			
+
 			if( setid ) {
 				if ( ! shutterSets[setid] ) shutterSets[setid] = [];
 					inset = shutterSets[setid].push(i);
 			}
-			
+
 			shfile = L.href.slice(L.href.lastIndexOf('/')+1);
 			T = ( L.title && L.title != shfile ) ? L.title : '';
-			
+
 			shutterLinks[i] = {link:L.href,num:inset,set:setid,title:T}
 			L.onclick = new Function('shutterReloaded.make("' + i + '");return false;');
 		}
@@ -75,14 +67,14 @@ shutterReloaded = {
 			if ( typeof window.pageYOffset != 'undefined' ) t.Top = window.pageYOffset;
 			else t.Top = (document.documentElement.scrollTop > 0) ? document.documentElement.scrollTop : document.body.scrollTop;
 		}
-		
+
 		if (window.parent) {
 			// XXX exception test attach to post tabs
 			var container = window.parent;
-			
+
 			if (typeof(container.ngg_get_measures_for_frame) != 'undefined') {
 				var measures = container.ngg_get_measures_for_frame(window.frameElement);
-				
+
 				t.Top = t.Top + measures.scrollTop;
 				//t.pgHeight = measures.scrollHeight;
 			}
@@ -95,7 +87,7 @@ shutterReloaded = {
 		else t.FS = shutterSettings.FS || 0;
 
 		if ( t.resizing ) t.resizing = null;
-        
+
         // resize event if window or orientation changed (i.e. iOS)
         if(t.mobileOS == true)
             window.onorientationchange = new Function('shutterReloaded.resize("'+ln+'");');
@@ -148,11 +140,11 @@ shutterReloaded = {
 		NavBar = '<div id="shTitle"><div id="shPrev">' + prevlink + '</div><div id="shNext">' + nextlink + '</div><div id="shName">' + shutterLinks[ln].title + '</div>' + imgNum + '</div>';
 
 		D.innerHTML = '<div id="shWrap"><img src="'+shutterLinks[ln].link+'" id="shTopImg" title="' + t.msgClose + '" onload="shutterReloaded.showImg();" onclick="shutterReloaded.hideShutter();" />' + NavBar +'</div>';
-		
+
 		document.onkeydown = function(event){shutterReloaded.handleArrowKeys(event);};
 		//Google Chrome 4.0.249.78 bug for onload attribute
 		document.getElementById('shTopImg').src = shutterLinks[ln].link;
-		
+
 		window.setTimeout(function(){shutterReloaded.loading();},1000);
 	},
 
@@ -220,14 +212,14 @@ shutterReloaded = {
 		T.style.width = (TI.width - 4) + 'px';
 
 		shHeight = t.wHeight - 50;
-			
+
 		if (window.parent) {
 			// XXX exception test attach to post tabs
 			var container = window.parent;
-			
+
 			if (typeof(container.ngg_get_measures_for_frame) != 'undefined') {
 				var measures = container.ngg_get_measures_for_frame(window.frameElement);
-				
+
 				shHeight = measures.scrollHeight - 50;
 			}
 		}
@@ -274,27 +266,34 @@ shutterReloaded = {
 		for (i = 0; i < emb.length; i++) emb[i].style.visibility = vis;
 		for (i = 0; i < ifr.length; i++) ifr[i].style.visibility = vis;
 	},
-	
+
 	handleArrowKeys : function(e) {
 	    var code = 0;
 	    if (!e) var e = window.event
 	    	if (e.keyCode) code = e.keyCode;
 	    	else if (e.which) code = e.which;
-	    	
+
 		var nextlink = document.getElementById('prevpic');
 		var prevlink = document.getElementById('nextpic');
 		var closelink = document.getElementById('shTopImg');
-	
+
 		switch (code) {
 		    case 39:
 			if (prevlink) prevlink.onclick();
-			break;    
+			break;
 		    case 37:
 			if (nextlink) nextlink.onclick();
-			break;    
+			break;
 		    case 27:
 			if (closelink) closelink.onclick();
-			break;    
+			break;
 		 }
 	}
+}
+shutterOnload = function(){shutterReloaded.init('sh');}
+
+if (typeof shutterOnload == 'function') {
+	if ('undefined' != typeof jQuery) jQuery(document).ready(function(){shutterOnload();});
+	else if( typeof window.onload != 'function' ) window.onload = shutterOnload;
+	else {oldonld = window.onload;window.onload = function(){if(oldonld){oldonld();};shutterOnload();}};
 }

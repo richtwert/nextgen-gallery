@@ -74,9 +74,9 @@ class Mixin_Dynamic_Stylesheet_Instance_Methods extends Mixin
 	{
 		$lzw			= $this->get_registry()->get_utility('I_Lzw');
 		$data			= json_encode($data);
-		$data			= $lzw->compress($data);
+//		$data			= $lzw->compress($data);
 		$data			= base64_encode($data);
-		$data			= str_replace('/', '__', $data);
+		$data			= str_replace('/', '\\', $data);
 		return $data;
 	}
 
@@ -84,9 +84,9 @@ class Mixin_Dynamic_Stylesheet_Instance_Methods extends Mixin
 	function decode($data)
 	{
 		$lzw			= $this->get_registry()->get_utility('I_Lzw');
-		$data			= str_replace('__', '/', $data);
+		$data			= str_replace('\\', '/', $data);
 		$data			= base64_decode($data);
-		$data			= $lzw->decompress($data);
+//		$data			= $lzw->decompress($data);
 		$data			= json_decode($data);
 		return $data;
 	}
