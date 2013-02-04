@@ -6,7 +6,7 @@ class A_NextGen_Basic_Slideshow_Mapper extends Mixin
 	{
 		$this->object->add_post_hook(
 			'set_defaults',
-			get_class(),
+            'NextGen Basic Slideshow Defaults',
 			'Hook_NextGen_Basic_Slideshow_Defaults'
 		);
 	}
