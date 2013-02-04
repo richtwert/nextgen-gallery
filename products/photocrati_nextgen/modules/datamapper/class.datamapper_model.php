@@ -4,7 +4,6 @@ class C_DataMapper_Model extends C_Component
 {
 	var $_mapper;
 	var $_stdObject;
-	var $_errors = array();
 
 	/**
 	 * Define the model
@@ -12,7 +11,6 @@ class C_DataMapper_Model extends C_Component
 	function define($mapper, $properties, $context=FALSE)
 	{
 		parent::define($context);
-		$this->add_mixin('Mixin_DataMapper_Model_Instance_Methods');
 		$this->add_mixin('Mixin_Validation');
 		$this->add_mixin('Mixin_DataMapper_Model_Validation');
 		$this->implement('I_DataMapper_Model');
@@ -33,13 +31,30 @@ class C_DataMapper_Model extends C_Component
 	}
 
 	/**
+	 * Gets the data mapper for the entity
+	 * @return C_DataMapper_Driver_Base
+	 */
+	function get_mapper()
+	{
+		return $this->_mapper;
+	}
+
+	/**
+	 * Returns the associated entity
+	 */
+	function &get_entity()
+	{
+		return $this->_stdObject;
+	}
+
+
+	/**
 	 * Gets a property of the model
 	 */
 	function &__get($property_name)
 	{
-		$entity = $this->get_entity();
-		if (isset($entity->$property_name)) {
-			$retval = &$entity->$property_name;
+		if (isset($this->_stdObject->$property_name)) {
+			$retval = &$this->_stdObject->$property_name;
 			return $retval;
 		}
 		else {
@@ -55,70 +70,15 @@ class C_DataMapper_Model extends C_Component
 	 */
 	function __set($property_name, $value)
 	{
-		$entity = $this->get_entity();
-		return $entity->$property_name = $value;
+		return $this->_stdObject->$property_name = $value;
 	}
 
 
 	function __isset($property_name)
 	{
-		return isset($this->get_entity()->$property_name);
-	}
-}
-
-class Mixin_DataMapper_Model_Instance_Methods extends Mixin
-{
-	/**
-	 * Gets/sets the primary key
-	 */
-	function id()
-	{
-		$key = $this->object->get_mapper()->get_primary_key_column();
-		$args = func_get_args();
-		if ($args) {
-			return $this->object->__set($key, $args[0]);
-		}
-		else {
-			return $this->object->__get($key);
-		}
+		return isset($this->_stdObject->$property_name);
 	}
 
-	/**
-	 * Determines whether the object is new or existing
-	 * @return type
-	 */
-	function is_new()
-	{
-		return $this->object->id() ? FALSE: TRUE;
-	}
-
-	/**
-	 * Destroys or deletes the entity
-	 */
-	function destroy()
-	{
-		$this->object->get_mapper()->destroy($this->object->get_entity());
-	}
-
-	/**
-	 * Sets the default values for this model
-	 */
-	function set_defaults()
-	{
-		$this->object->get_mapper()->set_defaults($this);
-	}
-
-
-	/**
-	 * Updates the attributes for an object
-	 */
-	function update_attributes($array=array())
-	{
-		$entity = $this->object->get_entity();
-		foreach ($array as $key => $value) $entity->$key = $value;
-		$this->object->_stdObject = $entity;
-		return $this->object;
-	}
 
 	/**
 	 * Saves the entity
@@ -126,26 +86,58 @@ class Mixin_DataMapper_Model_Instance_Methods extends Mixin
 	 */
 	function save($updated_attributes=array())
 	{
-		$this->object->update_attributes($updated_attributes);
-		return $this->object->get_mapper()->save($this->object->get_entity());
+		$this->update_attributes($updated_attributes);
+		return $this->get_mapper()->save($this->get_entity());
+	}
+
+	/**
+	 * Updates the attributes for an object
+	 */
+	function update_attributes($array=array())
+	{
+		foreach ($array as $key => $value) $this->_stdObject->$key = $value;
 	}
 
 
 	/**
-	 * Returns the associated entity
+	 * Sets the default values for this model
 	 */
-	function &get_entity()
+	function set_defaults()
 	{
-		return $this->object->_stdObject;
+		$this->get_mapper()->set_defaults($this);
 	}
 
 	/**
-	 * Gets the data mapper for the entity
-	 * @return C_DataMapper_Driver_Base
+	 * Destroys or deletes the entity
 	 */
-	function get_mapper()
+	function destroy()
 	{
-		return $this->object->_mapper;
+		$this->get_mapper()->destroy($this->_stdObject);
+	}
+
+
+	/**
+	 * Determines whether the object is new or existing
+	 * @return type
+	 */
+	function is_new()
+	{
+		return $this->id() ? FALSE: TRUE;
+	}
+
+	/**
+	 * Gets/sets the primary key
+	 */
+	function id()
+	{
+		$key = $this->get_mapper()->get_primary_key_column();
+		$args = func_get_args();
+		if ($args) {
+			return $this->__set($key, $args[0]);
+		}
+		else {
+			return $this->__get($key);
+		}
 	}
 }
 
