@@ -341,16 +341,23 @@ class Mixin_NextGen_Settings_Controller extends Mixin
         $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $thumbs  = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
-        $thumbnail_url = $storage->get_image_url(
-            $imap->find_first(),
-            $thumbs->get_size_name(
-                array(
-                    'height' => 250,
-                    'crop' => FALSE,
-                    'watermark' => TRUE
+        $first_image = $imap->find_first();
+        if ($first_image)
+        {
+            $thumbnail_url = $storage->get_image_url(
+                $first_image,
+                $thumbs->get_size_name(
+                    array(
+                        'height' => 250,
+                        'crop' => FALSE,
+                        'watermark' => TRUE
+                    )
                 )
-            )
-        );
+            );
+        }
+        else {
+            $thumbnail_url = NULL;
+        }
 
 		return $this->render_partial('watermarks_tab', array(
 			'notice'					=>	_('Please note : You can only activate the watermark under -> Manage Gallery . This action cannot be undone.'),
