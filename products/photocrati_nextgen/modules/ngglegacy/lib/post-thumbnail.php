@@ -25,7 +25,7 @@ class nggPostThumbnail {
 	 */	
 	function __construct() {
 		
-		add_filter( 'admin_post_thumbnail_html', array( $this, 'admin_post_thumbnail') );
+		add_filter( 'admin_post_thumbnail_html', array( $this, 'admin_post_thumbnail'), 10, 2 );
 		add_action( 'wp_ajax_ngg_set_post_thumbnail', array( $this, 'ajax_set_post_thumbnail') );
 		// Adding filter for the new post_thumbnail
 		add_filter( 'post_thumbnail_html', array( $this, 'ngg_post_thumbnail'), 10, 5 );
@@ -38,17 +38,40 @@ class nggPostThumbnail {
 	 * @param string $content
 	 * @return string html output
 	 */
-	function admin_post_thumbnail( $content ) {
-		global $post;
-		
-        if ( !is_object($post) )
-           return $content;
+	function admin_post_thumbnail( $content, $post_id = null ) 
+	{
+    if ($post_id == null)
+    {
+			global $post;
+
+		  if ( !is_object($post) )
+		     return $content;
+       
+      $post_id = $post->ID;
+    }
         
-		$thumbnail_id = get_post_meta( $post->ID, '_thumbnail_id', true );
+		$thumbnail_id = get_post_meta($post_id, '_thumbnail_id', true);
 
 		// in the case it's a ngg image it return ngg-<imageID>
-		if ( strpos($thumbnail_id, 'ngg-') === false)
+		if ( strpos($thumbnail_id, 'ngg-') === false) 
+		{
+			global $wp_version;
+			
+			if (version_compare($wp_version, '3.5', '>=') && $thumbnail_id <= 0)
+			{
+				$iframe_src = get_upload_iframe_src('image');
+				$iframe_src = remove_query_arg('TB_iframe', $iframe_src);
+				$iframe_src = add_query_arg('tab', 'nextgen', $iframe_src);
+				$iframe_src = add_query_arg('chromeless', '1', $iframe_src);
+				$iframe_src = add_query_arg('TB_iframe', '1', $iframe_src);
+			
+			  $set_thumbnail_link = '<p class="hide-if-no-js"><a title="' . esc_attr__( 'Set NextGEN featured image' ) . '" href="' . esc_url( $iframe_src ) . '" id="set-ngg-post-thumbnail" class="thickbox">%s</a></p>';
+			  
+			  $content .= sprintf($set_thumbnail_link, esc_html__( 'Set NextGEN featured image' ));
+			}
+			
 			return $content;
+		}
 			
 		// cut off the 'ngg-'
 		$thumbnail_id = substr( $thumbnail_id, 4);
