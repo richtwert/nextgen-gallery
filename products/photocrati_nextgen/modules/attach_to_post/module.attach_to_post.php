@@ -198,7 +198,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _enqueue_tinymce_resources()
 	{
-        wp_localize_script('jquery', 'nextgen_gallery_attach_to_post_url', NEXTGEN_GALLERY_ATTACH_TO_POST_URL);
+        wp_localize_script('media-editor', 'nextgen_gallery_attach_to_post_url', NEXTGEN_GALLERY_ATTACH_TO_POST_URL);
 
 		// Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
