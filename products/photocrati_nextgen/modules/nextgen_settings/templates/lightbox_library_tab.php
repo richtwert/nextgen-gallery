@@ -13,7 +13,11 @@
 					code="<?php echo esc_attr($lib->code)?>"
 					value="<?php echo esc_attr($lib->$id_field)?>"
 					<?php selected($lib->name, $selected, TRUE)?>>
-					<?php echo_h($lib->name)?>
+					<?php if (isset($lib->title) && $lib->title): ?>
+					<?php echo_h($lib->title) ?>
+					<?php else: ?>
+					<?php echo_h($lib->name) ?>
+					<?php endif ?>
 				</option>
 				<?php endforeach ?>
 			</select>

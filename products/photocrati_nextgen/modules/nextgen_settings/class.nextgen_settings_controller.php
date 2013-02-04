@@ -554,7 +554,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
      */
     function _save_gallery_path($settings, $params)
     {
-        if ($params['gallerypath'] !== $settings->gallerypath)
+        if (isset($params['gallerypath']) && $params['gallerypath'] !== $settings->gallerypath)
         {
             $params['gallerypath'] = trailingslashit($params['gallerypath']);
             $dir = ABSPATH . $params['gallerypath'];

@@ -16,7 +16,7 @@ class A_Ajax_Pagination_Actions extends Mixin
 
             // render the displayed gallery
             $this->renderer                 = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
-            $retval['html']                 = $this->renderer->render_displayed_gallery($displayed_gallery, TRUE);
+            $retval['html']                 = $this->renderer->render($displayed_gallery, TRUE);
             $retval['displayed_gallery_id'] = $displayed_gallery->id();
         }
         return $retval;

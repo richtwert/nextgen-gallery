@@ -5,7 +5,7 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 	function initialize()
 	{
 		$this->object->add_pre_hook(
-			'render_displayed_gallery',
+			'render',
 			'Add late url rewriting for albums',
 			__CLASS__,
 			'_nextgen_basic_album_rewrite_rules'

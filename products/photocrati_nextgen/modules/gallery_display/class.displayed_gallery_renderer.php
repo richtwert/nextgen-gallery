@@ -198,7 +198,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
                 $displayed_gallery->id(md5(serialize($displayed_gallery)));
 
                 // Display!
-                return $this->object->render_displayed_gallery($displayed_gallery, TRUE);
+                return $this->object->render($displayed_gallery, TRUE);
             }
             else $retval =  "Invalid Displayed Gallery".var_dump($displayed_gallery->get_errors());
         }
@@ -213,7 +213,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
      * Renders a displayed gallery on the frontend
      * @param C_Displayed_Gallery|stdClass $displayed_gallery
      */
-    function render_displayed_gallery($displayed_gallery, $return=FALSE)
+    function render($displayed_gallery, $return=FALSE)
     {
         // Save the displayed gallery as a transient
         $displayed_gallery->to_transient();

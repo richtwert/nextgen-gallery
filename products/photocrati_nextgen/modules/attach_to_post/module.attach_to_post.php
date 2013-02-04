@@ -148,7 +148,7 @@ class M_Attach_To_Post extends C_Base_Module
                         // Get the content for the displayed gallery
                         $content = '<p>'._('Invalid Displayed Gallery').'</p>';
                         if ($displayed_gallery) {
-                            $content = $this->renderer->render_displayed_gallery($displayed_gallery, TRUE);
+                            $content = $this->renderer->render($displayed_gallery, TRUE);
                         }
 
                         // Replace the placeholder with the displayed gallery content

@@ -374,10 +374,10 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		// Let the request determine what display type or alternative view to render
 		if (($show = $this->object->param('show'))) {
-			$retval = $this->_get_alternative_view($show, $display_type);
+			$retval = $this->object->_get_alternative_view($show, $display_type);
 		}
 		elseif (isset($_SERVER['NGGALLERY']) && (($show = $_SERVER['NGGALLERY']))) {
-			$retval = $this->_get_alternative_view($show, $display_type);
+			$retval = $this->object->_get_alternative_view($show, $display_type);
 		}
 
 		return $retval;
@@ -419,7 +419,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	{
 		$retval = '';
 
-		if (($view = $this->_get_alternative_view($uri_segment, $displayed_gallery->get_display_type())))
+		if (($view = $this->object->_get_alternative_view($uri_segment, $displayed_gallery->get_display_type())))
         {
 			// We leave room for other alternative view 'types'
 			// by letting a method become responsible for displaying
@@ -439,7 +439,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		return $retval;
 	}
 
-
+	
 	/**
 	 * Renders display types as alternative views
 	 * @param C_Displayed_Gallery|stdClass $displayed_gallery
