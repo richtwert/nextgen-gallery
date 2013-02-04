@@ -87,8 +87,10 @@ function media_upload_nextgen_form($errors) {
 	$galleryID 	= 0;
 	$total 		= 1;
 	$picarray 	= array();
+	$chromeless = !empty($_GET['chromeless']) ? $_GET['chromeless'] : null;
+	$chromeless_url = $chromeless ? ('&chromeless=' . $chromeless) : null;
 	
-	$form_action_url = site_url( "wp-admin/media-upload.php?type={$GLOBALS['type']}&tab=nextgen&post_id=$post_id", 'admin');
+	$form_action_url = site_url( "wp-admin/media-upload.php?type={$GLOBALS['type']}&tab=nextgen&post_id=$post_id" . $chromeless_url, 'admin');
 
 	// Get number of images in gallery	
 	if ( isset($_REQUEST['select_gal']) ){
@@ -142,6 +144,14 @@ function media_upload_nextgen_form($errors) {
 <form id="filter" action="" method="get">
 <input type="hidden" name="type" value="<?php echo esc_attr( $GLOBALS['type'] ); ?>" />
 <input type="hidden" name="tab" value="<?php echo esc_attr( $GLOBALS['tab'] ); ?>" />
+<?php 
+if ($chromeless)
+{ 
+?>
+<input type="hidden" name="chromeless" value="<?php echo esc_attr( $chromeless ); ?>" />
+<?php	
+}
+?>
 <input type="hidden" name="post_id" value="<?php echo (int) $post_id; ?>" />
 
 <div class="tablenav">
