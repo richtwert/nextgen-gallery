@@ -82,17 +82,16 @@ class Mixin_MVC_Controller_Rendering extends Mixin
      */
     function render_partial($__name, $__vars=array(), $__return=FALSE)
     {
-        // If the template given is an absolute path,
-        // then use that - otherwise find the template
-        $__filename = (strpos($__name, '/') === 0) ?
-            $__name: $this->object->find_template($__name);
+        // If the template given is an absolute path, then use that - otherwise find the template
+        $__filename = (strpos($__name, '/') === 0) ? $__name: $this->object->find_template($__name);
         ob_start();
         extract((array)$__vars);
         include($__filename);
         $__content = ob_get_clean();
-
-        if ($__return) return $__content;
-        else echo $__content;
+        if ($__return)
+            return $__content;
+        else
+            echo $__content;
     }
 
     /**
