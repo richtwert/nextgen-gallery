@@ -3,10 +3,8 @@
 }
 
 .gallery_page_ngg_display_settings table tr td:first-child {
-    vertical-align: top;
     text-align: right;
     padding-right: 7px;
-    width: 221px;
 }
 
 #nextgen-settings-slideshow-colors-wrapper td {
@@ -62,4 +60,11 @@
 
 .ngg_alternative_view {
 	width: 200px !important;
+}
+
+#photocrati-nextgen_pro_slideshow_content input[type=number] {
+    width: 70px;
+}
+#photocrati-nextgen_pro_slideshow_content .nextgen_settings_colorpicker {
+    margin: 0 0 0 0;
 }
