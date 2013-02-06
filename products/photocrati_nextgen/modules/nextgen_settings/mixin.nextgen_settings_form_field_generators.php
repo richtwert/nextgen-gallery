@@ -62,6 +62,23 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
         );
     }
 
+    function _render_text_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $placeholder = '')
+    {
+        return $this->object->render_partial(
+            'nextgen_settings_field_text',
+            array(
+                'display_type_name' => $display_type->name,
+                'name'  => $name,
+                'label' => _($label),
+                'value' => $value,
+                'text' => $text,
+                'hidden' => $hidden,
+                'placeholder' => $placeholder
+            ),
+            True
+        );
+    }
+
     function _render_color_field($display_type, $name, $label, $value, $text, $hidden)
     {
         return $this->object->render_partial(
