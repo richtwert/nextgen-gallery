@@ -20,7 +20,13 @@
 .gallery_page_ngg_display_settings input[type=text],
 .gallery_page_ngg_display_settings input[type=number],
 .gallery_page_ngg_display_settings select {
-    width: 157px;
+    width: 155px;
+}
+
+.gallery_page_ngg_display_settings select.nextgen_settings_field_width_and_unit,
+.gallery_page_ngg_display_settings input.nextgen_settings_field_width_and_unit {
+    text-align: center;
+    width: 79px;
 }
 
 .ngg_slideshow_gallery_width,
@@ -61,11 +67,4 @@
 
 .ngg_alternative_view {
 	width: 200px !important;
-}
-
-#photocrati-nextgen_pro_slideshow_content input[type=number] {
-    width: 70px;
-}
-#photocrati-nextgen_pro_slideshow_content .nextgen_settings_colorpicker {
-    margin: 0 0 0 0;
 }
