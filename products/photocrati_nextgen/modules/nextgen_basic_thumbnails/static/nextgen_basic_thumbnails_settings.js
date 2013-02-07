@@ -1,17 +1,7 @@
 jQuery(function($) {
-	$('.ngg_thumbnail_override_thumbnail_settings').change(function () {
-		var jthis = $(this);
-
-  	if (jthis.val() == '1') {
-      var rows = $("tr.nextgen-basic-thumbnails-thumbnail-settings").detach();
-      rows.show('slow');
-      rows.insertAfter(jthis.parents('tr'));
-  	}
-    else {
-      var rows = $("tr.nextgen-basic-thumbnails-thumbnail-settings").detach();
-      rows.insertAfter(jthis.parents('tr'));
-      rows.hide('slow');
-    }
-	});
+    $('input[name="photocrati-nextgen_basic_thumbnails[override_thumbnail_settings]"]')
+        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_thumbnail_dimensions'))
+        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_thumbnail_quality'))
+        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_thumbnail_crop'))
+        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_thumbnail_watermark'));
 });
-

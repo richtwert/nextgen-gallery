@@ -2,6 +2,10 @@
 
 class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
 {
+    function initialize()
+    {
+        $this->add_mixin('Mixin_NextGen_Settings_Form_Field_Generators');
+    }
 
     /**
      * Returns a list of fields to render on the settings page
@@ -9,7 +13,7 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
     function _get_field_names()
     {
         return array(
-            'nextgen_basic_thumbnails_thumbnail_settings',
+            'thumbnail_override_settings',
             'nextgen_basic_thumbnails_images_per_page',
             'nextgen_basic_thumbnails_number_of_columns',
             'nextgen_basic_thumbnails_piclens_link_text',
@@ -22,34 +26,6 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
             'alternative_view_link_text',
             'return_link_text',
             'nextgen_basic_templates_template',
-        );
-    }
-
-    /**
-     * Renders the thumbnail generation settings field
-     *
-     * @param C_Display_Type $display_type
-     * @return string
-     */
-    function _render_nextgen_basic_thumbnails_thumbnail_settings_field($display_type)
-    {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_thumbnail_settings',
-            array(
-                'display_type_name' => $display_type->name,
-                'override_thumbnail_settings_label' => _('Override Thumbnail Settings'),
-                'override_thumbnail_settings' => $display_type->settings['override_thumbnail_settings'],
-                'thumbnail_dimensions_label'=>	_('Thumbnail dimensions'),
-                'thumbnail_width'		=>	$display_type->settings['thumbnail_width'],
-                'thumbnail_height'		=>	$display_type->settings['thumbnail_height'],
-                'thumbnail_quality_label'=>	_('Thumbnail Quality'),
-                'thumbnail_quality'=>	$display_type->settings['thumbnail_quality'],
-                'thumbnail_crop_label'=>	_('Thumbnail Crop'),
-                'thumbnail_crop'=>	$display_type->settings['thumbnail_crop'],
-                'thumbnail_watermark_label'=>	_('Thumbnail Watermark'),
-                'thumbnail_watermark'=>	$display_type->settings['thumbnail_watermark'],
-            ),
-            TRUE
         );
     }
 
