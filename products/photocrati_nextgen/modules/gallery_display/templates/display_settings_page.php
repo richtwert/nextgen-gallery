@@ -6,6 +6,12 @@
 	<?php endforeach ?>
 	<?php endif ?>
 	<form method="POST" action="<?php echo esc_url($_SERVER['REQUEST_URI'])?>">
+		<?php
+			if (isset($form_header))
+			{
+				echo $form_header . "\n";
+			}
+		?>
 		<div class="accordion" id="display_settings_accordion">
 		<?php foreach($tabs as $tab): ?>
 			<?php echo $tab ?>

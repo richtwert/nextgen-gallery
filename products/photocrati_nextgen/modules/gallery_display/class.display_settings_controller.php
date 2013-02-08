@@ -34,6 +34,17 @@ class Mixin_Display_Settings_Controller extends Mixin
 {
 	function index_action()
 	{
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_token = $security->get_request_token('nextgen_edit_display_settings');
+		$sec_actor = $security->get_current_actor();
+		
+		if (!$sec_actor->is_allowed('nextgen_edit_display_settings'))
+		{
+			echo __('No permission.', 'nggallery');
+			
+			return;
+		}
+
 		// Enqueue resources
 		$this->enqueue_backend_resources();
 
@@ -53,7 +64,10 @@ class Mixin_Display_Settings_Controller extends Mixin
 
 			// Process the form
 			if ($this->object->is_post_request()) {
-				if (($params = $this->object->param($display_type->name))) {
+				if (!$sec_token->check_current_request()) {
+					$messages[] = '<div class="entity_errors">' . __('The request has expired. Please refresh the page.', 'nggallery');
+				}
+				elseif (($params = $this->object->param($display_type->name))) {
 					foreach ($params as $k => $v) $display_type->settings[$k] = $v;
 					if ($display_type->save()) {
 						$messages[] = $this->object->show_success_for(
@@ -87,7 +101,8 @@ class Mixin_Display_Settings_Controller extends Mixin
 		$this->render_partial('display_settings_page', array(
 			'page_heading'	=>	'NextGEN Display Settings',
 			'tabs'			=>	$display_type_tabs,
-			'messages'		=>	$messages
+			'messages'		=>	$messages,
+			'form_header' => $sec_token->get_form_html()
 		));
 	}
 }
