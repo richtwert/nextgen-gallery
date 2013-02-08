@@ -221,10 +221,11 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
             'nextgen_settings_field_width_and_unit',
             array(
                 'display_type_name' => $display_type->name,
-                'name'  => 'width',
+                'name' => 'width',
                 'label' => 'Gallery width',
                 'value' => $display_type->settings['width'],
                 'text' => 'An empty or "0" setting will make the gallery full width',
+                'placeholder' => '(optional)',
                 'unit_name' => 'width_unit',
                 'unit_value' => $display_type->settings['width_unit'],
                 'options' => array('px' => 'Pixels', '%' => 'Percent')
