@@ -3,7 +3,7 @@
 /***
 {
 		Module:		photocrati-nextgen_basic_thumbnails,
-		Depends:	{ photocrati-gallery_display, photocrati-thumbnails }
+		Depends:	{ photocrati-gallery_display }
 }
  ***/
 

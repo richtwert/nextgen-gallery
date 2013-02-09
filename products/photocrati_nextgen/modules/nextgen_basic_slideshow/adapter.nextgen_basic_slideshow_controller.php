@@ -9,7 +9,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function initialize()
 	{
-		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
         $this->add_mixin('Mixin_NextGen_Basic_Slideshow_Settings');
 	}
 
@@ -71,6 +70,11 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
         wp_enqueue_script('waitforimages', $this->static_url('jquery.waitforimages.js'));
 		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
+
+    function enqueue_backend_resources()
+    {
+        wp_enqueue_script('nextgen_basic_slideshow_settings-js', $this->static_url('nextgen_basic_slideshow_settings.js'));
+    }
 
 	/**
 	 * Provides the url of the JavaScript library required for

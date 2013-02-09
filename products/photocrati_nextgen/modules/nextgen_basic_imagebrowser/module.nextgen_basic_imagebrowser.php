@@ -2,7 +2,7 @@
 /***
 {
 	Module:		photocrati-nextgen_basic_imagebrowser,
-	Depends:	{ photocrati-gallery_display, photocrati-thumbnails }
+	Depends:	{ photocrati-gallery_display }
 }
 ***/
 

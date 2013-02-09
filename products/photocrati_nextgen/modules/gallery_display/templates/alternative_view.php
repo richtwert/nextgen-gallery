@@ -1,4 +1,4 @@
-<tr>
+<tr id='tr_<?php print esc_attr("{$display_type_name}_alternative_view"); ?>' class='<?php print !empty($hidden) ? 'hidden' : ''; ?>'>
     <td>
         <label for='<?php echo esc_attr($display_type_name); ?>_alternative_view' class="tooltip">
             <?php echo_h($show_alt_view_link_label); ?>

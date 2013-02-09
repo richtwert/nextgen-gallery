@@ -24,9 +24,9 @@ class Mixin_NextGen_Basic_Slideshow_Settings extends Mixin
             'nextgen_basic_slideshow_flash_xhtml_validation',
             'nextgen_basic_slideshow_flash_colors_wrapper',
             'show_alternative_view_link',
-            'show_return_link',
             'alternative_view',
             'alternative_view_link_text',
+            'show_return_link',
             'return_link_text',
             'nextgen_basic_templates_template',
         );

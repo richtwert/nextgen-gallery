@@ -1,5 +1,5 @@
 .gallery_page_ngg_display_settings table {
-	height: 100%;
+    height: 100%;
 }
 
 .gallery_page_ngg_display_settings table tr td:first-child {
@@ -8,63 +8,52 @@
     padding-right: 7px;
 }
 
-#nextgen-settings-slideshow-colors-wrapper td {
-    text-align: left;
-}
-
 .gallery_page_ngg_display_settings textarea {
-	height: 60px;
+    height: 60px;
 }
 
 .gallery_page_ngg_display_settings textarea,
-.gallery_page_ngg_display_settings input[type=text],
-.gallery_page_ngg_display_settings input[type=number],
-.gallery_page_ngg_display_settings select {
+.gallery_page_ngg_display_settings input[type=text] {
     width: 155px;
 }
 
+.gallery_page_ngg_display_settings input[type=number] {
+    width: 75px;
+    text-align: center;
+}
+
+.gallery_page_ngg_display_settings select {
+    width: 155px;
+    text-align: center;
+}
+
+/* paired width & width unit field on same line */
 .gallery_page_ngg_display_settings select.nextgen_settings_field_width_and_unit,
 .gallery_page_ngg_display_settings input.nextgen_settings_field_width_and_unit {
     text-align: center;
-    width: 79px;
+    width: 75px;
 }
 
-.ngg_slideshow_gallery_width,
-.ngg_slideshow_gallery_height,
-.ngg_thumbnail_dimension_width,
-.ngg_thumbnail_dimension_height,
-.ngg_singlepic_dimension_width,
-.ngg_singlepic_dimension_height {
-    width: 65px !important;
+/* paired width & height fields on same line */
+.gallery_page_ngg_display_settings input.nextgen_settings_field_width_and_height {
+    width: 65px;
 }
 
-.nextgen_settings_colorpicker {
-    width: 85px !important;
+/* Farbtastic color selector */
+.gallery_page_ngg_display_settings input.nextgen_settings_colorpicker {
+    width: 75px;
     text-align: center;
-}
-
-.ngg_customize_thumbnails {
-	font-size: 11px;
-	position: relative;
-	bottom: 5px;
-	color: #444444;
+    margin: 0;
 }
 
 .entity_errors {
-	color: red;
+    color: red;
 }
 
 .entity_errors ul {
-	margin-left: 30px;
-}
-.entity_errors ul li{
-	list-style-type: disc;
+    margin-left: 30px;
 }
 
-.ngg_settings_template {
-    width: 250px !important;
-}
-
-.ngg_alternative_view {
-	width: 200px !important;
+.entity_errors ul li {
+    list-style-type: disc;
 }

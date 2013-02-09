@@ -18,7 +18,8 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 				'return_link_text_label'	=>	_('Return link text'),
 				'tooltip'					=>	_('The text used for the return
 												link when using an alternative view, such as a Slideshow'),
-				'return_link_text'			=>	$display_type->settings['return_link_text']
+				'return_link_text'			=>	$display_type->settings['return_link_text'],
+                'hidden'                    => empty($display_type->settings['show_return_link']) ? TRUE : FALSE
 			),
 			TRUE
 		);
@@ -59,7 +60,8 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 			'show_alt_view_link_label'	=>	_('Alternative view link'),
 			'tooltip'					=>	_('Show a link that allows end-users to change how a gallery is displayed'),
 			'alternative_view'			=>	$display_type->settings['alternative_view'],
-			'altviews'					=>	$this->object->_get_alternative_views($display_type)
+			'altviews'					=>	$this->object->_get_alternative_views($display_type),
+            'hidden'                    => empty($display_type->settings['show_alternative_view_link']) ? TRUE : FALSE
 		);
 
 		// Apply overrides
@@ -87,7 +89,8 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 			'display_type_name'				=>	$display_type->name,
 			'alt_view_link_text_label'		=>	_('Alternative view link text'),
 			'tooltip'						=>	_('The text of the link used to display the alternative view'),
-			'alternative_view_link_text'	=>	$display_type->settings['alternative_view_link_text']
+			'alternative_view_link_text'	=>	$display_type->settings['alternative_view_link_text'],
+            'hidden'                        => empty($display_type->settings['show_alternative_view_link']) ? TRUE : FALSE
 		);
 
 		// Apply overrides

@@ -16,14 +16,14 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
             'thumbnail_override_settings',
             'nextgen_basic_thumbnails_images_per_page',
             'nextgen_basic_thumbnails_number_of_columns',
-            'nextgen_basic_thumbnails_piclens_link_text',
-            'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_ajax_pagination',
             'nextgen_basic_thumbnails_hidden',
+            'nextgen_basic_thumbnails_show_piclens_link',
+            'nextgen_basic_thumbnails_piclens_link_text',
             'show_alternative_view_link',
-            'show_return_link',
             'alternative_view',
             'alternative_view_link_text',
+            'show_return_link',
             'return_link_text',
             'nextgen_basic_templates_template',
         );
@@ -75,14 +75,13 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
      */
     function _render_nextgen_basic_thumbnails_piclens_link_text_field($display_type)
     {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_piclens_link_text',
-            array(
-                'display_type_name' => $display_type->name,
-                'piclens_link_text_label' => _('Piclens link text'),
-                'piclens_link_text' => $display_type->settings['piclens_link_text']
-            ),
-            TRUE
+        return $this->_render_text_field(
+            $display_type,
+            'piclens_link_text',
+            'Piclens link text',
+            $display_type->settings['piclens_link_text'],
+            '',
+            !empty($display_type->settings['show_piclens_link']) ? FALSE : TRUE
         );
     }
 
@@ -94,14 +93,11 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
      */
     function _render_nextgen_basic_thumbnails_show_piclens_link_field($display_type)
     {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_show_piclens_link',
-            array(
-                'display_type_name' => $display_type->name,
-                'show_piclens_link_label' => _('Show piclens link'),
-                'show_piclens_link' => $display_type->settings['show_piclens_link']
-            ),
-            TRUE
+        return $this->_render_radio_field(
+            $display_type,
+            'show_piclens_link',
+            'Show piclens link',
+            $display_type->settings['show_piclens_link']
         );
     }
 

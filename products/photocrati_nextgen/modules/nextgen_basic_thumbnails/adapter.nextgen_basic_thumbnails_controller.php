@@ -7,7 +7,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function initialize()
 	{
-		$this->add_mixin('Mixin_Thumbnail_Display_Type_Controller');
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->add_mixin('Mixin_Basic_Pagination');
         $this->add_mixin('Mixin_NextGen_Basic_Thumbnails_Settings');
