@@ -9,8 +9,8 @@ class Mixin_NextGen_Basic_Slideshow_Settings extends Mixin
     {
         return array(
             'nextgen_basic_slideshow_gallery_dimensions',
-            'nextgen_basic_slideshow_cycle_interval',
             'nextgen_basic_slideshow_cycle_effect',
+            'nextgen_basic_slideshow_cycle_interval',
             'nextgen_basic_slideshow_flash_enabled',
             'nextgen_basic_slideshow_flash_background_music',
             'nextgen_basic_slideshow_flash_stretch_image',
