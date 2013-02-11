@@ -4,6 +4,12 @@
 	<?php echo $message ?>
 	<?php endif ?>
 	<form id='nextgen_other_options' method="POST" action="<?php echo $_SERVER['REQUEST_URI']?>">
+		<?php
+			if (isset($form_header))
+			{
+				echo $form_header . "\n";
+			}
+		?>	
 		<div id="options_accordion" class="accordion">
 			<?php foreach ($tabs as $tab_title => $tab_content): ?>
 			<h3><a href="#"><?php echo_h($tab_title)?></a></h3>
