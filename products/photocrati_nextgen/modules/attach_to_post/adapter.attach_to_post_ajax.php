@@ -24,7 +24,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 	function get_attach_to_post_sources_action()
 	{
 		$response = array();
-		$response['sources'] = $this->attach_to_post->get_sources();
+		
+		if ($this->object->validate_ajax_request())
+		{
+			$response['sources'] = $this->attach_to_post->get_sources();
+		}
+		
 		return $response;
 	}
 
@@ -37,20 +42,23 @@ class A_Attach_To_Post_Ajax extends Mixin
 	{
 		$response = array();
 
-		$limit = $this->object->param('limit');
-		$offset = $this->object->param('offset');
+		if ($this->object->validate_ajax_request())
+		{
+			$limit = $this->object->param('limit');
+			$offset = $this->object->param('offset');
 
-		// We return the total # of galleries, so that the client can make
-		// pagination requests
-		$mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
-		$response['total'] = $mapper->count();
-		$response['limit'] = $limit = $limit ? $limit : 0;
-		$response['offset'] = $offset = $offset ? $offset : 0;
+			// We return the total # of galleries, so that the client can make
+			// pagination requests
+			$mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
+			$response['total'] = $mapper->count();
+			$response['limit'] = $limit = $limit ? $limit : 0;
+			$response['offset'] = $offset = $offset ? $offset : 0;
 
-		// Get the galleries
-		$mapper->select();
-		if ($limit) $mapper->limit($limit, $offset);
-		$response['items'] = $mapper->run_query();
+			// Get the galleries
+			$mapper->select();
+			if ($limit) $mapper->limit($limit, $offset);
+			$response['items'] = $mapper->run_query();
+		}
 
 		return $response;
 	}
@@ -64,19 +72,22 @@ class A_Attach_To_Post_Ajax extends Mixin
     {
         $response = array();
 
-        $limit  = $this->object->param('limit');
-        $offset = $this->object->param('offset');
+		if ($this->object->validate_ajax_request())
+		{
+		    $limit  = $this->object->param('limit');
+		    $offset = $this->object->param('offset');
 
-        // We return the total # of albums, so that the client can make pagination requests
-        $mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
-        $response['total'] = $mapper->count();
-        $response['limit'] = $limit = $limit ? $limit : 0;
-        $response['offset']= $offset = $offset ? $offset : 0;
+		    // We return the total # of albums, so that the client can make pagination requests
+		    $mapper = $this->object->get_registry()->get_utility('I_Album_Mapper');
+		    $response['total'] = $mapper->count();
+		    $response['limit'] = $limit = $limit ? $limit : 0;
+		    $response['offset']= $offset = $offset ? $offset : 0;
 
-        // Get the albums
-        $mapper->select();
-        if ($limit) $mapper->limit($limit, $offset);
-        $response['items'] = $mapper->run_query();
+		    // Get the albums
+		    $mapper->select();
+		    if ($limit) $mapper->limit($limit, $offset);
+		    $response['items'] = $mapper->run_query();
+		}
 
         return $response;
     }
@@ -88,25 +99,28 @@ class A_Attach_To_Post_Ajax extends Mixin
 	function get_existing_image_tags_action()
 	{
 		$response = array();
-
-		$limit = $this->object->param('limit');
-		$offset = $this->object->param('offset');
-		$response['limit'] = $limit = $limit ? $limit : 0;
-		$response['offset'] = $offset = $offset ? $offset : 0;
-		$response['items'] = array();
-		$params = array(
-			'number'	=>	$limit,
-			'offset'	=>	$offset,
-			'fields'	=>	'names'
-		);
-		foreach (get_terms('ngg_tag', $params) as $term) {
-			$response['items'][] = array(
-				'id'	=>	$term,
-				'title'	=>	$term
+		
+		if ($this->object->validate_ajax_request())
+		{
+			$limit = $this->object->param('limit');
+			$offset = $this->object->param('offset');
+			$response['limit'] = $limit = $limit ? $limit : 0;
+			$response['offset'] = $offset = $offset ? $offset : 0;
+			$response['items'] = array();
+			$params = array(
+				'number'	=>	$limit,
+				'offset'	=>	$offset,
+				'fields'	=>	'names'
 			);
+			foreach (get_terms('ngg_tag', $params) as $term) {
+				$response['items'][] = array(
+					'id'	=>	$term,
+					'title'	=>	$term
+				);
+			}
+			$response['total'] = count(get_terms('ngg_tag', array('fields' => 'ids')));
 		}
-		$response['total'] = count(get_terms('ngg_tag', array('fields' => 'ids')));
-
+		
 		return $response;
 	}
 
@@ -116,7 +130,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 	function get_displayed_gallery_entities_action()
 	{
 		$response = array();
-		if (($params = $this->object->param('displayed_gallery'))) {
+		if ($this->object->validate_ajax_request() && ($params = $this->object->param('displayed_gallery'))) {
 			$limit	 = $this->object->param('limit');
 			$offset  = $this->object->param('offset');
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
@@ -172,7 +186,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 		$mapper = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 
 		// Do we have fields to work with?
-		if (($params = $this->object->param('displayed_gallery'))) {
+		if ($this->object->validate_ajax_request(true) && ($params = $this->object->param('displayed_gallery'))) {
 
 			// Existing displayed gallery ?
 			if (($id = $this->object->param('id'))) {
@@ -199,5 +213,20 @@ class A_Attach_To_Post_Ajax extends Mixin
 		else $response['error'] = _('Invalid request');
 
 		return $response;
+	}
+	
+	function validate_ajax_request($check_token = false)
+	{
+		$valid_request = false;
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_token = $security->get_request_token('nextgen_edit_displayed_gallery');
+		$sec_actor = $security->get_current_actor();
+		
+		if ($sec_actor->is_allowed('nextgen_edit_displayed_gallery') && (!$check_token || $sec_token->check_current_request()))
+		{
+			$valid_request = true;
+		}
+		
+		return $valid_request;
 	}
 }

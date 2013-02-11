@@ -65,7 +65,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 			// Process the form
 			if ($this->object->is_post_request()) {
 				if (!$sec_token->check_current_request()) {
-					$messages[] = '<div class="entity_errors">' . __('The request has expired. Please refresh the page.', 'nggallery');
+					$messages[] = '<div class="entity_errors">' . __('The request has expired. Please refresh the page.', 'nggallery') . '</div>';
 				}
 				elseif (($params = $this->object->param($display_type->name))) {
 					foreach ($params as $k => $v) $display_type->settings[$k] = $v;

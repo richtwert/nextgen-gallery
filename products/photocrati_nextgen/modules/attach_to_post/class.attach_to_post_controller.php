@@ -149,7 +149,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 		// Bad request!
 		else {
-			$this->object->http_error("Displayed Gallery could not found.", 404);
+			$this->object->http_error("Displayed Gallery could not be found.", 404);
 		}
 	}
 
@@ -223,20 +223,32 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		$valid_request = TRUE;
 
-		// If an ID was passed, then we need to attempt
-		// retrieving the displayed gallery to edit.
-		// If the displayed gallery doesn't exist, then it's an
-		// invalid request
-		if (($id = $this->object->param('id')) && !isset($this->object->_displayed_gallery)) {
-			$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
-			$this->object->_displayed_gallery = $mapper->find($id, TRUE);
-			if (is_null($this->object->_displayed_gallery)) $valid_request = FALSE;
-			else $this->object->_displayed_gallery->id = $this->object->_displayed_gallery->id();
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_token = $security->get_request_token('nextgen_edit_displayed_gallery');
+		$sec_actor = $security->get_current_actor();
+		
+		if (!$sec_actor->is_allowed('nextgen_edit_displayed_gallery'))
+		{
+			$valid_request = false;
 		}
-		// No displayed gallery was specified
-		else {
-			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-			$this->object->_displayed_gallery = $factory->create('displayed_gallery');
+
+		if ($valid_request)
+		{
+			// If an ID was passed, then we need to attempt
+			// retrieving the displayed gallery to edit.
+			// If the displayed gallery doesn't exist, then it's an
+			// invalid request
+			if (($id = $this->object->param('id')) && !isset($this->object->_displayed_gallery)) {
+				$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+				$this->object->_displayed_gallery = $mapper->find($id, TRUE);
+				if (is_null($this->object->_displayed_gallery)) $valid_request = FALSE;
+				else $this->object->_displayed_gallery->id = $this->object->_displayed_gallery->id();
+			}
+			// No displayed gallery was specified
+			else {
+				$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+				$this->object->_displayed_gallery = $factory->create('displayed_gallery');
+			}
 		}
 
 		return $valid_request;

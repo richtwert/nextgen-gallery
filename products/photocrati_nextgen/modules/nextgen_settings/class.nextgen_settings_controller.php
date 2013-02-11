@@ -60,19 +60,42 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 	 */
 	function index_action()
 	{
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_token = $security->get_request_token('nextgen_edit_settings');
+		$sec_actor = $security->get_current_actor();
+		
+		if (!$sec_actor->is_allowed('nextgen_edit_settings'))
+		{
+			echo __('No permission.', 'nggallery');
+			
+			return;
+		}
+
 		// Enqueue resources
 		$this->object->enqueue_backend_resources();
 
 		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$message = null;
 
 		// Is this post a request? If so, process the request
 		if ($this->is_post_request()) {
-			$view_params = $this->object->_process_post_request($settings);
+			if (!$sec_token->check_current_request()) {
+				$message = '<div class="entity_errors">' . __('The request has expired. Please refresh the page.', 'nggallery') . '</div>';
+			}
+			else {
+				$view_params = $this->object->_process_post_request($settings);
+			}
 		}
 
 		// Set other view params
 		$view_params['page_heading'] = $this->object->_get_options_page_heading();
 		$view_params['tabs']		 = $this->object->_get_tabs($settings);
+		$view_params['form_header']  = $sec_token->get_form_html();
+		
+		if ($message != null)
+		{
+			$view_params['message'] = $message;
+		}
 
 		// Render view
 		$this->render_partial('nextgen_settings_page', $view_params);
@@ -83,6 +106,17 @@ class Mixin_NextGen_Settings_Controller extends Mixin
      */
     function watermark_update_action()
     {
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_token = $security->get_request_token('nextgen_edit_settings');
+		$sec_actor = $security->get_current_actor();
+		
+		if (!$sec_actor->is_allowed('nextgen_edit_settings'))
+		{
+			echo __('No permission.', 'nggallery');
+			
+			return;
+		}
+
         $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
         $original_settings = $settings->to_array();
 
@@ -118,6 +152,17 @@ class Mixin_NextGen_Settings_Controller extends Mixin
      */
     function refresh_watermark_preview()
     {
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_token = $security->get_request_token('nextgen_edit_settings');
+		$sec_actor = $security->get_current_actor();
+		
+		if (!$sec_actor->is_allowed('nextgen_edit_settings'))
+		{
+			echo __('No permission.', 'nggallery');
+			
+			return;
+		}
+
         $dynthumbs = $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
         $imap      = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $storage   = $this->object->get_registry()->get_utility('I_Gallery_Storage');

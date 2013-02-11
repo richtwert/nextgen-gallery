@@ -65,9 +65,21 @@ class Mixin_WordPress_Security_Action_Converter extends Mixin
 	{
 		switch ($capability_name)
 		{
+			case 'nextgen_edit_settings':
+			{
+				$capability_name = 'manage_options';
+				
+				break;
+			}
 			case 'nextgen_edit_display_settings':
 			{
 				$capability_name = 'manage_options';
+				
+				break;
+			}
+			case 'nextgen_edit_displayed_gallery':
+			{
+				$capability_name = 'edit_posts';
 				
 				break;
 			}
