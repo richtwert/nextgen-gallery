@@ -258,9 +258,7 @@ jQuery(document).ready( function() {
 					<th align="left">
 					<select <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery page id' ); ?>  name="pageid" style="width:95%">
 						<option value="0" ><?php _e('Not linked', 'nggallery') ?></option>
-						<?php if (get_post()): ?>
 						<?php parent_dropdown(intval($gallery->pageid)); ?>
-						<?php endif ?>
 					</select>
 					</th>
 				</tr>
