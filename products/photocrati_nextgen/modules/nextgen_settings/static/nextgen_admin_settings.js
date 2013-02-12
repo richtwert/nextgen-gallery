@@ -21,4 +21,9 @@ jQuery(function($){
             $(el).farbtastic('#' + $(el).data('nextgen-settings-farbtastic-target'));
         }
     });
+
+    $('input.nextgen_settings_field_colorpicker').wpColorPicker({
+        hide: false,
+        palettes: false
+    });
 });
