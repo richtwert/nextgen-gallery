@@ -1,8 +1,8 @@
 === NextGEN Gallery ===
 Contributors: photocrati
 Tags:gallery,image,images,photo,photos,picture,pictures,slideshow,flash,media,thumbnails,photo-albums,nextgen-gallery,nextgen
-Requires at least: 3.4
-Tested up to: 3.4.1
+Requires at least: 3.5
+Tested up to: 3.5.1
 Stable tag: trunk
 License: GPLv2
 
@@ -194,8 +194,17 @@ Yes, NextGEN Gallery has been translated into dozens of languages - <a href="htt
 
 == Changelog ==
 
-= V1.9.11 - 12.21.2012 =
+= V1.9.11 - 02.12.2013 =
+* NEW:	   Added the ability to detect JQuery conflicts on NGG Admin Pages and auto-resolve
+* Changed: Added "nggalbum" shortcode. Use this when Jetpack is installed.
+* Changed: Using natural sorting algorithm for alphanumeric values
+* Changed: Database schema is automatically updated when out-of-date
+* Fixed:   Empty drop-down for "Page Link To"
+* Fixed:   Alphabetical image sorting
+* Fixed:   Compatibility with Arjuna X theme
+* Fixed:   “Creating default object from empty value” on album page
 * Fixed:   Compatibility issues with PHP 5.4 on album page
+* Fixed:   E_DEPRECATED warning when using get_userdatabylogin() function
 * Fixed:   Removed many E_NOTICE errors
 * Fixed:   Correct use of register_uninstall_hook across all PHP versions
 
