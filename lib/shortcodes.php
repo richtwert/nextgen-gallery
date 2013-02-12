@@ -9,14 +9,14 @@
 
 class NextGEN_shortcodes {
 
-    // register the new shortcodes
-    function NextGEN_shortcodes() {
-
+	function __construct()
+	{
 		//Long posts should require a higher limit, see http://core.trac.wordpress.org/ticket/8553
 		@ini_set('pcre.backtrack_limit', 500000);
 
         // convert the old shortcode
         add_filter('the_content', array(&$this, 'convert_shortcode'));
+		add_filter('loop_start',  array(&$this, 'reset_globals'));
 
         // do_shortcode on the_excerpt could causes several unwanted output. Uncomment it on your own risk
         // add_filter('the_excerpt', array(&$this, 'convert_shortcode'));
@@ -33,7 +33,13 @@ class NextGEN_shortcodes {
         add_shortcode( 'random', array(&$this, 'show_random' ) );
         add_shortcode( 'recent', array(&$this, 'show_recent' ) );
         add_shortcode( 'tagcloud', array(&$this, 'show_tagcloud' ) );
-    }
+	}
+
+	function reset_globals()
+	{
+		unset($GLOBALS['subalbum']);
+		unset($GLOBALS['nggShowGallery']);
+	}
 
      /**
        * NextGEN_shortcodes::convert_shortcode()
