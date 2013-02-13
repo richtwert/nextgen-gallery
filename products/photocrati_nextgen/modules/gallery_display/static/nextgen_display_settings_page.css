@@ -39,13 +39,6 @@
     width: 65px;
 }
 
-/* Farbtastic color selector */
-.gallery_page_ngg_display_settings input.nextgen_settings_colorpicker {
-    width: 75px;
-    text-align: center;
-    margin: 0;
-}
-
 .entity_errors {
     color: red;
 }
