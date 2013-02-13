@@ -16,7 +16,7 @@
                name="<?php print esc_attr($display_type_name . '[' . $name . ']'); ?>"
                class="<?php print esc_attr($display_type_name . '_' . $name); ?>"
                value="1"
-               <?php checked(1, $value); ?>/>
+               <?php checked(True, !empty($value)); ?>/>
         <label for="<?php print esc_attr($display_type_name . '_' . $name); ?>"><?php _e('Yes'); ?></label>
         &nbsp;
         <input type="radio"
@@ -24,7 +24,7 @@
                name="<?php print esc_attr($display_type_name . '[' . $name . ']'); ?>"
                class="<?php print esc_attr($display_type_name . '_' . $name); ?>"
                value="0"
-               <?php checked(0, $value); ?>/>
+               <?php checked(True, empty($value)); ?>/>
         <label for="<?php print esc_attr($display_type_name . '_' . $name); ?>_no"><?php _e('No'); ?></label>
     </td>
 </tr>
