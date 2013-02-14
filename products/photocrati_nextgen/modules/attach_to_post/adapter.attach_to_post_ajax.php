@@ -24,12 +24,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 	function get_attach_to_post_sources_action()
 	{
 		$response = array();
-		
+
 		if ($this->object->validate_ajax_request())
 		{
 			$response['sources'] = $this->attach_to_post->get_sources();
 		}
-		
+
 		return $response;
 	}
 
@@ -99,7 +99,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 	function get_existing_image_tags_action()
 	{
 		$response = array();
-		
+
 		if ($this->object->validate_ajax_request())
 		{
 			$limit = $this->object->param('limit');
@@ -120,7 +120,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 			}
 			$response['total'] = count(get_terms('ngg_tag', array('fields' => 'ids')));
 		}
-		
+
 		return $response;
 	}
 
@@ -214,19 +214,19 @@ class A_Attach_To_Post_Ajax extends Mixin
 
 		return $response;
 	}
-	
+
 	function validate_ajax_request($check_token = false)
 	{
 		$valid_request = false;
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
 		$sec_token = $security->get_request_token('nextgen_edit_displayed_gallery');
 		$sec_actor = $security->get_current_actor();
-		
+
 		if ($sec_actor->is_allowed('nextgen_edit_displayed_gallery') && (!$check_token || $sec_token->check_current_request()))
 		{
 			$valid_request = true;
 		}
-		
+
 		return $valid_request;
 	}
 }

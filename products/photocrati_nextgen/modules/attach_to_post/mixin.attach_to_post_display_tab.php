@@ -20,6 +20,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper',			$context);
 			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper',	$context);
 			$source_mapper		= $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper', $context);
+			$security			= $this->get_registry()->get_utility('I_Security_Manager');
 
 			// Get the nextgen tags
 			global $wpdb;
@@ -41,6 +42,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'albums'				=>	json_encode($album_mapper->find_all()),
 				'tags'					=>	json_encode($tags),
 				'display_types'			=>	json_encode($display_type_mapper->find_all()),
+				'sec_token'				=>	$security->get_request_token('nextgen_edit_displayed_gallery')->get_json()
 			));
 		}
 	}

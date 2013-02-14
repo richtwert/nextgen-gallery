@@ -265,12 +265,13 @@ jQuery(function($){
 		extra_data:  {},
 
 		_create_request: function(limit, offset) {
-			var request = {
+			var request = <?php echo $sec_token?>;
+			request = _.extend(request, {
 				action: this.action,
 				limit: limit ? limit : this.fetch_limit,
 				offset: offset ? offset : 0
 
-			};
+			});
 			for (var index in this.extra_data) {
 				var value = this.extra_data[index];
 				if (typeof(request[index]) == 'undefined') {
@@ -1301,10 +1302,11 @@ jQuery(function($){
 
 		clicked: function(){
 			this.set_display_settings();
-			var request = {
+			var request = <?php echo $sec_token?>;
+			request = _.extend(request, {
 				action: 'save_displayed_gallery',
 				displayed_gallery: this.displayed_gallery.toJSON()
-			};
+			});
 
 			var self = this;
 			$.post(photocrati_ajax_url, request, function(response){
