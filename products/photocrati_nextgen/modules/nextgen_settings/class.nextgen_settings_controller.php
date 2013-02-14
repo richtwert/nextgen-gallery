@@ -42,7 +42,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		wp_enqueue_script(
 			'nextgen_settings_page',
 			$this->static_url('nextgen_settings_page.js'),
-			array('jquery-ui-accordion'),
+			array('jquery-ui-accordion', 'wp-color-picker'),
 			$this->module_version
 		);
 

@@ -63,16 +63,15 @@ class Mixin_NextGen_Backend_Controller extends Mixin
 			'pick' => __( 'Select Color' ),
 			'current' => __( 'Current Color' ),
 		));
-		wp_enqueue_script('wp-color-picker');
-		wp_enqueue_style('wp-color-picker');
-
 		wp_enqueue_script(
 			'nextgen_admin_settings',
-			$this->static_url('nextgen_admin_settings.js')
+			$this->static_url('nextgen_admin_settings.js'),
+            array('wp-color-picker')
 		);
 		wp_enqueue_style(
 			'nextgen_admin_settings',
-			$this->static_url('nextgen_admin_settings.css')
+			$this->static_url('nextgen_admin_settings.css'),
+            array('wp-color-picker')
 		);
 	}
 }

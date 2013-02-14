@@ -64,14 +64,14 @@ class Mixin_NextGen_Basic_Slideshow_Settings extends Mixin
             '',
             FALSE,
             array(
-                'fade',
-                'blindX',
-                'cover',
-                'scrollUp',
-                'scrollDown',
-                'shuffle',
-                'toss',
-                'wipe'
+                'fade' => 'fade',
+                'blindX' => 'blindX',
+                'cover' => 'cover',
+                'scrollUp' => 'scrollUp',
+                'scrollDown' => 'scrollDown',
+                'shuffle' => 'shuffle',
+                'toss' => 'toss',
+                'wipe' => 'wipe'
             )
         );
     }
@@ -166,7 +166,7 @@ class Mixin_NextGen_Basic_Slideshow_Settings extends Mixin
             $display_type->settings['flash_stretch_image'],
             '',
             empty($display_type->settings['flash_enabled']) ? TRUE : FALSE,
-            array('true', 'false', 'fit', 'none')
+            array('true' => 'true', 'false' => 'false', 'fit' => 'fit', 'none' => 'none')
         );
     }
 
@@ -180,16 +180,16 @@ class Mixin_NextGen_Basic_Slideshow_Settings extends Mixin
             '',
             empty($display_type->settings['flash_enabled']) ? TRUE : FALSE,
             array(
-                'fade',
-                'bgfade',
-                'slowfade',
-                'circles',
-                'bubbles',
-                'blocks',
-                'fluids',
-                'flash',
-                'lines',
-                'random'
+                'fade' => 'fade',
+                'bgfade' => 'bgfade',
+                'slowfade' => 'slowfade',
+                'circles' => 'circles',
+                'bubbles' => 'bubbles',
+                'blocks' => 'blocks',
+                'fluids' => 'fluids',
+                'flash' => 'flash',
+                'lines' => 'lines',
+                'random' => 'random'
             )
         );
     }

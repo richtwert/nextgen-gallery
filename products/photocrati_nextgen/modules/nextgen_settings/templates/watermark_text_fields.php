@@ -65,11 +65,11 @@
 		</label>
 	</td>
 	<td>
-        <div id="watermark_colorpicker"><?php echo_h($font_color); ?></div>
-		<input type="text"
-               id="font_color"
-               value="<?php echo esc_attr($font_color)?>"
-               name="settings[wmColor]"
-               class='nextgen_settings_colorpicker'/>
+        <input type='text'
+               id='font_color'
+               name='settings[wmColor'
+               class='nextgen_settings_field_colorpicker'
+               value='<?php print esc_attr($font_color); ?>'
+               data-default-color='<?php print esc_attr($font_color); ?>'/>
 	</td>
 </tr>

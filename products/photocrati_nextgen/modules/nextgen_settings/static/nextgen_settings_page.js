@@ -27,9 +27,6 @@ jQuery(function($){
 
 	/**** WATERMARK TAB ****/
 
-	// Activate the color picker for the Watermark font color
-	$('#watermark_colorpicker').farbtastic('#font_color');
-
 	// Configure the watermark customization link
 	$('#watermark_customization').attr('rel', 'watermark_'+$('#watermark_source').val()+'_source');
 
