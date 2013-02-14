@@ -55,7 +55,14 @@ class Mixin_NextGen_Backend_Controller extends Mixin
             '2.0.7',
             TRUE
         );
-		
+		wp_register_script('iris', $this->get_router()->get_url('/wp-admin/js/iris.min.js', FALSE), array('jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch'));
+		wp_register_script('wp-color-picker', $this->get_router()->get_url('/wp-admin/js/color-picker.js', FALSE), array('iris'));
+		wp_localize_script('wp-color-picker', 'wpColorPickerL10n', array(
+			'clear' => __( 'Clear' ),
+			'defaultString' => __( 'Default' ),
+			'pick' => __( 'Select Color' ),
+			'current' => __( 'Current Color' ),
+		));
 		wp_enqueue_script('wp-color-picker');
 		wp_enqueue_style('wp-color-picker');
 

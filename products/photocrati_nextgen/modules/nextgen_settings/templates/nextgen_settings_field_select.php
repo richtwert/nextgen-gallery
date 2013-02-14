@@ -15,8 +15,12 @@
                 name="<?php print esc_attr($display_type_name . '[' . $name . ']'); ?>"
                 class="<?php print esc_attr($display_type_name . '_' . $name); ?>">
             <?php foreach ($options as $key => $val) { ?>
-                <?php if (is_array($options)) { $key = $val; } ?>
-                <option value='<?php print $key; ?>' <?php selected($key, $value); ?>><?php print _($val); ?></option>
+                <?php
+					// TODO: Not sure what this is supposed to do. It screws
+					// up the aspect ratio fields
+					//if (is_array($options)) { $key = $val; }
+				?>
+                <option value='<?php print esc_attr($key); ?>' <?php selected($key, $value); ?>><?php print htmlentities(_($val)); ?></option>
             <?php } ?>
         </select>
     </td>
