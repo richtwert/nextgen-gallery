@@ -37,14 +37,15 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
      */
     function _render_nextgen_basic_thumbnails_images_per_page_field($display_type)
     {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_images_per_page',
-            array(
-                'display_type_name' => $display_type->name,
-                'images_per_page_label' => _('Images per page'),
-                'images_per_page' => $display_type->settings['images_per_page'],
-            ),
-            TRUE
+        return $this->_render_number_field(
+            $display_type,
+            'images_per_page',
+            'Images per page',
+            $display_type->settings['images_per_page'],
+            '',
+            FALSE,
+            '# of images',
+            1
         );
     }
 
@@ -56,14 +57,15 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
      */
     function _render_nextgen_basic_thumbnails_number_of_columns_field($display_type)
     {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_number_of_columns',
-            array(
-                'display_type_name' => $display_type->name,
-                'number_of_columns_label' => _('Number of columns to display'),
-                'number_of_columns' => $display_type->settings['number_of_columns']
-            ),
-            TRUE
+        return $this->_render_number_field(
+            $display_type,
+            'number_of_columns',
+            'Number of columns to display',
+            $display_type->settings['number_of_columns'],
+            '',
+            FALSE,
+            '# of columns',
+            0
         );
     }
 
@@ -109,15 +111,12 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
      */
     function _render_nextgen_basic_thumbnails_hidden_field($display_type)
     {
-        return $this->render_partial(
-            'nextgen_basic_thumbnails_settings_hidden',
-            array(
-                'display_type_name' => $display_type->name,
-                'show_all_in_lightbox_label' => _('Add Hidden Images'),
-                'show_all_in_lightbox_desc' => _('If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.) This increases page load.'),
-                'show_all_in_lightbox' => $display_type->settings['show_all_in_lightbox']
-            ),
-            TRUE
+        return $this->_render_radio_field(
+            $display_type,
+            'show_all_in_lightbox',
+            'Add Hidden Images',
+            $display_type->settings['show_all_in_lightbox'],
+            'If pagination is used this option will show all images in the modal window (Thickbox, Lightbox etc.) This increases page load.'
         );
     }
 
@@ -129,11 +128,12 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
      */
     function _render_nextgen_basic_thumbnails_ajax_pagination_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_thumbnails_settings_ajax_pagination', array(
-            'display_type_name' => $display_type->name,
-            'ajax_pagination_label' => _('Enable Ajax pagination'),
-            'ajax_pagination_desc' => _('Browse images without reloading the page.'),
-            'ajax_pagination' => $display_type->settings['ajax_pagination']
-        ), TRUE);
+        return $this->_render_radio_field(
+            $display_type,
+            'ajax_pagination',
+            'Enable Ajax pagination',
+            $display_type->settings['ajax_pagination'],
+            'Browse images without reloading the page.'
+        );
     }
 }
