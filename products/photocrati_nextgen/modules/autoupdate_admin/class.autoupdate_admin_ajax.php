@@ -49,6 +49,12 @@ class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 							set_current_screen('index');
 						}
 					}
+					
+					if ($command_stage == 'cleanup')
+					{
+						update_option('photocrati_auto_update_admin_update_list', null);
+						update_option('photocrati_auto_update_admin_check_date', '');
+					}
 			
 					$result = $updater->execute_api_command($command_action, $command_info);
 					
@@ -58,6 +64,7 @@ class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 				{
 					$item_list = $params['update-list'];
 					$return_list = array();
+					$clear_cache = false;
 					
 					foreach ($item_list as $item)
 					{
@@ -71,9 +78,17 @@ class Mixin_AutoUpdate_Admin_Ajax extends Mixin
 							$result = $updater->execute_api_command($command_action, $command_info);
 							
 							$item['info'] = $result;
+							
+							$clear_cache = true;
 						}
 						
 						$return_list[] = $item;
+					}
+					
+					if ($clear_cache)
+					{
+						update_option('photocrati_auto_update_admin_update_list', null);
+						update_option('photocrati_auto_update_admin_check_date', '');
 					}
 					
 					return $return_list;
