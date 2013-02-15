@@ -103,7 +103,8 @@ class nggAdminPanel{
 					window.onerror = function(msg, url, line){
 						if (url.match(/\.js$|\.js\?/)) {
 							if (window.location.search.length > 0) {
-								window.location.search += '&skipjs[{$skipjs_count}]='+url;
+								if (window.location.search.indexOf(url) == -1)
+									window.location.search += '&skipjs[{$skipjs_count}]='+url;
 							}
 							else {
 								window.location.search = '?skipjs[{$skipjs_count}]='+url;
