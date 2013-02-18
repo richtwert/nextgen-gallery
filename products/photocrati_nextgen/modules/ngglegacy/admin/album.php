@@ -162,7 +162,7 @@ class nggManageAlbum {
 
 			$album = new stdClass();
 			$album->name = $_POST['newalbum'];
-			$this->get_album_mapper()->save($album);
+			$result = $this->get_album_mapper()->save($album);
             $this->currentID = $album->{$album->id_field};
 			if (!$this->currentID) $this->currentID = 0;
 
