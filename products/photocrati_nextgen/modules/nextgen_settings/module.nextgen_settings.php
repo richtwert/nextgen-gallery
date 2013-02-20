@@ -40,8 +40,10 @@ class M_NextGen_Settings extends C_Base_Module
 	{
 		parent::initialize();
 		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
-        $this->deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
+    $this->deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
 		$this->controller  = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
+		
+		$this->_register_hooks_init();
 	}
 
 
@@ -115,32 +117,32 @@ class M_NextGen_Settings extends C_Base_Module
 			'A_Stylesheet_Ajax_Actions'
 		);
 
-        // plugin deactivation routine
-        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
+		// plugin deactivation routine
+		$this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
 
-        // adds some AJAX-support routes like updating watermark previews
-        $this->get_registry()->add_adapter('I_Router', 'A_NextGen_Settings_Routes');
+		// adds some AJAX-support routes like updating watermark previews
+		$this->get_registry()->add_adapter('I_Router', 'A_NextGen_Settings_Routes');
 	}
 
 	/**
 	 * Hooks into the WordPress Framework
 	 */
-	function _register_hooks()
+	function _register_hooks_init()
 	{
 		// Use the NextGEN Activator to run activation routines
 		add_action(
 			'activate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME,
-			array(&$this->activator, 'install')
+			array($this->activator, 'install')
 		);
 
-        // NextGEN Deactivator routines
-        register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
-        register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
+		// NextGEN Deactivator routines
+		register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
+		register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
 			'admin_menu',
-			array(&$this, 'add_menu_pages'),
+			array($this, 'add_menu_pages'),
 			999
 		);
 	}
