@@ -18,7 +18,7 @@ class C_Lzw extends C_Component
 		$this->implement('I_Lzw');
 	}
 
-	function &get_instance($context=FALSE)
+	static function &get_instance($context=FALSE)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();

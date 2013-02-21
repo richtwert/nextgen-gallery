@@ -14,7 +14,7 @@ class C_Dynamic_Stylesheet_Controller extends C_MVC_Controller
 		$this->implement('I_Dynamic_Stylesheet');
 	}
 
-	function &get_instance($context=FALSE)
+	static function &get_instance($context=FALSE)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();
