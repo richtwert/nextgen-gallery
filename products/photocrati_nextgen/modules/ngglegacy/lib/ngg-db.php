@@ -231,7 +231,8 @@ class nggdb {
         // Say no to any other value
         $order_dir		= ( $order_dir == 'DESC') ? 'DESC' : 'ASC';
         $order_by		= ( empty($order_by) ) ? 'sortorder' : $order_by;
-		$order_clause	= "tt.{$order_by} {$order_dir}, ABS(tt.{$order_by}) {$order_dir}";
+		$order_clause	= "ABS(tt.{$order_by}) {$order_dir}, tt.{$order_by} {$order_dir}";
+//		$order_clause	= "LENGTH(tt.{$order_by}) {$order_dir}, tt.{$order_by} {$order_dir}";
 
         // Should we limit this query ?
         $limit_by  = ( $limit > 0 ) ? 'LIMIT ' . intval($start) . ',' . intval($limit) : '';

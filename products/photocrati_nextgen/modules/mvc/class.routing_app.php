@@ -261,7 +261,7 @@ class Mixin_Routing_App extends Mixin
         if (($request_uri = $this->object->get_app_request_uri())){
 
 			// Perform URL rewrites
-			$redirect = $this->object->do_rewrites($request_uri);
+			$redirect = $this->object->do_rewrites($request_uri);;
 
 			// Are we to perform a redirect?
 			if ($redirect) {

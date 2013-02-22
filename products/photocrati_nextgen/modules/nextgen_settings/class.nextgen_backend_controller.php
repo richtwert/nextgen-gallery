@@ -39,13 +39,14 @@ class Mixin_NextGen_Backend_Controller extends Mixin
 
 		// There are many jQuery UI themes available via Google's CDN:
 		// See: http://stackoverflow.com/questions/820412/downloading-jquery-css-from-googles-cdn
+		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
 		wp_enqueue_style(
-			NEXTGEN_GALLERY_JQUERY_UI_THEME,
+			$settings->jquery_ui_theme,
 			is_ssl() ?
-				 str_replace('http:', 'https:', NEXTGEN_GALLERY_JQUERY_UI_THEME_URL) :
-				 NEXTGEN_GALLERY_JQUERY_UI_THEME_URL,
+				 str_replace('http:', 'https:', $settings->jquery_ui_theme_url()) :
+				 $settings->jquery_ui_theme_url(),
 			array(),
-			NEXTGEN_GALLERY_JQUERY_UI_THEME_VERSION
+			$settings->jquery_ui_theme_version
 		);
 
 		wp_enqueue_script(

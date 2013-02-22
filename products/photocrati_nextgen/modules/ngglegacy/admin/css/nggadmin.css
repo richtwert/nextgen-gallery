@@ -376,6 +376,9 @@ p#sortButton{
 	width:130px;	/* Total width of each image box */
 	height:160px;	/* Total height of each image box */
 	float:left;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding: 5px;
 }
 .imageBox_theImage{
 	width:110px;	/* Width of image */

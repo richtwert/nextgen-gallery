@@ -424,7 +424,8 @@ function nggShowAlbum($albumID, $template = 'extend', $gallery_template = '') {
 
         // subalbum support only one instance, you can't use more of them in one post
         //TODO: causes problems with SFC plugin, due to a second filter callback
-        if ( isset($GLOBALS['subalbum']) || isset($GLOBALS['nggShowGallery']) )
+		global $wp_current_filter;
+        if ( isset($GLOBALS['subalbum']) || isset($GLOBALS['nggShowGallery']))
                 return;
 
         // if gallery is submit , then show the gallery instead

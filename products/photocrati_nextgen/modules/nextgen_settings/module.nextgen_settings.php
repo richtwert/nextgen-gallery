@@ -8,7 +8,6 @@
 
 class M_NextGen_Settings extends C_Base_Module
 {
-	var $activator = NULL;
 	var $page_name = 'ngg_other_options';
 
 	/**
@@ -25,11 +24,6 @@ class M_NextGen_Settings extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-		$this->add_mixin('Mixin_MVC_Controller_Rendering');
-
-		define('NEXTGEN_GALLERY_JQUERY_UI_THEME', 'jquery-ui-nextgen');
-        define('NEXTGEN_GALLERY_JQUERY_UI_THEME_URL', $this->static_url('jquery-ui/jquery-ui-1.9.1.custom.css'));
-        define('NEXTGEN_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
 	}
 
 
@@ -39,11 +33,7 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
-    $this->deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
 		$this->controller  = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
-		
-		$this->_register_hooks_init();
 	}
 
 
@@ -117,34 +107,37 @@ class M_NextGen_Settings extends C_Base_Module
 			'A_Stylesheet_Ajax_Actions'
 		);
 
-		// plugin deactivation routine
-		$this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
+        // plugin deactivation routine
+        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
 
-		// adds some AJAX-support routes like updating watermark previews
-		$this->get_registry()->add_adapter('I_Router', 'A_NextGen_Settings_Routes');
+        // adds some AJAX-support routes like updating watermark previews
+        $this->get_registry()->add_adapter('I_Router', 'A_NextGen_Settings_Routes');
 	}
 
 	/**
 	 * Hooks into the WordPress Framework
 	 */
-	function _register_hooks_init()
+	function _register_hooks()
 	{
-		// Use the NextGEN Activator to run activation routines
-		add_action(
-			'activate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME,
-			array($this->activator, 'install')
-		);
-
-		// NextGEN Deactivator routines
-		register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
-		register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
+		register_activation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, get_class().'::activate');
+		register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, get_class().'::deactivate');
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
 			'admin_menu',
-			array($this, 'add_menu_pages'),
+			array(&$this, 'add_menu_pages'),
 			999
 		);
+	}
+
+	static function activate()
+	{
+		C_Component_Registry::get_instance()->get_utility('I_NextGen_Activator')->install();
+	}
+
+	static function deactivate()
+	{
+		C_Component_Registry::get_instance()->get_utility('I_NextGen_Deactivator')->deactivate();
 	}
 
 	/**

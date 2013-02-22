@@ -362,11 +362,25 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 		catch (Exception $ex) {
 			throw new E_InvalidEntityException($ex);
 		}
-
-		$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-		$retval = $factory->create($this->object->get_model_factory_method(), $this->object, $stdObject, $context);
+		$retval = $this->object->create($stdObject, $context);
 
 		return $retval;
+	}
+
+	/**
+	 * Creates a new model
+	 * @param stdClass|array $properties
+	 * @return C_DataMapper_Model
+	 */
+	function create($properties=array(), $context=FALSE)
+	{
+		$entity = $properties;
+		$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
+		if (!is_object($properties)) {
+			$entity = new stdClass;
+			foreach ($properties as $k=>$v) $entity->$k = $v;
+		}
+		return $factory->create($this->object->get_model_factory_method(), $this->object, $entity, $context);
 	}
 
 

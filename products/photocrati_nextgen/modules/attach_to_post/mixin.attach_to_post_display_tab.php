@@ -170,6 +170,8 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 				'I_Display_Type_Controller', $display_type->name
 			);
 
+            $display_type_controller->enqueue_backend_resources($display_type);
+
 			// Determine which classes to use for the form's "class" attribute
 			$current = $this->object->is_displayed_gallery_using_display_type($display_type->name);
 			$css_class =  $current ? 'display_settings_form' : 'display_settings_form hidden';

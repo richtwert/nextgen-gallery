@@ -105,9 +105,13 @@ class C_NextGen_Settings_Defaults
                 'CSSfile'     => 'nggallery.css', // set default css filename
 
                 // Framework settings
-                'datamapper_driver' => 'custom_table_datamapper',
+                'datamapper_driver'		=> 'custom_table_datamapper',
                 'gallerystorage_driver' => 'ngglegacy_gallery_storage',
 				'maximum_entity_count'	=> 500,
+
+				// JQuery UI
+				'jquery_ui_theme'		=>	'jquery-ui-nextgen',
+				'jquery_ui_theme_version'		=>	1.8
             );
 
 			// Thumbnail sizes
@@ -254,6 +258,15 @@ class Mixin_WordPress_NextGen_Settings_Persistance extends Mixin
  */
 class Mixin_NextGen_Settings extends Mixin
 {
+	function jquery_ui_theme_url()
+	{
+		$this->object->add_mixin('Mixin_MVC_Controller_Rendering');
+		$retval = $this->static_url('jquery-ui/jquery-ui-1.9.1.custom.css');
+		$this->object->remove_mixin('Mixin_MVC_Controller_Rendering');
+
+		return $retval;
+	}
+
 	/**
 	 * Resets NextGEN to it's default settings
      *

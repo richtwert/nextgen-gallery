@@ -12,7 +12,7 @@ class C_Displayed_Gallery_Source_Mapper extends C_CustomPost_DataMapper_Driver
 	 * @param string|array|bool $context
 	 * @return C_Displayed_Gallery_Source_Mapper
 	 */
-	public static function get_instance($context=FALSE)
+	static function &get_instance($context=FALSE)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();
@@ -35,16 +35,16 @@ class C_Displayed_Gallery_Source_Mapper extends C_CustomPost_DataMapper_Driver
 		array_push($context, $object_name);
 
 		// Define the driver
-		parent::define($object_name, $context);
-
-		// Set the factory method for instantiating models
-		$this->set_model_factory_method('displayed_gallery_source');
+		parent::define(NULL, $context);
 
 		// Add the mixin of instance methods
 		$this->add_mixin('Mixin_Displayed_Gallery_Source_Mapper');
 
 		// Implement the interface
 		$this->implement('I_Displayed_Gallery_Source_Mapper');
+
+		// Set the factory method for instantiating models
+		$this->set_model_factory_method('displayed_gallery_source');
 	}
 
 	/**
@@ -64,7 +64,8 @@ class Mixin_Displayed_Gallery_Source_Mapper extends Mixin
 	 */
 	function find_by_name($name, $return_models=FALSE)
 	{
-		return array_pop($this->object->find_all(array("name = %s", $name), $return_models));
+		$retval = $this->object->find_all(array("name = %s", $name), $return_models);
+		return array_pop($retval);
 	}
 
 	/**

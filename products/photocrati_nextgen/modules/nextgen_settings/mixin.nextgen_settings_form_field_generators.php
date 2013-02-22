@@ -107,7 +107,8 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
             $display_type,
             'override_thumbnail_settings',
             'Override thumbnail settings',
-            $display_type->settings['override_thumbnail_settings']
+            $display_type->settings['override_thumbnail_settings'],
+			'Overriding the thumbnail settings will create an additional set of thumbnails'
         );
 
         $dimensions_field = $this->render_partial(
@@ -171,7 +172,8 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
             $display_type,
             'override_image_settings',
             'Override image settings',
-            $display_type->settings['override_image_settings']
+            $display_type->settings['override_image_settings'],
+			'Overriding the image settings will create an additional set of images'
         );
 
         $qualities = array();
