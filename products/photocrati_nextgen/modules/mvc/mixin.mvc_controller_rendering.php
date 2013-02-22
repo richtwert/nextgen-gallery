@@ -124,6 +124,11 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         return array_pop($found);
     }
 
+	function get_router()
+	{
+		return $this->get_registry()->get_utility('I_Router');
+	}
+
 
     /**
      * Finds a static resource

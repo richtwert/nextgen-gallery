@@ -3,17 +3,6 @@
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
 /**
- * Indicates that a clean exit occured. Handled by set_exception_handler
- */
-if (!class_exists('E_Clean_Exit')) {
-	class E_Clean_Exit extends RuntimeException
-	{
-
-	}
-}
-
-
-/**
  * Loads the NextGEN plugin
  */
 if (!class_exists('nggLoader')) {
@@ -34,9 +23,6 @@ if (!class_exists('nggLoader')) {
 			// Stop the plugin if we missed the requirements
 			if ( ( !$this->required_version() ) || ( !$this->check_memory_limit() ) )
 				return;
-
-			// Set error handler
-            set_exception_handler(array(&$this, 'exception_handler'));
 
 			// Determine plugin basename based on whether NGG is being used in
 			// it's legacy form, or as a Photocrati Gallery

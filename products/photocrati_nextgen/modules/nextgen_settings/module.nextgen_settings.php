@@ -8,7 +8,6 @@
 
 class M_NextGen_Settings extends C_Base_Module
 {
-	var $activator = NULL;
 	var $page_name = 'ngg_other_options';
 
 	/**
@@ -120,17 +119,8 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
-
-
-		// Use the NextGEN Activator to run activation routines
-		add_action(
-			'activate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME,
-			array(&$this->activator, 'install')
-		);
-
-        // NextGEN Deactivator routines
-        register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, get_class().'::deactivate_plugin');
+		register_activation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, get_class().'::activate');
+		register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, get_class().'::deactivate');
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
@@ -140,10 +130,14 @@ class M_NextGen_Settings extends C_Base_Module
 		);
 	}
 
-	static function deactivate_plugin()
+	static function activate()
 	{
-		$deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
-		$deactivator->deactivate();
+		C_Component_Registry::get_instance()->get_utility('I_NextGen_Activator')->install();
+	}
+
+	static function deactivate()
+	{
+		C_Component_Registry::get_instance()->get_utility('I_NextGen_Deactivator')->deactivate();
 	}
 
 	/**

@@ -68,8 +68,8 @@
                                     }
                                 })
                                 .addClass("ui-widget ui-widget-content ui-corner-left");
-
-            input.data("autocomplete")._renderItem = function(ul, item) {
+			var autocomplete = input.data("autocomplete");
+            if (autocomplete) autocomplete._renderItem = function(ul, item) {
                 return $("<li>").data("item.autocomplete", item)
                                 .append("<a>" + item.label + "</a>")
                                 .appendTo(ul);
