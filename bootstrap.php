@@ -27,6 +27,8 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
  */
 class C_NextGEN_Bootstrap
 {
+	var $_registry = NULL;
+
 	function __construct()
 	{
         // Pope requires a a higher limit
@@ -49,18 +51,18 @@ class C_NextGEN_Bootstrap
 		require_once(path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'wordpress_helpers.php'));
 
 		// Get the component registry
-		$registry = C_Component_Registry::get_instance();
+		$this->_registry = C_Component_Registry::get_instance();
 
 		// Add the default Pope factory utility, C_Component_Factory
-		$registry->add_utility('I_Component_Factory', 'C_Component_Factory');
+		$this->_registry->add_utility('I_Component_Factory', 'C_Component_Factory');
 
 		// Load embedded products. Each product is expected any
 		// modules required
-		$registry->add_module_path(NEXTGEN_GALLERY_PRODUCT_DIR, true, false);
-		$registry->load_all_products();
+		$this->_registry->add_module_path(NEXTGEN_GALLERY_PRODUCT_DIR, true, false);
+		$this->_registry->load_all_products();
 
 		// Initializes all loaded modules
-		$registry->initialize_all_modules();
+		$this->_registry->initialize_all_modules();
 	}
 
 
@@ -87,6 +89,19 @@ class C_NextGEN_Bootstrap
 
 		// Register our test suite
 		add_filter('simpletest_suites', array(&$this, 'add_testsuite'));
+
+		// Route using the MVC Router
+		add_action('init', array(&$this, 'route'), 99);
+	}
+
+	function route()
+	{
+        // TODO: get gallery stub from setting
+		$router = $this->_registry->get_utility('I_Router');
+		$router->set_document_root(ABSPATH);
+		if (!$router->serve_request() && $router->has_parameter_segments()) {
+			return $router->passthru();
+		}
 	}
 
 	/**
@@ -133,7 +148,7 @@ class C_NextGEN_Bootstrap
 		define('NEXTGEN_GALLERY_MODULE_URL', path_join(NEXTGEN_GALLERY_PRODUCT_URL, 'photocrati_nextgen/modules'));
 		define('NEXTGEN_GALLERY_PLUGIN_CLASS', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'module.NEXTGEN_GALLERY_PLUGIN.php'));
 		define('NEXTGEN_GALLERY_PLUGIN_STARTED_AT', microtime());
-		define('NEXTGEN_GALLERY_PLUGIN_VERSION', '1.9.9');
+		define('NEXTGEN_GALLERY_PLUGIN_VERSION', '2.0');
 		//define('LOG_WPDB_QUERIES', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 

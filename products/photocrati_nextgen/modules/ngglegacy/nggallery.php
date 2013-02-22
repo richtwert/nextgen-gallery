@@ -19,7 +19,7 @@ if (!class_exists('E_Clean_Exit')) {
 if (!class_exists('nggLoader')) {
 	class nggLoader {
 
-		var $version     = '2.0';
+		var $version     = NEXTGEN_GALLERY_PLUGIN_VERSION;
 		var $dbversion   = '1.8.1';
 		var $minimum_WP  = '3.5';
 		var $donators    = 'http://www.nextgen-gallery.com/donators.php';

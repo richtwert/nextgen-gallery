@@ -98,8 +98,7 @@ class Mixin_Router extends Mixin
 	{
 		$protocol = $this->object->is_https()? 'https://' : 'http://';
 		$retval = "{$protocol}{$_SERVER['SERVER_NAME']}{$this->object->context}";
-		if (substr($retval, -1) == '/') $retval = substr($retval, 0, -1);
-		return $retval;
+		return untrailingslashit($retval);
 	}
 
 	/**
@@ -237,6 +236,17 @@ class C_Router extends C_Component
 	{
 		parent::initialize();
 		$this->_request_method	= $_SERVER['REQUEST_METHOD'];
+		$this->_path			= $_SERVER['DOCUMENT_ROOT'];
+	}
+
+	function set_document_root($path)
+	{
+		$this->_path = $path;
+	}
+
+	function get_document_root()
+	{
+		return untrailingslashit($this->_path);
 	}
 
     static function &get_instance($context = False)

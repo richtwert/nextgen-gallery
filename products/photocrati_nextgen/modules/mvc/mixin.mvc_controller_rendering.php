@@ -173,7 +173,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
 
 		$found = $found ? realpath((array_pop($found))) : NULL;
 		if ($relative && !is_null($found)) {
-			$found = str_replace(ABSPATH, '', $found);
+			$found = str_replace($this->object->get_router()->get_document_root(), '', $found);
 		}
 
         return $found;
@@ -187,10 +187,14 @@ class Mixin_MVC_Controller_Rendering extends Mixin
      */
     function static_url($resource)
     {
-        $path = $this->object->find_static_file($resource);
+		$router		= $this->object->get_router();
+        $path		= $this->object->find_static_file($resource);
+		$doc_root	= $router->get_document_root();
+		$base_url	= $router->get_base_url();
+		$base_url	= $router->remove_url_segment('/index.php', $base_url);
         return str_replace(
-            realpath(NEXTGEN_GALLERY_PLUGIN_DIR),
-            NEXTGEN_GALLERY_PLUGIN_URL,
+			$doc_root,
+			$base_url,
             $path
         );
     }

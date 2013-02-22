@@ -61,20 +61,6 @@ class M_MVC extends C_Base_Module
         $this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
 	}
 
-    function _register_hooks()
-    {
-        add_action('init', array(&$this, 'route'), 99);
-    }
-
-	function route()
-	{
-        // TODO: get gallery stub from setting
-		$router = $this->get_registry()->get_utility('I_Router');
-		if (!$router->serve_request() && $router->has_parameter_segments()) {
-			return $router->passthru();
-		}
-	}
-
     function handle_exit($exception)
     {
         if (!($exception instanceof E_Clean_Exit))

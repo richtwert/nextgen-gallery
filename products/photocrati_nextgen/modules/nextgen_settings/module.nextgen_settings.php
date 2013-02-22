@@ -25,11 +25,6 @@ class M_NextGen_Settings extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-		$this->add_mixin('Mixin_MVC_Controller_Rendering');
-
-		define('NEXTGEN_GALLERY_JQUERY_UI_THEME', 'jquery-ui-nextgen');
-        define('NEXTGEN_GALLERY_JQUERY_UI_THEME_URL', $this->static_url('jquery-ui/jquery-ui-1.9.1.custom.css'));
-        define('NEXTGEN_GALLERY_JQUERY_UI_THEME_VERSION', '1.8');
 	}
 
 
@@ -39,8 +34,6 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
-        $this->deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
 		$this->controller  = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
 	}
 
@@ -127,6 +120,9 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
+		$this->activator   = $this->get_registry()->get_utility('I_NextGen_Activator');
+
+
 		// Use the NextGEN Activator to run activation routines
 		add_action(
 			'activate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME,
@@ -134,8 +130,7 @@ class M_NextGen_Settings extends C_Base_Module
 		);
 
         // NextGEN Deactivator routines
-        register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, array($this->deactivator, 'deactivate'));
-        register_uninstall_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME,    array($this->deactivator, 'uninstall'));
+        register_deactivation_hook(NEXTGEN_GALLERY_PLUGIN_BASENAME, get_class().'::deactivate_plugin');
 
 		// Provides menu options for managing NextGEN Settings
 		add_action(
@@ -143,6 +138,12 @@ class M_NextGen_Settings extends C_Base_Module
 			array(&$this, 'add_menu_pages'),
 			999
 		);
+	}
+
+	static function deactivate_plugin()
+	{
+		$deactivator = $this->get_registry()->get_utility('I_NextGen_Deactivator');
+		$deactivator->deactivate();
 	}
 
 	/**
