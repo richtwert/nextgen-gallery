@@ -38,11 +38,6 @@ class M_Attach_To_Post extends C_Base_Module
 		parent::initialize();
 		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
-
-		$router = $this->get_registry()->get_utility('I_Router');
-		define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $router->get_url('/attach_to_post', FALSE));
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL', $router->get_url('/attach_to_post/preview', FALSE));
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL', $router->get_url('/attach_to_post/display_tab_js', FALSE));
 	}
 
 	/**
@@ -77,6 +72,12 @@ class M_Attach_To_Post extends C_Base_Module
 		// gallery storage component
 		$this->get_registry()->add_adapter(
 			'I_Gallery_Storage', 'A_Gallery_Storage_Frame_Event'
+		);
+
+		// Adds Attach to Post settings
+		$this->get_registry()->add_adapter(
+			'I_Settings_Manager',
+			'A_Attach_to_Post_Settings'
 		);
 	}
 
@@ -198,7 +199,12 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _enqueue_tinymce_resources()
 	{
-        wp_localize_script('media-editor', 'nextgen_gallery_attach_to_post_url', NEXTGEN_GALLERY_ATTACH_TO_POST_URL);
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_localize_script(
+			'media-editor',
+			'nextgen_gallery_attach_to_post_url',
+			$settings->attach_to_post_url
+		);
 
 		// Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
@@ -248,9 +254,10 @@ class M_Attach_To_Post extends C_Base_Module
 	function locate_stale_displayed_galleries($post_id)
 	{
 		global $displayed_galleries_to_cleanup;
-		$displayed_galleries_to_cleanup = array();
-		$post = get_post($post_id);
-		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
+		$displayed_galleries_to_cleanup	= array();
+		$post							= get_post($post_id);
+		$settings						= $this->get_registry()->get_utility('I_Settings_Manager');
+		$preview_url = preg_quote($settings->gallery_preview_url, '#');
 		if (preg_match_all("#{$preview_url}/id--(\d+)#", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');

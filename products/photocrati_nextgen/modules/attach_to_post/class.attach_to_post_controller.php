@@ -112,8 +112,9 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		);
 
 		// Enqueue the backbone app for the display tab
-		$display_tab_js_url = NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL;
-		$preview_url		= NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL;
+		$settings			= $this->get_registry()->get_utility('I_Settings_Manager');
+		$preview_url		= $settings->gallery_preview_url;
+		$display_tab_js_url	= $settings->attach_to_post_display_tab_js_url;
 		if ($this->object->_displayed_gallery->id()) {
 			$display_tab_js_url .= '/id--'.$this->object->_displayed_gallery->id();
 		}
@@ -126,7 +127,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_localize_script(
 			'ngg_display_tab',
 			'ngg_displayed_gallery_preview_url',
-			$preview_url
+			$settings->gallery_preview_url
 		);
 	}
 
@@ -226,7 +227,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
 		$sec_token = $security->get_request_token('nextgen_edit_displayed_gallery');
 		$sec_actor = $security->get_current_actor();
-		
+
 		if (!$sec_actor->is_allowed('nextgen_edit_displayed_gallery'))
 		{
 			$valid_request = false;
@@ -300,7 +301,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		$frame_url = real_site_url("/wp-admin/admin.php?page={$page}&attach_to_post");
 		$frame_url = esc_url($frame_url);
-		
+
 		if ($tab_id) {
 			$tab_id = " id='ngg-iframe-{$tab_id}'";
 		}
