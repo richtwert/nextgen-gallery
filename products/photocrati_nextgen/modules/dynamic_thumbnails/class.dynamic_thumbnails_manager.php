@@ -4,7 +4,8 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 {
 	function get_route_name()
 	{
-		return 'nextgen_image';
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		return $settings->dynamic_thumbnail_route;
 	}
 
 	function _get_params_sanitized($params)
@@ -12,16 +13,16 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		if (isset($params['rotation']))
 		{
 			$rotation = intval($params['rotation']);
-			
+
 			if ($rotation && in_array(abs($rotation), array(90, 180, 270)))
 			{
 				$rotation = $rotation % 360;
-				
+
 				if ($rotation < 0)
 				{
 					$rotation = 360 - $rotation;
 				}
-				
+
 				$params['rotation'] = $rotation;
 			}
 			else
@@ -29,11 +30,11 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 				unset($params['rotation']);
 			}
 		}
-		
+
 		if (isset($params['flip']))
 		{
 			$flip = strtolower($params['flip']);
-			
+
 			if (in_array($flip, array('h', 'v', 'hv')))
 			{
 				$params['flip'] = $flip;
@@ -43,14 +44,14 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 				unset($params['flip']);
 			}
 		}
-		
+
 		return $params;
 	}
 
 	function get_uri_from_params($params)
 	{
 		$params = $this->object->_get_params_sanitized($params);
-		
+
 		$image = isset($params['image']) ? $params['image'] : null;
 		$image_id = is_scalar($image) ? ((int)$image) : $image->pid;
 		$image_width = isset($params['width']) ? $params['width'] : null;
@@ -94,12 +95,12 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 		{
 			$uri .= 'watermark/';
 		}
-		
+
 		if ($image_rotation)
 		{
 			$uri .= 'rotation-' . $image_rotation . '/';
 		}
-		
+
 		if ($image_flip)
 		{
 			$uri .= 'flip-' . $image_flip . '/';
@@ -131,7 +132,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	function get_image_url($image, $params)
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
-		
+
 		return $router->get_url($this->object->get_image_uri($image, $params), FALSE);
 	}
 
