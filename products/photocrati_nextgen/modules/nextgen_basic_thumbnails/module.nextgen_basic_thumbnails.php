@@ -82,6 +82,30 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
             'A_Ajax_Pagination_Actions'
         );
 	}
+
+	function _register_hooks()
+	{
+		add_shortcode('nggallery', array(&$this, 'render_shortcode'));
+	}
+
+	/**
+     * Short-cut for rendering an thumbnail gallery
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+	function render_shortcode($params, $inner_content=NULL)
+    {
+        $params['gallery_ids']     = $this->_get_param('id', NULL, $params);
+        $params['display_type']    = $this->_get_param('display_type', NEXTGEN_GALLERY_BASIC_THUMBNAILS, $params);
+        if (isset($params['images']))
+        {
+            $params['images_per_page'] = $this->_get_param('images', NULL, $params);
+        }
+        unset($params['id']);
+        unset($params['images']);
+        return $this->renderer->display_images($params, $inner_content);
+    }
 }
 
 new M_NextGen_Basic_Thumbnails();
