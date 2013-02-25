@@ -69,6 +69,7 @@ class M_NextGen_Basic_Album extends C_Base_Module
 	function _register_hooks()
 	{
 		add_shortcode('album',        array(&$this, 'ngglegacy_shortcode'));
+		add_shortcode('nggalbum',        array(&$this, 'ngglegacy_shortcode'));
 	}
 
 	/**

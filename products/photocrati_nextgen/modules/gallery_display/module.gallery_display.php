@@ -134,7 +134,6 @@ class M_Gallery_Display extends C_Base_Module
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
         // wrap the old nextgen tags to call our display_images()
-        add_shortcode('nggtags',      array(&$this, 'wrap_shortcode_nggtags'));
         add_shortcode('random',       array(&$this, 'wrap_shortcode_random'));
         add_shortcode('recent',       array(&$this, 'wrap_shortcode_recent'));
         add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
@@ -183,22 +182,6 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		return $this->renderer->display_images($params, $inner_content);
 	}
-
-    /**
-     * Short-cut for rendering a thumbnail gallery based on tags
-     * @param array $params
-     * @param null $inner_content
-     * @return string
-     */
-    function wrap_shortcode_nggtags($params, $inner_content=NULL)
-    {
-        $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
-        $params['source']       = $this->_get_param('source', 'galleries', $params);
-        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
-        unset($params['gallery']);
-        return $this->renderer->display_images($params, $inner_content);
-    }
-
 
     /**
      * Short-cut for rendering a thumbnail gallery with random images

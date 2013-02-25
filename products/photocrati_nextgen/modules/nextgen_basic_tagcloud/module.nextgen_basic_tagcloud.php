@@ -64,6 +64,26 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 			'A_NextGen_Basic_TagCloud_Urls'
 		);
     }
+
+	function _register_hooks()
+	{
+		add_action('nggtags', array(&$this, 'render_shortcode'));
+	}
+
+	/**
+     * Short-cut for rendering a thumbnail gallery based on tags
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+	function render_shortcode($params, $inner_content=NULL)
+    {
+        $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', NEXTGEN_GALLERY_BASIC_THUMBNAILS, $params);
+        unset($params['gallery']);
+        return $this->renderer->display_images($params, $inner_content);
+    }
 }
 
 new M_NextGen_Basic_Tagcloud();
