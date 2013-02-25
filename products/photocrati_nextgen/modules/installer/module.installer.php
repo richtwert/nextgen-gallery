@@ -14,6 +14,11 @@ class M_Installer extends C_Base_Module
 			'http://www.photocrati.com'
 		);
 	}
+
+	function _register_utilities()
+	{
+		$this->get_registry()->add_utility('I_Installer', 'C_Module_Installer');
+	}
 }
 
 new M_Installer;

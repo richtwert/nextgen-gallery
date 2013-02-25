@@ -22,25 +22,16 @@ class M_Ajax extends C_Base_Module
 		);
 	}
 
-	/**
-	 * Initializes the module
-	 */
-	function initialize()
-	{
-		parent::initialize();
-		$router = $this->get_registry()->get_utility('I_Router');
-		define('NEXTGEN_GALLERY_AJAX_URL', $router->get_url('/photocrati_ajax/', FALSE));
-		define('NEXTGEN_GALLERY_AJAX_JS_URL', $router->get_url('/photocrati_ajax/js', FALSE));
-	}
-
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Router', 'A_Ajax_Routes');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Ajax_Settings');
 	}
 
 	function _register_utilities()
 	{
 		$this->get_registry()->add_utility('I_Ajax_Controller', 'C_Ajax_Controller');
+
 	}
 
 	/**
@@ -58,7 +49,8 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-        wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL, array(), NULL);
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_enqueue_script('photocrati_ajax', $settings->ajax_js_url, array(), NULL);
 	}
 }
 

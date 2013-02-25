@@ -87,6 +87,14 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	{
 		return update_option($this->object->_get_option_name(), $this->object->_options);
 	}
+
+	/**
+	 * Removes settings completely
+	 */
+	function destroy()
+	{
+		delete_option($this->object->_get_option_name());
+	}
 }
 
 class C_Settings_Manager extends C_Component implements ArrayAccess
