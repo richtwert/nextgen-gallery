@@ -6,8 +6,6 @@
     }
 ***/
 
-define('NEXTGEN_GALLERY_FANCYBOX_VERSION', '1.3.4');
-
 class M_Fancybox extends C_Base_Module
 {
     function define()
@@ -25,7 +23,8 @@ class M_Fancybox extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Fancybox_Library_Activation');
+        $this->get_registry()->add_adapter('I_Settings_Manager', 'A_Fancybox_Settings');
+		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Fancybox_Library_Activation');
     }
 }
 
