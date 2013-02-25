@@ -41,14 +41,14 @@ class Mixin_NextGen_Activator extends Mixin
 		));
 
 		// Install our options
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$settings->save();
 
         if ($settings->is_multisite())
         {
             $this->object
                  ->get_registry()
-                 ->get_utility('I_NextGen_Settings', 'multisite')
+                 ->get_utility('I_Settings_Manager', 'multisite')
                  ->save();
         }
 	}

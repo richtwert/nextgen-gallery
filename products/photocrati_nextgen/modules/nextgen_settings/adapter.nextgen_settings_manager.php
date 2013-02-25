@@ -1,0 +1,170 @@
+<?php
+
+class Mixin_Global_NextGen_Settings extends Mixin
+{
+	function set_defaults()
+	{
+		if (is_multisite()) {
+			$defaults = array(
+				'gallerypath'	=> 'wp-content/blogs.dir/%BLOG_ID%/files/',
+				'wpmuCSSfile'	=> 'nggallery.css',
+				'wpmuStyle'		=> TRUE
+			);
+
+			foreach ($defaults as $key=>$value) {
+				if (!isset($this->object->$key)) $this->object->$key = $value;
+			}
+		}
+	}
+
+	function save()
+	{
+		return update_site_option($this->object->_get_option_name(), $this->object->_options);
+	}
+
+	function load()
+	{
+		$this->object->_options = get_site_option(
+			$this->object->_get_option_name(),
+			array()
+		);
+	}
+}
+
+class Mixin_NextGen_Settings extends Mixin
+{
+	function set_default()
+	{
+		// Some of the site-specific settings are based on globals. Global
+		// settings aren't set if this isn't a multisite environment. So, in that
+		// case, we'll set the globals to the default site-specific value
+		$global_settings = $this->get_factory()->get_utility('I_Settings_Manager', 'global');
+		if (!isset($global_settings->gallerypath))	$global_settings->gallerypath = 'wp-content/gallery';
+		if (!isset($global_settings->wpmuCSSfile))	$global_settings->wpmuCSSfile = '';
+		if (!isset($global_settings->wpmuStyle))	$global_settings->wpmuStyle = 1;
+
+		$defaults = array (
+			'gallerypath'    => $global_settings->gallerypath,
+			'deleteImg'      => True,              // delete Images
+			'swfUpload'      => True,              // activate the batch upload
+			'usePermalinks'  => False,             // use permalinks for parameters
+			'permalinkSlug'  => 'nggallery',       // the default slug for permalinks
+			'graphicLibrary' => 'gd',              // default graphic library
+			'imageMagickDir' => '/usr/local/bin/', // default path to ImageMagick
+			'useMediaRSS'    => False,             // activate the global Media RSS file
+			'usePicLens'     => False,             // activate the PicLens Link for galleries
+
+			// Tags / categories
+			'activateTags' => False,  // append related images
+			'appendType'   => 'tags', // look for category or tags
+			'maxImages'    => 7,      // number of images toshow
+
+			// Thumbnail Settings
+			'thumbwidth'   => 100,  // Thumb Width
+			'thumbheight'  => 75,   // Thumb height
+			'thumbfix'     => True, // Fix the dimension
+			'thumbquality' => 100,  // Thumb Quality
+
+			// Image Settings
+			'imgWidth'      => 800,   // Image Width
+			'imgHeight'     => 600,   // Image height
+			'imgQuality'    => 85,    // Image Quality
+			'imgBackup'     => True,  // Create a backup
+			'imgAutoResize' => False, // Resize after upload
+
+			// Gallery Settings
+			'galImages'         => '20', // Number of images per page
+			'galPagedGalleries' => 0,    // Number of galleries per page (in a album)
+			'galColumns'        => 0,    // Number of columns for the gallery
+			'galShowSlide'      => True, // Show slideshow
+			'galTextSlide'      => __('[Show as slideshow]', 'nggallery'), // Text for slideshow
+			'galTextGallery'    => __('[Show picture list]', 'nggallery'), // Text for gallery
+			'galShowOrder'      => 'gallery',   // Show order
+			'galSort'           => 'sortorder', // Sort order
+			'galSortDir'        => 'ASC',       // Sort direction
+			'galNoPages'        => True,        // use no subpages for gallery
+			'galImgBrowser'     => 0,       // Show ImageBrowser => instead effect
+			'galHiddenImg'      => 0,       // For paged galleries we can hide image
+			'galAjaxNav'        => 0,       // AJAX Navigation for Shutter effect
+
+			// Thumbnail Effect
+			'thumbEffect'  => 'shutter',                           // select effect
+			'thumbCode'    => 'class="shutterset_%GALLERY_NAME%"', //
+
+			// Watermark settings
+			'wmPos'    => 'botRight',             // Postion
+			'wmXpos'   => 5,                      // X Pos
+			'wmYpos'   => 5,                      // Y Pos
+			'wmType'   => 'text',                 // Type : 'image' / 'text'
+			'wmPath'   => '',                     // Path to image
+			'wmFont'   => 'arial.ttf',            // Font type
+			'wmSize'   => 10,                     // Font Size
+			'wmText'   => get_option('blogname'), // Text
+			'wmColor'  => '000000',               // Font Color
+			'wmOpaque' => '100',                  // Font Opaque
+
+			// Image Rotator settings
+			'enableIR'          => 0,
+			'slideFx'           => 'fade',
+			'irURL'             => '',
+			'irXHTMLvalid'      => 0,
+			'irAudio'           => '',
+			'irWidth'           => 320,
+			'irHeight'          => 240,
+			'irShuffle'         => True,
+			'irLinkfromdisplay' => True,
+			'irShownavigation'  => 0,
+			'irShowicons'       => 0,
+			'irWatermark'       => 0,
+			'irOverstretch'     => 'True',
+			'irRotatetime'      => 10,
+			'irTransition'      => 'random',
+			'irKenburns'        => 0,
+			'irBackcolor'       => '000000',
+			'irFrontcolor'      => 'FFFFFF',
+			'irLightcolor'      => 'CC0000',
+			'irScreencolor'     => '000000',
+
+			// CSS Style
+			'activateCSS'		=> $global_settings->wpmuStyle,   // activate the CSS file
+			'CSSfile'			=> $global_settings->wpmuCSSfile, // set default css filename
+
+			// Framework settings
+			'datamapper_driver'		=> 'custom_table_datamapper',
+			'gallerystorage_driver' => 'ngglegacy_gallery_storage',
+			'maximum_entity_count'	=> 500,
+
+			// JQuery UI
+			'jquery_ui_theme'				=>	'jquery-ui-nextgen',
+			'jquery_ui_theme_version'		=>	1.8,
+		);
+
+		foreach ($defaults as $key=>$value) {
+			if (!isset($this->object->$key)) $this->object->$key = $value;
+		}
+	}
+}
+
+/**
+ * Adds NextGEN Gallery specific logic
+ */
+class A_NextGen_Settings_Manager extends Mixin
+{
+	function initialize()
+	{
+		$this->object->_option_name = 'ngg_options';
+		if ($this->object->is_global_context()) $this->object->add_mixin('Mixin_Global_NextGen_Settings');
+		else $this->object->add_mixin('Mixin_NextGen_Settings');
+	}
+
+	function is_global_context()
+	{
+		$retval		= FALSE;
+		$context	= $this->object->context;
+		if ($context) {
+			if (!is_array($context)) $context = array($context);
+			$retval = in_array('global', $context);
+		}
+		return $retval;
+	}
+}

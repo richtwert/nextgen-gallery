@@ -20,7 +20,7 @@ class Hook_NextGen_Basic_Slideshow_Defaults extends Hook
 	function set_defaults($entity)
 	{
 		if ($entity->name == NEXTGEN_GALLERY_BASIC_SLIDESHOW) {
-			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 			$this->object->_set_default_value($entity, 'settings', 'images_per_page', $settings->galImages);
 			$this->object->_set_default_value($entity, 'settings', 'gallery_width', $settings->irWidth);
 			$this->object->_set_default_value($entity, 'settings', 'gallery_height', $settings->irHeight);

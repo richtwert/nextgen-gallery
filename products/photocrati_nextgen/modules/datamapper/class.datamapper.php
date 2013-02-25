@@ -18,7 +18,7 @@ class Mixin_DataMapper extends Mixin
 		if (!defined('DATAMAPPER_DRIVER')) {
 
 			// Get the datamapper configured in the database
-			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 			$factory_method = $settings->datamapper_driver;
 			if (!$factory_method) throw new DataMapperDriverNotSelectedException();
 

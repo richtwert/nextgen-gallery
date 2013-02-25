@@ -185,7 +185,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
         if (FALSE == $gallery)
         {
-            $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+            $settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
             $retval = path_join(WINABSPATH, $settings->gallerypath);
             $retval = path_join($retval, 'cache');
         }
@@ -527,7 +527,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		$result  = NULL;
 
 		// XXX this should maybe be removed and extra settings go into $params?
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
 		// Ensure we have a valid image
 		if ($image_path && file_exists($image_path))
@@ -884,7 +884,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 		$result = $this->object->calculate_image_clone_result($image_path, $clone_path, $params);
 
 		// XXX this should maybe be removed and extra settings go into $params?
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
 		// Ensure we have a valid image
 		if ($image_path && file_exists($image_path) && $result != null && !isset($result['error']))

@@ -397,7 +397,7 @@ class nggAdminPanel{
 	function enqueue_jquery_ui_theme()
 	{
 		$registry = C_Component_Registry::get_instance();
-		$settings = $registry->get_utility('I_NextGen_Settings');
+		$settings = $registry->get_utility('I_Settings_Manager');
 		wp_enqueue_style(
 			$settings->jquery_ui_theme,
 			$settings->jquery_ui_theme_url(),

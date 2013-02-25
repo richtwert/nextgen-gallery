@@ -48,7 +48,7 @@
     $swfobject->add_flashvars( 'lightcolor', $flash_rollover_color, '000000', 'string', '0x');
     $swfobject->add_flashvars( 'screencolor', $flash_screen_color, '000000', 'string', '0x');
     if ($flash_watermark_logo) {
-		$ngg_options = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$ngg_options = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$swfobject->add_flashvars( 'logo', $ngg_options['wmPath'], '', 'string');
 	}
 

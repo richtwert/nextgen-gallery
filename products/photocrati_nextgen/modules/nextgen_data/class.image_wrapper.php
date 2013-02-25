@@ -6,7 +6,7 @@
 class C_Image_Wrapper
 {
     public $_cache;         // cache of retrieved values
-    public $_settings;      // I_NextGen_Settings cache
+    public $_settings;      // I_Settings_Manager cache
     public $_storage;       // I_Gallery_Storage cache
     public $_galleries;     // cache of I_Gallery_Mapper (plural)
     public $_orig_image;    // original provided image
@@ -335,7 +335,7 @@ class C_Image_Wrapper
     }
 
     /**
-     * Retrieves and caches an I_NextGen_Settings instance
+     * Retrieves and caches an I_Settings_Manager instance
      *
      * @return mixed
      */
@@ -343,7 +343,7 @@ class C_Image_Wrapper
     {
         if (is_null($this->_settings))
         {
-            $this->_settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
+            $this->_settings = C_Component_Registry::get_instance()->get_utility('I_Settings_Manager');
         }
         return $this->_settings;
     }

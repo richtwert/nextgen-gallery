@@ -9,7 +9,7 @@ class Hook_Propagate_Thumbnail_Dimensions_To_Settings extends Hook
 	{
 		if ($this->object->get_method_property('save',
 		  ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE)) {
-			$settings			= $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings			= $this->object->get_registry()->get_utility('I_Settings_Manager');
 			$display_settings	= isset($entity->settings) ? $entity->settings : $entity->display_settings;
 			if (isset($display_settings['thumbnail_width']) && isset($display_settings['thumbnail_height'])) {
 				$width				= $display_settings['thumbnail_width'];

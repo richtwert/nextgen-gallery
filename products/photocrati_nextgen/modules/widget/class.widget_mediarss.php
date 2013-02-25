@@ -61,7 +61,7 @@ class C_Widget_MediaRSS extends WP_Widget
         
         extract($args);
 
-        $settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
+        $settings = C_Component_Registry::get_instance()->get_utility('I_Settings_Manager');
         $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
 
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);

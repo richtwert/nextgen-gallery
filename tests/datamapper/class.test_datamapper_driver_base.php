@@ -28,7 +28,7 @@ abstract class C_Test_DataMapper_Driver_Base extends C_Test_Component_Base
 		$this->model_factory_method = 'my_model';
 		$this->ids_to_cleanup = array();
 		$this->new_datamapper_driver = $datamapper_driver;
-		$this->settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+		$this->settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		$this->original_datamapper_driver = $this->settings->datamapper_driver;
 	}
 

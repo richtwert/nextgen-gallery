@@ -79,14 +79,6 @@ class C_NextGEN_Bootstrap
 			$this->directory_path('lang')
 		);
 
-		// Run activation logic
-		register_activation_hook(__FILE__, array(&$this, 'activate'));
-
-		// Should we log database queries for debugging
-		if (defined('LOG_WPDB_QUERIES')) {
-			add_filter('query', array(&$this, 'log_db_queries'));
-		}
-
 		// Register our test suite
 		add_filter('simpletest_suites', array(&$this, 'add_testsuite'));
 

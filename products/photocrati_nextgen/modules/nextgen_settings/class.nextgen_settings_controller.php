@@ -11,7 +11,7 @@ class C_NextGen_Settings_Controller extends C_NextGen_Backend_Controller
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Settings_Controller');
-		$this->implement('I_NextGen_Settings_Controller');
+		$this->implement('I_Settings_Manager_Controller');
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		// Enqueue resources
 		$this->object->enqueue_backend_resources();
 
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$message = null;
 
 		// Is this post a request? If so, process the request
@@ -117,7 +117,7 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 			return;
 		}
 
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
         $original_settings = $settings->to_array();
 
         if (($params = $this->object->param('settings')))
@@ -188,15 +188,15 @@ class Mixin_NextGen_Settings_Controller extends Mixin
 		$retval	= array();
 		$multi	= FALSE;
 
-        // WARNING: this will reset all options in I_NextGen_Settings to their defaults
+        // WARNING: this will reset all options in I_Settings_Manager to their defaults
         if (!empty($_POST['resetdefault']))
         {
-            $new_settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+            $new_settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
             if ($new_settings->is_multisite())
             {
                 $multi = $this->object->get_registry()
-                                      ->get_utility('I_NextGen_Settings', array('multisite'))
+                                      ->get_utility('I_Settings_Manager', array('multisite'))
                                       ->reset(TRUE);
             }
             $single = $new_settings->reset(TRUE);

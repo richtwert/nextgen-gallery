@@ -65,7 +65,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	function enqueue_lightbox_resources($displayed_gallery)
 	{
 		// Enqueue the lightbox effect library
-		$settings	= $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings	= $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$library	= $mapper->find_by_name($settings->thumbEffect);
 		if ($library)
@@ -211,7 +211,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function get_effect_code($displayed_gallery)
 	{
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$effect_code = $settings->thumbCode;
 		$effect_code = str_replace('%GALLERY_ID%', $displayed_gallery->id(), $effect_code);
 		$effect_code = str_replace('%GALLERY_NAME%', $displayed_gallery->id(), $effect_code);

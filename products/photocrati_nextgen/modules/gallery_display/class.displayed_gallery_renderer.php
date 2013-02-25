@@ -91,7 +91,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
         $displayed_gallery = NULL;
 
         // Get the NextGEN settings to provide some defaults
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
         // Configure the arguments
         $defaults = array(

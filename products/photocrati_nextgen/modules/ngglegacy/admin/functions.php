@@ -314,7 +314,7 @@ class nggAdmin{
 		$registry = C_Component_Registry::get_instance();
     $storage  = $registry->get_utility('I_Gallery_Storage');
     // XXX maybe get rid of this...it's needed to get width/height defaults, placing these directly in generate_image_size could have unwanted consequences
-		$settings = $registry->get_utility('I_NextGen_Settings');
+		$settings = $registry->get_utility('I_Settings_Manager');
 
 		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
 		$params = array('watermark' => false, 'reflection' => false);
@@ -367,7 +367,7 @@ class nggAdmin{
 		$registry = C_Component_Registry::get_instance();
     $storage  = $registry->get_utility('I_Gallery_Storage');
     // XXX maybe get rid of this...it's needed to get width/height defaults, placing these directly in generate_image_size could have unwanted consequences
-		$settings = $registry->get_utility('I_NextGen_Settings');
+		$settings = $registry->get_utility('I_Settings_Manager');
 
 		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
 		$params = array('watermark' => false, 'reflection' => false);
@@ -1433,13 +1433,13 @@ function ngg_checkExtract($p_event, &$p_header)	{
     return 1;
 }
 
-// XXX temporary...used as a quick fix to refresh I_NextGen_Settings when the nextgen option is updated manually in order to run Hooks etc.
+// XXX temporary...used as a quick fix to refresh I_Settings_Manager when the nextgen option is updated manually in order to run Hooks etc.
 function ngg_refreshSavedSettings()
 {
 	if (class_exists('C_Component_Registry'))
 	{
 		$registry = C_Component_Registry::get_instance();
-		$settings = $registry->get_utility('I_NextGen_Settings');
+		$settings = $registry->get_utility('I_Settings_Manager');
 
 		if ($settings != null)
 		{

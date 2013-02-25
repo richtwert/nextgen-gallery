@@ -33,7 +33,7 @@ class M_NextGen_Settings extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->controller  = $this->get_registry()->get_utility('I_NextGen_Settings_Controller');
+		$this->controller  = $this->get_registry()->get_utility('I_Settings_Manager_Controller');
 	}
 
 
@@ -42,14 +42,6 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function _register_utilities()
 	{
-		/**
-		 * Provides a component to manage NextGen Settings
-		 */
-		$this->get_registry()->add_utility(
-			'I_NextGen_Settings',
-			'C_NextGen_Settings'
-		);
-
 		/**
 		 * Provides a component to provide plugin activation
 		 */
@@ -76,7 +68,7 @@ class M_NextGen_Settings extends C_Base_Module
 
 		// Provides the Options page
 		$this->get_registry()->add_utility(
-			'I_NextGen_Settings_Controller',
+			'I_Settings_Manager_Controller',
 			'C_NextGen_Settings_Controller'
 		);
 
@@ -92,6 +84,11 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
+		$this->get_registry()->add_adapter(
+			'I_Settings_Manager',
+			'A_NextGen_Settings_Manager'
+		);
+
 		$this->get_registry()->add_adapter(
 			'I_Component_Factory',
 			'A_NextGen_Settings_Factory'

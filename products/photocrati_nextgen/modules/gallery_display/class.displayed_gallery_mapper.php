@@ -81,7 +81,7 @@ class Mixin_Displayed_Gallery_Defaults extends Mixin
 		}
 
 		// Default ordering
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$this->object->_set_default_value($entity, 'order_by', $settings->galSort);
 		$this->object->_set_default_value($entity, 'order_direction', $settings->galSortDir);
 
@@ -95,7 +95,7 @@ class Mixin_Displayed_Gallery_Defaults extends Mixin
 		$this->object->_set_default_value($entity, 'returns', 'included');
 
 		// Set maximum_entity_count
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$this->object->_set_default_value($entity, 'maximum_entity_count', $settings->maximum_entity_count);
 	}
 }
