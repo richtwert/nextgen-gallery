@@ -65,6 +65,26 @@ class M_NextGen_Basic_Album extends C_Base_Module
 			'A_NextGen_Basic_Album_Routes'
 		);
     }
+
+	function _register_hooks()
+	{
+		add_shortcode('album',        array(&$this, 'ngglegacy_shortcode'));
+	}
+
+	/**
+     * Renders the shortcode for rendering an album
+     * @param array $params
+     * @param null $inner_content
+     * @return string
+     */
+	function ngglegacy_shortcode($params, $inner_content=NULL)
+    {
+        $params['source']           = $this->_get_param('source', 'albums', $params);
+        $params['container_ids']    = $this->_get_param('id', NULL, $params);
+        $params['display_type']     = $this->_get_param('display_type', NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM, $params);
+        unset($params['id']);
+        return $this->renderer->display_images($params, $inner_content);
+    }
 }
 
 
