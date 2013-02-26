@@ -88,6 +88,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 		add_shortcode('nggallery', array(&$this, 'render'));
 		add_shortcode('nggtags',   array(&$this, 'render_based_on_tags'));
 		add_shortcode('random',    array(&$this, 'render_random_images'));
+		add_shortcode('recent',    array(&$this, 'render_recent_images'));
 	}
 
 	/**
@@ -106,7 +107,9 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         }
         unset($params['id']);
         unset($params['images']);
-        return $this->renderer->display_images($params, $inner_content);
+
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
     }
 
 	function render_based_on_tags($params, $inner_content=NULL)
@@ -115,7 +118,9 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', NEXTGEN_GALLERY_BASIC_THUMBNAILS, $params);
         unset($params['gallery']);
-        return $this->renderer->display_images($params, $inner_content);
+
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
     }
 
 	function render_random_images($params, $inner_content=NULL)
@@ -135,7 +140,27 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         unset($params['max']);
         unset($params['id']);
 
-        return $this->renderer->display_images($params, $inner_content);
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
+	}
+
+	function render_recent_images($params, $inner_content=NULL)
+	{
+		        $params['source']             = $this->_get_param('source', 'recent', $params);
+        $params['images_per_page']    = $this->_get_param('max', NULL, $params);
+        $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
+        $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+
+        if (isset($params['id']))
+        {
+            $params['container_ids'] = $this->_get_param('id', NULL, $params);
+        }
+
+        unset($params['max']);
+        unset($params['id']);
+
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
 	}
 }
 

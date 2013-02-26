@@ -134,7 +134,6 @@ class M_Gallery_Display extends C_Base_Module
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
         // wrap the old nextgen tags to call our display_images()
-        add_shortcode('recent',       array(&$this, 'wrap_shortcode_recent'));
         add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
         add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
         add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
@@ -181,31 +180,6 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		return $this->renderer->display_images($params, $inner_content);
 	}
-
-
-    /**
-     * Short-cut for rendering a thumbnail gallery with recent images
-     * @param array $params
-     * @param null $inner_content
-     * @return string
-     */
-    function wrap_shortcode_recent($params, $inner_content=NULL)
-    {
-        $params['source']             = $this->_get_param('source', 'recent', $params);
-        $params['images_per_page']    = $this->_get_param('max', NULL, $params);
-        $params['disable_pagination'] = $this->_get_param('disable_pagination', TRUE, $params);
-        $params['display_type']       = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
-
-        if (isset($params['id']))
-        {
-            $params['container_ids'] = $this->_get_param('id', NULL, $params);
-        }
-
-        unset($params['max']);
-        unset($params['id']);
-
-        return $this->renderer->display_images($params, $inner_content);
-    }
 
 
     /**
