@@ -136,7 +136,6 @@ class M_Gallery_Display extends C_Base_Module
         // wrap the old nextgen tags to call our display_images()
         add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
         add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
-        add_shortcode('thumb',        array(&$this, 'wrap_shortcode_thumb'));
         add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
 	}
 
@@ -225,22 +224,6 @@ class M_Gallery_Display extends C_Base_Module
         $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
         $params['source']       = $this->_get_param('source', 'tags', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
-        return $this->renderer->display_images($params, $inner_content);
-    }
-
-
-    /**
-     * Short-cut for rendering a thumbnail gallery
-     * @param array $params
-     * @param null $inner_content
-     * @return string
-     */
-    function wrap_shortcode_thumb($params, $inner_content=NULL)
-    {
-        $params['entity_ids']   = $this->_get_param('id', NULL, $params);
-        $params['source']       = $this->_get_param('source', 'galleries', $params);
-        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
-        unset($params['id']);
         return $this->renderer->display_images($params, $inner_content);
     }
 
