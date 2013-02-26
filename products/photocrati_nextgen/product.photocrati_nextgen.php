@@ -50,6 +50,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 //
 		// The MVC framework is really a templating framework - not MVC.
 		$this->get_registry()->load_module('photocrati-mvc');
+
+		$this->get_registry()->load_module('photocrati-test');
 //
 //
 //		// Load the LZW compression module, a useful utility

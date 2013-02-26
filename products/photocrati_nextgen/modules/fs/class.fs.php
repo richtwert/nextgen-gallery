@@ -82,17 +82,20 @@ class Mixin_Fs_Instance_Methods extends Mixin
 	function _rglob($base_path, $file, $flags=0)
 	{
 		$retval = NULL;
-		$results = glob($this->join_paths($base_path, $file), $flags);
+		$results = file_exists($this->join_paths($base_path, $file));
 
 		// Must be located in a sub-directory
 		if (!$results) {
 			$results = glob($this->join_paths($base_path, '/*'), GLOB_ONLYDIR);
 			foreach ($results as $dir) {
+				if (strpos($dir, 'mvc') !== FALSE) {
+					$this->debug = TRUE;
+				}
 				$retval = $this->_rglob($dir, $file, $flags);
 				if ($retval) break;
 			}
 		}
-		else $retval = array_pop($results);
+		else $retval = $this->join_paths($base_path, $file);
 
 		return $retval;
 	}

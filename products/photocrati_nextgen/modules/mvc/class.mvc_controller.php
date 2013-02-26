@@ -235,6 +235,7 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
 		$retval = $fs->get_abspath($fs->join_paths($settings->mvc_template_dirname, $filename), $module);
 		if (!$retval) throw new RuntimeException("{$path} is not a valid MVC template");
+		return $retval;
 	}
 
 	/**

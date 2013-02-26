@@ -97,7 +97,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	function set_default($key, $value)
 	{
 		if ((!$this->object->is_set($key)) OR $this->object->is_default($key)) $this->object->set($key, $value);
-		$this->object->_defaults[$key] = $value;
+		return $this->object->_defaults[$key] = $value;
 
 	}
 
