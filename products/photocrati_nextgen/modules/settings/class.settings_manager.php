@@ -7,7 +7,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 {
 	function _to_named_constant($property)
 	{
-		return $this->object->_constant_prefix.(preg_replace("/[^\w]/", "_", strtoupper($property)));
+		return $this->object->_get_constant_prefix().(preg_replace("/[^\w]/", "_", strtoupper($property)));
 	}
 
 
@@ -17,7 +17,13 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	 */
 	function _get_option_name()
 	{
-		return $this->object->_option_name;
+		return 'module_settings';
+	}
+
+
+	function _get_constant_prefix()
+	{
+		return 'POPE_MOD_';
 	}
 
 
@@ -64,7 +70,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	 */
 	function load()
 	{
-		$this->object->options = get_option($this->object->_get_option_name(), array());
+		$this->object->_options = get_option($this->object->_get_option_name(), array());
 		$this->object->set_defaults();
 	}
 
@@ -125,8 +131,6 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	static $_instances		= array();
 	var $_options			= array();
 	var $_defaults			= array();
-	var $_option_name		= 'module_settings';
-	var $_constant_prefix	= 'POPE_MOD_';
 
 	/**
 	 * Returns the singleton instance of the settings manager
@@ -152,6 +156,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 
 	function initialize()
 	{
+		parent::initialize();
 		$this->load();
 	}
 
@@ -180,12 +185,11 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	/**
 	 * Returns the value of a particular setting
 	 * @param string $property
-	 * @param mixed $default
 	 * @return mixed
 	 */
-	function __get($property, $default=NULL)
+	function __get($property)
 	{
-		return $this->get($property, $default);
+		return $this->get($property);
 	}
 
 	/**
@@ -204,7 +208,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	 * @param string $offset
 	 * @return boolean
 	 */
-	function offsetExists(string $offset)
+	function offsetExists($offset)
 	{
 		return $this->is_set($offset);
 	}
@@ -215,7 +219,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	 * @param mixed $value
 	 * @return mixed
 	 */
-	function offsetSet(string $offset, $value)
+	function offsetSet($offset, $value)
 	{
 		return $this->set($offset, $value);
 	}
@@ -225,7 +229,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	 * @param string $offset
 	 * @return mixed
 	 */
-	function offsetGet(string $offset)
+	function offsetGet($offset)
 	{
 		return $this->get($offset);
 	}

@@ -63,6 +63,9 @@ class C_NextGEN_Bootstrap
 
 		// Initializes all loaded modules
 		$this->_registry->initialize_all_modules();
+
+		// Set the document root
+		$this->_registry->get_utility('I_Fs')->set_document_root(ABSPATH);
 	}
 
 
@@ -82,7 +85,7 @@ class C_NextGEN_Bootstrap
 		// Register our test suite
 		add_filter('simpletest_suites', array(&$this, 'add_testsuite'));
 
-		// Route using the MVC Router
+		// Start the plugin!
 		add_action('init', array(&$this, 'route'), 99);
 	}
 
@@ -90,7 +93,6 @@ class C_NextGEN_Bootstrap
 	{
         // TODO: get gallery stub from setting
 		$router = $this->_registry->get_utility('I_Router');
-		$router->set_document_root(ABSPATH);
 		if (!$router->serve_request() && $router->has_parameter_segments()) {
 			return $router->passthru();
 		}

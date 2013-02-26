@@ -1,5 +1,10 @@
 <?php
-
+/*
+{
+	Module: photocrati-installer,
+	Depends: { photocrati-settings }
+}
+ */
 class M_Installer extends C_Base_Module
 {
 	function define()

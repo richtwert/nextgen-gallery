@@ -10,7 +10,7 @@
  * TODO: The file below should be deprecated. We should use an example template
  * engine, such as Twig
  */
-require_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
+require_once('template_helper.php');
 
 /**
  * Indicates that a clean exit occurred. Handled by set_exception_handler

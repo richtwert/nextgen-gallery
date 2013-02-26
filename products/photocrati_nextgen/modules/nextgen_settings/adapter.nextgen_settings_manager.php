@@ -151,9 +151,13 @@ class A_NextGen_Settings_Manager extends Mixin
 {
 	function initialize()
 	{
-		$this->object->_option_name = 'ngg_options';
 		if ($this->object->is_global_context()) $this->object->add_mixin('Mixin_Global_NextGen_Settings');
 		else $this->object->add_mixin('Mixin_NextGen_Settings');
+	}
+
+	function _get_option_name()
+	{
+		return 'ngg_options';
 	}
 
 	function is_global_context()

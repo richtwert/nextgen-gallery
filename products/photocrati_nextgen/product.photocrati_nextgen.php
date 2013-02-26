@@ -28,10 +28,17 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load the settings manager module
 		$this->get_registry()->load_module('photocrati-settings');
+		$this->get_registry()->load_module('photocrati-nextgen_settings');
+
+		// Load the FS module
+		$this->get_registry()->load_module('photocrati-fs');
 
 		// Load the installer
 		$this->get_registry()->load_module('photocrati-installer');
 
+		// Load the router
+		$this->get_registry()->load_module('photocrati-router');
+		$this->get_registry()->load_module('photocrati-wordpress_routing');
 //
 //		// The validation module is a helper module intended to be adopted
 //		// by other modules. The datamapper and nextgen_settings modules
@@ -44,15 +51,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		// The MVC framework is really a templating framework - not MVC.
 //		$this->get_registry()->load_module('photocrati-mvc');
 //
-//		// Load the WordPress Routing integration module
-//		$this->get_registry()->load_module('photocrati-wordpress_routing');
 //
 //		// Load the LZW compression module, a useful utility
 //		$this->get_registry()->load_module('photocrati-lzw');
-//
-//		// The NextGEN Settings module provides uniform centralized management
-//		// of settings for the plugin.
-//		$this->get_registry()->load_module('photocrati-nextgen_settings');
 //
 //		// The datamapper is a library which is required by our data tier
 //		// components. This is the first module we load as in the future, the

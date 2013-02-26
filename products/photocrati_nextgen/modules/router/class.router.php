@@ -76,6 +76,26 @@ class Mixin_Router extends Mixin
 	}
 
 	/**
+	 * Returns a static url
+	 * @param string $path
+	 * @param string $module
+	 * @return string
+	 */
+	function get_static_url($path, $module=FALSE)
+	{
+		$fs = $this->get_registry()->get_utility('I_Fs');
+		$path = $fs->get_abspath($path, $module);
+		$base_url = $this->object->get_base_url();
+		$base_url = $this->object->remove_url_segment('/index.php', $base_url);
+		return str_replace(
+			$fs->get_document_root(),
+			$base_url,
+			$path
+		);
+	}
+
+
+	/**
 	 * Gets the routed url
 	 * @returns string
 	 */
@@ -236,17 +256,6 @@ class C_Router extends C_Component
 	{
 		parent::initialize();
 		$this->_request_method	= $_SERVER['REQUEST_METHOD'];
-		$this->_path			= $_SERVER['DOCUMENT_ROOT'];
-	}
-
-	function set_document_root($path)
-	{
-		$this->_path = $path;
-	}
-
-	function get_document_root()
-	{
-		return untrailingslashit($this->_path);
 	}
 
     static function &get_instance($context = False)
