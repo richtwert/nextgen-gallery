@@ -55,7 +55,6 @@ class M_MVC extends C_Base_Module
 
 	function _register_adapters()
 	{
-		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Activator_Rendering');
         $this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
 		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_MVC_Settings');
 	}
