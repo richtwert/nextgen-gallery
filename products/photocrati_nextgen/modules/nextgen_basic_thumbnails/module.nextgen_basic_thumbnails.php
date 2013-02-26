@@ -85,7 +85,8 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 
 	function _register_hooks()
 	{
-		add_shortcode('nggallery', array(&$this, 'render_shortcode'));
+		add_shortcode('nggallery', array(&$this, 'render'));
+		add_shortcode('nggtags',   array(&$this, 'render_based_on_tags'));
 	}
 
 	/**
@@ -94,7 +95,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
      * @param null $inner_content
      * @return string
      */
-	function render_shortcode($params, $inner_content=NULL)
+	function render($params, $inner_content=NULL)
     {
         $params['gallery_ids']     = $this->_get_param('id', NULL, $params);
         $params['display_type']    = $this->_get_param('display_type', NEXTGEN_GALLERY_BASIC_THUMBNAILS, $params);
@@ -104,6 +105,15 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         }
         unset($params['id']);
         unset($params['images']);
+        return $this->renderer->display_images($params, $inner_content);
+    }
+
+	function render_based_on_tags($params, $inner_content=NULL)
+    {
+        $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
+        $params['source']       = $this->_get_param('source', 'galleries', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
+        unset($params['gallery']);
         return $this->renderer->display_images($params, $inner_content);
     }
 }
