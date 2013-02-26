@@ -170,7 +170,9 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_thumbnails', $params);
         unset($params['id']);
-        return $this->renderer->display_images($params, $inner_content);
+		
+        $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
 	}
 }
 

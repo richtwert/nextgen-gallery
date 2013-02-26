@@ -134,7 +134,7 @@ class M_Gallery_Display extends C_Base_Module
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
         // wrap the old nextgen tags to call our display_images()
-        add_shortcode('singlepic',    array(&$this, 'wrap_shortcode_singlepic'));
+
         add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
         add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
 	}
@@ -179,21 +179,6 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		return $this->renderer->display_images($params, $inner_content);
 	}
-
-
-    /**
-     * Short-cut for rendering an singlepic gallery
-     * @param array $params
-     * @param null $inner_content
-     * @return string
-     */
-    function wrap_shortcode_singlepic($params, $inner_content=NULL)
-    {
-        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
-        $params['image_ids'] = $this->_get_param('id', NULL, $params);
-        unset($params['id']);
-        return $this->renderer->display_images($params, $inner_content);
-    }
 
 
     /**

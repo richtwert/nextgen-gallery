@@ -52,6 +52,22 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
 			'A_NextGen_Basic_Singlepic_Mapper'
 		);
     }
+
+	function _register_hooks()
+	{
+		add_shortcode('singlepic',    array(&$this, 'render_singlepic'));
+	}
+
+	
+	function render_singlepic($params, $inner_content=NULL)
+	{
+		$params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
+        $params['image_ids'] = $this->_get_param('id', NULL, $params);
+        unset($params['id']);
+
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
+	}
 }
 
 new M_NextGen_Basic_Singlepic();
