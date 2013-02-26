@@ -69,12 +69,26 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 
 	function _register_hooks()
 	{
-		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+		add_shortcode('slideshow',		 array(&$this, 'render_slideshow'));
+		add_shortcode('nggslideshow',	 array(&$this, 'render_slideshow'));
 	}
 
 	function enqueue_scripts()
 	{
 		wp_enqueue_script('swfobject');
+	}
+
+	function render_slideshow($params, $inner_content=NULL)
+	{
+		$params['gallery_ids']    = $this->_get_param('id', NULL, $params);
+        $params['display_type']   = $this->_get_param('display_type', 'photocrati-nextgen_basic_slideshow', $params);
+        $params['gallery_width']  = $this->_get_param('w', NULL, $params);
+        $params['gallery_height'] = $this->_get_param('h', NULL, $params);
+        unset($params['id'], $params['w'], $params['h']);
+		
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
 	}
 }
 

@@ -11,7 +11,6 @@ class M_Gallery_Display extends C_Base_Module
 {
 	var $display_settings_page_name     = 'ngg_display_settings';
 	var $controller                     = NULL;
-    var $renderer                       = NULL;
 
 	function define()
 	{
@@ -34,7 +33,6 @@ class M_Gallery_Display extends C_Base_Module
 	function initialize()
 	{
 		parent::initialize();
-		$this->renderer     = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->controller   = $this->get_registry()->get_utility('I_Display_Settings_Controller');
 	}
 
@@ -132,7 +130,6 @@ class M_Gallery_Display extends C_Base_Module
 
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
-        add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
 	}
 
 
@@ -173,25 +170,9 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function display_images($params, $inner_content=NULL)
 	{
-		return $this->renderer->display_images($params, $inner_content);
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+		return $renderer->display_images($params, $inner_content);
 	}
-
-
-    /**
-     * Short-cut for rendering an slideshow
-     * @param array $params
-     * @param null $inner_content
-     * @return string
-     */
-    function wrap_shortcode_slideshow($params, $inner_content=NULL)
-    {
-        $params['gallery_ids']    = $this->_get_param('id', NULL, $params);
-        $params['display_type']   = $this->_get_param('display_type', 'photocrati-nextgen_basic_slideshow', $params);
-        $params['gallery_width']  = $this->_get_param('w', NULL, $params);
-        $params['gallery_height'] = $this->_get_param('h', NULL, $params);
-        unset($params['id'], $params['w'], $params['h']);
-        return $this->renderer->display_images($params, $inner_content);
-    }
 
     /**
      * Gets a value from the parameter array, and if not available, uses the default value
