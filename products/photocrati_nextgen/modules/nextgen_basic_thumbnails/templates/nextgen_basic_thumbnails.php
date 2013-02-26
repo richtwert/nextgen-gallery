@@ -38,10 +38,10 @@
 
         <div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-thumbnail-box" <?php print $image->style; ?>>
             <div class="ngg-gallery-thumbnail">
-                <a
-                    href="<?php echo esc_attr($storage->get_image_url($image))?>"
-                    title="<?php echo esc_attr($image->description)?>"
-                    <?php echo $effect_code ?>>
+                <a href="<?php echo esc_attr($storage->get_image_url($image))?>"
+                   title="<?php echo esc_attr($image->description)?>"
+                   data-image-id='<?php echo esc_attr($image->pid); ?>'
+                   <?php echo $effect_code ?>>
                     <img
                         title="<?php echo esc_attr($image->alttext)?>"
                         alt="<?php echo esc_attr($image->alttext)?>"

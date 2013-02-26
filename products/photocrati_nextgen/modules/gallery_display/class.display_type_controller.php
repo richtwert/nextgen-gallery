@@ -106,8 +106,6 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
-		$this->object->enqueue_lightbox_resources($displayed_gallery);
-
 		// Enqueue the display type library
 		wp_enqueue_script(
 			$displayed_gallery->display_type,
@@ -130,6 +128,8 @@ class Mixin_Display_Type_Controller extends Mixin
 			(array)$displayed_gallery->get_entity(),
 			FALSE
 		);
+
+        $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
 
 	/**

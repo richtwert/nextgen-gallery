@@ -1,6 +1,7 @@
 <?php if (!empty($image)) { ?>
     <a href="<?php echo esc_attr($settings['link']); ?>"
        title="<?php echo esc_attr($image->description)?>"
+       data-image-id='<?php echo esc_attr($image->pid); ?>'
        <?php echo $effect_code ?>>
         <img class="ngg-singlepic <?php echo $settings['float']; ?>"
              src="<?php echo $thumbnail_url; ?>"

@@ -5,6 +5,7 @@
     <div class='pic'>
         <a href='<?php echo esc_attr($storage->get_image_url($image)); ?>'
            title='<?php echo esc_attr($image->description); ?>'
+           data-image-id='<?php echo esc_attr($image->pid); ?>'
            <?php echo $effect_code ?>>
             <img title='<?php echo esc_attr($image->alttext); ?>'
                  alt='<?php echo esc_attr($image->alttext); ?>'
