@@ -67,7 +67,7 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 
 	function _register_hooks()
 	{
-		add_action('nggtags', array(&$this, 'render_shortcode'));
+		add_action('tagcloud', array(&$this, 'render_shortcode'));
 	}
 
 	/**
@@ -78,11 +78,12 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
      */
 	function render_shortcode($params, $inner_content=NULL)
     {
-        $params['tag_ids']      = $this->_get_param('gallery', NULL, $params);
-        $params['source']       = $this->_get_param('source', 'galleries', $params);
-        $params['display_type'] = $this->_get_param('display_type', NEXTGEN_GALLERY_BASIC_THUMBNAILS, $params);
-        unset($params['gallery']);
-        return $this->renderer->display_images($params, $inner_content);
+	    $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
+        $params['source']       = $this->_get_param('source', 'tags', $params);
+        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
+
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
     }
 }
 

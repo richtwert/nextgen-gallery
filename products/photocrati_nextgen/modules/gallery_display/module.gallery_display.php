@@ -132,10 +132,6 @@ class M_Gallery_Display extends C_Base_Module
 
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
-
-        // wrap the old nextgen tags to call our display_images()
-
-        add_shortcode('tagcloud',     array(&$this, 'wrap_shortcode_tagcloud'));
         add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
 	}
 
@@ -194,21 +190,6 @@ class M_Gallery_Display extends C_Base_Module
         $params['gallery_width']  = $this->_get_param('w', NULL, $params);
         $params['gallery_height'] = $this->_get_param('h', NULL, $params);
         unset($params['id'], $params['w'], $params['h']);
-        return $this->renderer->display_images($params, $inner_content);
-    }
-
-
-    /**
-     * Short-cut for rendering a tagcloud
-     * @param array $params
-     * @param null $inner_content
-     * @return string
-     */
-    function wrap_shortcode_tagcloud($params, $inner_content=NULL)
-    {
-        $params['tagcloud']     = $this->_get_param('tagcloud', 'yes', $params);
-        $params['source']       = $this->_get_param('source', 'tags', $params);
-        $params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_tagcloud', $params);
         return $this->renderer->display_images($params, $inner_content);
     }
 
