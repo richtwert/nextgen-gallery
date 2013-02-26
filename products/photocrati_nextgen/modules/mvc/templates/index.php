@@ -1,7 +1,8 @@
 <?php
+$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 $obj = method_exists($this, 'get_class_definition_dir') ? $this : $this->object;
 $template_dir = path_join($obj->get_class_definition_dir(), 'templates');
-$default_template_dir = MVC_TEMPLATE_DIR;
+$default_template_dir = $settings->mvc_template_dir;
 ?>
 
 <h1>Welcome to Pope MVC!</h1>

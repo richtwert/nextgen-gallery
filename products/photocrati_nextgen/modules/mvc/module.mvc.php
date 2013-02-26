@@ -6,11 +6,10 @@
 	}
 ***/
 
-define('MVC_MODULE_DIR',		dirname(__FILE__));
-define('MVC_TEMPLATE_DIR',		path_join(MVC_MODULE_DIR, 'templates'));
-define('MVC_PARAM_SEPARATOR',	'--');
-define('MVC_PARAM_PREFIX',		'ngg');
-define('MVC_PARAM_SLUG',		'nggallery');
+/**
+ * TODO: The file below should be deprecated. We should use an example template
+ * engine, such as Twig
+ */
 require_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
 
 /**
@@ -50,7 +49,6 @@ class M_MVC extends C_Base_Module
 
     function _register_utilities()
     {
-		$this->get_registry()->add_utility('I_Test_Controller', 'C_Test_Controller');
 		$this->get_registry()->add_utility('I_Http_Response', 'C_Http_Response_Controller');
         $this->get_registry()->add_utility('I_Router', 'C_Router');
     }
@@ -59,6 +57,7 @@ class M_MVC extends C_Base_Module
 	{
 		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Activator_Rendering');
         $this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_MVC_Settings');
 	}
 
     function handle_exit($exception)

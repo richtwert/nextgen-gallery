@@ -23,6 +23,11 @@ class M_Router extends C_Base_Module
 	{
 		$this->get_registry()->add_utility('I_Router', 'C_Router');
 	}
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Router_Settings');
+	}
 }
 
 new M_Router;

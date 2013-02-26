@@ -4,6 +4,6 @@ class A_Fancybox_Settings extends Mixin
 {
 	function initialize()
 	{
-		$this->object->set('fancybox_1x_version', '1.3.4');
+		$this->object->set_default('fancybox_1x_version', '1.3.4');
 	}
 }

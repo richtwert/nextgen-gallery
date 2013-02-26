@@ -79,6 +79,29 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 		if ($save) $this->object->save();
 	}
 
+	function is_default($key)
+	{
+		$retval = FALSE;
+		if (isset($this->object->_defaults[$key]) && $this->object->_defaults[$key] == $this->object->get($key)) {
+			$retval = TRUE;
+		}
+		return $retval;
+	}
+
+	function set_default($key, $value)
+	{
+		if ((!$this->object->is_set($key)) OR $this->object->is_default($key)) $this->object->set($key, $value);
+		$this->object->_defaults[$key] = $value;
+
+	}
+
+	function set_defaults()
+	{
+		foreach ($this->object->_defaults as $key=>$value) {
+			if (!isset($this->object->$key)) $this->object->set($key,$value);
+		}
+	}
+
 	/**
 	 * Persists the settings
 	 * @return boolean
@@ -101,6 +124,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 {
 	static $_instances		= array();
 	var $_options			= array();
+	var $_defaults			= array();
 	var $_option_name		= 'module_settings';
 	var $_constant_prefix	= 'POPE_MOD_';
 

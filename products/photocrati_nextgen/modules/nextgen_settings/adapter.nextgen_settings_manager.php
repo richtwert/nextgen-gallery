@@ -2,7 +2,7 @@
 
 class Mixin_Global_NextGen_Settings extends Mixin
 {
-	function set_defaults()
+	function initialize()
 	{
 		if (is_multisite()) {
 			$defaults = array(
@@ -10,10 +10,7 @@ class Mixin_Global_NextGen_Settings extends Mixin
 				'wpmuCSSfile'	=> 'nggallery.css',
 				'wpmuStyle'		=> TRUE
 			);
-
-			foreach ($defaults as $key=>$value) {
-				if (!isset($this->object->$key)) $this->object->$key = $value;
-			}
+			foreach ($defaults as $key=>$value) $this->object->set_default($key, $value);
 		}
 	}
 
@@ -33,18 +30,22 @@ class Mixin_Global_NextGen_Settings extends Mixin
 
 class Mixin_NextGen_Settings extends Mixin
 {
-	function set_default()
+	function initialize()
 	{
-		// Some of the site-specific settings are based on globals. Global
-		// settings aren't set if this isn't a multisite environment. So, in that
-		// case, we'll set the globals to the default site-specific value
-		$global_settings = $this->get_factory()->get_utility('I_Settings_Manager', 'global');
-		if (!isset($global_settings->gallerypath))	$global_settings->gallerypath = 'wp-content/gallery';
-		if (!isset($global_settings->wpmuCSSfile))	$global_settings->wpmuCSSfile = '';
-		if (!isset($global_settings->wpmuStyle))	$global_settings->wpmuStyle = 1;
+		// Some of the site-specific settings are based on globals
+		$global_settings = $this->get_registry()->get_utility('I_Settings_Manager', 'global');
+		$gallerypath = str_replace(
+			'%BLOG_ID%',
+			get_current_blog_id(),
+			$global_settings->get('gallerypath', 'wp-content/gallery')
+		);
+		$cssfile		= $global_settings->get('wpmuCSSfile', 'nggallery.css');
+		$activateCSS	= $global_settings->get('wpmuStyle', 1);
+		unset($global_settings);
 
+		// Set the defaults
 		$defaults = array (
-			'gallerypath'    => $global_settings->gallerypath,
+			'gallerypath'    => $gallerypath,
 			'deleteImg'      => True,              // delete Images
 			'swfUpload'      => True,              // activate the batch upload
 			'usePermalinks'  => False,             // use permalinks for parameters
@@ -126,8 +127,8 @@ class Mixin_NextGen_Settings extends Mixin
 			'irScreencolor'     => '000000',
 
 			// CSS Style
-			'activateCSS'		=> $global_settings->wpmuStyle,   // activate the CSS file
-			'CSSfile'			=> $global_settings->wpmuCSSfile, // set default css filename
+			'activateCSS'		=> $activateCSS,   // activate the CSS file
+			'CSSfile'			=> $cssfile, // set default css filename
 
 			// Framework settings
 			'datamapper_driver'		=> 'custom_table_datamapper',
@@ -139,9 +140,7 @@ class Mixin_NextGen_Settings extends Mixin
 			'jquery_ui_theme_version'		=>	1.8,
 		);
 
-		foreach ($defaults as $key=>$value) {
-			if (!isset($this->object->$key)) $this->object->$key = $value;
-		}
+		foreach ($defaults as $key=>$value) $this->object->set_default($key, $value);
 	}
 }
 

@@ -99,12 +99,13 @@ class Mixin_MVC_Controller_Rendering extends Mixin
      */
     function find_template($name)
     {
-        $found = FALSE;
+        $found		= FALSE;
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
 
         $patterns = array(
             $this->object->get_class_definition_dir(),
             $this->object->get_class_definition_dir(TRUE),
-            MVC_MODULE_DIR
+            $settings->mvc_module_dir
         );
 
 		$products = $this->get_registry()->get_product_list();
@@ -138,9 +139,9 @@ class Mixin_MVC_Controller_Rendering extends Mixin
      */
     function find_static_file($name, $relative=FALSE)
     {
-        $found = FALSE;
-
-        if (is_array($name)) $name = path_join($name);
+        $found						= FALSE;
+		$settings					= $this->get_registry()->get_utility('I_Settings_Manager');
+        if (is_array($name)) $name	= path_join($name);
 
 		// This isn't probably the best way of getting
 		// the module path of where the method was called... but it works
@@ -160,7 +161,7 @@ class Mixin_MVC_Controller_Rendering extends Mixin
         $patterns = array(
 			$module_dir,
             $this->object->get_class_definition_dir(),
-            MVC_MODULE_DIR
+            $settings->mvc_module_dir
         );
 
 		// Next, we look in all other module folders

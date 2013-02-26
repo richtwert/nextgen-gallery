@@ -411,6 +411,9 @@ class Mixin_Routing_App extends Mixin
      */
     function _route_to_regex($route)
     {
+		// Get the settings manager
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+
         // convert route to RegEx pattern
         $route_regex = preg_quote(
             str_replace(
@@ -432,8 +435,8 @@ class Mixin_Routing_App extends Mixin
 		if ($route != '/') $route_regex .= '/?';
 
 		// If parameters come after a slug, it might appear as well
-		if (MVC_PARAM_SLUG) {
-			$route_regex .= "(".preg_quote(MVC_PARAM_SLUG, '#').'/)?';
+		if ($settings->router_param_slug) {
+			$route_regex .= "(".preg_quote($settings->router_param_slug, '#').'/)?';
 		}
 
 		// Parameter might follow the request uri
@@ -443,13 +446,13 @@ class Mixin_Routing_App extends Mixin
         $route_regex = '#' . $route_regex . '/?$#i';
 
         // convert placeholders to regex as well
-        return preg_replace('/~([^~]+)~/i', (MVC_PARAM_SLUG ? '('.preg_quote(MVC_PARAM_SLUG,'#').'\K)?' : '').'(?<\1>[^/]+)/?', $route_regex);
+        return preg_replace('/~([^~]+)~/i', ($settings->router_param_slug ? '('.preg_quote($settings->router_param_slug,'#').'\K)?' : '').'(?<\1>[^/]+)/?', $route_regex);
     }
 
 	/**
 	 * Gets a request parameter from either the request uri or querystring
-	 * This method takes into consideration the values of the MVC_PARAM_PREFIX
-	 * and MVC_PARAM_SEPARATOR constants when searching for the parameter
+	 * This method takes into consideration the values of the router_param_prefix
+	 * and router_param_separator settings when searching for the parameter
 	 *
 	 * Parameter can take on the following forms:
 	 * /key--value
@@ -469,10 +472,11 @@ class Mixin_Routing_App extends Mixin
 	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE, $url=FALSE)
 	{
 		$retval				= $default;
+		$settings			= $this->get_registry()->get_utility('I_Settings_Manager');
 		$quoted_key			= preg_quote($key,'#');
 		$id					= $id ? preg_quote($id,'#') : "[^/]+";
-		$param_prefix		= preg_quote(MVC_PARAM_PREFIX,'#');
-		$param_sep			= preg_quote(MVC_PARAM_SEPARATOR,'#');
+		$param_prefix		= preg_quote($settings->router_param_prefix,'#');
+		$param_sep			= preg_quote($settings->router_param_separator,'#');
 		$param_regex		= "#/((?<id>{$id}){$param_sep})?({$param_prefix}[-_]?)?{$quoted_key}{$param_sep}(?<value>[^/\?]+)/?#i";
 		$found				= FALSE;
 		$sources			= $url ? array('custom' => $url) : $this->object->get_parameter_sources();
@@ -504,7 +508,10 @@ class Mixin_Routing_App extends Mixin
 	function set_parameter_value($key, $value, $id=NULL, $use_prefix=FALSE, $url=FALSE)
 	{
 		// Remove the parameter from both the querystring and request uri
-		$retval = $this->object->remove_parameter($key, $id, $url);
+		$retval		= $this->object->remove_parameter($key, $id, $url);
+
+		// Get the settings manager
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
 
 		// We're modifying a url passed in
 		if ($url) {
@@ -512,8 +519,8 @@ class Mixin_Routing_App extends Mixin
 			if (!isset($parts['path'])) $parts['path'] = '';
 			$parts['path'] = $this->object->join_paths(
 				$parts['path'],
-				MVC_PARAM_SLUG && strpos($retval, MVC_PARAM_SLUG) === FALSE ?
-					MVC_PARAM_SLUG : '',
+				$settings->router_param_slug && strpos($retval, $settings->router_param_slug) === FALSE ?
+					$settings->router_param_slug : '',
 				$this->object->create_parameter_segment($key, $value, $id, $use_prefix)
 			);
 			$retval = $this->object->construct_url_from_parts($parts);
@@ -552,9 +559,10 @@ class Mixin_Routing_App extends Mixin
 	function remove_parameter($key, $id=NULL, $url=FALSE)
 	{
 		$retval			= $url;
-		$param_sep		= MVC_PARAM_SEPARATOR;
-		$param_prefix	= MVC_PARAM_PREFIX ? preg_quote(MVC_PARAM_PREFIX, '#') : '';
-		$param_slug		= MVC_PARAM_SLUG ? preg_quote(MVC_PARAM_SLUG, '#') : FALSE;
+		$settings		= $this->get_registry()->get_utility('I_Settings_Manager');
+		$param_sep		= $settings->router_param_separator;
+		$param_prefix	= $settings->router_param_prefix ? preg_quote($settings->router_param_prefix, '#') : '';
+		$param_slug		= $settings->router_param_slug ? preg_quote($settings->router_param_slug, '#') : FALSE;
 
 		// Is the parameter already part of the request? If so, modify that
 		// parmaeter
@@ -576,7 +584,7 @@ class Mixin_Routing_App extends Mixin
 			elseif ($source == 'request_uri') {
 				$uri = $this->object->get_app_request_uri();
 				$uri = $this->object->join_paths(explode($segment, $uri));
-				if (MVC_PARAM_SLUG && preg_match("#{$param_slug}/?$#i", $uri, $match)) {
+				if ($settings->router_param_slug && preg_match("#{$param_slug}/?$#i", $uri, $match)) {
 					$retval = $this->object->remove_url_segment($match[0], $retval);
 				}
 				$this->object->set_app_request_uri($uri);
@@ -584,7 +592,7 @@ class Mixin_Routing_App extends Mixin
 			}
 			else {
 				$retval = $this->object->join_paths(explode($segment, $url));
-				if (MVC_PARAM_SLUG && preg_match("#/{$param_slug}$#i", $retval, $match)) {
+				if ($settings->router_param_slug && preg_match("#/{$param_slug}$#i", $retval, $match)) {
 					$retval = $this->object->remove_url_segment($match[0], $retval);
 				}
 			}
@@ -604,10 +612,11 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function add_parameter_to_app_request_uri($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		$uri = $this->object->get_app_request_uri();
-		$parts = array($uri);
-		if (MVC_PARAM_SLUG && strpos($uri, MVC_PARAM_SLUG) === FALSE) $parts[] = MVC_PARAM_SLUG;
-		$parts[] = $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+		$uri		= $this->object->get_app_request_uri();
+		$parts		= array($uri);
+		if ($settings->router_param_slug && strpos($uri, $settings->router_param_slug) === FALSE) $parts[] = $settings->router_param_slug;
+		$parts[]	= $this->object->create_parameter_segment($key, $value, $id, $use_prefix);
 		$this->object->set_app_request_uri($this->object->join_paths($parts));
 
 		return $this->object->get_app_request_uri();
@@ -623,11 +632,12 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function create_parameter_segment($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		if ($use_prefix) $key = MVC_PARAM_PREFIX.$key;
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+		if ($use_prefix) $key = $settings->router_param_prefix.$key;
 		if ($value === TRUE) $value = 1;
 		elseif ($value == FALSE) $value = 0; // null and false values
-		$retval = $key . MVC_PARAM_SEPARATOR . $value;
-		if ($id) $retval = $id . MVC_PARAM_SEPARATOR . $retval;
+		$retval = $key . $settings->router_param_separator . $value;
+		if ($id) $retval = $id . $settings->router_param_separator . $retval;
 		return $retval;
 	}
 
@@ -692,11 +702,11 @@ class Mixin_Routing_App extends Mixin
 
 	function get_postdata()
 	{
-		$retval = '/' . urldecode(file_get_contents("php://input"));
-
+		$retval		= '/' . urldecode(file_get_contents("php://input"));
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
 		$retval = str_replace(
 			array('&', '='),
-			array('/', MVC_PARAM_SEPARATOR),
+			array('/', $settings->router_param_separator),
 			$retval
 		);
 
@@ -706,10 +716,11 @@ class Mixin_Routing_App extends Mixin
 
 	function get_formatted_querystring()
 	{
-		$retval = '/'.$this->object->get_router()->get_querystring();
-		$retval = str_replace(
+		$retval		= '/'.$this->object->get_router()->get_querystring();
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+		$retval		= str_replace(
 			array('&', '='),
-			array('/', MVC_PARAM_SEPARATOR),
+			array('/', $settings->router_param_separator),
 			$retval
 		);
 
@@ -719,11 +730,12 @@ class Mixin_Routing_App extends Mixin
 	function has_parameter_segments()
 	{
 		$retval			= FALSE;
+		$settings		= $this->get_registry()->get_utility('I_Settings_Manager');
 		$request_uri	= $this->object->get_app_request_uri();
-		$sep			= preg_quote(MVC_PARAM_SEPARATOR,'#');
+		$sep			= preg_quote($settings->router_param_separator,'#');
 
 		// If we detect the MVC_PARAM_SLUG, then we assume that we have parameters
-		if (MVC_PARAM_SLUG && strpos($request_uri, '/'.MVC_PARAM_SLUG) !== FALSE) {
+		if ($settings->router_param_slug && strpos($request_uri, '/'.$settings->router_param_slug) !== FALSE) {
 			$retval = TRUE;
 		}
 
@@ -732,7 +744,7 @@ class Mixin_Routing_App extends Mixin
 		if (!$retval) {
 			$regex			= implode('', array(
 				'#',
-				MVC_PARAM_SLUG ? '/'.preg_quote(MVC_PARAM_SLUG,'#').'/?' : '',
+				$settings->router_param_slug ? '/'.preg_quote($settings->router_param_slug,'#').'/?' : '',
 				"(/?([^/]+{$sep})?[^/]+{$sep}[^/]+/?){0,}",
 				'$#'
 			));
