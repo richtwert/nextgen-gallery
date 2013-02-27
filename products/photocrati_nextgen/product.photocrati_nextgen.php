@@ -40,6 +40,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the router - depends on photocrati-settings and photocrati-fs
 		$this->get_registry()->load_module('photocrati-router');
 		$this->get_registry()->load_module('photocrati-wordpress_routing');
+
+		// Load the Lazy Resource Loader - dependent on photocrati-router
+		$this->get_registry()->load_module('photocrati-lazy_resources');
 //
 //		// The validation module is a helper module intended to be adopted
 //		// by other modules. The datamapper and nextgen_settings modules
@@ -87,8 +90,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		$this->get_registry()->load_module('photocrati-nextgen-legacy');
 //
 //
-//		// Load the Lazy Resource Loader
-//		$this->get_registry()->load_module('photocrati-lazy_resources');
 //
 //
 //        // Provides cache clearing support
