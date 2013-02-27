@@ -23,14 +23,6 @@ class M_Widget extends C_Base_Module
     }
 
     /**
-     * Initializes the module
-     */
-    function initialize()
-    {
-        parent::initialize();
-    }
-
-    /**
      * Register utilities
      */
     function _register_utilities()

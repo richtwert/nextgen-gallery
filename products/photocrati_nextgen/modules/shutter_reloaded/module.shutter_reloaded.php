@@ -6,11 +6,6 @@
     }
  ***/
 
-define('NEXTGEN_GALLERY_SHUTTER_IMAGES_URL', path_join(
-    NEXTGEN_GALLERY_MODULE_URL,
-    basename(dirname(__FILE__)).'/static/shutter/images/'
-));
-
 class M_Shutter_Reloaded extends C_Base_Module
 {
     function define()

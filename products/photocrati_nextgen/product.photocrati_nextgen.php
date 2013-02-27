@@ -41,16 +41,16 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-router');
 		$this->get_registry()->load_module('photocrati-wordpress_routing');
 
+		// load security module, to perform capability and nonce checks
+		$this->get_registry()->load_module('photocrati-security');
+
 		// Load the Lazy Resource Loader - dependent on photocrati-router
 		$this->get_registry()->load_module('photocrati-lazy_resources');
-//
-//		// The validation module is a helper module intended to be adopted
-//		// by other modules. The datamapper and nextgen_settings modules
-//		// make use of it.
-//		$this->get_registry()->load_module('photocrati-validation');
-//
-//		// load security module, to perform capability and nonce checks
-//		$this->get_registry()->load_module('photocrati-security');
+
+		// The validation module is a helper module intended to be adopted
+		// by other modules. The datamapper module makes use of it for
+		// example
+		$this->get_registry()->load_module('photocrati-validation');
 
 		// Load the LZW compression module, a useful utility
 		$this->get_registry()->load_module('photocrati-lzw');
@@ -79,8 +79,12 @@ class P_Photocrati_NextGen extends C_Base_Product
 		/*** NEXTGEN GALLERY MODULES ***/
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
 
+//		// Provides jsconsole remote debugging support
+//		$this->get_registry()->load_module('photocrati-jsconsole')
+
 //		// Load MediaRSS module - dependent on photocrati-nextgen_gallery_display
 //		$this->get_registry()->load_module('photocrati-mediarss');
+//
 //
 //		// We load the data tier module for NextGen. This is built on top of
 //		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
@@ -124,11 +128,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 //        $this->get_registry()->load_module('photocrati-nextgen_basic_tagcloud');
 //        $this->get_registry()->load_module('photocrati-nextgen_basic_album');
 //
-//        // Provides sidebar widgets
-//        $this->get_registry()->load_module('photocrati-widget');
-//
-//		// Provides jsconsole remote debugging support
-//		$this->get_registry()->load_module('photocrati-jsconsole');
+        // Provides sidebar widgets
+        $this->get_registry()->load_module('photocrati-widget');
+//;
 	}
 }
 

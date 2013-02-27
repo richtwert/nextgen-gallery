@@ -8,11 +8,6 @@
  ***/
 
 define(
-	'NEXTGEN_GALLERY_BASIC_SLIDESHOW_JS_URL',
-	NEXTGEN_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
-);
-
-define(
 	'NEXTGEN_GALLERY_BASIC_SLIDESHOW',
 	'photocrati-nextgen_basic_slideshow'
 );
@@ -76,7 +71,12 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 
 	function enqueue_scripts()
 	{
-		wp_enqueue_script('swfobject');
+		$router = $this->get_registry()->get_utility('I_Router');
+		wp_register_script(
+			'jquery.cycle',
+			$router->get_static_url('/jquery.cycle.min.js'),
+			array('jquery')
+		);
 	}
 
 	function render_slideshow($params, $inner_content=NULL)
@@ -86,7 +86,7 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
         $params['gallery_width']  = $this->_get_param('w', NULL, $params);
         $params['gallery_height'] = $this->_get_param('h', NULL, $params);
         unset($params['id'], $params['w'], $params['h']);
-		
+
 		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
         return $renderer->display_images($params, $inner_content);
 	}
