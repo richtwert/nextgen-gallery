@@ -26,7 +26,6 @@ class M_Attach_To_Post extends C_Base_Module
 			'http://www.photocrati.com',
 		    $context
 		);
-		$this->add_mixin('Mixin_MVC_Controller_Rendering');
     }
 
 	/**
@@ -188,8 +187,9 @@ class M_Attach_To_Post extends C_Base_Module
 
 		elseif (isset($_REQUEST['attach_to_post']) OR
 		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
-			wp_enqueue_script('iframely', $this->static_url('iframely.js'));
-			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
+			$router = $this->get_registry()->get_utility('I_Router');
+			wp_enqueue_script('iframely', $router->get_static_url('iframely.js'));
+			wp_enqueue_style('iframely',  $router->get_static_url('iframely.css'));
 		}
 	}
 
@@ -240,7 +240,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
-		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url('ngg_attach_to_post_tinymce_plugin.js');
+		$plugins[$this->attach_to_post_tinymce_plugin] = $this->get_static_url('ngg_attach_to_post_tinymce_plugin.js');
 		return $plugins;
 	}
 

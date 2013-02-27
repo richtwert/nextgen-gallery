@@ -63,27 +63,27 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue JQuery UI libraries
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
-		wp_enqueue_script('ngg_tabs', $this->static_url('ngg_tabs.js'));
+		wp_enqueue_script('ngg_tabs', $this->get_static_url('attach_to_post#ngg_tabs.js'));
 
 		// Ensure select2
-		wp_enqueue_style('select2', $this->static_url('select2.css'));
-		wp_enqueue_script('select2', $this->static_url('select2.js'));
+		wp_enqueue_style('select2', $this->get_static_url('attach_to_post#select2.css'));
+		wp_enqueue_script('select2', $this->get_static_url('attach_to_post#select2.js'));
 
 		// Ensure we have the AJAX module ready
 		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
-			'ngg_attach_to_post', $this->static_url('attach_to_post.js')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post.js')
 		);
 		wp_enqueue_style(
-			'ngg_attach_to_post', $this->static_url('attach_to_post.css')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post.css')
 		);
 
 		// Enqueue our JS templating library, Handlebars
 		wp_enqueue_script(
 			'handlebars',
-			$this->static_url('handlebars-1.0.0.beta.6.js'),
+			$this->get_static_url('attach_to_post#handlebars-1.0.0.beta.6.js'),
 			array(),
 			'1.0.0b6'
 		);
@@ -91,7 +91,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue the underscore.js library, required by Backbone
 		wp_enqueue_script(
 			'underscore',
-			$this->static_url('underscore.js'),
+			$this->get_static_url('attach_to_post#underscore.js'),
 			array(),
 			'1.4.2'
 		);
@@ -99,14 +99,14 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue backbone.js library, required by the Attach to Post display tab
 		wp_enqueue_script(
 			'backbone',
-			$this->static_url('backbone.js'),
+			$this->get_static_url('attach_to_post#backbone.js'),
 			array('jquery', 'underscore'),
 			'0.9.2'
 		);
 
 		wp_enqueue_script(
 			'underscore.string',
-			$this->static_url('underscore.string.js'),
+			$this->get_static_url('attach_to_post#underscore.string.js'),
 			array('underscore'),
 			'2.3.0'
 		);
@@ -159,7 +159,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$settings = $this->object->get_registry()->get_utlity('I_Settings_Manager');
 		$this->object->set_content_type('css');
 		$this->object->do_not_cache();
-		return $this->object->render_view('preview_tab_css', array(
+		return $this->object->render_view('attach_to_post#preview_tab_css', array(
 			// Need to determine what parameters to include
 		));
 	}
@@ -208,7 +208,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 		// Render invalid image if no preview pic is found
 		if (!$found_preview_pic) {
-			$filename = $this->object->find_static_file('invalid_image.png');
+			$filename = $this->object->get_static_abspath('attach_to_post#invalid_image.png');
 			$this->set_content_type('image/png');
 			readfile($filename);
 			$this->render();
@@ -316,7 +316,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function _render_display_tab()
 	{
-		return $this->object->render_partial('display_tab', array(
+		return $this->object->render_partial('attach_to_post#display_tab', array(
 			'messages'	=>	array(),
 			'tabs'		=>	$this->object->_get_display_tabs()
 		), TRUE);
