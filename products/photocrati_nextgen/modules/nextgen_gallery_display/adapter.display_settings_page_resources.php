@@ -19,14 +19,14 @@ class A_Display_Settings_Page_Resources extends Mixin
 	{
 		wp_enqueue_script(
 			'nextgen_display_settings_page',
-			$this->static_url('nextgen_display_settings_page.js'),
+			$this->get_static_url('nextgen_display_settings_page.js'),
 			array('jquery-ui-accordion'),
 			$this->module_version
 		);
 
 		wp_enqueue_style(
 			'nextgen_display_settings_page',
-			$this->static_url('nextgen_display_settings_page.css')
+			$this->get_static_url('nextgen_display_settings_page.css')
 		);
 	}
 }

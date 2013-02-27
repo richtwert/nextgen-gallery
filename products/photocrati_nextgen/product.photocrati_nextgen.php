@@ -91,29 +91,23 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// module requires the ngglegacy module
 		$this->get_registry()->load_module('photocrati-nextgen-data');
 
+		// Provides framework-wide support for thumbnail-like gallery types
+		// Depends on photocrati-nextgen_data
+		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
+
+		// Load the Gallery Display module, used to display galleries and albums
+		$this->get_registry()->load_module('photocrati-gallery_display');
+		$this->get_registry()->load_module('photocrati-attach_to_post');
+
 //		// Provides jsconsole remote debugging support
 //		$this->get_registry()->load_module('photocrati-jsconsole')
 
-//		// Load MediaRSS module - dependent on photocrati-nextgen_gallery_display
-//		$this->get_registry()->load_module('photocrati-mediarss');
-//
-//
+		// Load MediaRSS module - dependent on photocrati-nextgen_gallery_display
+		$this->get_registry()->load_module('photocrati-mediarss');
 
-//
-//
-//
-//
-//
-//        // Provides cache clearing support
-//        $this->get_registry()->load_module('photocrati-cache');
-//
-//		// Provides framework-wide support for thumbnail-like gallery types
-//		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
-//
-//		// Load the Gallery Display module, used to display galleries and albums
-//		$this->get_registry()->load_module('photocrati-gallery_display');
-//		$this->get_registry()->load_module('photocrati-attach_to_post');
-//
+        // Provides cache clearing support
+        $this->get_registry()->load_module('photocrati-cache');
+
 //		// Load various lightbox effect libraries
 //		$this->get_registry()->load_module('photocrati-thickbox');
 //        $this->get_registry()->load_module('photocrati-shutter');

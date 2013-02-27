@@ -12,7 +12,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 	function _render_return_link_text_field($display_type)
 	{
 		return $this->render_partial(
-			'return_link_text',
+			'nextgen_gallery_display#return_link_text',
 			array(
 				'display_type_name'			=>	$display_type->name,
 				'return_link_text_label'	=>	_('Return link text'),
@@ -34,7 +34,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 	function _render_show_return_link_field($display_type)
 	{
 		return $this->render_partial(
-			'show_return_link',
+			'nextgen_gallery_display#show_return_link',
 			array(
 				'display_type_name'			=>	$display_type->name,
 				'show_return_link_label'	=>	_('Show return link'),
@@ -71,7 +71,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 
 		// Render the template
 		return $this->render_partial(
-			'alternative_view',
+			'nextgen_gallery_display#alternative_view',
 			$template_params,
 			TRUE
 		);
@@ -100,7 +100,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 
 		// Render the template
 		return $this->render_partial(
-			'alt_view_link_text',
+			'nextgen_gallery_display#alt_view_link_text',
 			$template_params,
 			TRUE
 		);
@@ -124,7 +124,7 @@ class Mixin_Display_Type_Controller_Fields extends Mixin
 
 		// Render the template
 		return $this->render_partial(
-			'show_altview_link',
+			'nextgen_gallery_display#show_altview_link',
 			$template_params,
 			TRUE
 		);

@@ -140,12 +140,12 @@ class Mixin_Display_Type_Controller extends Mixin
 	{
 		wp_enqueue_style(
 			'nextgen_display_settings',
-			$this->object->static_url('nextgen_display_settings.css')
+			$this->object->get_static_url('nextgen_display_settings.css')
 		);
 
 		wp_enqueue_script(
 			'nextgen_display_settings',
-			$this->object->static_url('nextgen_display_settings.js')
+			$this->object->get_static_url('nextgen_display_settings.js')
 		);
 	}
 
@@ -173,7 +173,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		}
 
 		// Render the display type settings template
-		return $this->object->render_partial('display_type_settings', array(
+		return $this->object->render_partial('nextgen_gallery_display#display_type_settings', array(
 			'fields'		=> $fields,
 		), $return);
 	}
@@ -439,7 +439,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		return $retval;
 	}
 
-	
+
 	/**
 	 * Renders display types as alternative views
 	 * @param C_Displayed_Gallery|stdClass $displayed_gallery

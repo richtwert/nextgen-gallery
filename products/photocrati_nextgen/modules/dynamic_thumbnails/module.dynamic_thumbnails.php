@@ -2,7 +2,8 @@
 
 /***
  {
-	Module: photocrati-dynamic-thumbnails
+	Module: photocrati-dynamic-thumbnails,
+	Depends: { photocrati-nextgen_data }
  }
  ***/
 

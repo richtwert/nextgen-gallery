@@ -37,11 +37,11 @@ class Mixin_Display_Settings_Controller extends Mixin
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
 		$sec_token = $security->get_request_token('nextgen_edit_display_settings');
 		$sec_actor = $security->get_current_actor();
-		
+
 		if (!$sec_actor->is_allowed('nextgen_edit_display_settings'))
 		{
 			echo __('No permission.', 'nggallery');
-			
+
 			return;
 		}
 
@@ -90,7 +90,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 				'I_Display_Type_Controller', $display_type->name
 			);
 			$display_type_controller->enqueue_backend_resources($display_type);
-			$display_type_tabs[] = $this->render_partial('accordion_tab', array(
+			$display_type_tabs[] = $this->render_partial('nextgen_gallery_display#accordion_tab', array(
 				'id'		=>	$display_type->name,
 				'title'		=>	$display_type->title,
 				'content'	=>	$display_type_controller->settings_action($display_type, TRUE)
@@ -98,7 +98,7 @@ class Mixin_Display_Settings_Controller extends Mixin
 		}
 
 		// Render the view
-		$this->render_partial('display_settings_page', array(
+		$this->render_partial('nextgen_gallery_display#display_settings_page', array(
 			'page_heading'	=>	'NextGEN Display Settings',
 			'tabs'			=>	$display_type_tabs,
 			'messages'		=>	$messages,
