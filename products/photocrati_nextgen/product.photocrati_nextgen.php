@@ -78,6 +78,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		/*** NEXTGEN GALLERY MODULES ***/
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
+
+//		// Load MediaRSS module - dependent on photocrati-nextgen_gallery_display
+//		$this->get_registry()->load_module('photocrati-mediarss');
 //
 //		// We load the data tier module for NextGen. This is built on top of
 //		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
@@ -109,9 +112,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 //        $this->get_registry()->load_module('photocrati-highslide');
 //        $this->get_registry()->load_module('photocrati-lightbox');
 //        $this->get_registry()->load_module('photocrati-fancybox-1x');
-//
-//		// Load MediaRSS module. Required by the NextGEN Basic Thumbnails display type
-//		$this->get_registry()->load_module('photocrati-mediarss');
 //
 //		// Provides support for thumbnail basic templates
 //		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');

@@ -2,7 +2,7 @@
 
 /***
 	{
-		Module: photocrati-gallery_display,
+		Module: photocrati-nextgen_gallery_display,
 		Depends: { photocrati-lazy_resources, photocrati-simple_html_dom }
 	}
 ***/
@@ -15,7 +15,7 @@ class M_Gallery_Display extends C_Base_Module
 	function define()
 	{
 		parent::define(
-			'photocrati-gallery_display',
+			'photocrati-nextgen_gallery_display',
 			'Gallery Display',
 			'Provides the ability to display gallery of images',
 			'0.1',
