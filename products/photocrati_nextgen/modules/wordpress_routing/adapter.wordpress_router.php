@@ -29,7 +29,11 @@ class A_WordPress_Router extends Mixin
 		// Determine whether the url is a directory or file on the filesystem
 		// If so, then we do NOT need /index.php as part of the url
 		$base_url = $this->object->get_base_url();
-		$filename = str_replace($base_url, $this->object->get_document_root(), $retval);
+		$filename = str_replace(
+			$base_url,
+			$this->get_registry()->get_utility('I_Fs')->get_document_root(),
+			$retval
+		);
 		if ($retval && file_exists($filename) && $retval != $base_url) {
 
 			// Remove index.php from the url

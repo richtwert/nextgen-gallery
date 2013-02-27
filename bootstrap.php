@@ -33,9 +33,9 @@ class C_NextGEN_Bootstrap
 	{
         // Pope requires a a higher limit
         $tmp = ini_get('xdebug.max_nesting_level');
-        if ($tmp && (int)$tmp <= 300)
+        if ($tmp && (int)$tmp <= 500)
         {
-            @ini_set('xdebug.max_nesting_level', 300);
+            @ini_set('xdebug.max_nesting_level', 500);
         }
 
 		// Boostrap

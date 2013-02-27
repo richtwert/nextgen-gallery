@@ -72,8 +72,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		// This is Alex Rabe's version of NextGEN, which we built on top of.
 //		$this->get_registry()->load_module('photocrati-nextgen-legacy');
 //
-//		// This provides a general AJAX handler for all other modules to extend
-//		$this->get_registry()->load_module('photocrati-ajax');
+		// This provides a general AJAX handler for all other modules to extend
+		$this->get_registry()->load_module('photocrati-ajax');
 //
 //		// Load the Lazy Resource Loader
 //		$this->get_registry()->load_module('photocrati-lazy_resources');

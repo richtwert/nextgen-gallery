@@ -36,13 +36,12 @@ class C_Ajax_Controller extends C_MVC_Controller
 
 	function js_action()
 	{
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		$this->set_content_type('javascript');
 		$this->render_view('ajax#ajax_js', array(
-			'ajax_url'	=>	NEXTGEN_GALLERY_AJAX_URL,
+			'ajax_url'	=>	$settings->ajax_url,
 			'site_url'	=>  $this->get_router()->get_base_url()
 		));
-		// TODO: Is the following even required?
-        throw new E_Clean_Exit();
 	}
 
 

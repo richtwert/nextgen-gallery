@@ -1,12 +1,11 @@
 <?php
 
-/***
+/*
  {
 		Module: photocrati-ajax,
 		Depends: { photocrati-mvc }
  }
  */
-
 class M_Ajax extends C_Base_Module
 {
 	function define()
