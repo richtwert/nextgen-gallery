@@ -32,6 +32,7 @@ class C_Fs extends C_Component
 
 	function initialize()
 	{
+		parent::initialize();
 		$this->_document_root = $this->set_document_root($_SERVER['DOCUMENT_ROOT']);
 	}
 }
@@ -43,33 +44,75 @@ class Mixin_Fs_Instance_Methods extends Mixin
 	 * @param string $path
 	 * @param string $module
 	 */
-	function get_abspath($path, $module=FALSE, $relpath=FALSE)
+	function get_abspath($path, $module=FALSE, $relpath=FALSE, $search_paths=array())
 	{
-		// Get a starting point
-		$module_path = $this->get_registry()->get_product_module_path($this->context);
-		if (!$module_path) $module_path = $this->object->get_document_root();
-		$base_path = $module_path;
+		$retval = NULL;
 
-		// The path might be relative to a specific module
-		if ($module) {
+		if (file_exists($path))
+			$retval = $path;
+		
+		else {
+			// Ensure that we know where to search for the file
+			if (!$search_paths) {
+				$search_paths = $this->object->get_search_paths($path, $module);
+			}
 
-			// Perhaps the directory of the module was specified?
-			$module_dir = $this->join_paths($module_path, $module);
-			if (file_exists($module_dir)) $base_path = $module_dir;
-
-			// Nope - perhaps the module id was specified instead?
-			else {
-				$module_dir = $this->join_paths(
-					$module_path,
-					$this->get_registry()->get_module_dir($module)
-				);
-				if (file_exists($module_dir)) $base_path = $module_dir;
+			// Now that know where to search, let's find the file
+			foreach ($search_paths as $dir) {
+				if (($retval = $this->object->_rglob($dir, $path))) {
+					if ($relpath) $retval = str_replace(
+						$this->object->get_document_root(), '', $retval
+					);
+					break;
+				}
 			}
 		}
-		// Find the file/directory
-		$retval = $this->_rglob($base_path, $path);
-		if ($retval && $relpath) $retval = str_replace($base_path, '', $retval);
+
 		return $retval;
+	}
+
+	/**
+	 * Returns a list of directories to search for a particular filename
+	 * @param string $path
+	 * @param string $module
+	 * @return array
+	 */
+	function get_search_paths($path, $module=FALSE)
+	{
+		$append_module = FALSE;
+
+		// Ensure that we weren't passed a module id in the path
+		if (!$module) list($path, $module) = $this->object->parse_formatted_path($path);
+
+		// Directories to search
+		$directories = array();
+
+		// If a name of a module has been provided, then we need to search within
+		// that directory first
+		if ($module) {
+
+			// Were we given a module id?
+			if (($module_dir = $this->get_registry()->get_module_dir($module))) {
+				$directories[] = $module_dir;
+			}
+			else {
+				$append_module = TRUE;
+			}
+		}
+
+		// Add product's module directories
+		foreach ($this->get_registry()->get_product_list() as $product_id) {
+			$product_dir = $this->get_registry()->get_product_module_path($product_id);
+			if ($append_module) $directories[] = $this->object->join_paths(
+				$product_dir, $module
+			);
+			$directories[] = $product_dir;
+		}
+
+		// If all else fails, we search from the document root
+		$directories[] = $this->object->get_document_root();
+
+		return $directories;
 	}
 
 	/**
@@ -88,9 +131,6 @@ class Mixin_Fs_Instance_Methods extends Mixin
 		if (!$results) {
 			$results = glob($this->join_paths($base_path, '/*'), GLOB_ONLYDIR);
 			foreach ($results as $dir) {
-				if (strpos($dir, 'mvc') !== FALSE) {
-					$this->debug = TRUE;
-				}
 				$retval = $this->_rglob($dir, $file, $flags);
 				if ($retval) break;
 			}
@@ -141,6 +181,22 @@ class Mixin_Fs_Instance_Methods extends Mixin
 			foreach ($obj as $inner_obj) $this->_flatten_array($inner_obj, $arr);
 		}
 		elseif ($obj) $arr[] = $obj;
+	}
+
+	/**
+	 * Parses the path for a module and filename
+	 * @param string $str
+	 */
+	function parse_formatted_path($str)
+	{
+		$module = FALSE;
+		$path	= $str;
+		$parts	= explode('#', $path);
+		if (count($parts) > 1) {
+			$module = array_shift($parts);
+			$path   = array_shift($parts);
+		}
+		return array($path, $module);
 	}
 
 	/**

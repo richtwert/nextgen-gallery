@@ -206,9 +206,9 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 	 */
 	function get_static_abspath($path, $module=FALSE, $relative=FALSE)
 	{
-		$fs			= $this->get_registry()->get_utility('I_Fs');
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
-		return $fs->get_abspath($fs->join_paths($settings->mvc_static_dirname, $path), $module);
+		return $this->get_registry()->get_utility('I_Fs')->get_static_abspath(
+			$path, $module
+		);
 	}
 
 	/**
@@ -219,7 +219,17 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 	 */
 	function get_static_relpath($path, $module=FALSE)
 	{
-		return $this->object->get_static_abspath($path, $module, TRUE);
+		return $this->get_registry()->get_utility('I_Fs')->get_static_abspath(
+			$path, $module, TRUE
+		);
+	}
+
+
+	function get_static_url($path, $module=FALSE)
+	{
+		return $this->get_registry()->get_utility('I_Router')->get_static_url(
+			$path, $module
+		);
 	}
 
 	/**
@@ -230,9 +240,16 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 	 */
 	function get_template_abspath($path, $module=FALSE)
 	{
-		$filename	= $path.'.php';
 		$fs			= $this->get_registry()->get_utility('I_Fs');
 		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+
+		// We also accept module_name#path, which needs parsing.
+		if (!$module) list($path, $module) = $fs->parse_formatted_path($path);
+
+		// Append the suffix
+		$filename	= $path.'.php';
+
+		// Find the template
 		$retval = $fs->get_abspath($fs->join_paths($settings->mvc_template_dirname, $filename), $module);
 		if (!$retval) throw new RuntimeException("{$path} is not a valid MVC template");
 		return $retval;
@@ -265,7 +282,7 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
     function render_partial($__name, $__vars=array(), $__return=FALSE)
     {
         // If the template given is an absolute path, then use that - otherwise find the template
-        $__filename = (strpos($__name, '/') === 0) ? $__name: $this->object->get_template_abspath($__name);
+        $__filename = (strpos($__name, '/') === 0 && file_exists($__name)) ? $__name: $this->object->get_template_abspath($__name);
         ob_start();
         extract((array)$__vars);
         include($__filename);

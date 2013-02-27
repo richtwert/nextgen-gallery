@@ -17,6 +17,6 @@ class C_Test_Controller extends C_MVC_Controller
 
 	function index_action()
 	{
-		$this->render_view('index');
+		die($this->get_static_url('test.js', 'test'));
 	}
 }

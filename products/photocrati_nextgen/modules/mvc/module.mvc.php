@@ -44,19 +44,19 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
 		parent::initialize();
-        set_exception_handler(array(&$this, 'handle_exit'));
+//        set_exception_handler(array(&$this, 'handle_exit'));
     }
 
     function _register_utilities()
     {
 		$this->get_registry()->add_utility('I_Http_Response', 'C_Http_Response_Controller');
-        $this->get_registry()->add_utility('I_Router', 'C_Router');
     }
 
 	function _register_adapters()
 	{
-        $this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
 		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_MVC_Settings');
+		$this->get_registry()->add_adapter('I_Fs', 'A_MVC_Fs');
+		$this->get_registry()->add_adapter('I_Router', 'A_MVC_Router');
 	}
 
     function handle_exit($exception)
