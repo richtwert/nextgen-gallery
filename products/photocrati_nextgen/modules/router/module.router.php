@@ -1,7 +1,8 @@
 <?php
 /*
 {
-	Module: photocrati-router
+	Module: photocrati-router,
+	Depends: { photocrati-settings, photocrati-fs }
 }
  */
 class M_Router extends C_Base_Module

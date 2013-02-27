@@ -26,17 +26,17 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->set_product_module_path($this->module_id, $module_path);
 		$this->get_registry()->add_module_path($module_path, TRUE, FALSE);
 
-		// Load the settings manager module
+		// Load the FS module - no dependencies
+		$this->get_registry()->load_module('photocrati-fs');
+
+		// Load the settings manager module - no dependencies
 		$this->get_registry()->load_module('photocrati-settings');
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
 
-		// Load the FS module
-		$this->get_registry()->load_module('photocrati-fs');
-
-		// Load the installer
+		// Load the installer - dependent on photocrati-settings
 		$this->get_registry()->load_module('photocrati-installer');
 
-		// Load the router
+		// Load the router - depends on photocrati-settings and photocrati-fs
 		$this->get_registry()->load_module('photocrati-router');
 		$this->get_registry()->load_module('photocrati-wordpress_routing');
 //
@@ -49,8 +49,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		$this->get_registry()->load_module('photocrati-security');
 //
 		// The MVC framework is really a templating framework - not MVC.
+		// Dependent on photocrati-router
 		$this->get_registry()->load_module('photocrati-mvc');
-
 		$this->get_registry()->load_module('photocrati-test');
 //
 //

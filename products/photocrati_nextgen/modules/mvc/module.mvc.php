@@ -2,7 +2,8 @@
 
 /***
 	{
-		Module: photocrati-mvc
+		Module: photocrati-mvc,
+		Depends: { photocrati-router }
 	}
 ***/
 
