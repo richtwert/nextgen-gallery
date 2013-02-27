@@ -788,7 +788,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 						{
 							$crop_width = $width;
 						}
-						
+
 						if ($crop_height == ($height - 1))
 						{
 							$crop_height = $height;
@@ -1028,14 +1028,14 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 				{
 					$thumbnail->rotateImageAngle($rotation);
 				}
-				
+
 				$flip = strtolower($flip);
-				
+
 				if ($flip && in_array($flip, array('h', 'v', 'hv')))
 				{
 					$flip_h = in_array($flip, array('h', 'hv'));
 					$flip_v = in_array($flip, array('v', 'hv'));
-					
+
 					$thumbnail->flipImage($flip_h, $flip_v);
 				}
 

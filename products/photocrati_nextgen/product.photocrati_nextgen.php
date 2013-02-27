@@ -79,6 +79,18 @@ class P_Photocrati_NextGen extends C_Base_Product
 		/*** NEXTGEN GALLERY MODULES ***/
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
 
+		// This is Alex Rabe's version of NextGEN, which we built on top of.
+		$this->get_registry()->load_module('photocrati-nextgen-legacy');
+
+		// We load the data tier module for NextGen. This is built on top of
+		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
+		// module, all other modules require this. Eventually, we will refactor
+		// the photocrati-nextgen-legacy module to make use of this module as
+		// well.
+		// Unfortunately, at this time as well, the photocrati-nextgen-data
+		// module requires the ngglegacy module
+		$this->get_registry()->load_module('photocrati-nextgen-data');
+
 //		// Provides jsconsole remote debugging support
 //		$this->get_registry()->load_module('photocrati-jsconsole')
 
@@ -86,15 +98,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		$this->get_registry()->load_module('photocrati-mediarss');
 //
 //
-//		// We load the data tier module for NextGen. This is built on top of
-//		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
-//		// module, all other modules require this. Eventually, we will refactor
-//		// the photocrati-nextgen-legacy module to make use of this module as
-//		// well
-//		$this->get_registry()->load_module('photocrati-nextgen-data');
+
 //
-//		// This is Alex Rabe's version of NextGEN, which we built on top of.
-//		$this->get_registry()->load_module('photocrati-nextgen-legacy');
 //
 //
 //

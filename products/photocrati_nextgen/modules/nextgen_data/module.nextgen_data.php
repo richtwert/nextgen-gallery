@@ -24,11 +24,9 @@ class M_NextGen_Data extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->get_registry()->add_adapter('I_Component_Factory', 'A_Photocrati_Factory');
+        $this->get_registry()->add_adapter('I_Component_Factory', 'A_NextGen_Data_Factory');
 		$this->get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
-		$this->get_registry()->add_adapter('I_Component_Factory', 'A_GalleryStorage_Factory');
         $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Data_Deactivation');
-
     }
 
 
