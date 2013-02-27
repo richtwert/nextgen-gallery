@@ -26,12 +26,13 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->set_product_module_path($this->module_id, $module_path);
 		$this->get_registry()->add_module_path($module_path, TRUE, FALSE);
 
+		/*** GENERIC MODULES ***/
+
 		// Load the FS module - no dependencies
 		$this->get_registry()->load_module('photocrati-fs');
 
 		// Load the settings manager module - no dependencies
 		$this->get_registry()->load_module('photocrati-settings');
-		$this->get_registry()->load_module('photocrati-nextgen_settings');
 
 		// Load the installer - dependent on photocrati-settings
 		$this->get_registry()->load_module('photocrati-installer');
@@ -47,20 +48,29 @@ class P_Photocrati_NextGen extends C_Base_Product
 //
 //		// load security module, to perform capability and nonce checks
 //		$this->get_registry()->load_module('photocrati-security');
-//
+
+		// Load the LZW compression module, a useful utility
+		$this->get_registry()->load_module('photocrati-lzw');
+
 		// The MVC framework is really a templating framework - not MVC.
 		// Dependent on photocrati-router
 		$this->get_registry()->load_module('photocrati-mvc');
 		$this->get_registry()->load_module('photocrati-test');
-//
-//
-//		// Load the LZW compression module, a useful utility
-//		$this->get_registry()->load_module('photocrati-lzw');
-//
-//		// The datamapper is a library which is required by our data tier
-//		// components. This is the first module we load as in the future, the
-//		// plan is to refactor the photocrati-nextgen-legacy module to use it
-//		$this->get_registry()->load_module('photocrati-datamapper');
+
+		// Load the dynamic stylesheet utility - dependent on photocrati-lzw
+		// and photocrati-mvc
+		$this->get_registry()->load_module('photocrati-dynamic_stylesheet');
+
+		// This provides a general AJAX handler for all other modules to extend
+		$this->get_registry()->load_module('photocrati-ajax');
+
+		// The datamapper is a library which is required by our data tier
+		// components. This is the first module we load as in the future, the
+		// plan is to refactor the photocrati-nextgen-legacy module to use it
+		$this->get_registry()->load_module('photocrati-datamapper');
+
+		/*** NEXTGEN GALLERY MODULES ***/
+		$this->get_registry()->load_module('photocrati-nextgen_settings');
 //
 //		// We load the data tier module for NextGen. This is built on top of
 //		// the photocrati-datamapper module. Other than the photocrati-nextgen-legacy
@@ -72,14 +82,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		// This is Alex Rabe's version of NextGEN, which we built on top of.
 //		$this->get_registry()->load_module('photocrati-nextgen-legacy');
 //
-		// This provides a general AJAX handler for all other modules to extend
-		$this->get_registry()->load_module('photocrati-ajax');
 //
 //		// Load the Lazy Resource Loader
 //		$this->get_registry()->load_module('photocrati-lazy_resources');
-//
-//		// Load the dynamic stylesheet utility
-//		$this->get_registry()->load_module('photocrati-dynamic_stylesheet');
 //
 //		// Provides a mechanism for Frame Communication
 //		$this->get_registry()->load_module('photocrati-frame_communication');
