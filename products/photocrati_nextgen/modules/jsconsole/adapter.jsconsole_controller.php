@@ -26,7 +26,7 @@ class A_JsConsole_Controller extends Mixin
 	 */
 	function _enqueue_jsconsole_settings_resources()
 	{
-		wp_register_script('jsconsole_settings', $this->object->static_url('jsconsole_settings.js'), array('jquery'));
+		wp_register_script('jsconsole_settings', $this->object->get_static_url('jsconsole_settings.js'), array('jquery'));
 		wp_enqueue_script('jsconsole_settings');
 	}
 
@@ -63,7 +63,7 @@ class A_JsConsole_Controller extends Mixin
 	 */
 	function _render_jsconsole_tab($settings)
 	{
-		return $this->object->render_partial('jsconsole_settings', array(
+		return $this->object->render_partial('jsconsole#jsconsole_settings', array(
 			'jsconsole_enabled_label'		=>	'Enable jsconsole.com support?',
 			'jsconsole_enabled_tooltip'		=>	'Provides remote debugging capabilities utilizing jsconsole.com',
 			'jsconsole_enabled'				=>	$settings['jsconsole_enabled'],

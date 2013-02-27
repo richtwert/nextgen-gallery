@@ -1,7 +1,8 @@
 <?php
 /*
 {
-	Module: photocrati-jsconsole
+	Module: photocrati-jsconsole,
+	Depends: { photocrati-mvc }
 }
  */
 
@@ -25,8 +26,13 @@ class M_JsConsole extends C_Base_Module
 	{
 		// Add settings to "Other Options" page
 		$this->get_registry()->add_adapter(
-			'I_Settings_Manager_Controller',
+			'I_NextGen_Settings_Controller',
 			'A_JsConsole_Controller'
+		);
+
+		$this->get_registry()->add_adapter(
+			'I_Settings_Manager',
+			'A_JsConsole_Settings'
 		);
 	}
 

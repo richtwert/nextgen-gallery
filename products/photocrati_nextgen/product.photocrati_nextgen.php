@@ -61,6 +61,10 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// and photocrati-mvc
 		$this->get_registry()->load_module('photocrati-dynamic_stylesheet');
 
+		// Provides a mechanism for Frame Communication - dependent on
+		// photocrati-settings and photocrati-router
+		$this->get_registry()->load_module('photocrati-frame_communication');
+
 		// This provides a general AJAX handler for all other modules to extend
 		$this->get_registry()->load_module('photocrati-ajax');
 
@@ -86,8 +90,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 //		// Load the Lazy Resource Loader
 //		$this->get_registry()->load_module('photocrati-lazy_resources');
 //
-//		// Provides a mechanism for Frame Communication
-//		$this->get_registry()->load_module('photocrati-frame_communication');
 //
 //        // Provides cache clearing support
 //        $this->get_registry()->load_module('photocrati-cache');
