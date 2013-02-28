@@ -88,21 +88,8 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			'1.0.0b6'
 		);
 
-		// Enqueue the underscore.js library, required by Backbone
-		wp_enqueue_script(
-			'underscore',
-			$this->static_url('underscore.js'),
-			array(),
-			'1.4.2'
-		);
-
 		// Enqueue backbone.js library, required by the Attach to Post display tab
-		wp_enqueue_script(
-			'backbone',
-			$this->static_url('backbone.js'),
-			array('jquery', 'underscore'),
-			'0.9.2'
-		);
+		wp_enqueue_script('backbone');
 
 		wp_enqueue_script(
 			'underscore.string',
