@@ -104,11 +104,11 @@ class M_Gallery_Display extends C_Base_Module
 			'A_Display_Settings_Page_Resources'
 		);
 
-        // plugin deactivation routine
-        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_Gallery_Display_Deactivation');
-
 		// Plugin activation routine
-		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Gallery_Display_Activation');
+		$this->get_registry()->add_adapter(
+			'I_Installer',
+			'A_Gallery_Display_Installer'
+		);
 	}
 
 	/**

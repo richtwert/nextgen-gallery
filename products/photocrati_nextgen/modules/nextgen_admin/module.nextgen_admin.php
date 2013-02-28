@@ -58,14 +58,6 @@ class M_NextGen_Settings extends C_Base_Module
             'C_NextGen_Deactivator'
         );
 
-		/**
-		 * Provides a utility to perform CRUD operations for Lightbox libraries
-		 */
-		$this->get_registry()->add_utility(
-			'I_Lightbox_Library_Mapper',
-			'C_Lightbox_Library_Mapper'
-		);
-
 		// Provides the Options page
 		$this->get_registry()->add_utility(
 			'I_Settings_Manager_Controller',
@@ -87,11 +79,6 @@ class M_NextGen_Settings extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Settings_Manager',
 			'A_NextGen_Settings_Manager'
-		);
-
-		$this->get_registry()->add_adapter(
-			'I_Component_Factory',
-			'A_NextGen_Settings_Factory'
 		);
 
 		$this->get_registry()->add_adapter(

@@ -14,7 +14,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
-	 * This method deprecated use of the nggShowGallery() function.
+	 * This method deprecates the use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
 	function index_action($displayed_gallery, $return=FALSE)

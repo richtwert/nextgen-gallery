@@ -76,6 +76,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// plan is to refactor the photocrati-nextgen-legacy module to use it
 		$this->get_registry()->load_module('photocrati-datamapper');
 
+		// Provides a collection of lightbox libraries
+		$this->get_registry()->load_module('photocrati-lightbox');
+
 		/*** NEXTGEN GALLERY MODULES ***/
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
 
@@ -107,14 +110,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 
         // Provides cache clearing support
         $this->get_registry()->load_module('photocrati-cache');
-
-//		// Load various lightbox effect libraries
-//		$this->get_registry()->load_module('photocrati-thickbox');
-//        $this->get_registry()->load_module('photocrati-shutter');
-//		$this->get_registry()->load_module('photocrati-shutter_reloaded');
-//        $this->get_registry()->load_module('photocrati-highslide');
-//        $this->get_registry()->load_module('photocrati-lightbox');
-//        $this->get_registry()->load_module('photocrati-fancybox-1x');
 //
 //		// Provides support for thumbnail basic templates
 //		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
@@ -128,7 +123,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 //        $this->get_registry()->load_module('photocrati-nextgen_basic_album');
 //
         // Provides sidebar widgets
-        $this->get_registry()->load_module('photocrati-widget');
+//        $this->get_registry()->load_module('photocrati-widget');
 //;
 	}
 }

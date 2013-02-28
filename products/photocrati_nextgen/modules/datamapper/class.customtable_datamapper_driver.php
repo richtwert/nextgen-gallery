@@ -27,6 +27,35 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		return $this->object;
 	}
 
+	/**
+	 * Determines whether we're going to execute a SELECT statement
+	 * @return boolean
+	 */
+	function is_select_statement()
+	{
+		return ($this->object->_select_clause) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Determines if we're going to be executing a DELETE statement
+	 * @return type
+	 */
+	function is_delete_statement()
+	{
+		return $this->object->_delete_clause ? TRUE : FALSE;
+	}
+
+
+	/**
+	 * Start a delete statement
+	 */
+	function delete()
+	{
+		// Create a fresh slate
+		$this->object->_init();
+		$this->object->_delete_clause = "DELETE";
+	}
+
 
 	/**
 	 * Orders the results of the query
@@ -141,16 +170,21 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 	function get_generated_query()
 	{
 		$sql = array();
-		$sql[] = $this->object->_select_clause;
+
+		if	   ($this->object->is_select_statement()) $sql[] = $this->object->_select_clause;
+		elseif ($this->object->is_delete_statement()) $sql[] = $this->object->_delete_clause;
 		$sql[] = 'FROM `'.$this->object->get_table_name().'`';
 		$where_clauses = array();
 		foreach ($this->object->_where_clauses as $where) {
 			$where_clauses[] = '('.$where.')';
 		}
 		if ($where_clauses) $sql[] = 'WHERE '.implode(' AND ', $where_clauses);
-		if ($this->object->_order_clauses) $sql[] = 'ORDER BY '.implode(', ', $this->object->_order_clauses);
-		if ($this->object->_group_by_columns) $sql[] = 'GROUP BY '.implode(', ', $this->object->_group_by_columns);
-		if ($this->object->_limit_clause) $sql[] = $this->object->_limit_clause;
+
+		if ($this->object->is_select_statement()) {
+			if ($this->object->_order_clauses) $sql[] = 'ORDER BY '.implode(', ', $this->object->_order_clauses);
+			if ($this->object->_group_by_columns) $sql[] = 'GROUP BY '.implode(', ', $this->object->_group_by_columns);
+			if ($this->object->_limit_clause) $sql[] = $this->object->_limit_clause;
+		}
 		return implode(' ', $sql);
 	}
 
@@ -401,6 +435,7 @@ class C_CustomTable_DataMapper_Driver extends C_DataMapper_Driver_Base
     var $_group_by_columns = array();
 	var $_limit_clause = '';
 	var $_select_clause = '';
+	var $_delete_clause = '';
 	var $_columns = array();
 	var $_defined_columns = array();
 

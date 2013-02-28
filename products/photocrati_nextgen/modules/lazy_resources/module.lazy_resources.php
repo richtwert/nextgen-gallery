@@ -1,11 +1,11 @@
 <?php
 
-/***
-	{
-		Module:		photocrati-lazy_resources
-		Depends:	photocrati-router
-	}
-***/
+/*
+{
+	Module:		photocrati-lazy_resources,
+	Depends:	{ photocrati-router }
+}
+*/
 
 class M_Lazy_Resources extends C_Base_Module
 {

@@ -23,4 +23,7 @@ interface I_DataMapper_Driver
 	function count();
 	function convert_to_model($stdObject, $context=FALSE);
 	function get_driver_class_name();
+	function is_select_statement();
+	function is_delete_statement();
+	function delete();
 }

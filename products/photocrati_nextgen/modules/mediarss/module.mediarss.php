@@ -1,7 +1,7 @@
 <?php
 /***
 {
-		Module: photocrati-mediarss
+		Module: photocrati-mediarss,
 		Depends: { photocrati-router, photocrati-nextgen_gallery_display }
 }
 ***/

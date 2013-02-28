@@ -393,6 +393,12 @@ class nggAdminPanel{
 
 		}
 	}
+	function enqueue_shutter()
+	{
+		$registry	= C_Component_Registry::get_instance();
+		$router		= $registry->get_utility('I_Router');
+	}
+
 
 	function enqueue_jquery_ui_theme()
 	{
