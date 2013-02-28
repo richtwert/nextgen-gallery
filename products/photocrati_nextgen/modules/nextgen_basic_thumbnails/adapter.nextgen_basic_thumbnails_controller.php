@@ -131,6 +131,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['storage']				= &$storage;
                 $params['images']				= &$images;
                 $params['displayed_gallery_id'] = $gallery_id;
+                $params['transient_id'] = $displayed_gallery->transient_id;
                 $params['current_page']			= $current_page;
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);

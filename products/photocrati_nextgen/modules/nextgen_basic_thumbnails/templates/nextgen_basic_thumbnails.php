@@ -50,8 +50,23 @@
                         height="<?php echo esc_attr($thumb_size['height'])?>"
                         style="max-width:none;"
                     />
-
                 </a>
+								<?php
+
+									$triggers = $this->get_registry()->get_utility('I_NextGen_Pro_Lightbox_Trigger_Manager');
+
+									if ($triggers != null)
+									{
+										$params = array(
+											'context' => 'image', 
+											'context-id' => $image->{$image->id_field},
+											'context-parent' => 'gallery', 
+											'context-parent-id' => $transient_id,
+										);
+		
+										echo $triggers->render_trigger_list(null, $params, $this->object);
+									}
+								?>
             </div>
         </div>
 
