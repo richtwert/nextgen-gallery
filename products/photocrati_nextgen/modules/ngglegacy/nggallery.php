@@ -123,9 +123,6 @@ if (!class_exists('nggLoader')) {
                 case 'image':
                     require_once (dirname (__FILE__) . '/nggshow.php');
                     break;
-                case 'ngg-ajax':
-                    require_once (dirname (__FILE__) . '/xml/ajax.php');
-                    break;
             }
 
             throw new E_Clean_Exit();

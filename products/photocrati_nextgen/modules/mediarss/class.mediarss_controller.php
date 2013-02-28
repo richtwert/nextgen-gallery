@@ -39,6 +39,15 @@ class Mixin_MediaRSS_Controller extends Mixin
 		else $this->object->http_error("No source specified");
 	}
 
+	function render_latest_images()
+	{
+		$this->object->set_param('params', json_encode(array(
+			'source'		=>	'recent'
+		)));
+
+		$this->object->render_displayed_gallery();
+	}
+
 	/**
 	 * Renders a feed for a displayed gallery
 	 */
