@@ -130,6 +130,8 @@ class M_Gallery_Display extends C_Base_Module
 			);
 		}
 
+        add_action('wp_enqueue_scripts', array(&$this, 'enqueue_galleries_js'));
+
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
@@ -146,6 +148,11 @@ class M_Gallery_Display extends C_Base_Module
         add_shortcode('slideshow',    array(&$this, 'wrap_shortcode_slideshow'));
 	}
 
+    function enqueue_galleries_js()
+    {
+        wp_register_script('nextgen_galleries', $this->static_url('nextgen_galleries.js'));
+        wp_enqueue_script('nextgen_galleries');
+    }
 
 	/**
 	 * Adds the display settings page to wp-admin

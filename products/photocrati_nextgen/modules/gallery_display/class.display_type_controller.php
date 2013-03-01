@@ -107,27 +107,17 @@ class Mixin_Display_Type_Controller extends Mixin
 	function enqueue_frontend_resources($displayed_gallery)
 	{
 		// Enqueue the display type library
-		wp_enqueue_script(
-			$displayed_gallery->display_type,
-			$this->object->_get_js_lib_url()
-		);
+		wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url());
 
 		// Enqueue the display type initialization routine
-		wp_enqueue_script(
-			$displayed_gallery->display_type.'_init',
-			$this->object->_get_js_init_url()
-		);
-		$this->object->_add_script_data(
-			$displayed_gallery->display_type.'_init',
-			'galleries',
-			new stdClass()
-		);
-		$this->object->_add_script_data(
-			$displayed_gallery->display_type.'_init',
-			'galleries.gallery_'.$displayed_gallery->id(),
-			(array)$displayed_gallery->get_entity(),
-			FALSE
-		);
+		wp_enqueue_script($displayed_gallery->display_type . '_init', $this->object->_get_js_init_url());
+
+        $this->object->_add_script_data(
+            $displayed_gallery->display_type . '_init',
+            'galleries.gallery_' . $displayed_gallery->id(),
+            (array)$displayed_gallery->get_entity(),
+            FALSE
+        );
 
         $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
@@ -252,8 +242,8 @@ class Mixin_Display_Type_Controller extends Mixin
 			$data = &$script->extra['data'];
 
 			// Construct the addition
-			$addition = $define ? "\nvar {$object_name} = ".json_encode($object_value).';' :
-				"\n{$object_name} = ".json_encode($object_value).';';
+			$addition = $define ? "\nvar {$object_name} = " . json_encode($object_value) . ';' :
+				"\n{$object_name} = " . json_encode($object_value) . ';';
 
 			// Add the addition
 			if ($override) {
