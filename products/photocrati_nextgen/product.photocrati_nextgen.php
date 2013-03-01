@@ -102,20 +102,23 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-gallery_display');
 		$this->get_registry()->load_module('photocrati-attach_to_post');
 
-//		// Provides jsconsole remote debugging support
-//		$this->get_registry()->load_module('photocrati-jsconsole')
+		// Load the NextGEN Gallery Admin interface
+		$this->get_registry()->load_module('photocrati-nextgen_admin');
+
+		// Provides jsconsole remote debugging support
+		$this->get_registry()->load_module('photocrati-jsconsole');
 
 		// Load MediaRSS module - dependent on photocrati-nextgen_gallery_display
 		$this->get_registry()->load_module('photocrati-mediarss');
 
         // Provides cache clearing support
         $this->get_registry()->load_module('photocrati-cache');
-//
-//		// Provides support for thumbnail basic templates
-//		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
-//
-//		// Load the NextGEN Basic display types
-//		$this->get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
+
+		// Provides support for thumbnail basic templates
+		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');
+
+		// Load the NextGEN Basic display types
+		$this->get_registry()->load_module('photocrati-nextgen_basic_thumbnails');
 //		$this->get_registry()->load_module('photocrati-nextgen_basic_slideshow');
 //		$this->get_registry()->load_module('photocrati-nextgen_basic_imagebrowser');
 //        $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');

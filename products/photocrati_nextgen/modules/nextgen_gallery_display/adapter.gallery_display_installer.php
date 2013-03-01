@@ -27,7 +27,7 @@ class A_Gallery_Display_Installer extends Mixin
 	function install_display_type($name, $properties=array())
 	{
 		// Try to find the existing entity. If it doesn't exist, we'll create
-		$router				= $this->get_registry()->get_utility('I_Router');
+		$fs					= $this->get_registry()->get_utility('I_Fs');
 		$mapper				= $this->get_registry()->get_utility('I_Display_Type_Mapper');
 		$display_type		= $mapper->find_by_name($name);
 		if (!$display_type)	$display_type = new stdClass;
@@ -36,11 +36,11 @@ class A_Gallery_Display_Installer extends Mixin
 		$properties['name'] = $name;
 		foreach ($properties as $key=>$val) {
 			if ($key == 'preview_image_relpath') {
-				$value = $router->get_static_relpath($value);
+				$value = $fs->get_static_relpath($val);
 			}
-			$display_type->$key = $value;
+			$display_type->$key = $val;
 		}
-		
+
 		// Save the entity
 		$mapper->save($display_type);
 		unset($mapper);

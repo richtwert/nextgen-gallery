@@ -403,6 +403,7 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		$this->object->select();
 		$this->object->_query_args['is_select'] = FALSE;
 		$this->object->_query_args['is_delete'] = TRUE;
+		return $this->object;
 	}
 
 

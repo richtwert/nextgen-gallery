@@ -22,16 +22,6 @@ class M_NextGen_Basic_Templates extends C_Base_Module
 		);
 	}
 
-
-	function _register_adapters()
-	{
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Backend_Controller',
-			'A_NextGen_Basic_Template_Resources'
-		);
-	}
-
-
     function _register_utilities()
     {
         $this->get_registry()->add_utility(

@@ -9,9 +9,6 @@
 
 class M_Gallery_Display extends C_Base_Module
 {
-	var $display_settings_page_name     = 'ngg_display_settings';
-	var $controller                     = NULL;
-
 	function define()
 	{
 		parent::define(
@@ -23,17 +20,6 @@ class M_Gallery_Display extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-
-		$this->add_mixin('Mixin_MVC_Controller_Rendering');
-	}
-
-	/**
-	 * Initializes the module
-	 */
-	function initialize()
-	{
-		parent::initialize();
-		$this->controller   = $this->get_registry()->get_utility('I_Display_Settings_Controller');
 	}
 
 
@@ -42,14 +28,6 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function _register_utilities()
 	{
-		// This utility provides a controller that renders the
-		// Display Settings page, used to control global values for
-		// all display types
-		$this->get_registry()->add_utility(
-			'I_Display_Settings_Controller',
-			'C_Display_Settings_Controller'
-		);
-
 		// This utility provides a controller to render the settings form
 		// for a display type, or render the front-end of a display type
 		$this->get_registry()->add_utility(
@@ -98,12 +76,6 @@ class M_Gallery_Display extends C_Base_Module
 			'I_Component_Factory', 'A_Gallery_Display_Factory'
 		);
 
-		// Enqueues resources required for the Display Settings page
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Backend_Controller',
-			'A_Display_Settings_Page_Resources'
-		);
-
 		// Plugin activation routine
 		$this->get_registry()->add_adapter(
 			'I_Installer',
@@ -116,8 +88,6 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-		// Add the display settings page to wp-admin
-		add_action('admin_menu', array(&$this, 'add_display_settings_page'), 900);
 
 		// Enqueues static resources required
 		if (is_admin()) {
@@ -134,22 +104,6 @@ class M_Gallery_Display extends C_Base_Module
 
 
 	/**
-	 * Adds the display settings page to wp-admin
-	 */
-	function add_display_settings_page()
-	{
-		add_submenu_page(
-			NGGFOLDER,
-			_('NextGEN Gallery & Album Settings'),
-			_('Gallery Settings'),
-			'NextGEN Manage gallery',
-			$this->display_settings_page_name,
-			array(&$this->controller, 'index_action')
-		);
-	}
-
-
-	/**
 	 * Enqueues static resources for the Display Settings Page
 	 */
 	function enqueue_resources()
@@ -158,7 +112,7 @@ class M_Gallery_Display extends C_Base_Module
         if (isset($_GET['page']) && $_GET['page'] == 'nggallery-manage-gallery')
         {
 			$router = $this->get_registry()->get_utility('I_Router');
-            wp_enqueue_style('nextgen_display_settings_page', $router->get_static_url('nextgen_display_settings_page.css'));
+
         }
 	}
 

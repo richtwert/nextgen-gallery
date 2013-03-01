@@ -54,6 +54,7 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		// Create a fresh slate
 		$this->object->_init();
 		$this->object->_delete_clause = "DELETE";
+		return $this->object;
 	}
 
 

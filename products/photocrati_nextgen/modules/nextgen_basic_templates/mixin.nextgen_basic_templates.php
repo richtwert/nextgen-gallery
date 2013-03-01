@@ -1,6 +1,6 @@
 <?php
 
-class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
+class Mixin_NextGen_Basic_Templates extends Mixin
 {
     /**
      * Renders 'template' settings field
@@ -40,7 +40,7 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
             $templates[$display_type->settings['template']] = $display_type->settings['template'];
 
         return $this->object->render_partial(
-            'nextgen_basic_templates_settings_template',
+            'nextgen_basic_templates#nextgen_basic_templates_settings_template',
             array(
                 'display_type_name' => $display_type->name,
                 'template_label'    => _('Template'),
@@ -242,4 +242,16 @@ class Mixin_NextGen_Basic_Templates extends A_NextGen_Basic_Template_Resources
         return $return;
     }
 
+	function enqueue_backend_resources($displayed_gallery)
+	{
+		$this->call_parent('enqueue_backend_resources', $displayed_gallery);
+		wp_enqueue_style('ngg_template_settings', $this->get_static_url('nextgen_basic_templates#ngg_template_settings.css'));
+        wp_enqueue_script(
+            'ngg_template_settings',
+            $this->get_static_url('nextgen_basic_templates#ngg_template_settings.js'),
+            array('jquery-ui-autocomplete', 'jquery-ui-button'),
+            $this->module_version,
+            TRUE
+        );
+	}
 }

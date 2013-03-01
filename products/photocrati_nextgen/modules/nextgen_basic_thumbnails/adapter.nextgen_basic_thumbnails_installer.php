@@ -1,6 +1,6 @@
 <?php
 
-class A_NextGen_Basic_Thumbnails_Activation extends Mixin
+class A_NextGen_Basic_Thumbnails_Installer extends Mixin
 {
 	/**
 	 * Adds the activation routine

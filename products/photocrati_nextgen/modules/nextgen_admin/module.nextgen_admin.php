@@ -6,10 +6,8 @@
 }
 ***/
 
-class M_NextGen_Settings extends C_Base_Module
+class M_NextGen_Admin extends C_Base_Module
 {
-	var $page_name = 'ngg_other_options';
-
 	/**
 	 * Defines the module
 	 */
@@ -28,47 +26,15 @@ class M_NextGen_Settings extends C_Base_Module
 
 
 	/**
-	 * Initializes the module
-	 */
-	function initialize()
-	{
-		parent::initialize();
-		$this->controller  = $this->get_registry()->get_utility('I_Settings_Manager_Controller');
-	}
-
-
-	/**
 	 * Register utilities necessary for this module (and the plugin)
 	 */
 	function _register_utilities()
 	{
-		/**
-		 * Provides a component to provide plugin activation
-		 */
+		// Provides a NextGEN Administation page
 		$this->get_registry()->add_utility(
-			'I_NextGen_Activator',
-			'C_NextGen_Activator'
+			'I_NextGen_Admin_Page',
+			'C_NextGen_Admin_Page_Controller'
 		);
-
-        /**
-         * Provides a counterpart deactivation routine
-         */
-        $this->get_registry()->add_utility(
-            'I_NextGen_Deactivator',
-            'C_NextGen_Deactivator'
-        );
-
-		// Provides the Options page
-		$this->get_registry()->add_utility(
-			'I_Settings_Manager_Controller',
-			'C_NextGen_Settings_Controller'
-		);
-
-        // Provides the deactivator "check uninstall" page
-        $this->get_registry()->add_utility(
-            'I_NextGen_Deactivator_Controller',
-            'C_NextGen_Deactivator_Controller'
-        );
 	}
 
 	/**
@@ -91,11 +57,17 @@ class M_NextGen_Settings extends C_Base_Module
 			'A_Stylesheet_Ajax_Actions'
 		);
 
-        // plugin deactivation routine
-        $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Settings_Deactivation');
+		$this->get_registry()->add_adapter(
+			'I_NextGen_Admin_Page',
+			'A_Display_Settings_Controller',
+			'display_settings'
+		);
 
         // adds some AJAX-support routes like updating watermark previews
-        $this->get_registry()->add_adapter('I_Router', 'A_NextGen_Settings_Routes');
+        $this->get_registry()->add_adapter(
+			'I_Router',
+			'A_NextGen_Settings_Routes'
+		);
 	}
 
 	/**
@@ -104,11 +76,7 @@ class M_NextGen_Settings extends C_Base_Module
 	function _register_hooks()
 	{
 		// Provides menu options for managing NextGEN Settings
-		add_action(
-			'admin_menu',
-			array(&$this, 'add_menu_pages'),
-			999
-		);
+		add_action('admin_menu', array(&$this, 'add_menu_pages'), 999);
 	}
 
 	/**
@@ -117,29 +85,47 @@ class M_NextGen_Settings extends C_Base_Module
 	 */
 	function add_menu_pages()
 	{
+		// Get controllers for pages
+		$display_settings_controller = $this->get_registry()->get_utility(
+			'I_NextGen_Admin_Page', 'display_settings'
+		);
+		$other_options_controller	 = $this->get_registry()->get_utility(
+			'I_NextGen_Admin_Page', 'other_options'
+		);
+		$uninstall_controller		 = $this->get_registry()->get_utility(
+			'I_NextGen_Admin_Page',	'uninstall'
+		);
+
+		// Register menus
+		add_submenu_page(
+			NGGFOLDER,
+			_('NextGEN Gallery & Album Settings'),
+			_('Gallery Settings'),
+			'NextGEN Manage gallery',
+			'ngg_display_settings',
+			array(&$display_settings_controller, 'index_action')
+		);
+
 		// Add the "Options" page
 		add_submenu_page(
 			NGGFOLDER,
 			_('NextGEN Gallery - Other Options'),
 			_('Other Options'),
 			'NextGEN Change options',
-			$this->page_name,
-			array(&$this->controller, 'index_action')
+			'ngg_other_options',
+			array(&$other_options_controller, 'index_action')
 		);
 
-        // nextgen-deactivator 'check uninstall' page
+        // Add Uninstall Page
         add_submenu_page(
             NULL,
             _('NextGEN Gallery - Check Uninstall'),
             _('Check Uninstall'),
             'administrator',
-            'ngg_deactivator_check_uninstall',
-            array(
-                $this->get_registry()->get_utility('I_NextGen_Deactivator_Controller'),
-                'index_action'
-            )
+            'ngg_uninstall',
+            array(&$uninstall_controller, 'index_action')
         );
 	}
 }
 
-new M_NextGen_Settings();
+new M_NextGen_Admin();

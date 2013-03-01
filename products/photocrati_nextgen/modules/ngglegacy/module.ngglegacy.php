@@ -18,9 +18,6 @@ define(
 
 class M_NggLegacy extends C_Base_Module
 {
-	/**
-	 * Defines the module
-	 */
 	function define()
 	{
 		parent::define(
@@ -34,13 +31,17 @@ class M_NggLegacy extends C_Base_Module
 		);
 	}
 
-	/**
-	 * Initializes the module
-	 */
 	function initialize()
 	{
 		parent::initialize();
 		include_once(path_join(dirname(__FILE__), 'nggallery.php'));
+	}
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter(
+			'I_Installer', 'A_NggLegacy_Installer'
+		);
 	}
 }
 

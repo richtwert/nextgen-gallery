@@ -3,7 +3,7 @@
 /***
 {
 		Module:		photocrati-nextgen_basic_thumbnails,
-		Depends:	{ photocrati-gallery_display }
+		Depends:	{ photocrati-nextgen_gallery_display }
 }
  ***/
 
@@ -26,11 +26,6 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			'http://www.photocrati.com'
 		);
 	}
-
-    public function initialize()
-    {
-        parent::initialize();
-    }
 
 	function _register_adapters()
 	{
