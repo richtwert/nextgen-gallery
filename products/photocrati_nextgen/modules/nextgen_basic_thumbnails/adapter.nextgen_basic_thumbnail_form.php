@@ -1,13 +1,41 @@
 <?php
 
-class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
+class A_NextGen_Basic_Thumbnail_Form extends Mixin
 {
-    function initialize()
-    {
-        $this->add_mixin('Mixin_NextGen_Settings_Form_Field_Generators');
-    }
+	/**
+	 * Gets the entity which the form is editing
+	 * @return C_Display_Type
+	 */
+	function get_model()
+	{
+		$mapper = $this->get_registry()->get_utility('I_Display_Type_Mapper');
+		return $mapper->find_by_name(NEXTGEN_GALLERY_BASIC_THUMBNAILS);
+	}
 
-    /**
+	function get_title()
+	{
+		return $this->object->get_model()->title;
+	}
+
+	/**
+	 * Enqueues static resources required by this form
+	 */
+	function enqueue_static_resources()
+	{
+		wp_enqueue_style(
+			'ngg_basic_thumbnails_settings',
+			$this->object->get_static_url('nextgen_basic_thumbnails_settings.css'),
+			false
+		);
+
+		wp_enqueue_script(
+			'ngg_basic_thumbnails_settings',
+			$this->object->get_static_url('nextgen_basic_thumbnails_settings.js'),
+			array('jquery')
+		);
+	}
+
+	/**
      * Returns a list of fields to render on the settings page
      */
     function _get_field_names()
@@ -21,7 +49,7 @@ class Mixin_NextGen_Basic_Thumbnails_Settings extends Mixin
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_piclens_link_text',
             'show_alternative_view_link',
-            'alternative_view',
+//            'alternative_view',
             'alternative_view_link_text',
             'show_return_link',
             'return_link_text',

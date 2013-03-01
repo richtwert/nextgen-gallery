@@ -37,6 +37,7 @@ class M_Lazy_Resources extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
+
 		add_action('init', array(&$this, 'enqueue_scripts'), 1);
 		add_action('wp_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);
 		add_action('admin_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);

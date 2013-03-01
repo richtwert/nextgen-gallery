@@ -27,6 +27,13 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 		);
 	}
 
+	function initialize()
+	{
+		parent::initialize();
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		$form_manager->add_form('display_settings', $this->module_id);
+	}
+
 	function _register_adapters()
 	{
 		// Provides additional routing
@@ -54,6 +61,12 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 			$this->module_id
 		);
 
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_Thumbnail_Form',
+			$this->module_id
+		);
+
 		// Provides validation for the display type
 		$this->get_registry()->add_adapter(
 			'I_Display_Type',
@@ -64,11 +77,6 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Display_Type_Mapper',
 			'A_NextGen_Basic_Thumbnails_Mapper'
-		);
-
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Backend_Controller',
-			'A_NextGen_Basic_Thumbnails_Resources'
 		);
 
 		// Provides AJAX pagination actions required by the display type

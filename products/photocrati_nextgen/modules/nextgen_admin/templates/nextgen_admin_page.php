@@ -1,9 +1,12 @@
 <div class="wrap">
 	<h2><?php echo_h($page_heading)?></h2>
-	<?php if ($messages): ?>
-	<?php foreach ($messages as $msg): ?>
+	<?php if ($errors): ?>
+	<?php foreach ($errors as $msg): ?>
 	<?php echo $msg ?>
 	<?php endforeach ?>
+	<?php endif ?>
+	<?php if ($success): ?>
+	<div class='success'><?php echo_h($success);?></div>
 	<?php endif ?>
 	<form method="POST" action="<?php echo esc_url($_SERVER['REQUEST_URI'])?>">
 		<?php

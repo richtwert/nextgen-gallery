@@ -13,15 +13,20 @@ class C_NextGen_Admin_Page_Controller extends C_MVC_Controller
 		return self::$_instances[$context];
 	}
 
-	function define($context=FALSE)
+	function define($name, $context=FALSE)
 	{
+		if (!$context) $context = $name;
+		elseif (!is_array($context)) $context = array($name, $context);
+		else array_unshift($context, $name);
+
 		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Admin_Page_Instance_Methods');
 		$this->implement('I_NextGen_Admin_Page');
 	}
 
-	function initialize()
+	function initialize($name)
 	{
+		$this->name = $name;
 		parent::initialize();
 		$this->add_pre_hook(
 			'index_action',
@@ -46,8 +51,9 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 	/**
 	 * Authorizes the request
 	 */
-	function is_authorized_request($privilege)
+	function is_authorized_request($privilege=NULL)
 	{
+		if (!$privilege) $privilege = $this->object->get_required_permission();
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
 		$retval = $sec_token = $security->get_request_token($privilege);
 		$sec_actor = $security->get_current_actor();
@@ -64,6 +70,18 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 		return $retval;
 	}
 
+	/**
+	 * Returns the permission required to access this page
+	 * @return string
+	 */
+	function get_required_permission()
+	{
+		return 'nextgen_manage_settings';
+	}
+
+	/**
+	 * Enqueues resources required by a NextGEN Admin page
+	 */
 	function enqueue_backend_resources()
 	{
 		$this->object->enqueue_jquery_ui_theme();
@@ -85,12 +103,12 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 		));
 		wp_enqueue_script(
 			'nextgen_admin_settings',
-			$this->static_url('nextgen_admin_settings.js'),
+			$this->get_static_url('nextgen_admin_settings.js'),
             array('wp-color-picker')
 		);
 		wp_enqueue_style(
 			'nextgen_admin_settings',
-			$this->static_url('nextgen_admin_settings.css'),
+			$this->get_static_url('nextgen_admin_settings.css'),
             array('wp-color-picker')
 		);
 	}
@@ -106,5 +124,110 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 			array(),
 			$settings->jquery_ui_theme_version
 		);
+	}
+
+	/**
+	 * Returns the page title
+	 * @return string
+	 */
+	function get_page_title()
+	{
+		return $this->object->name;
+	}
+
+	/**
+	 * Returns the page heading
+	 * @return string
+	 */
+	function get_page_heading()
+	{
+		return $this->object->get_page_title();
+	}
+
+	/**
+	 * Returns the type of forms to render on this page
+	 * @return string
+	 */
+	function get_form_type()
+	{
+		return $this->object->context;
+	}
+
+	function get_success_message()
+	{
+		return "Saved successfully";
+	}
+
+
+	/**
+	 * Returns an accordion tab, encapsulating the form
+	 * @param I_Form $form
+	 */
+	function to_accordion_tab($form)
+	{
+		return $this->object->render_partial('nextgen_admin#accordion_tab', array(
+			'id'		=>	$form->get_id(),
+			'title'		=>	$form->get_title(),
+			'content'	=>	$form->render(TRUE)
+		), TRUE);
+	}
+
+	/**
+	 * Returns the
+	 * @return type
+	 */
+	function get_forms()
+	{
+		$forms = array();
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		foreach ($form_manager->get_forms($this->object->get_form_type()) as $form) {
+			$forms[] = $this->get_registry()->get_utility('I_Form', $form);
+		}
+		return $forms;
+	}
+
+	/**
+	 * Renders a NextGEN Admin Page using jQuery Accordions
+	 */
+	function index_action()
+	{
+		if (($token = $this->object->is_authorized_request())) {
+			// Get each form. Validate it and save any changes if this is a post
+			// request
+			$tabs			= array();
+			$errors			= array();
+			$success		= $this->object->is_post_request() ?
+									$this->object->get_success_message() : '';
+
+			foreach ($this->object->get_forms() as $form) {
+				$form->enqueue_static_resources();
+				$tabs[] = $this->object->to_accordion_tab($form);
+				if ($this->object->is_post_request()) {
+					$action = $this->object->param('action');
+					if ($form->has_method($action)) {
+						if (!$form->$action()) {
+							$errors[] = $this->object->show_errors_for($form->get_model());
+						}
+					}
+				}
+			}
+
+			// Render the view
+			$this->render_partial('nextgen_admin#nextgen_admin_page', array(
+				'page_heading'		=>	$this->object->get_page_heading(),
+				'tabs'				=>	$tabs,
+				'errors'			=>	$errors,
+				'success'			=>	$success,
+				'form_header'		=>  $token->get_form_html()
+			));
+		}
+
+		// The user is not authorized to view this page
+		else {
+			$this->render_view('nextgen_admin#not_authorized', array(
+				'name'	=>	$this->object->name,
+				'title'	=>	$this->object->get_page_title()
+			));
+		}
 	}
 }

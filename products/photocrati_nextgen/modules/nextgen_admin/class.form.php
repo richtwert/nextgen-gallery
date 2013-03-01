@@ -1,11 +1,112 @@
 <?php
 
-class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
+class C_Form extends C_MVC_Controller
 {
-    function _render_select_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $options)
+	static $_instances = array();
+
+	/**
+	 * Gets an instance of a form
+	 * @param string $context
+	 * @return C_Form
+	 */
+	static function &get_instance($context)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
+	}
+
+	/**
+	 * Defines the form
+	 * @param string $context
+	 */
+	function define($context)
+	{
+		parent::define($context);
+		$this->add_mixin('Mixin_Form_Instance_Methods');
+		$this->add_mixin('Mixin_Form_Field_Generators');
+		$this->implement('I_Form');
+	}
+}
+
+class Mixin_Form_Instance_Methods extends Mixin
+{
+	/**
+	 * Enqueues any static resources required by the form
+	 */
+	function enqueue_static_resources()
+	{
+	}
+
+	/**
+	 * Gets a list of fields to render
+	 * @return array
+	 */
+	function _get_field_names()
+	{
+		return array();
+	}
+
+	/**
+	 * Returns datmapper model
+	 * @throws ErrorException
+	 * @returns C_DataMapper_Model
+	 */
+	function get_model()
+	{
+		throw new ErrorException("C_Form::get_model() not implemented with {$this->object->context} context.");
+	}
+
+	function get_id()
+	{
+		return $this->object->context;
+	}
+
+	function get_title()
+	{
+		return $this->object->context;
+	}
+
+	/**
+	 * Saves the form/model
+	 * @param array $attributes
+	 * @return type
+	 */
+	function save($attributes=array())
+	{
+		return $this->object->get_model()->save($attributes);
+	}
+
+	/**
+	 * Returns the rendered form
+	 */
+	function render()
+	{
+		$fields = array();
+		foreach ($this->object->_get_field_names() as $field) {
+			$method = "_render_{$field}_field";
+			if ($this->object->has_method($method)) {
+				$fields[] = $this->object->$method($this->object->get_model());
+			}
+		}
+
+		return $this->render_partial('form', array(
+			'fields'	=>	$fields
+		), TRUE);
+	}
+}
+
+/**
+ * Provides some default field generators for forms to use
+ */
+class Mixin_Form_Field_Generators extends Mixin
+{
+	function _render_select_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $options)
     {
         return $this->object->render_partial(
-            'nextgen_settings_field_select',
+            'field_generator/nextgen_settings_field_select',
             array(
                 'display_type_name' => $display_type->name,
                 'name'    => $name,
@@ -22,7 +123,7 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
     function _render_radio_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE)
     {
         return $this->object->render_partial(
-            'nextgen_settings_field_radio',
+            'field_generator/nextgen_settings_field_radio',
             array(
                 'display_type_name' => $display_type->name,
                 'name'   => $name,
@@ -46,7 +147,7 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
                                   $max = NULL)
     {
         return $this->object->render_partial(
-            'nextgen_settings_field_number',
+            'field_generator/nextgen_settings_field_number',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,
@@ -65,7 +166,7 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
     function _render_text_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $placeholder = '')
     {
         return $this->object->render_partial(
-            'nextgen_settings_field_text',
+            'field_generator/nextgen_settings_field_text',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,
@@ -82,7 +183,7 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
     function _render_color_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE)
     {
         return $this->object->render_partial(
-            'nextgen_settings_field_color',
+            'field_generator/nextgen_settings_field_color',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,
@@ -112,7 +213,7 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
         );
 
         $dimensions_field = $this->render_partial(
-            'nextgen_basic_thumbnails_settings_thumbnail_settings',
+            'field_generator/thumbnail_settings',
             array(
                 'display_type_name' => $display_type->name,
                 'name' => 'thumbnail_dimensions',
@@ -220,7 +321,7 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
     function _render_width_and_unit_field($display_type)
     {
         return $this->object->render_partial(
-            'nextgen_settings_field_width_and_unit',
+            'field_generator/nextgen_settings_field_width_and_unit',
             array(
                 'display_type_name' => $display_type->name,
                 'name' => 'width',
@@ -250,4 +351,130 @@ class Mixin_NextGen_Settings_Form_Field_Generators extends Mixin
             '1'     => '1:1 (Square) [1]'
         );
     }
+
+	/**
+	 * Renders the "Show return Link" settings field
+	 * @param C_Display_Type $display_type
+	 * @return string
+	 */
+	function _render_return_link_text_field($display_type)
+	{
+		return $this->render_partial(
+			'nextgen_gallery_display#field_generator/return_link_text',
+			array(
+				'display_type_name'			=>	$display_type->name,
+				'return_link_text_label'	=>	_('Return link text'),
+				'tooltip'					=>	_('The text used for the return
+												link when using an alternative view, such as a Slideshow'),
+				'return_link_text'			=>	$display_type->settings['return_link_text'],
+                'hidden'                    => empty($display_type->settings['show_return_link']) ? TRUE : FALSE
+			),
+			TRUE
+		);
+	}
+
+
+	/**
+	 * Renders the "Return link text" settings field
+	 * @param C_Display_Type $display_type
+	 * @return string
+	 */
+	function _render_show_return_link_field($display_type)
+	{
+		return $this->render_partial(
+			'nextgen_gallery_display#field_generator/show_return_link',
+			array(
+				'display_type_name'			=>	$display_type->name,
+				'show_return_link_label'	=>	_('Show return link'),
+				'tooltip'					=>	_('When viewing as a Slideshow,
+												   do you want a return link to
+												   display Thumbnails?'),
+				'show_return_link'			=>	$display_type->settings['show_return_link']
+			),
+			TRUE
+		);
+	}
+
+	/**
+	 * Renders the "Show alternative view link" settings field
+	 * @param C_Display_Type $display_type
+	 * @return string
+	 */
+	function _render_alternative_view_field($display_type, $template_overrides=array())
+	{
+		// Params for template
+		$template_params = array(
+			'display_type_name'			=>	$display_type->name,
+			'show_alt_view_link_label'	=>	_('Alternative view link'),
+			'tooltip'					=>	_('Show a link that allows end-users to change how a gallery is displayed'),
+			'alternative_view'			=>	$display_type->settings['alternative_view'],
+			'altviews'					=>	$this->object->_get_alternative_views($display_type),
+            'hidden'                    => empty($display_type->settings['show_alternative_view_link']) ? TRUE : FALSE
+		);
+
+		// Apply overrides
+		$template_params = $this->array_merge_assoc(
+			$template_params, $template_overrides,TRUE
+		);
+
+		// Render the template
+		return $this->render_partial(
+			'nextgen_gallery_display#field_generator/alternative_view',
+			$template_params,
+			TRUE
+		);
+	}
+
+	/**
+	 * Renders the "Alternative view link text" settings field
+	 * @param type $display_type
+	 * @param type $template_overrides
+	 * @return type
+	 */
+	function _render_alternative_view_link_text_field($display_type, $template_overrides=array()){
+		// Params for template
+		$template_params = array(
+			'display_type_name'				=>	$display_type->name,
+			'alt_view_link_text_label'		=>	_('Alternative view link text'),
+			'tooltip'						=>	_('The text of the link used to display the alternative view'),
+			'alternative_view_link_text'	=>	$display_type->settings['alternative_view_link_text'],
+            'hidden'                        => empty($display_type->settings['show_alternative_view_link']) ? TRUE : FALSE
+		);
+
+		// Apply overrides
+		$template_params = $this->array_merge_assoc(
+			$template_params, $template_overrides,TRUE
+		);
+
+		// Render the template
+		return $this->render_partial(
+			'nextgen_gallery_display#field_generator/alt_view_link_text',
+			$template_params,
+			TRUE
+		);
+	}
+
+
+	function _render_show_alternative_view_link_field($display_type, $template_overrides=array())
+	{
+		// Params for template
+		$template_params = array(
+			'display_type_name'			=>	$display_type->name,
+			'show_alt_view_link_label'	=>	_('Show alternative view link'),
+			'tooltip'					=>	_('When enabled, show a link for the user to activate an alternative view'),
+			'show_alternative_view_link'=>	$display_type->settings['show_alternative_view_link']
+		);
+
+		// Apply overrides
+		$template_params = $this->array_merge_assoc(
+			$template_params, $template_overrides,TRUE
+		);
+
+		// Render the template
+		return $this->render_partial(
+			'nextgen_gallery_display#field_generator/show_altview_link',
+			$template_params,
+			TRUE
+		);
+	}
 }

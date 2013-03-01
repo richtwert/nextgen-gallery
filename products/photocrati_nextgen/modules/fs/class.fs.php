@@ -50,8 +50,11 @@ class Mixin_Fs_Instance_Methods extends Mixin
 
 		if (file_exists($path))
 			$retval = $path;
-		
+
 		else {
+			// Ensure that we weren't passed a module id in the path
+		if (!$module) list($path, $module) = $this->object->parse_formatted_path($path);
+
 			// Ensure that we know where to search for the file
 			if (!$search_paths) {
 				$search_paths = $this->object->get_search_paths($path, $module);

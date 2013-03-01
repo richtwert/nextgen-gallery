@@ -3,7 +3,7 @@
 /**
  * Provides the ability to create and edit C_Displayed_Galleries
  */
-class C_Attach_To_Post_Controller extends C_NextGen_Backend_Controller
+class C_Attach_To_Post_Controller extends C_NextGen_Admin_Page_Controller
 {
 	static $_instances = array();
 	var $_displayed_gallery;

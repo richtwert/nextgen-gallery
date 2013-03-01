@@ -44,9 +44,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// load security module, to perform capability and nonce checks
 		$this->get_registry()->load_module('photocrati-security');
 
-		// Load the Lazy Resource Loader - dependent on photocrati-router
-		$this->get_registry()->load_module('photocrati-lazy_resources');
-
 		// The validation module is a helper module intended to be adopted
 		// by other modules. The datamapper module makes use of it for
 		// example
@@ -59,6 +56,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Dependent on photocrati-router
 		$this->get_registry()->load_module('photocrati-mvc');
 		$this->get_registry()->load_module('photocrati-test');
+
+		// Load the Lazy Resource Loader - dependent on photocrati-router
+		$this->get_registry()->load_module('photocrati-lazy_resources');
 
 		// Load the dynamic stylesheet utility - dependent on photocrati-lzw
 		// and photocrati-mvc
@@ -98,12 +98,12 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Depends on photocrati-nextgen_data
 		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
 
-		// Load the Gallery Display module, used to display galleries and albums
-		$this->get_registry()->load_module('photocrati-gallery_display');
-		$this->get_registry()->load_module('photocrati-attach_to_post');
-
 		// Load the NextGEN Gallery Admin interface
 		$this->get_registry()->load_module('photocrati-nextgen_admin');
+
+		// Load the Gallery Display module, used to display galleries and albums
+		$this->get_registry()->load_module('photocrati-nextgen_gallery_display');
+		$this->get_registry()->load_module('photocrati-attach_to_post');
 
 		// Provides jsconsole remote debugging support
 		$this->get_registry()->load_module('photocrati-jsconsole');

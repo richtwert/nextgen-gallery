@@ -2,7 +2,7 @@
 /**
  {
 	Module:		photocrati-attach_to_post,
-	Depends:	{ photocrati-gallery_display }
+	Depends:	{ photocrati-nextgen_gallery_display }
  }
  */
 

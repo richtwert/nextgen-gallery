@@ -35,6 +35,18 @@ class M_NextGen_Admin extends C_Base_Module
 			'I_NextGen_Admin_Page',
 			'C_NextGen_Admin_Page_Controller'
 		);
+
+		// Provides a form manager
+		$this->get_registry()->add_utility(
+			'I_Form_Manager',
+			'C_Form_Manager'
+		);
+
+		// Provides a form
+		$this->get_registry()->add_utility(
+			'I_Form',
+			'C_Form'
+		);
 	}
 
 	/**
@@ -63,10 +75,14 @@ class M_NextGen_Admin extends C_Base_Module
 			'display_settings'
 		);
 
-        // adds some AJAX-support routes like updating watermark previews
         $this->get_registry()->add_adapter(
 			'I_Router',
 			'A_NextGen_Settings_Routes'
+		);
+
+		$this->get_registry()->add_adapter(
+			'I_Installer',
+			'A_NextGen_Admin_Installer'
 		);
 	}
 
