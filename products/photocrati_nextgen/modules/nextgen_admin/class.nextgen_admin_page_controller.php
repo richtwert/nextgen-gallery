@@ -13,20 +13,18 @@ class C_NextGen_Admin_Page_Controller extends C_MVC_Controller
 		return self::$_instances[$context];
 	}
 
-	function define($name, $context=FALSE)
+	function define($context=FALSE)
 	{
-		if (!$context) $context = $name;
-		elseif (!is_array($context)) $context = array($name, $context);
-		else array_unshift($context, $name);
+		if (is_array($context)) $this->name = $context[0];
+		else $this->name = $context;
 
 		parent::define($context);
 		$this->add_mixin('Mixin_NextGen_Admin_Page_Instance_Methods');
 		$this->implement('I_NextGen_Admin_Page');
 	}
 
-	function initialize($name)
+	function initialize()
 	{
-		$this->name = $name;
 		parent::initialize();
 		$this->add_pre_hook(
 			'index_action',
@@ -76,7 +74,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 	 */
 	function get_required_permission()
 	{
-		return 'nextgen_manage_settings';
+		return $this->object->name;
 	}
 
 	/**

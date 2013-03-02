@@ -16,11 +16,6 @@ class A_Display_Settings_Controller extends Mixin
 		);
 	}
 
-	function get_required_permission()
-	{
-		return 'ngg_manage_'.$this->object->context;
-	}
-
 	function get_page_title()
 	{
 		return 'Gallery Settings';

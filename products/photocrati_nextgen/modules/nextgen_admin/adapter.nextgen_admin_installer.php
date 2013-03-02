@@ -2,12 +2,13 @@
 
 class A_NextGen_Admin_Installer extends Mixin
 {
-	var $capabilities = array(
-		'ngg_manage_display_settings'
-	);
+	var $capabilities = array();
 
 	function initialize()
 	{
+		$pages = $this->get_registry()->get_utility('I_Page_Manager');
+		$this->capabilities = array_keys($pages->get_all());
+
 		$this->object->add_post_hook(
 			'install',
 			get_class(),

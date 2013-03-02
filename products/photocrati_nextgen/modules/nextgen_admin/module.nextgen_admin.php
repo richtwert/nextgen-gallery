@@ -36,6 +36,11 @@ class M_NextGen_Admin extends C_Base_Module
 			'C_NextGen_Admin_Page_Controller'
 		);
 
+		$this->get_registry()->add_utility(
+			'I_Page_Manager',
+			'C_Page_Manager'
+		);
+
 		// Provides a form manager
 		$this->get_registry()->add_utility(
 			'I_Form_Manager',
@@ -69,12 +74,6 @@ class M_NextGen_Admin extends C_Base_Module
 			'A_Stylesheet_Ajax_Actions'
 		);
 
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Admin_Page',
-			'A_Display_Settings_Controller',
-			'display_settings'
-		);
-
         $this->get_registry()->add_adapter(
 			'I_Router',
 			'A_NextGen_Settings_Routes'
@@ -101,46 +100,13 @@ class M_NextGen_Admin extends C_Base_Module
 	 */
 	function add_menu_pages()
 	{
-		// Get controllers for pages
-		$display_settings_controller = $this->get_registry()->get_utility(
-			'I_NextGen_Admin_Page', 'display_settings'
-		);
-		$other_options_controller	 = $this->get_registry()->get_utility(
-			'I_NextGen_Admin_Page', 'other_options'
-		);
-		$uninstall_controller		 = $this->get_registry()->get_utility(
-			'I_NextGen_Admin_Page',	'uninstall'
-		);
-
-		// Register menus
-		add_submenu_page(
-			NGGFOLDER,
-			_('NextGEN Gallery & Album Settings'),
-			_('Gallery Settings'),
-			'NextGEN Manage gallery',
-			'ngg_display_settings',
-			array(&$display_settings_controller, 'index_action')
-		);
-
-		// Add the "Options" page
-		add_submenu_page(
-			NGGFOLDER,
-			_('NextGEN Gallery - Other Options'),
-			_('Other Options'),
-			'NextGEN Change options',
-			'ngg_other_options',
-			array(&$other_options_controller, 'index_action')
-		);
-
-        // Add Uninstall Page
-        add_submenu_page(
-            NULL,
-            _('NextGEN Gallery - Check Uninstall'),
-            _('Check Uninstall'),
-            'administrator',
-            'ngg_uninstall',
-            array(&$uninstall_controller, 'index_action')
-        );
+		$pages = $this->get_registry()->get_utility('I_Page_Manager');
+//		$pages->add(
+//			'ngg_uninstall',
+//			'A_Uninstall_Controller',
+//			NULL
+//		);
+		$pages->setup();
 	}
 }
 

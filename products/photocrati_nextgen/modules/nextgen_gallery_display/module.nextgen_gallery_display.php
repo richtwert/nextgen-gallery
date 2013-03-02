@@ -22,6 +22,35 @@ class M_Gallery_Display extends C_Base_Module
 		);
 	}
 
+	function initialize()
+	{
+		parent::initialize();
+
+		// Add display settings page
+		$pages = $this->get_registry()->get_utility('I_Page_Manager');
+		$pages->add(
+			'ngg_display_settings',
+			'A_Display_Settings_Controller',
+			NGGFOLDER
+		);
+		
+		$this->add_display_types_as_alternative_views();
+	}
+
+	/**
+	 * Registers each display type as an alternative view
+	 */
+	function add_display_types_as_alternative_views()
+	{
+		$view_manager = $this->get_registry()->get_utility('I_Alternative_View_Manager');
+		$mapper		  = $this->get_registry()->get_utility('I_Display_Type_Mapper');
+		foreach ($mapper->find_all() as $display_type) {
+			$view_manager->add(
+				'display_type', $display_type->name, $display_type->title
+			);
+		}
+	}
+
 
 	/**
 	 * Register utilities required for this module
@@ -62,8 +91,12 @@ class M_Gallery_Display extends C_Base_Module
             'I_Displayed_Gallery_Renderer',
             'C_Displayed_Gallery_Renderer'
         );
-	}
 
+		$this->get_registry()->add_utility(
+			'I_Alternative_View_Manager',
+			'C_Alternative_View_Manager'
+		);
+	}
 
 	/**
 	 * Registers adapters required for this module
@@ -74,6 +107,12 @@ class M_Gallery_Display extends C_Base_Module
 		// displayed gallery instances
 		$this->get_registry()->add_adapter(
 			'I_Component_Factory', 'A_Gallery_Display_Factory'
+		);
+
+		// Provides fields related to alternative views
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_Alternative_View_Form'
 		);
 
 		// Plugin activation routine
@@ -88,7 +127,6 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-
 		// Enqueues static resources required
 		if (is_admin()) {
 			add_action(

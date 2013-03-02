@@ -48,11 +48,11 @@ class A_NextGen_Basic_Thumbnail_Form extends Mixin
             'nextgen_basic_thumbnails_hidden',
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_piclens_link_text',
-            'show_alternative_view_link',
+//            'show_alternative_view_link',
 //            'alternative_view',
-            'alternative_view_link_text',
-            'show_return_link',
-            'return_link_text',
+//            'alternative_view_link_text',
+//            'show_return_link',
+//            'return_link_text',
             'nextgen_basic_templates_template',
         );
     }

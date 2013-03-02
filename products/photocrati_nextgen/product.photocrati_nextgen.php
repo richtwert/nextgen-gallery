@@ -105,6 +105,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-nextgen_gallery_display');
 		$this->get_registry()->load_module('photocrati-attach_to_post');
 
+		// Load the NextGEN Gallery "Other Options" page
+		$this->get_registry()->load_module('photocrati-nextgen_other_options');
+
 		// Provides jsconsole remote debugging support
 		$this->get_registry()->load_module('photocrati-jsconsole');
 
