@@ -2,8 +2,8 @@
 
 /***
  {
-	Module: photocrati-dynamic-thumbnails,
-	Depends: { photocrati-nextgen_data }
+	Module: photocrati-dynamic_thumbnails,
+	Depends: { photocrati-dynamic_thumbnails }
  }
  ***/
 
@@ -34,7 +34,7 @@ class M_Dynamic_Thumbnails extends C_Base_Module
 	{
 		$this->get_registry()->add_adapter('I_Router', 'A_Dynamic_Thumbnail_Routes');
 		$this->get_registry()->add_adapter('I_GalleryStorage_Driver', 'A_Dynamic_Thumbnails_Storage_Driver');
-		$this->get_registry()->add_adater('I_Settings_Manager', 'A_Dynamic_Thumbnail_Settings');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Dynamic_Thumbnail_Settings');
 	}
 
 	function _register_utilities()

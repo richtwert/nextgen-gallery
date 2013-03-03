@@ -96,7 +96,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Provides framework-wide support for thumbnail-like gallery types
 		// Depends on photocrati-nextgen_data
-		$this->get_registry()->load_module('photocrati-dynamic-thumbnails');
+		$this->get_registry()->load_module('photocrati-dynamic_thumbnails');
 
 		// Load the NextGEN Gallery Admin interface
 		$this->get_registry()->load_module('photocrati-nextgen_admin');
