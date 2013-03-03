@@ -61,7 +61,7 @@ class M_NextGen_Admin extends C_Base_Module
 	{
 		$this->get_registry()->add_adapter(
 			'I_Settings_Manager',
-			'A_NextGen_Settings_Manager'
+			'A_NextGen_Admin_Settings'
 		);
 
 		$this->get_registry()->add_adapter(

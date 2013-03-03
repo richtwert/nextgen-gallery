@@ -119,7 +119,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 			is_ssl() ?
 				 str_replace('http:', 'https:', $settings->jquery_ui_theme_url) :
 				 $settings->jquery_ui_theme_url,
-			array(),
+			NULL,
 			$settings->jquery_ui_theme_version
 		);
 	}

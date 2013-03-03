@@ -5,6 +5,9 @@
 	Depends: { photocrati-nextgen_admin }
 }
  */
+
+define('NEXTGEN_OTHER_OPTIONS_SLUG', 'ngg_other_options');
+
 class M_NextGen_Other_Options extends C_Base_Module
 {
 	function define()
@@ -20,12 +23,16 @@ class M_NextGen_Other_Options extends C_Base_Module
 		);
 	}
 
-	function initialize() {
-		parent::initialize();
-		$this->get_registry()->get_utility('I_Page_Manager')->add(
-			'ngg_other_options',
-			'A_Other_Options_Controller',
-			NGGFOLDER
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter(
+			'I_Page_Manager',
+			'A_Other_Options_Page'
+		);
+
+		$this->get_registry()->add_adapter(
+			'I_Form_Manager',
+			'A_Other_Options_Forms'
 		);
 	}
 }

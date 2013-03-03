@@ -26,14 +26,6 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		parent::initialize();
 
-		// Add display settings page
-		$pages = $this->get_registry()->get_utility('I_Page_Manager');
-		$pages->add(
-			'ngg_display_settings',
-			'A_Display_Settings_Controller',
-			NGGFOLDER
-		);
-		
 		$this->add_display_types_as_alternative_views();
 	}
 
@@ -119,6 +111,11 @@ class M_Gallery_Display extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Installer',
 			'A_Gallery_Display_Installer'
+		);
+
+		$this->get_registry()->add_adapter(
+			'I_Page_Manager',
+			'A_Display_Settings_Page'
 		);
 	}
 
