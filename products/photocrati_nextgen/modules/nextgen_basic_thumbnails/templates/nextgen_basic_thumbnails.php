@@ -55,7 +55,7 @@
 
 									$triggers = $this->get_registry()->get_utility('I_NextGen_Pro_Lightbox_Trigger_Manager');
 
-									if ($triggers != null)
+									if ($triggers != null && defined('NEXTGEN_PRO_LIGHTBOX_MODULE_NAME') && $this->object->get_registry()->get_utility('I_NextGen_Settings')->thumbEffect == NEXTGEN_PRO_LIGHTBOX_MODULE_NAME)
 									{
 										$params = array(
 											'context' => 'image', 
