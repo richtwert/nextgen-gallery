@@ -15,7 +15,7 @@ class C_Test_Controller extends C_Http_Response_Controller
 		echo "Here is your value: {$this->param('value')}";
 	}
 
-	function get_instance($context=FALSE)
+	static function get_instance($context=FALSE)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();
