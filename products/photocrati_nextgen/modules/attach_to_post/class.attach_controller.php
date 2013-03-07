@@ -3,6 +3,7 @@
 class C_Attach_Controller extends C_NextGen_Admin_Page_Controller
 {
 	static $_instances = array();
+	var	   $_displayed_gallery;
 
 	static function &get_instance($context='attach_to_post')
 	{
@@ -22,12 +23,28 @@ class C_Attach_Controller extends C_NextGen_Admin_Page_Controller
 		$this->add_mixin('Mixin_Attach_To_Post_Display_Tab');
 		$this->implement('I_Attach_To_Post_Controller');
 	}
+
+	function initialize()
+	{
+		parent::initialize();
+		$this->_load_displayed_gallery();
+	}
 }
 
 class Mixin_Attach_To_Post extends Mixin
 {
-	function enqueue_attach_to_post_resources()
+	function _load_displayed_gallery()
 	{
+		$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
+		if (!($this->object->_displayed_gallery = $mapper->find($this->object->param('id'), TRUE))) {
+			$this->object->_displayed_gallery = $mapper->create();
+		}
+	}
+
+
+	function enqueue_backend_resources()
+	{
+		$this->call_parent('enqueue_backend_resources');
 		// Enqueue frame event publishing
 		do_action('admin_enqueue_scripts');
 		wp_enqueue_script('frame_event_publisher');
@@ -41,8 +58,8 @@ class Mixin_Attach_To_Post extends Mixin
 		wp_enqueue_style('select2', $this->get_static_url('attach_to_post#select2.css'));
 		wp_enqueue_script('select2', $this->get_static_url('attach_to_post#select2.js'));
 
-		// Ensure we have the AJAX module ready
-		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
+		// Ensure that the Photocrati AJAX library is loaded
+		wp_enqueue_script('photocrati_ajax');
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
@@ -96,22 +113,12 @@ class Mixin_Attach_To_Post extends Mixin
 	 */
 	function index_action()
 	{
-		// For a valid request, we'll display our tabbed interface
-		if ($this->object->_validate_request()) {
-
-			// Enqueue resources
-			$this->enqueue_backend_resources();
-			$this->object->render_view('attach_to_post', array(
-				'page_title'	=>	$this->object->_get_page_title(),
-				'tabs'			=>	$this->object->_get_main_tabs(),
-				'tab_titles'	=>	$this->object->_get_main_tab_titles()
-			));
-		}
-
-		// Bad request!
-		else {
-			$this->object->http_error("Displayed Gallery could not be found.", 404);
-		}
+		// Enqueue resources
+		$this->object->render_view('attach_to_post', array(
+			'page_title'	=>	$this->object->_get_page_title(),
+			'tabs'			=>	$this->object->_get_main_tabs(),
+			'tab_titles'	=>	$this->object->_get_main_tab_titles()
+		));
 	}
 
 	function preview_tab_css($return=FALSE)

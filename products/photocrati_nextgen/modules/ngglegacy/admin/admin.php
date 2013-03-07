@@ -97,7 +97,7 @@ class nggAdminPanel{
 				if (preg_match_all("/<script.*wp-content.*jquery[-_\.](min\.)?js.*<\script>/", $html, $matches, PREG_SET_ORDER)) {
 					foreach ($matches as $match) {
 						$old_script = array_shift($match);
-						if (strpos($old_script, NGGFOLDER) === FALSE)
+						if (strpos($old_script, NEXTGEN_GALLERY_PLUGIN_DIR) === FALSE)
 							$html = str_replace($old_script, '', $html);
 					}
 				}
@@ -107,7 +107,7 @@ class nggAdminPanel{
 					$detected_jquery_ui = TRUE;
 					foreach ($matches as $match) {
 						$old_script = array_shift($match);
-						if (strpos($old_script, NGGFOLDER) === FALSE)
+						if (strpos($old_script, NEXTGEN_GALLERY_PLUGIN_DIR) === FALSE)
 							$html = str_replace($old_script, '', $html);
 					}
 				}

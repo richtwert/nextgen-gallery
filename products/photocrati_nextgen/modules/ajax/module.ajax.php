@@ -38,7 +38,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-		add_action('wp_enqueue_scripts', array(&$this, 'enqueue_scripts'));
+		add_action('init', array(&$this, 'enqueue_scripts'));
 		add_action('admin_init', array(&$this, 'enqueue_scripts'));
 	}
 
@@ -49,7 +49,8 @@ class M_Ajax extends C_Base_Module
 	function enqueue_scripts()
 	{
 		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
-        wp_enqueue_script('photocrati_ajax', $settings->ajax_js_url, array(), NULL);
+		wp_register_script('photocrati_ajax', $settings->ajax_js_url, array(), NULL);
+        wp_enqueue_script('photocrati_ajax');
 	}
 }
 
