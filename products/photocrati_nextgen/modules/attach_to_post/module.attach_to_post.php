@@ -6,6 +6,8 @@
  }
  */
 
+define('NEXTGEN_GALLERY_ATTACH_TO_POST_SLUG', 'ngg_attach_to_post');
+
 class M_Attach_To_Post extends C_Base_Module
 {
 	var $attach_to_post_tinymce_plugin  = 'NextGEN_AttachToPost';
@@ -48,7 +50,7 @@ class M_Attach_To_Post extends C_Base_Module
 		// Attach to Post interface, used to manage Displayed Galleries
 		$this->get_registry()->add_utility(
 			'I_Attach_To_Post_Controller',
-			'C_Attach_To_Post_Controller'
+			'C_Attach_Controller'
 		);
 	}
 
@@ -57,6 +59,11 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
+		// Installs the Attach to Post module
+		$this->get_registry()->add_adapter(
+			'I_Installer', 'A_Attach_To_Post_Installer'
+		);
+
 		// Provides routing for the Attach To Post interface
 		$this->get_registry()->add_adapter(
 			'I_Router', 'A_Attach_To_Post_Routes'
@@ -240,7 +247,8 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
-		$plugins[$this->attach_to_post_tinymce_plugin] = $this->get_static_url('ngg_attach_to_post_tinymce_plugin.js');
+		$router = $this->get_registry()->get_utility('I_Router');
+		$plugins[$this->attach_to_post_tinymce_plugin] = $router->get_static_url('ngg_attach_to_post_tinymce_plugin.js');
 		return $plugins;
 	}
 

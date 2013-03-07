@@ -148,7 +148,9 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 	 */
 	function get_form_type()
 	{
-		return $this->object->context;
+
+		return is_array($this->object->context) ?
+			$this->object->context[0] : $this->object->context;
 	}
 
 	function get_success_message()
@@ -200,6 +202,15 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 	}
 
 	/**
+	 * Returns the template to be rendered for the index action
+	 * @return string
+	 */
+	function index_template()
+	{
+		return 'nextgen_admin#nextgen_admin_page';
+	}
+
+	/**
 	 * Renders a NextGEN Admin Page using jQuery Accordions
 	 */
 	function index_action()
@@ -229,7 +240,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 			}
 
 			// Render the view
-			$this->render_partial('nextgen_admin#nextgen_admin_page', array(
+			$this->render_partial($this->object->index_template(), array(
 				'page_heading'		=>	$this->object->get_page_heading(),
 				'tabs'				=>	$tabs,
 				'errors'			=>	$errors,

@@ -124,33 +124,33 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-		// Enqueues static resources required
-		if (is_admin()) {
-			add_action(
-				'admin_enqueue_scripts',
-				array(&$this, 'enqueue_resources'),
-				1
-			);
-		}
+        add_action('wp_enqueue_scripts', array(&$this, 'enqueue_galleries_js'));
 
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 	}
 
+	// TODO: Is this the right place for this?
+    function enqueue_galleries_js()
+    {
+        wp_register_script('nextgen_galleries', $this->static_url('nextgen_galleries.js'));
+        wp_enqueue_script('nextgen_galleries');
+    }
 
 	/**
-	 * Enqueues static resources for the Display Settings Page
+	 * Adds the display settings page to wp-admin
 	 */
-	function enqueue_resources()
+	function add_display_settings_page()
 	{
-        // for tooltip styling
-        if (isset($_GET['page']) && $_GET['page'] == 'nggallery-manage-gallery')
-        {
-			$router = $this->get_registry()->get_utility('I_Router');
-
-        }
+		add_submenu_page(
+			NGGFOLDER,
+			_('NextGEN Gallery & Album Settings'),
+			_('Gallery Settings'),
+			'NextGEN Manage gallery',
+			$this->display_settings_page_name,
+			array(&$this->controller, 'index_action')
+		);
 	}
-
 
 	/**
 	 * Provides the [display_images] shortcode

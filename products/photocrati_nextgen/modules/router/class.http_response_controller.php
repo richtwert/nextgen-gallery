@@ -11,7 +11,7 @@ class C_Http_Response_Controller extends C_MVC_Controller
 		$this->implement('I_Http_Response');
 	}
 
-	function get_instance($context=FALSE)
+	static function get_instance($context=FALSE)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();

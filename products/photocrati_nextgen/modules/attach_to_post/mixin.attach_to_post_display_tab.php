@@ -161,6 +161,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_settings_contents()
 	{
+		return;
 		$retval = array();
 		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper', 'attach_to_post');
 		foreach ($mapper->find_all(array()) as $display_type) {

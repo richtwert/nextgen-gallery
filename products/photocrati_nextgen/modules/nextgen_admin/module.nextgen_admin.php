@@ -18,7 +18,7 @@ class M_NextGen_Admin extends C_Base_Module
 		parent::define(
 			'photocrati-nextgen_admin',
 			'NextGEN Administration',
-			'Provides central management for NextGEN Gallery',
+			'Provides a framework for adding Administration pages',
 			'0.1',
 			'http://www.nextgen-gallery.com',
 			'Photocrati Media',

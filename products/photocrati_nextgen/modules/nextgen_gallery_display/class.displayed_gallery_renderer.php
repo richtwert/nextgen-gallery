@@ -109,7 +109,8 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
             'entity_ids'		=>	array(),
             'tagcloud'          => FALSE,
             'inner_content'     => $inner_content,
-            'returns'           => 'included'
+            'returns'           => 'included',
+            'slug'              => NULL
         );
         $args = shortcode_atts($defaults, $params);
 
@@ -216,7 +217,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
     function render($displayed_gallery, $return=FALSE)
     {
         // Save the displayed gallery as a transient
-        $displayed_gallery->to_transient();
+        $displayed_gallery->transient_id = $displayed_gallery->to_transient();
 
         // Get the display type controller
         $controller = $this->get_registry()->get_utility(

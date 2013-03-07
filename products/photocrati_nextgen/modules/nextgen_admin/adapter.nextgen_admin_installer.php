@@ -29,17 +29,27 @@ class A_NextGen_Admin_Installer extends Mixin
 		return $sec_actor;
 	}
 
+	function add_capability($cap)
+	{
+		$this->get_current_actor()->add_capability($cap);
+	}
+
+	function remove_capability($cap)
+	{
+		$this->get_current_actor()->remove_capability($cap);
+	}
+
 	function install_nextgen_admin_module()
 	{
 		foreach ($this->object->capabilities as $cap) {
-			$this->get_current_actor()->add_capability($cap);
+			$this->object->add_capability($cap);
 		}
 	}
 
 	function uninstall_nextgen_admin_module()
 	{
 		foreach ($this->object->capabilities as $cap) {
-			$this->get_current_actor()->remove_capability($cap);
+			$this->object->remove_capability($cap);
 		}
 	}
 }

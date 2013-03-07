@@ -38,10 +38,10 @@
 
         <div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-thumbnail-box" <?php print $image->style; ?>>
             <div class="ngg-gallery-thumbnail">
-                <a
-                    href="<?php echo esc_attr($storage->get_image_url($image))?>"
-                    title="<?php echo esc_attr($image->description)?>"
-                    <?php echo $effect_code ?>>
+                <a href="<?php echo esc_attr($storage->get_image_url($image))?>"
+                   title="<?php echo esc_attr($image->description)?>"
+                   data-image-id='<?php echo esc_attr($image->pid); ?>'
+                   <?php echo $effect_code ?>>
                     <img
                         title="<?php echo esc_attr($image->alttext)?>"
                         alt="<?php echo esc_attr($image->alttext)?>"
@@ -50,8 +50,23 @@
                         height="<?php echo esc_attr($thumb_size['height'])?>"
                         style="max-width:none;"
                     />
-
                 </a>
+								<?php
+
+									$triggers = $this->get_registry()->get_utility('I_NextGen_Pro_Lightbox_Trigger_Manager');
+
+									if ($triggers != null && defined('NEXTGEN_PRO_LIGHTBOX_MODULE_NAME') && $this->object->get_registry()->get_utility('I_NextGen_Settings')->thumbEffect == NEXTGEN_PRO_LIGHTBOX_MODULE_NAME)
+									{
+										$params = array(
+											'context' => 'image', 
+											'context-id' => $image->{$image->id_field},
+											'context-parent' => 'gallery', 
+											'context-parent-id' => $transient_id,
+										);
+		
+										echo $triggers->render_trigger_list(null, $params, $this->object);
+									}
+								?>
             </div>
         </div>
 

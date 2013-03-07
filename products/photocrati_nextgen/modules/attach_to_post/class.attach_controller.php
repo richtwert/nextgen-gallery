@@ -1,65 +1,33 @@
 <?php
 
-/**
- * Provides the ability to create and edit C_Displayed_Galleries
- */
-class C_Attach_To_Post_Controller extends C_NextGen_Admin_Page_Controller
+class C_Attach_Controller extends C_NextGen_Admin_Page_Controller
 {
 	static $_instances = array();
-	var $_displayed_gallery;
 
-
-	/**
-	 * Gets an instance of the controller
-	 * @param string $context
-	 * @return C_NextGen_Settings_Controller
-	 */
-	static function &get_instance($context=FALSE)
+	static function &get_instance($context='attach_to_post')
 	{
 		if (!isset(self::$_instances[$context])) {
-			$klass = function_exists('get_called_class') ?
-				get_called_class() : get_class();
+			$klass = get_class();
 			self::$_instances[$context] = new $klass($context);
 		}
 		return self::$_instances[$context];
 	}
 
-	/**
-	 * Defines what instance methods the Attach To Post Controller has
-	 * @param mixed $context
-	 */
-	function define($context=FALSE)
+	function define($context)
 	{
+		if (!is_array($context)) $context = array($context);
+		array_unshift($context, 'ngg_attach_to_post');
 		parent::define($context);
-		$this->add_mixin('Mixin_Attach_To_Post_Controller');
+		$this->add_mixin('Mixin_Attach_To_Post');
 		$this->add_mixin('Mixin_Attach_To_Post_Display_Tab');
 		$this->implement('I_Attach_To_Post_Controller');
 	}
 }
 
-/**
- * Provide instance methods for the Attach To Post Controller
- */
-class Mixin_Attach_To_Post_Controller extends Mixin
+class Mixin_Attach_To_Post extends Mixin
 {
-	function initialize()
+	function enqueue_attach_to_post_resources()
 	{
-		$this->object->add_post_hook(
-			'enqueue_backend_resources',
-			'Enqueues resources needed for the Attach to Post interface',
-			__CLASS__,
-			'enqueue_attach_to_post_resources'
-		);
-
-	}
-
-	/**
-	 * Enqueue static resources required by the Attach to Post interface
-	 */
-	function enqueue_backend_resources()
-	{
-		$this->call_parent('enqueue_backend_resources');
-
 		// Enqueue frame event publishing
 		do_action('admin_enqueue_scripts');
 		wp_enqueue_script('frame_event_publisher');
