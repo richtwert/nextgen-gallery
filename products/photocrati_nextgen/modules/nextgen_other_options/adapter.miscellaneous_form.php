@@ -22,4 +22,11 @@ class A_Miscellaneous_Form extends Mixin
 			'mediarss_activated_yes'	=>		_('Yes'),
 		), TRUE);
 	}
+
+	function save_action()
+	{
+		if (($settings = $this->object->param('misc_settings'))) {
+			$this->object->get_model()->set($settings)->save();
+		}
+	}
 }

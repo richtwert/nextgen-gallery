@@ -107,7 +107,6 @@ class A_Watermarks_Form extends Mixin
 		));
 		$thumb_url	= $image ? $storage->get_image_url($image, $size) : NULL;
 
-
 		return $this->render_partial('nextgen_other_options#watermarks_tab', array(
 			'notice'					=>	_('Please note : You can only activate the watermark under -> Manage Gallery . This action cannot be undone.'),
 			'watermark_source_label'	=>	_('How will you generate a watermark?'),
@@ -124,7 +123,14 @@ class A_Watermarks_Form extends Mixin
             'thumbnail_url'             => $thumb_url,
             'preview_label'             => _('Preview of saved settings:'),
             'refresh_label'             => _('Refresh preview image'),
-            'refresh_url'               => ''//$router->get_url('/nextgen_settings/update_watermark_preview', FALSE)
+            'refresh_url'               => $settings->ajax_url
 		), TRUE);
+	}
+
+	function save_action()
+	{
+		if (($settings = $this->object->param('watermark_options'))) {
+			$this->object->get_model()->set($settings)->save();
+		}
 	}
 }

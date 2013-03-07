@@ -95,4 +95,95 @@ class A_Image_Options_Form extends Mixin
 			'backup_images'					=>	$settings->imgBackup
 		), TRUE);
 	}
+
+	function save_action()
+	{
+		$save = TRUE;
+		if (($image_options = $this->object->param('image_options'))) {
+
+			// Update the gallery path. Moves all images to the new location
+			if (isset($image_options['gallerypath'])) {
+				$fs			  = $this->get_registry()->get_utility('I_Fs');
+				$original_dir = $fs->get_abspath($this->object->get_model()->get('gallerypath'));
+				$new_dir	  = $fs->get_abspath($image_options['gallerypath']);
+
+				// If the gallery path has changed...
+				if ($original_dir != $new_dir) {
+
+					// Try moving files
+					if (is_writable($new_dir)) {
+						$this->object->recursive_copy($original_dir, $new_dir);
+						$this->object->recursive_delete($original_dir);
+
+						// Update gallery paths
+						$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
+						foreach ($mapper->find_all() as $gallery) {
+							$gallery->gallerypath = $image_options['gallerypath'];
+							$mapper->save($gallery);
+						}
+					}
+					else {
+						$this->get_model()->add_error("Unable to change gallery path. Insufficient filesystem permissions");
+						$save = FALSE;
+					}
+				}
+			}
+
+			// Update image options
+			if ($save) $this->object->get_model()->set($image_options)->save();
+		}
+	}
+
+	/**
+	 * Copies one directory to another
+	 * @param string $src
+	 * @param string $dst
+	 * @return boolean
+	 */
+	function recursive_copy($src, $dst)
+	{
+		$retval = TRUE;
+		$dir = opendir($src);
+		@mkdir($dst);
+		while(false !== ( $file = readdir($dir)) ) {
+			if (( $file != '.' ) && ( $file != '..' )) {
+				if ( is_dir($src . '/' . $file) ) {
+					if (!$this->object->recursive_copy($src . '/' . $file,$dst . '/' . $file)) {
+						$retval = FALSE;
+						break;
+					}
+				}
+				else {
+					if (!copy($src . '/' . $file,$dst . '/' . $file)) {
+						$retval = FALSE;
+						break;
+					}
+				}
+			}
+		}
+		closedir($dir);
+		return $retval;
+	}
+
+	/**
+	 * Deletes all files within a particular directory
+	 * @param string $dir
+	 * @return boolean
+	 */
+	function recursive_delete($dir)
+	{
+		$retval = FALSE;
+		while(false !== ( $file = readdir($dir)) ) {
+			if (( $file != '.' ) && ( $file != '..' )) {
+				if ( is_dir($dir . '/' . $file) ) {
+					if (!($retval = $this->object->recursive_delete($dir.'/'.$file)))
+						break;
+				}
+				else {
+					if (!($retval = unlink($dir.'/'.$file))) break;
+				}
+			}
+		}
+		return $retval;
+	}
 }

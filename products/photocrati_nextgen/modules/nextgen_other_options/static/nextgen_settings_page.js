@@ -2,18 +2,42 @@ jQuery(function($){
 	// Activate accordions
 	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
 
-    $('#nextgen_other_options').submit(function(event) {
-        event.preventDefault();
-        var confirmed = true;
+    // When a submit button is clicked...
+	$('input[type="submit"]').click(function(e){
+		var $button = $(this);
+		var message = false;
 
-        if ($('#gallery_path').val() !== $('#gallery_path').data('original-value')) {
-            confirmed = confirm('This will move the entire gallery folder and its contents to your new location. Proceed?');
-        }
+		// Check if a confirmation dialog is required
+		if ((message = $button.attr('data-confirm'))) {
+			if (!confirm(message)) {
+				e.preventDefault();
+				return;
+			}
+		}
 
-        if (confirmed == true) {
-            $(this).off('submit').submit();
-        }
-    });
+		// Check if this is a proxy button for another field
+		if ($button.attr('name').indexOf('_proxy') != -1) {
+
+			// Get the value to set
+			var value = $button.attr('data-proxy-value');
+			if (!value) value = $button.attr('value');
+
+			// Get the name of the field that is being proxied
+			var field_name = $button.attr('name').replace('_proxy', '');
+
+			// Try getting the existing field
+			var $field = $('input[name="'+field_name+'"]');
+			if ($field.length > 0) $field.val(value);
+			else {
+				$field = $('<input/>').attr({
+					type: 'hidden',
+					name: field_name,
+					value: value
+				});
+				$button.parents('form').append($field);
+			}
+		}
+	});
 
 	/**** LIGHTBOX EFFECT TAB ****/
 
@@ -54,7 +78,7 @@ jQuery(function($){
         $.ajax({
             type: form.attr('method'),
             url: $(this).data('refresh-url'),
-            data: form.serialize(),
+            data: form.serialize()+"&action=get_watermark_preview_url",
             dataType: 'json',
             success: function(data) {
                 var img = self.prev();

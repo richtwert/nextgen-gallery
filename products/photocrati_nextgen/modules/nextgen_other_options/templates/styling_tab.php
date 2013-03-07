@@ -6,7 +6,7 @@
 			</label>
 		</td>
 		<td>
-			<select id="activated_stylesheet" name="settings[CSSfile]">
+			<select id="activated_stylesheet" name="style_settings[CSSfile]">
 			<?php foreach ($stylesheets as $value => $p): ?>
 				<option
 					value="<?php echo esc_attr($value)?>"

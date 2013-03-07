@@ -33,11 +33,12 @@ class C_Page_Manager extends C_Component
 
 class Mixin_Page_Manager extends Mixin
 {
-	function add($slug, $adapter, $parent=NULL)
+	function add($slug, $adapter, $parent=NULL, $add_menu=TRUE)
 	{
 		$this->object->_pages[$slug] = array(
 			'adapter'	=>	$adapter,
-			'parent'	=>	$parent
+			'parent'	=>	$parent,
+			'add_menu'	=>	$add_menu
 		);
 	}
 
@@ -65,14 +66,16 @@ class Mixin_Page_Manager extends Mixin
 				'I_NextGen_Admin_Page',
 				$slug
 			);
-			add_submenu_page(
-				$properties['parent'],
-				$controllers[$slug]->get_page_title(),
-				$controllers[$slug]->get_page_heading(),
-				$controllers[$slug]->get_required_permission(),
-				$slug,
-				array(&$controllers[$slug], 'index_action')
-			);
+			if ($properties['add_menu']) {
+				add_submenu_page(
+					$properties['parent'],
+					$controllers[$slug]->get_page_title(),
+					$controllers[$slug]->get_page_heading(),
+					$controllers[$slug]->get_required_permission(),
+					$slug,
+					array(&$controllers[$slug], 'index_action')
+				);
+			}
 		}
 	}
 }

@@ -7,7 +7,7 @@
 	<td>
 		<input
 			type="text"
-			name="settings[wmPath]"
+			name="watermark_options[wmPath]"
 			id="watermark_image_url"
 			value="<?php echo esc_attr($watermark_image_url)?>"
 		/>

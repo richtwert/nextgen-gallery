@@ -9,7 +9,7 @@
 			<input
 				id="gallery_path"
 				type="text"
-				name="settings[gallerypath]"
+				name="image_options[gallerypath]"
                 data-original-value='<?php echo esc_attr($gallery_path); ?>'
 				value="<?php echo esc_attr($gallery_path) ?>"
 			/>
@@ -29,7 +29,7 @@
 				<input
 					type="checkbox"
 					id="delete_images"
-					name="settings[deleteImg]"
+					name="image_options[deleteImg]"
 					value="1"
 					<?php checked(TRUE, $delete_image_files? TRUE: FALSE)?>
 				/>
@@ -48,7 +48,7 @@
 				<input
 					type="checkbox"
 					id="automatic_resize"
-					name="settings[imgAutoResize]"
+					name="image_options[imgAutoResize]"
 					value="1"
 					<?php checked(TRUE, $automatic_resize ? TRUE : FALSE)?>
 				/>
@@ -69,7 +69,7 @@
 				type="text"
 				id="image_width"
 				maxlength="4"
-				name="settings[imgWidth]"
+				name="image_options[imgWidth]"
 				value="<?php echo esc_attr($resized_image_width) ?>"
 			/>
 			&nbsp;<label for="image_height"><?php echo_h($resized_image_height_label)?></label>
@@ -77,14 +77,14 @@
 				type="text"
 				id="image_height"
 				maxlength="4"
-				name="settings[imgHeight]"
+				name="image_options[imgHeight]"
 				value="<?php echo esc_attr($resized_image_height) ?>"
 			/>
 		</td>
 		<td>
 			<div class="column_wrapper">
 				<label for="image_quality"><?php echo_h($resized_image_quality_label)?></label>
-				<select id="image_quality" name="settings[imgQuality]">
+				<select id="image_quality" name="image_options[imgQuality]">
 				<?php for($i=100; $i>50; $i--): ?>
 					<option
 						<?php selected($i, $resized_image_quality) ?>
@@ -112,7 +112,7 @@
 			</label>
 			<input
 				id="backup_images_yes"
-				name="settings[backup_images]"
+				name="image_options[backup_images]"
 				value="1"
 				type="radio"
 				<?php checked(1, $backup_images)?>
@@ -123,7 +123,7 @@
 			</label>
 			<input
 				id="backup_images_no"
-				name="settings[backup_images]"
+				name="image_options[backup_images]"
 				value="0"
 				type="radio"
 				<?php checked(0, $backup_images)?>
@@ -137,7 +137,7 @@
 			</label>
 		</td>
 		<td>
-			<select name="settings[galSort]" id="image_sorting_order">
+			<select name="image_options[galSort]" id="image_sorting_order">
 				<?php foreach ($sorting_order_options as $label => $value): ?>
 				<option value="<?php echo esc_attr($value) ?>" <?php selected($value, $sorting_order)?>>
 					<?php echo_h($label) ?>
@@ -149,7 +149,7 @@
 			<label for="image_sorting_direction">
 				<?php echo_h($sorting_direction_label) ?>
 			</label>
-			<select name="settings[galSortDir]" id="image_sorting_direction">
+			<select name="image_options[galSortDir]" id="image_sorting_direction">
 			<?php foreach ($sorting_direction_options as $label => $value): ?>
 			<option value="<?php echo esc_attr($value) ?>" <?php selected($value, $sorting_direction)?>>
 				<?php echo_h($label) ?>
@@ -169,7 +169,7 @@
 				<input
 					type="checkbox"
 					id="show_related_images"
-					name="settings[activateTags]"
+					name="image_options[activateTags]"
 					value="1"
 					<?php checked(TRUE, $show_related_images ? TRUE: FALSE)?>
 				/>
@@ -196,7 +196,7 @@
 			</label>
 		</td>
 		<td>
-			<select id="match_related_images" name="settings[appendType]">
+			<select id="match_related_images" name="image_options[appendType]">
 			<?php foreach ($match_related_image_options as $label => $value): ?>
 				<option
 					value="<?php echo esc_attr($value)?>"
@@ -214,7 +214,7 @@
 			<input
 				id="max_related_images"
 				type="text"
-				name="settings[maxImages]"
+				name="image_options[maxImages]"
 				value="<?php echo esc_attr($max_related_images)?>"
 			/>
 		</td>

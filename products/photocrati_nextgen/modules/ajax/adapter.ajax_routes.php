@@ -20,4 +20,11 @@ class A_Ajax_Routes extends Mixin
 		$app->route('/js',	'I_Ajax_Controller#js');
 		$app->route('/',	'I_Ajax_Controller#index');
 	}
+
+	function get_ajax_url()
+	{
+		return $this->object->get_url(
+			$this->get_registry()->get_utility('I_Settings')->ajax_slug, FALSE
+		);
+	}
 }

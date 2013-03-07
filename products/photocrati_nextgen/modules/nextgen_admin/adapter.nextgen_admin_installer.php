@@ -2,12 +2,10 @@
 
 class A_NextGen_Admin_Installer extends Mixin
 {
-	var $capabilities = array();
-
 	function initialize()
 	{
 		$pages = $this->get_registry()->get_utility('I_Page_Manager');
-		$this->capabilities = array_keys($pages->get_all());
+		$this->object->capabilities = array_keys($pages->get_all());
 
 		$this->object->add_post_hook(
 			'install',
@@ -33,14 +31,14 @@ class A_NextGen_Admin_Installer extends Mixin
 
 	function install_nextgen_admin_module()
 	{
-		foreach ($this->capabilities as $cap) {
+		foreach ($this->object->capabilities as $cap) {
 			$this->get_current_actor()->add_capability($cap);
 		}
 	}
 
 	function uninstall_nextgen_admin_module()
 	{
-		foreach ($this->capabilities as $cap) {
+		foreach ($this->object->capabilities as $cap) {
 			$this->get_current_actor()->remove_capability($cap);
 		}
 	}

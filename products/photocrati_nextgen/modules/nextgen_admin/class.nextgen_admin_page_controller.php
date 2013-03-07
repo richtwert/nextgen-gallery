@@ -185,6 +185,21 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 	}
 
 	/**
+	 * Gets the action to be executed
+	 * @return string
+	 */
+	function _get_action()
+	{
+		$retval = preg_quote($this->object->param('action'), '/');
+		$retval = strtolower(preg_replace(
+			"/[^\w]/",
+			'_',
+			$retval
+		));
+		return preg_replace("/_{2,}/", "_", $retval).'_action';
+	}
+
+	/**
 	 * Renders a NextGEN Admin Page using jQuery Accordions
 	 */
 	function index_action()
@@ -201,10 +216,13 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 				$form->enqueue_static_resources();
 				$tabs[] = $this->object->to_accordion_tab($form);
 				if ($this->object->is_post_request()) {
-					$action = $this->object->param('action');
+					$action = $this->object->_get_action();
 					if ($form->has_method($action)) {
 						if (!$form->$action()) {
-							$errors[] = $this->object->show_errors_for($form->get_model());
+							if (($form_errors = $this->object->show_errors_for($form->get_model(), TRUE))) {
+								$errors[] = $form_errors;
+							}
+							$form->get_model()->clear_errors();
 						}
 					}
 				}

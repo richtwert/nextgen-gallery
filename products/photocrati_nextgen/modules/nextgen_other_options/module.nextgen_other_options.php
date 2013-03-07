@@ -34,6 +34,11 @@ class M_NextGen_Other_Options extends C_Base_Module
 			'I_Form_Manager',
 			'A_Other_Options_Forms'
 		);
+
+		$this->get_registry()->add_adapter(
+			'I_Ajax_Controller',
+			'A_Watermarking_Ajax_Actions'
+		);
 	}
 }
 

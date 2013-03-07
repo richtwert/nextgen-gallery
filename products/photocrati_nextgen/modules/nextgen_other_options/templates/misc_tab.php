@@ -12,7 +12,7 @@
 			<input
                 id='mediarss_activated'
 				type="radio"
-				name="settings[useMediaRSS]"
+				name="misc_settings[useMediaRSS]"
 				value="1"
 				<?php checked(TRUE, $mediarss_activated ? TRUE : FALSE)?>
 			/>
@@ -23,7 +23,7 @@
 			<input
                 id='mediarss_activated_no'
 				type="radio"
-				name="settings[useMediaRSS]"
+				name="misc_settings[useMediaRSS]"
 				value="0"
 				<?php checked(FALSE, $mediarss_activated ? TRUE : FALSE)?>
 			/>

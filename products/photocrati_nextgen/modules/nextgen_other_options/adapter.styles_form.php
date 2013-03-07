@@ -100,4 +100,39 @@ class A_Styles_Form extends Mixin
 			'readonly_label'			=>	_('You could edit this file if it were writable')
 		), TRUE);
 	}
+
+	function save_action()
+	{
+		// Ensure that we have
+		if (($settings = $this->object->param('style_settings'))) {
+			$this->object->get_model()->set($settings)->save();
+
+			// Are we to modify the CSS file?
+			if (($contents = $this->object->param('cssfile_contents'))) {
+
+				// Find filename
+				$css_file		= $settings['CSSfile'];
+				$filename		= path_join(TEMPLATEPATH, $css_file);
+				$alt_filename	= path_join(
+					NGGALLERY_ABSPATH,
+					implode(DIRECTORY_SEPARATOR, array('css', $css_file))
+				);
+				$found = FALSE;
+				if (file_exists($filename)) {
+					if (is_writable($filename)) $found = $filename;
+				}
+				elseif (file_exists($alt_filename)) {
+					if (is_writable($alt_filename)) $found = $alt_filename;
+				}
+
+				// Write file contents
+				if ($found)
+				{
+					$fp = fopen($found, 'w');
+					fwrite($fp, $contents);
+					fclose($fp);
+				}
+			}
+		}
+	}
 }

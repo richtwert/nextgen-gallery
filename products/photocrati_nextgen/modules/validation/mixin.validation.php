@@ -2,12 +2,6 @@
 
 class Mixin_Validation extends Mixin
 {
-	function initialize()
-	{
-		if (!isset($this->object->_errors)) $this->object->_errors = array();
-	}
-
-
     var $_default_msgs = array(
        "validates_presence_of"      => "%s should be present",
        "validates_presence_with"    => "%s should be present with %s",
@@ -55,11 +49,13 @@ class Mixin_Validation extends Mixin
      */
     function add_error($msg, $property='*')
     {
-        if (!isset($this->object->_errors[$property])) {
-            $this->object->_errors[$property] = array();
+		$errors = &$this->object->_errors;
+
+        if (!isset($errors[$property])) {
+            $errors[$property] = array();
         }
 
-        $this->object->_errors[$property][] = $msg;
+		$errors[$property][] = $msg;
     }
 
     /**
@@ -114,7 +110,9 @@ class Mixin_Validation extends Mixin
 	 */
     function get_errors($property=FALSE)
     {
-        return $property ? $this->object->errors_for($property) : $this->object->_errors;
+		$retval = $property ? $this->object->errors_for($property) : $this->object->_errors;
+        if (!$retval) $retval = array();
+		return $retval;
     }
 
 

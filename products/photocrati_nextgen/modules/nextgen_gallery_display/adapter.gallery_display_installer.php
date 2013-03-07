@@ -128,10 +128,11 @@ class A_Gallery_Display_Installer extends Mixin
 	/**
 	 * Uninstalls this module
 	 */
-	function uninstall_nextgen_gallery_display()
+	function uninstall_nextgen_gallery_display($hard=FALSE)
 	{
 		$this->object->uninstall_display_types();
 		$this->object->uninstall_displayed_gallery_sources();
+		if ($hard) $this->object->uninstall_displayed_galleries();
 	}
 
 

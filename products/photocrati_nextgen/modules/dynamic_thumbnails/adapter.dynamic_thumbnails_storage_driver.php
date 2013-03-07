@@ -47,22 +47,22 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
 
 	function get_image_url($image, $size='full')
 	{
-    $retval = NULL;
+		$retval = NULL;
 		$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
 		if ($dynthumbs && $dynthumbs->is_size_dynamic($size)) {
 
 			$abspath = $this->object->get_image_abspath($image, $size, true);
 
-      if ($abspath == null) {
+		if ($abspath == null) {
 				$params = $dynthumbs->get_params_from_name($size, true);
 				$retval = $dynthumbs->get_image_url($image, $params);
 			}
 		}
 
-    if ($retval == null) {
-    	$retval = $this->call_parent('get_image_url', $image, $size);
-    }
+		if ($retval == null) {
+			$retval = $this->call_parent('get_image_url', $image, $size);
+		}
 
 		return $retval;
 	}
@@ -70,18 +70,18 @@ class A_Dynamic_Thumbnails_Storage_Driver extends Mixin
   function get_image_dimensions($image, $size = 'full')
   {
 		$retval = $this->call_parent('get_image_dimensions', $image, $size);
-		
+
 		if ($retval == null) {
 			$dynthumbs = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-			
+
 			if ($dynthumbs && $dynthumbs->is_size_dynamic($size))
 			{
 				$new_dims = $this->object->calculate_image_size_dimensions($image, $size);
-				
+
 				$retval = array('width' => $new_dims['real_width'], 'height' => $new_dims['real_height']);
 			}
 		}
-		
+
 		return $retval;
   }
 

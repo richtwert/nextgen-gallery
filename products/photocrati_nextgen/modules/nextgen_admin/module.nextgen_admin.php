@@ -6,6 +6,8 @@
 }
 ***/
 
+define('NEXTGEN_FS_ACCESS_SLUG', 'ngg_fs_access');
+
 class M_NextGen_Admin extends C_Base_Module
 {
 	/**
@@ -24,6 +26,10 @@ class M_NextGen_Admin extends C_Base_Module
 		);
 	}
 
+	function initialize()
+	{
+		parent::initialize();
+	}
 
 	/**
 	 * Register utilities necessary for this module (and the plugin)
@@ -83,6 +89,11 @@ class M_NextGen_Admin extends C_Base_Module
 			'I_Installer',
 			'A_NextGen_Admin_Installer'
 		);
+
+		$this->get_registry()->add_adapter(
+			'I_Page_Manager',
+			'A_NextGen_Admin_Pages'
+		);
 	}
 
 	/**
@@ -100,13 +111,7 @@ class M_NextGen_Admin extends C_Base_Module
 	 */
 	function add_menu_pages()
 	{
-		$pages = $this->get_registry()->get_utility('I_Page_Manager');
-//		$pages->add(
-//			'ngg_uninstall',
-//			'A_Uninstall_Controller',
-//			NULL
-//		);
-		$pages->setup();
+		$this->get_registry()->get_utility('I_Page_Manager')->setup();
 	}
 }
 

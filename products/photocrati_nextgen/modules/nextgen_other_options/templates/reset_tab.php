@@ -1,4 +1,3 @@
-<?php global $wpdb; ?>
 <table>
     <tr>
         <td class='column1'>
@@ -10,24 +9,25 @@
         <td>
             <input type="submit"
                    class="button-secondary"
-                   name="resetdefault"
+				   data-confirm="<?php echo $reset_confirmation; ?>"
+				   data-proxy-value="reset"
+                   name="action_proxy"
                    value="<?php echo $reset_value; ?>"
-                   onclick="javascript:return confirm('<?php echo $reset_confirmation; ?>');"/>
+				/>
         </td>
     </tr>
-    <?php if ($show_uninstall) { ?>
         <tr>
             <td class='column1'>
                 <?php echo $uninstall_label; ?>
             </td>
             <td>
-                <button type='button'
-                       name="check_uninstall"
+                <input type='submit'
+                       name="action_proxy"
                        class="button delete button-secondary"
-                       onclick='location.href="<?php echo $check_uninstall_url; ?>";'/>
-                    <?php echo $uninstall_label; ?>
-                </button>
+					   data-proxy-value="uninstall"
+					   data-confirm="<?php echo $uninstall_confirmation; ?>"
+					   value='<?php echo $uninstall_label; ?>'
+				/>
             </td>
         </tr>
-    <?php } ?>
 </table>

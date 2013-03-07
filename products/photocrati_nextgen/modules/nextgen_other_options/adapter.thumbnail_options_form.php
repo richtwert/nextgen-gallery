@@ -25,4 +25,11 @@ class A_Thumbnail_Options_Form extends Mixin
 			'thumbnail_quality'				=>	$settings->thumbquality
 		), TRUE);
 	}
+
+	function save_action()
+	{
+		if (($settings = $this->object->param('thumbnail_settings'))) {
+			$this->object->get_model()->set($settings)->save();
+		}
+	}
 }

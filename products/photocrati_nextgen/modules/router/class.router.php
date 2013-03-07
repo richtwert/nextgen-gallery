@@ -76,6 +76,21 @@ class Mixin_Router extends Mixin
 	}
 
 	/**
+	 * Currents the relative url
+	 * @param string $uri
+	 * @param boolean $with_qs
+	 * @return string
+	 */
+	function get_relative_url($uri='/', $with_qs=TRUE)
+	{
+		$url = $this->object->get_url($uri, $with_qs=TRUE);
+		$retval = str_replace($this->object->get_base_url(), '', $url);
+		if (strpos($retval, '/') !== 0) $retval = '/'.$retval;
+		return $retval;
+	}
+
+
+	/**
 	 * Returns a static url
 	 * @param string $path
 	 * @param string $module

@@ -31,6 +31,11 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the FS module - no dependencies
 		$this->get_registry()->load_module('photocrati-fs');
 
+		// The validation module is a helper module intended to be adopted
+		// by other modules. The datamapper module makes use of it for
+		// example
+		$this->get_registry()->load_module('photocrati-validation');
+
 		// Load the settings manager module - no dependencies
 		$this->get_registry()->load_module('photocrati-settings');
 
@@ -43,11 +48,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// load security module, to perform capability and nonce checks
 		$this->get_registry()->load_module('photocrati-security');
-
-		// The validation module is a helper module intended to be adopted
-		// by other modules. The datamapper module makes use of it for
-		// example
-		$this->get_registry()->load_module('photocrati-validation');
 
 		// Load the LZW compression module, a useful utility
 		$this->get_registry()->load_module('photocrati-lzw');
