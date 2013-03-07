@@ -1863,16 +1863,19 @@ body .ui-tooltip {
 
 .ui-tabs-icon {
     float: left;
-    background: url('images/ui-icons-photocrati.png') no-repeat center center;
-    margin: 9px 6px 0 4px;
-    height: 24px;
-    width: 28px;
-    background-size: cover;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/ui-icons-photocrati.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/ui-icons-photocrati.png', sizingMethod='scale')";
+    background: url('images/nextgen-logo-small.png') no-repeat center center;
+    font-size: 18px;
+    font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', sans-serif;
+    width: 140px;
+    height: 40px;
+}
+
+.ui-tabs-icon .nextgen_logo {
+	display: none;
+}
+.ui-tabs-icon .nextgen_logo_sub {
+	display: none;
+	font-size: 14px;
 }
 
 /** Fix overlays in IE8 **/
