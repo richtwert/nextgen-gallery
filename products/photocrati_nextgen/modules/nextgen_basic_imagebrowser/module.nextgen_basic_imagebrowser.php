@@ -26,6 +26,15 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 		);
 	}
 
+	function initialize()
+	{
+		parent::initialize();
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		$form_manager->add_form(
+			NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER
+		);
+	}
+
 	/**
 	 * Register adapters required for the NextGen Basic ImageBrowser
 	 */
@@ -42,7 +51,7 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 
 		// Add activation routine
 		$this->get_registry()->add_adapter(
-		  'I_NextGen_Activator',	   'A_NextGen_Basic_ImageBrowser_Activation'
+		  'I_Installer',				'A_NextGen_Basic_ImageBrowser_Installer'
 		);
 
 		// Add rendering logic
@@ -59,6 +68,13 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 		// Add imagebrowser ngglegacy-compatible urls
 		$this->get_registry()->add_adapter(
 			'I_Routing_App',			'A_NextGen_Basic_ImageBrowser_Urls'
+		);
+
+		// Provide the imagebrowser form
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_ImageBrowser_Form',
+			$this->module_id
 		);
 	}
 

@@ -29,6 +29,14 @@ class M_NextGen_Basic_Templates extends C_Base_Module
             'C_Legacy_Template_Locator'
         );
     }
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_Template_Form'
+		);
+	}
 }
 
 new M_NextGen_Basic_Templates();
