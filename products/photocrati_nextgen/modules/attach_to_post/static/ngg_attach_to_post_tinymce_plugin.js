@@ -109,7 +109,12 @@
 
 				// Assign the window the "ngg_attach_to_post_window" so that
 				// we can style it
-				var window_selector = '#'+win.params.mce_window_id;
+				var window_selector = '#';
+				if (win.params && win.params.mce_window_id)
+					window_selector += win.params.mce_window_id;
+				else if (win.features && win.features.id)
+					window_selector += win.features.id;
+				
 				var callback = function(selector, callback){
 					var obj = jQuery(selector);
 					if (obj.length == 0) {
@@ -135,19 +140,34 @@
                 tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select('p')[0]);
                 tinyMCE.activeEditor.selection.collapse(0);
 			});
+			
+			var popupDialog = jQuery('<div style="display:none;"><div id="ngg_attach_to_post_dialog" tabindex="-1" action=""></div></div>');
+			popupDialog.appendTo(jQuery(document.body));
 
 			// Open a window, occupying 90% of the screen real estate
 			var popup = this.editor.windowManager.open({
 				file:		attach_to_post_url,
+//				wpDialog: true,
+				id: 'ngg_attach_to_post_dialog',
 				width:		1200,
 				height:		600,
 				inline:		true,
 				title:		"NextGEN Gallery - Attach To Post"
 			});
+//			popupDialog.wpdialog({
+//				title: "NextGEN Gallery - Attach To Post",
+//				width: 1200,
+//				height: 600,
+//				modal: true,
+//				dialogClass: 'wp-dialog',
+//				zIndex: 300000
+//			});
 
 			// Ensure that the window cannot be scrolled - XXX actually allow scrolling in the main window and disable it for the inner-windows/frames/elements as to create a single scrollbar
 			jQuery('#'+popup.id+'_ifr').css('overflow-y', 'auto');
 			jQuery('#'+popup.id+'_ifr').css('overflow-x', 'hidden');
+			//jQuery('#'+popup.id+'_ifr').mCustomScrollbar();
+			//jQuery('#'+popup.id).addClass('wp-dialog');
 		}
 	});
 

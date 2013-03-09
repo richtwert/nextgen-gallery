@@ -161,42 +161,45 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_settings_contents()
 	{
-		return;
 		$retval = array();
-		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper', 'attach_to_post');
-		foreach ($mapper->find_all(array()) as $display_type) {
 
-			// Get the display type controller
-			$display_type_controller = $this->object->get_registry()->get_utility(
-				'I_Display_Type_Controller', $display_type->name
-			);
+		// Get all display setting forms
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		$forms		  = $form_manager->get_forms(
+			NEXTGEN_DISPLAY_SETTINGS_SLUG, TRUE
+		);
 
-            $display_type_controller->enqueue_backend_resources($display_type);
+		// Display each form
+		foreach ($forms as $form) {
+
+			// Enqueue the form's static resources
+			$form->enqueue_static_resources();
 
 			// Determine which classes to use for the form's "class" attribute
-			$current = $this->object->is_displayed_gallery_using_display_type($display_type->name);
+			$current = $this->object->is_displayed_gallery_using_display_type($form->get_model()->name);
 			$css_class =  $current ? 'display_settings_form' : 'display_settings_form hidden';
 
-			// Override the display type settings with that of the displayed
-			// gallery
+			// If this form is used to provide the display settings for the current
+			// displayed gallery, then we need to override the forms settings
+			// with the displayed gallery settings
 			if ($current) {
-				$display_type->settings = $this->array_merge_assoc(
-					$display_type->settings,
+				$form->get_model()->settings = $this->array_merge_assoc(
+					$form->get_model()->settings,
 					$this->object->_displayed_gallery->display_settings,
 					TRUE
 				);
 			}
 
+			// Output the display settings form
 			$retval[] = $this->object->render_partial('attach_to_post#display_settings_form', array(
-				'settings'				=>	$display_type_controller->settings_action(
-												$display_type, TRUE
-											),
-				'display_type_name'		=>	$display_type->name,
+				'settings'				=>	$form->render(),
+				'display_type_name'		=>	$form->get_model()->name,
 				'css_class'				=>	$css_class
 			), TRUE);
-
 		}
 
+		// In addition, we'll render a form that will be displayed when no
+		// display type has been selected in the Attach to Post interface
 		// Render the default "no display type selected" view
 		$css_class = $this->object->_get_selected_display_type_name() ?
 			'display_settings_form hidden' : 'display_settings_form';
@@ -206,6 +209,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 
 		), TRUE);
 
+		// Return all display setting forms
 		return implode("\n", $retval);
 	}
 

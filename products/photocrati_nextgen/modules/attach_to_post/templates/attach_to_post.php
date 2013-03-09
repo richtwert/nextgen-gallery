@@ -9,7 +9,7 @@
     </head>
 	<body>
 		<div id="attach_to_post_tabs">
-            <div class='ui-tabs-icon'><br/></div>
+            <div class='ui-tabs-icon'><span class="nextgen_logo"><?php echo_h('NextGEN')?></span> <span class="nextgen_logo_sub"><?php echo_h('Gallery')?></span></div>
 			<ul>
 			<?php foreach ($tab_titles as $title => $id): ?>
 				<li>

@@ -187,14 +187,25 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function enqueue_static_resources()
 	{
+		$router = $this->get_registry()->get_utility('I_Router');
+
 		// Enqueue resources needed at post/page level
 		if (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
 			$this->_enqueue_tinymce_resources();
+
+#			wp_enqueue_style(
+#				'ngg_custom_scrollbar', $this->static_url('jquery.mCustomScrollbar.css')
+#			);
+#			wp_enqueue_script(
+#				'ngg_custom_scrollbar', $this->static_url('jquery.mCustomScrollbar.concat.min.js'), array('jquery')
+#			);
+			wp_enqueue_style(
+				'ngg_attach_to_post_dialog', $router->get_static_url('attach_to_post_dialog.css')
+			);
 		}
 
 		elseif (isset($_REQUEST['attach_to_post']) OR
 		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
-			$router = $this->get_registry()->get_utility('I_Router');
 			wp_enqueue_script('iframely', $router->get_static_url('iframely.js'));
 			wp_enqueue_style('iframely',  $router->get_static_url('iframely.css'));
 		}

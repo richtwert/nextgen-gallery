@@ -106,11 +106,14 @@ class Mixin_Form_Manager extends Mixin
 	 * @param string $type
 	 * @return array
 	 */
-	function get_forms($type)
+	function get_forms($type, $instantiate=FALSE)
 	{
 		$retval = array();
 		if (isset($this->object->_forms[$type])) {
-			$retval = $this->object->_forms[$type];
+			if (!$instantiate) $retval = $this->object->_forms[$type];
+			else foreach ($this->object->_forms[$type] as $context) {
+				$retval[] = $this->get_registry()->get_utility('I_Form', $context);
+			}
 		}
 		return $retval;
 	}

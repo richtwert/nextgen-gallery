@@ -31,7 +31,7 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
 	{
 		parent::initialize();
 		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
-		$form_manager->add_form('ngg_display_settings', $this->module_id);
+		$form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, $this->module_id);
 	}
 
 	function _register_adapters()

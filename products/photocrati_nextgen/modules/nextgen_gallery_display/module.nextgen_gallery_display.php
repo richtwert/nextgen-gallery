@@ -7,6 +7,8 @@
 	}
 ***/
 
+define('NEXTGEN_DISPLAY_SETTINGS_SLUG', 'ngg_display_settings');
+
 class M_Gallery_Display extends C_Base_Module
 {
 	function define()
@@ -147,7 +149,7 @@ class M_Gallery_Display extends C_Base_Module
 			_('NextGEN Gallery & Album Settings'),
 			_('Gallery Settings'),
 			'NextGEN Manage gallery',
-			$this->display_settings_page_name,
+			NEXTGEN_DISPLAY_SETTINGS_SLUG,
 			array(&$this->controller, 'index_action')
 		);
 	}
