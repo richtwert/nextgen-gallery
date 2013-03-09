@@ -1,20 +1,10 @@
 <?php
 
-class A_NextGen_Basic_Thumbnail_Form extends Mixin
+class A_NextGen_Basic_Thumbnail_Form extends Mixin_Display_Type_Form
 {
-	/**
-	 * Gets the entity which the form is editing
-	 * @return C_Display_Type
-	 */
-	function get_model()
+	function get_display_type_name()
 	{
-		$mapper = $this->get_registry()->get_utility('I_Display_Type_Mapper');
-		return $mapper->find_by_name(NEXTGEN_GALLERY_BASIC_THUMBNAILS);
-	}
-
-	function get_title()
-	{
-		return $this->object->get_model()->title;
+		return NEXTGEN_GALLERY_BASIC_THUMBNAILS;
 	}
 
 	/**

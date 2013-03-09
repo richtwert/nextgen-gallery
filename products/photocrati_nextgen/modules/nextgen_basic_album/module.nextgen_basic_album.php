@@ -12,8 +12,6 @@ define('NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM', 'photocrati-nextgen_basic
 
 class M_NextGen_Basic_Album extends C_Base_Module
 {
-	var $module_id = 'photocrati-nextgen_basic_album';
-
 	function define()
     {
         parent::define(
@@ -27,13 +25,27 @@ class M_NextGen_Basic_Album extends C_Base_Module
         );
     }
 
+	function initialize()
+	{
+		parent::initialize();
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		$form_manager->add_form(
+			NEXTGEN_DISPLAY_SETTINGS_SLUG,
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM
+		);
+		$form_manager->add_form(
+			NEXTGEN_DISPLAY_SETTINGS_SLUG,
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
+		);
+	}
+
 
     function _register_adapters()
     {
 		// Add module activation
         $this->get_registry()->add_adapter(
-			'I_NextGen_Activator',
-			'A_NextGen_Basic_Album_Activator'
+			'I_Installer',
+			'A_NextGen_Basic_Album_Installer'
 		);
 
 		// Add validation for album display settings
@@ -63,6 +75,18 @@ class M_NextGen_Basic_Album extends C_Base_Module
 		$this->get_registry()->add_adapter(
 			'I_Displayed_Gallery_Renderer',
 			'A_NextGen_Basic_Album_Routes'
+		);
+
+		// Add a display settings form for each display type
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_Compact_Album_Form',
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM
+		);
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_Extended_Album_Form',
+			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
 		);
     }
 

@@ -1,20 +1,15 @@
 <?php
 
-class Mixin_NextGen_Basic_Album_Settings extends Mixin
+class Mixin_NextGen_Basic_Album_Form extends Mixin_Display_Type_Form
 {
-    /**
-     * Returns a list of fields to render
-     * @return array
-     */
-    function _get_field_names()
-    {
-        return array(
+	function _get_field_names()
+	{
+		return array(
             'nextgen_basic_album_gallery_display_type',
             'nextgen_basic_album_galleries_per_page',
             'nextgen_basic_templates_template',
         );
-    }
-
+	}
 
     /**
      * Renders the Gallery Display Type field
