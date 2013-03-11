@@ -135,7 +135,8 @@ class M_Gallery_Display extends C_Base_Module
 	// TODO: Is this the right place for this?
     function enqueue_galleries_js()
     {
-        wp_register_script('nextgen_galleries', $this->static_url('nextgen_galleries.js'));
+		$router = $this->get_registry()->get_utility('I_Router');
+        wp_register_script('nextgen_galleries', $router->get_static_url('nextgen_galleries.js'));
         wp_enqueue_script('nextgen_galleries');
     }
 

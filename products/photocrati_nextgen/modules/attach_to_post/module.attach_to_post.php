@@ -194,13 +194,13 @@ class M_Attach_To_Post extends C_Base_Module
 			$this->_enqueue_tinymce_resources();
 
 #			wp_enqueue_style(
-#				'ngg_custom_scrollbar', $this->static_url('jquery.mCustomScrollbar.css')
+#				'ngg_custom_scrollbar', $this->get_static_url('jquery.mCustomScrollbar.css')
 #			);
 #			wp_enqueue_script(
-#				'ngg_custom_scrollbar', $this->static_url('jquery.mCustomScrollbar.concat.min.js'), array('jquery')
+#				'ngg_custom_scrollbar', $this->get_static_url('jquery.mCustomScrollbar.concat.min.js'), array('jquery')
 #			);
 			wp_enqueue_style(
-				'ngg_attach_to_post_dialog', $router->get_static_url('attach_to_post_dialog.css')
+				'ngg_attach_to_post_dialog', $router->get_static_url('attach_to_post#attach_to_post_dialog.css')
 			);
 		}
 
