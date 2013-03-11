@@ -1,6 +1,6 @@
 <?php
 
-class Mixin_NextGen_Basic_Tagcloud_Settings extends Mixin_Display_Type_Form
+class A_NextGen_Basic_Tagcloud_Form extends Mixin_Display_Type_Form
 {
     function _get_field_names()
     {
