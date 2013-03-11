@@ -24,7 +24,7 @@ class Mixin_GalleryStorage extends Mixin
 		if (!defined('GALLERYSTORAGE_DRIVER')) {
 
 			// Get the datamapper configured in the database
-			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 			$factory_method = $settings->gallerystorage_driver;
 			if (!$factory_method) throw new GalleryStorageDriverNotSelectedException();
 

@@ -2,14 +2,21 @@
 
 class C_Frame_Event_Publisher extends C_Component
 {
-	static $_instances = array();
-	var $setting_name = 'X-Frame-Events';
+	static $_instances	= array();
+	var $setting_name	= NULL;
 
 	function define($context=FALSE)
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Frame_Event_Publisher');
 		$this->implement('I_Frame_Event_Publisher');
+	}
+
+	function initialize()
+	{
+		parent::initialize();
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$this->setting_name = $settings->frame_communication_option_name;
 	}
 
 	/**

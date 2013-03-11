@@ -143,7 +143,7 @@ class A_Attach_To_Post_Ajax extends Mixin
             $controller   = $this->object->get_registry()->get_utility('I_Display_Type_Controller');
 			$storage	  = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 			$image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
-			$settings	  = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings	  = $this->object->get_registry()->get_utility('I_Settings_Manager');
 			foreach ( $response['items'] as &$entity) {
                 $image = $entity;
                 if (in_array($displayed_gallery->source, array('album','albums'))) {

@@ -31,16 +31,21 @@ class C_NextGEN_Bootstrap
 
 	function __construct()
 	{
-        // Pope requires a a higher limit
-        $tmp = ini_get('xdebug.max_nesting_level');
-        if ($tmp && (int)$tmp <= 300)
-        {
-            @ini_set('xdebug.max_nesting_level', 300);
-        }
-
 		// Boostrap
 		$this->_define_constants();
+		$this->_load_pope();
 		$this->_register_hooks();
+
+	}
+
+	/**
+	 * Loads the Pope Framework
+	 */
+	function _load_pope()
+	{
+		// Pope requires a a higher limit
+        $tmp = ini_get('xdebug.max_nesting_level');
+        if ($tmp && (int)$tmp <= 300) @ini_set('xdebug.max_nesting_level', 300);
 
 		// Include pope framework
 		require_once(path_join(NEXTGEN_GALLERY_PLUGIN_DIR, implode(
@@ -63,6 +68,9 @@ class C_NextGEN_Bootstrap
 
 		// Initializes all loaded modules
 		$this->_registry->initialize_all_modules();
+
+		// Set the document root
+		$this->_registry->get_utility('I_Fs')->set_document_root(ABSPATH);
 	}
 
 
@@ -79,56 +87,67 @@ class C_NextGEN_Bootstrap
 			$this->directory_path('lang')
 		);
 
-		// Run activation logic
-		register_activation_hook(__FILE__, array(&$this, 'activate'));
+		// Register the activation routines
+		add_action('activate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME, array(get_class(), 'activate'));
 
-		// Should we log database queries for debugging
-		if (defined('LOG_WPDB_QUERIES')) {
-			add_filter('query', array(&$this, 'log_db_queries'));
-		}
+		// Register the deactivation routines
+		add_action('deactivate_'.NEXTGEN_GALLERY_PLUGIN_BASENAME, array(get_class(), 'deactivate'));
 
 		// Register our test suite
 		add_filter('simpletest_suites', array(&$this, 'add_testsuite'));
 
-		// Route using the MVC Router
+		// Start the plugin!
 		add_action('init', array(&$this, 'route'), 99);
 	}
 
+	/**
+	 * Routes access points using the Pope Router
+	 * @return boolean
+	 */
 	function route()
 	{
         // TODO: get gallery stub from setting
 		$router = $this->_registry->get_utility('I_Router');
-		$router->set_document_root(ABSPATH);
 		if (!$router->serve_request() && $router->has_parameter_segments()) {
 			return $router->passthru();
 		}
 	}
 
-	/**
-	 * When the plugin is activated, we ensure that we have what's necessary
-	 * for the plugin to run, which are roles installed
-	 */
-	function activate()
+	private static function get_pope_installer()
 	{
-		if (!current_user_can('activate_plugins')) {
-
-			// Grant NextGEN capabilities for Administator role
-			$role = get_role('administrator');
-			$caps = array(
-				NEXTGEN_GALLERY_OVERVIEW_CAP,
-				'NextGEN Use TinyMCE',
-				NEXTGEN_GALLERY_UPLOAD_IMAGE_CAP,
-				NEXTGEN_GALLERY_MANAGE_GALLERY_CAP,
-				NEXTGEN_GALLERY_MANAGE_TAGS_CAP,
-				'NextGEN Manage others gallery',
-				NEXTGEN_GALLERY_MANAGE_ALBUM_CAP,
-				'NextGEN Change style',
-				NEXTGEN_GALLERY_CHANGE_OPTIONS_CAP
-			);
-			foreach ($caps as $cap) $role->add_cap($cap);
-		}
+		$registry	= C_Component_Registry::get_instance();
+		return $installer	= $registry->get_utility('I_Installer');
 	}
 
+	/**
+	 * Run the installer
+	 */
+	static function activate()
+	{
+		self::get_pope_installer()->install();
+//		// Grant NextGEN capabilities for Administator role
+//		$role = get_role('administrator');
+//		$caps = array(
+//			NEXTGEN_GALLERY_OVERVIEW_CAP,
+//			'NextGEN Use TinyMCE',
+//			NEXTGEN_GALLERY_UPLOAD_IMAGE_CAP,
+//			NEXTGEN_GALLERY_MANAGE_GALLERY_CAP,
+//			NEXTGEN_GALLERY_MANAGE_TAGS_CAP,
+//			'NextGEN Manage others gallery',
+//			NEXTGEN_GALLERY_MANAGE_ALBUM_CAP,
+//			'NextGEN Change style',
+//			NEXTGEN_GALLERY_CHANGE_OPTIONS_CAP
+//		);
+//		foreach ($caps as $cap) $role->add_cap($cap);
+	}
+
+	/**
+	 * Run the uninstaller
+	 */
+	static function deactivate()
+	{
+		self::get_pope_installer()->uninstall();
+	}
 
 	/**
 	 * Defines necessary plugins for the plugin to load correctly
@@ -149,7 +168,6 @@ class C_NextGEN_Bootstrap
 		define('NEXTGEN_GALLERY_PLUGIN_CLASS', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'module.NEXTGEN_GALLERY_PLUGIN.php'));
 		define('NEXTGEN_GALLERY_PLUGIN_STARTED_AT', microtime());
 		define('NEXTGEN_GALLERY_PLUGIN_VERSION', '2.0');
-		//define('LOG_WPDB_QUERIES', path_join(NEXTGEN_GALLERY_PLUGIN_DIR, 'wpdb.log'));
 	}
 
 
@@ -160,27 +178,6 @@ class C_NextGEN_Bootstrap
 	 */
 	function add_testsuite($suites=array())
 	{
-        // To avoid autoloading issues we feed Pope's tests one at a time
-//        $suites['pope'] = array(
-//            'core',
-//            'pre_hooks',
-//            'post_hooks',
-//            'registry',
-//            'factories',
-//            'modules',
-//            'wrappers',
-//            'advanced',
-//            'method_properties'
-//        );
-//        foreach ($suites['pope'] as &$suite)
-//        {
-//            $suite = path_join(
-//                NEXTGEN_GALLERY_PLUGIN_DIR,
-//                'pope' . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $suite . '.php'
-//            );
-//        }
-
-		// Define Test Directory
 		$tests_dir = NEXTGEN_GALLERY_TESTS_DIR;
 
 		if (file_exists($tests_dir)) {
@@ -193,8 +190,8 @@ class C_NextGEN_Bootstrap
 			// Define the NextGEN Test Suite
             $suites['nextgen'] = array(
 //                path_join($tests_dir, 'mvc'),
-//                path_join($tests_dir, 'datamapper'),
-//                path_join($tests_dir, 'nextgen_data'),
+                path_join($tests_dir, 'datamapper'),
+                path_join($tests_dir, 'nextgen_data'),
                 path_join($tests_dir, 'gallery_display')
             );
         }
@@ -337,22 +334,6 @@ class C_NextGEN_Bootstrap
 	function file_uri($file_name = NULL)
 	{
 		return $this->path($file_name);
-	}
-
-
-	/**
-	 * Logs DB queries
-	 * @param string $query
-	 */
-	function log_db_queries($query)
-	{
-		$fp = fopen(LOG_WPDB_QUERIES, 'a');
-		$time = strftime("%c");
-		$log = "\n{$time}: {$query}";
-		fputs($fp, $log);
-		fclose($fp);
-
-		return $query;
 	}
 }
 

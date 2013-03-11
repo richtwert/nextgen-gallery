@@ -49,10 +49,13 @@ class A_NextGen_Basic_Thumbnail_Urls extends Mixin
 			$this->method_called, ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
 		);
 
+		// Get the settings manager
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+
 		// Create the regex pattern
-		$sep		= preg_quote(MVC_PARAM_SEPARATOR, '#');
+		$sep		= preg_quote($settings->router_param_separator, '#');
 		if ($id)$id = preg_quote($id, '#').$sep;
-		$prefix		= preg_quote(MVC_PARAM_PREFIX, '#');
+		$prefix		= preg_quote($settings->router_param_prefix, '#');
 		$regex		= implode('', array(
 			'#//?',
 			$id ? "({$id})?" : "(\w+{$sep})?",

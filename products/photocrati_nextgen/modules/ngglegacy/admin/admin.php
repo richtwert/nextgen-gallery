@@ -97,7 +97,7 @@ class nggAdminPanel{
 				if (preg_match_all("/<script.*wp-content.*jquery[-_\.](min\.)?js.*<\script>/", $html, $matches, PREG_SET_ORDER)) {
 					foreach ($matches as $match) {
 						$old_script = array_shift($match);
-						if (strpos($old_script, NGGFOLDER) === FALSE)
+						if (strpos($old_script, NEXTGEN_GALLERY_PLUGIN_DIR) === FALSE)
 							$html = str_replace($old_script, '', $html);
 					}
 				}
@@ -107,7 +107,7 @@ class nggAdminPanel{
 					$detected_jquery_ui = TRUE;
 					foreach ($matches as $match) {
 						$old_script = array_shift($match);
-						if (strpos($old_script, NGGFOLDER) === FALSE)
+						if (strpos($old_script, NEXTGEN_GALLERY_PLUGIN_DIR) === FALSE)
 							$html = str_replace($old_script, '', $html);
 					}
 				}
@@ -359,7 +359,7 @@ class nggAdminPanel{
 				wp_enqueue_script( 'ngg-progressbar' );
 				wp_enqueue_script( 'jquery-ui-dialog' );
 				wp_enqueue_script( 'jquery-ui-sortable' );
-    			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.js', false ,'1.3.2');
+    			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter.js', false ,'1.3.2');
     			wp_localize_script('shutter', 'shutterSettings', array(
     						'msgLoading' => __('L O A D I N G', 'nggallery'),
     						'msgClose' => __('Click to Close', 'nggallery'),
@@ -393,14 +393,20 @@ class nggAdminPanel{
 
 		}
 	}
+	function enqueue_shutter()
+	{
+		$registry	= C_Component_Registry::get_instance();
+		$router		= $registry->get_utility('I_Router');
+	}
+
 
 	function enqueue_jquery_ui_theme()
 	{
 		$registry = C_Component_Registry::get_instance();
-		$settings = $registry->get_utility('I_NextGen_Settings');
+		$settings = $registry->get_utility('I_Settings_Manager');
 		wp_enqueue_style(
 			$settings->jquery_ui_theme,
-			$settings->jquery_ui_theme_url(),
+			$settings->jquery_ui_theme_url,
 			array(),
 			$settings->jquery_ui_theme_version
 		);
@@ -435,7 +441,7 @@ class nggAdminPanel{
 				wp_enqueue_style( 'nggadmin' );
             break;
 			case "nggallery-manage-gallery" :
-                wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.css', false, '1.3.2', 'screen');
+                wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter.css', false, '1.3.2', 'screen');
 			case "nggallery-roles" :
 			case "nggallery-manage-album" :
 				$this->enqueue_jquery_ui_theme();

@@ -4,7 +4,7 @@ class C_Dynamic_Stylesheet_Controller extends C_MVC_Controller
 {
 	static	$_instances				= array();
 	var		$_known_templates		= array();
-	var		$_app					= '/dcss';
+	var		$_app					= NULL;
 
 	function define($context=FALSE)
 	{
@@ -12,6 +12,13 @@ class C_Dynamic_Stylesheet_Controller extends C_MVC_Controller
 		$this->add_mixin('Mixin_Dynamic_Stylesheet_Instance_Methods');
 		$this->add_mixin('Mixin_Dynamic_Stylesheet_Actions');
 		$this->implement('I_Dynamic_Stylesheet');
+	}
+
+	function initialize()
+	{
+		parent::initialize();
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$this->_app =$settings->get('dynamic_stylesheet_slug');
 	}
 
 	static function &get_instance($context=FALSE)

@@ -2,16 +2,16 @@
 
 /***
 	{
-		Module: photocrati-mvc
+		Module: photocrati-mvc,
+		Depends: { photocrati-router }
 	}
 ***/
 
-define('MVC_MODULE_DIR',		dirname(__FILE__));
-define('MVC_TEMPLATE_DIR',		path_join(MVC_MODULE_DIR, 'templates'));
-define('MVC_PARAM_SEPARATOR',	'--');
-define('MVC_PARAM_PREFIX',		'ngg');
-define('MVC_PARAM_SLUG',		'nggallery');
-require_once(path_join(MVC_MODULE_DIR, 'template_helper.php'));
+/**
+ * TODO: The file below should be deprecated. We should use an example template
+ * engine, such as Twig
+ */
+require_once('template_helper.php');
 
 /**
  * Indicates that a clean exit occurred. Handled by set_exception_handler
@@ -45,20 +45,19 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
 		parent::initialize();
-        set_exception_handler(array(&$this, 'handle_exit'));
+//        set_exception_handler(array(&$this, 'handle_exit'));
     }
 
     function _register_utilities()
     {
-		$this->get_registry()->add_utility('I_Test_Controller', 'C_Test_Controller');
 		$this->get_registry()->add_utility('I_Http_Response', 'C_Http_Response_Controller');
-        $this->get_registry()->add_utility('I_Router', 'C_Router');
     }
 
 	function _register_adapters()
 	{
-		$this->get_registry()->add_adapter('I_NextGen_Activator', 'A_Activator_Rendering');
-        $this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_MVC_Settings');
+		$this->get_registry()->add_adapter('I_Fs', 'A_MVC_Fs');
+		$this->get_registry()->add_adapter('I_Router', 'A_MVC_Router');
 	}
 
     function handle_exit($exception)

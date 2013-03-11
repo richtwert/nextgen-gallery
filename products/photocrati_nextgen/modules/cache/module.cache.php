@@ -22,14 +22,6 @@ class M_Cache extends C_Base_Module
 		);
 	}
 
-	/**
-	 * Initializes the module
-	 */
-	function initialize()
-	{
-		parent::initialize();
-	}
-
     /**
      * Register utilities
      */

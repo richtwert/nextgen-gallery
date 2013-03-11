@@ -1,15 +1,11 @@
 <?php
 
-/***
-	{
-		Module: photocrati-lazy_resources
-	}
-***/
-
-define(
-	'NEXTGEN_GALLERY_LAZY_RESOURCES_JS_URL',
-	NEXTGEN_GALLERY_MODULE_URL.'/'.basename(dirname(__FILE__)).'/js'
-);
+/*
+{
+	Module:		photocrati-lazy_resources,
+	Depends:	{ photocrati-router }
+}
+*/
 
 class M_Lazy_Resources extends C_Base_Module
 {
@@ -36,12 +32,12 @@ class M_Lazy_Resources extends C_Base_Module
 		);
 	}
 
-
 	/**
 	 * Registers hooks for the WordPress platform
 	 */
 	function _register_hooks()
 	{
+
 		add_action('init', array(&$this, 'enqueue_scripts'), 1);
 		add_action('wp_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);
 		add_action('admin_print_footer_scripts', array(&$this, 'print_footer_scripts'), 1);
@@ -53,17 +49,19 @@ class M_Lazy_Resources extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
+		$router = $this->get_registry()->get_utility('I_Router');
+
 		// Register SidJS: http://www.diveintojavascript.com/projects/sidjs-load-javascript-and-stylesheets-on-demand
 		wp_register_script(
 			'sidjs',
-			NEXTGEN_GALLERY_LAZY_RESOURCES_JS_URL.'/sidjs-0.1.js',
+			$router->get_static_url('lazy_resources#sidjs-0.1.js'),
 			array('jquery'),
 			'0.1'
 		);
 
 		wp_register_script(
 			'lazy_resources',
-			NEXTGEN_GALLERY_LAZY_RESOURCES_JS_URL.'/lazy_resources.js',
+			$router->get_static_url('lazy_resources#lazy_resources.js'),
 			array('sidjs', 'jquery'),
 			$this->module_version
 		);

@@ -26,10 +26,10 @@ class C_Test_Nextgen_Settings extends C_Test_Component_Base
 		delete_option('ngg_options');
 
 		// We can get the instance from the component registry as a utility
-		$this->settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings', array());
+		$this->settings = $this->get_registry()->get_singleton_utility('I_Settings_Manager', array());
 		$this->assertEqual(get_class($this->settings), 'C_NextGen_Settings');
 
-        $this->multi_settings = $this->get_registry()->get_singleton_utility('I_NextGen_Settings', array('multisite'));
+        $this->multi_settings = $this->get_registry()->get_singleton_utility('I_Settings_Manager', array('multisite'));
         $this->assertEqual(get_class($this->multi_settings), 'C_NextGen_Settings');
 
         $this->settings->reset();

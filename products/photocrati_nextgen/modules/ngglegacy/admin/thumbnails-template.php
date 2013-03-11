@@ -18,7 +18,7 @@ if (empty($thumbnails_template_height_id))
 if (class_exists('C_Component_Registry'))
 {
 	$registry = C_Component_Registry::get_instance();
-	$settings = $registry->get_utility('I_NextGen_Settings');
+	$settings = $registry->get_utility('I_Settings_Manager');
 
 	if ($settings != null)
 	{

@@ -1,7 +1,8 @@
 <?php
 /***
 {
-		Module: photocrati-mediarss
+		Module: photocrati-mediarss,
+		Depends: { photocrati-router, photocrati-nextgen_gallery_display }
 }
 ***/
 class M_MediaRss extends C_Base_Module
@@ -17,14 +18,6 @@ class M_MediaRss extends C_Base_Module
 			'Photocrati Media',
 			'http://www.photocrati.com'
 		);
-	}
-
-	/**
-	 * Initializes the module
-	 */
-	function initialize()
-	{
-		parent::initialize();
 	}
 
 	function _register_adapters()

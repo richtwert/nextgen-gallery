@@ -3,7 +3,7 @@
 /**
  * Provides the ability to create and edit C_Displayed_Galleries
  */
-class C_Attach_To_Post_Controller extends C_NextGen_Backend_Controller
+class C_Attach_To_Post_Controller extends C_NextGen_Admin_Page_Controller
 {
 	static $_instances = array();
 	var $_displayed_gallery;
@@ -53,9 +53,13 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 	}
 
-
-	function enqueue_attach_to_post_resources()
+	/**
+	 * Enqueue static resources required by the Attach to Post interface
+	 */
+	function enqueue_backend_resources()
 	{
+		$this->call_parent('enqueue_backend_resources');
+
 		// Enqueue frame event publishing
 		do_action('admin_enqueue_scripts');
 		wp_enqueue_script('frame_event_publisher');
@@ -63,44 +67,46 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		// Enqueue JQuery UI libraries
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
-		wp_enqueue_script('ngg_tabs', $this->static_url('ngg_tabs.js'));
+		wp_enqueue_script('ngg_tabs', $this->get_static_url('attach_to_post#ngg_tabs.js'));
 
 		// Ensure select2
-		wp_enqueue_style('select2', $this->static_url('select2.css'));
-		wp_enqueue_script('select2', $this->static_url('select2.js'));
+		wp_enqueue_style('select2', $this->get_static_url('attach_to_post#select2.css'));
+		wp_enqueue_script('select2', $this->get_static_url('attach_to_post#select2.js'));
 
 		// Ensure we have the AJAX module ready
 		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
-			'ngg_attach_to_post', $this->static_url('attach_to_post.js')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post.js')
 		);
 		wp_enqueue_style(
-			'ngg_attach_to_post', $this->static_url('attach_to_post.css')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post.css')
 		);
 
 		// Enqueue our JS templating library, Handlebars
 		wp_enqueue_script(
 			'handlebars',
-			$this->static_url('handlebars-1.0.0.beta.6.js'),
+			$this->get_static_url('attach_to_post#handlebars-1.0.0.beta.6.js'),
 			array(),
 			'1.0.0b6'
 		);
 
 		// Enqueue backbone.js library, required by the Attach to Post display tab
-		wp_enqueue_script('backbone');
+		wp_enqueue_script('backbone'); // provided by WP
 
+		// Ensure underscore sting, a helper utility
 		wp_enqueue_script(
 			'underscore.string',
-			$this->static_url('underscore.string.js'),
+			$this->get_static_url('attach_to_post#underscore.string.js'),
 			array('underscore'),
 			'2.3.0'
 		);
 
 		// Enqueue the backbone app for the display tab
-		$display_tab_js_url = NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL;
-		$preview_url		= NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL;
+		$settings			= $this->get_registry()->get_utility('I_Settings_Manager');
+		$preview_url		= $settings->gallery_preview_url;
+		$display_tab_js_url	= $settings->attach_to_post_display_tab_js_url;
 		if ($this->object->_displayed_gallery->id()) {
 			$display_tab_js_url .= '/id--'.$this->object->_displayed_gallery->id();
 		}
@@ -113,7 +119,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_localize_script(
 			'ngg_display_tab',
 			'ngg_displayed_gallery_preview_url',
-			$preview_url
+			$settings->gallery_preview_url
 		);
 	}
 
@@ -142,10 +148,10 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 	function preview_tab_css($return=FALSE)
 	{
-		$settings = $this->object->get_registry()->get_utlity('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utlity('I_Settings_Manager');
 		$this->object->set_content_type('css');
 		$this->object->do_not_cache();
-		return $this->object->render_view('preview_tab_css', array(
+		return $this->object->render_view('attach_to_post#preview_tab_css', array(
 			// Need to determine what parameters to include
 		));
 	}
@@ -194,7 +200,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 
 		// Render invalid image if no preview pic is found
 		if (!$found_preview_pic) {
-			$filename = $this->object->find_static_file('invalid_image.png');
+			$filename = $this->object->get_static_abspath('attach_to_post#invalid_image.png');
 			$this->set_content_type('image/png');
 			readfile($filename);
 			$this->render();
@@ -213,7 +219,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
 		$sec_token = $security->get_request_token('nextgen_edit_displayed_gallery');
 		$sec_actor = $security->get_current_actor();
-		
+
 		if (!$sec_actor->is_allowed('nextgen_edit_displayed_gallery'))
 		{
 			$valid_request = false;
@@ -287,7 +293,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	{
 		$frame_url = real_site_url("/wp-admin/admin.php?page={$page}&attach_to_post");
 		$frame_url = esc_url($frame_url);
-		
+
 		if ($tab_id) {
 			$tab_id = " id='ngg-iframe-{$tab_id}'";
 		}
@@ -302,7 +308,7 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 	 */
 	function _render_display_tab()
 	{
-		return $this->object->render_partial('display_tab', array(
+		return $this->object->render_partial('attach_to_post#display_tab', array(
 			'messages'	=>	array(),
 			'tabs'		=>	$this->object->_get_display_tabs()
 		), TRUE);

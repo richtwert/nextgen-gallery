@@ -1,0 +1,33 @@
+<table>
+    <tr>
+        <td class='column1'>
+            <span class='tooltip'>
+                <?php echo $reset_label; ?>
+                <span><?php echo $reset_warning; ?></span>
+            </span>
+        </td>
+        <td>
+            <input type="submit"
+                   class="button-secondary"
+				   data-confirm="<?php echo $reset_confirmation; ?>"
+				   data-proxy-value="reset"
+                   name="action_proxy"
+                   value="<?php echo $reset_value; ?>"
+				/>
+        </td>
+    </tr>
+        <tr>
+            <td class='column1'>
+                <?php echo $uninstall_label; ?>
+            </td>
+            <td>
+                <input type='submit'
+                       name="action_proxy"
+                       class="button delete button-secondary"
+					   data-proxy-value="uninstall"
+					   data-confirm="<?php echo $uninstall_confirmation; ?>"
+					   value='<?php echo $uninstall_label; ?>'
+				/>
+            </td>
+        </tr>
+</table>

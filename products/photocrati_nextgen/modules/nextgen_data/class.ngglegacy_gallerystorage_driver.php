@@ -15,7 +15,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function get_upload_abspath($gallery=FALSE)
 	{
 		// Base upload path
-		$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$retval = $settings->get('gallerypath');
 
 		// If a gallery has been specified, then we'll
@@ -153,9 +153,12 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	 */
 	function get_image_url($image, $size='full')
 	{
+		$fs		= $this->get_registry()->get_utility('I_Fs');
 		$router = $this->get_registry()->get_utility('I_Router');
 		$request_uri = str_replace(
-			ABSPATH, '', $this->object->get_image_abspath($image, $size)
+			trailingslashit($fs->get_document_root()),
+			'',
+			$this->object->get_image_abspath($image, $size)
 		);
 		return $router->get_url($request_uri, FALSE);
 	}
@@ -211,7 +214,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		// Ensure we have a valid image
 		if ($image)
 		{
-			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
 			if (!$skip_defaults)
 			{
@@ -359,7 +362,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 		if ($image)
 		{
 			$params = $this->object->get_image_size_params($image, $size, $params, $skip_defaults);
-			$settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+			$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
 			// Get the image filename
 			$filename = $this->object->get_original_abspath($image, 'original');
@@ -580,7 +583,7 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
         $message        = '';
         $new_image_pids = array();
 
-        $settings = $this->object->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 
         // move_images() is a wrapper to this function so we implement both features here
         $func = $move ? 'rename' : 'copy';

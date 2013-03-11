@@ -3,7 +3,7 @@
 /***
  {
 	Module: photocrati-wordpress_routing,
-	Depends: { photocrati-mvc }
+	Depends: { photocrati-router }
  }
  ***/
 class M_WordPress_Routing extends C_Base_Module

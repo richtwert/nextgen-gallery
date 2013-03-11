@@ -24,6 +24,7 @@ class M_DataMapper extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Component_Factory', 'A_DataMapper_Factory');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_DataMapper_Settings');
 
 	}
 
@@ -45,8 +46,16 @@ class M_DataMapper extends C_Base_Module
 	 */
 	function set_custom_wp_query($sql, &$wp_query)
 	{
-		$custom_sql = $wp_query->get('custom_sql');
-		if ($custom_sql) $sql = $custom_sql;
+		// Set the custom query
+		if (($custom_sql = $wp_query->get('custom_sql'))) {
+			$sql = $custom_sql;
+		}
+
+		// Perhaps we're to initiate a delete query instead?
+		elseif ($wp_query->get('is_delete')) {
+			$sql = preg_replace("/^SELECT.*FROM/i", "DELETE FROM", $sql);
+		}
+		
 		return $sql;
 	}
 

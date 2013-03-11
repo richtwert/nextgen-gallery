@@ -3,7 +3,7 @@
 /***
 {
         Module:     photocrati-nextgen_basic_singlepic,
-        Depends:    { photocrati-gallery_display }
+        Depends:    { photocrati-nextgen_gallery_display }
 }
  ***/
 
@@ -24,13 +24,22 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
         );
     }
 
+	function initialize()
+	{
+		parent::initialize();
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		$form_manager->add_form(
+			NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME
+		);
+	}
+
 
     function _register_adapters()
     {
         // Installs the display type
         $this->get_registry()->add_adapter(
-            'I_NextGen_Activator',
-            'A_NextGen_Basic_Singlepic_Activation'
+            'I_Installer',
+            'A_NextGen_Basic_SinglePic_Installer'
         );
 
         // Provides settings fields and frontend rendering
@@ -51,7 +60,30 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
 			'I_Display_Type_Mapper',
 			'A_NextGen_Basic_Singlepic_Mapper'
 		);
+
+		// Provides the display settings form for the SinglePic display type
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_SinglePic_Form',
+			$this->module_id
+		);
     }
+
+	function _register_hooks()
+	{
+		add_shortcode('singlepic',    array(&$this, 'render_singlepic'));
+	}
+
+
+	function render_singlepic($params, $inner_content=NULL)
+	{
+		$params['display_type'] = $this->_get_param('display_type', 'photocrati-nextgen_basic_singlepic', $params);
+        $params['image_ids'] = $this->_get_param('id', NULL, $params);
+        unset($params['id']);
+
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
+	}
 }
 
 new M_NextGen_Basic_Singlepic();

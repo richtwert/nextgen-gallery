@@ -34,7 +34,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			$all_tags->name = "All";
 			array_unshift($tags, $all_tags);
 
-			$this->object->render_view('display_tab_js', array(
+			$this->object->render_view('attach_to_post#display_tab_js', array(
 				'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),
 				'sources'				=>	json_encode($source_mapper->select()->order_by('title')->run_query()),
 				'gallery_primary_key'	=>	$gallery_mapper->get_primary_key_column(),
@@ -67,7 +67,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_source_tab()
 	{
-		return $this->object->render_partial('accordion_tab', array(
+		return $this->object->render_partial('attach_to_post#accordion_tab', array(
 			'id'			=> 'source_tab',
 			'title'		=>	_('What would you like to display?'),
 			'content'	=>	$this->object->_render_display_source_tab_contents()
@@ -81,7 +81,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_source_tab_contents()
 	{
-		return $this->object->render_partial('display_tab_source', array(),TRUE);
+		return $this->object->render_partial('attach_to_post#display_tab_source', array(),TRUE);
 	}
 
 
@@ -91,7 +91,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_types_tab()
 	{
-		return $this->object->render_partial('accordion_tab', array(
+		return $this->object->render_partial('attach_to_post#accordion_tab', array(
 			'id'			=> 'display_type_tab',
 			'title'		=>	_('Select a display type'),
 			'content'	=>	$this->object->_render_display_type_tab_contents()
@@ -104,7 +104,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_type_tab_contents()
 	{
-		return $this->object->render_partial('display_tab_type', array(), TRUE);
+		return $this->object->render_partial('attach_to_post#display_tab_type', array(), TRUE);
 	}
 
 
@@ -114,7 +114,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_display_settings_tab()
 	{
-		return $this->object->render_partial('accordion_tab', array(
+		return $this->object->render_partial('attach_to_post#accordion_tab', array(
 			'id'			=> 'display_settings_tab',
 			'title'		=>	_('Customize the display settings'),
 			'content'	=>	$this->object->_render_display_settings_contents()
@@ -162,49 +162,54 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	function _render_display_settings_contents()
 	{
 		$retval = array();
-		$mapper = $this->object->get_registry()->get_utility('I_Display_Type_Mapper', 'attach_to_post');
-		foreach ($mapper->find_all(array()) as $display_type) {
 
-			// Get the display type controller
-			$display_type_controller = $this->object->get_registry()->get_utility(
-				'I_Display_Type_Controller', $display_type->name
-			);
+		// Get all display setting forms
+		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+		$forms		  = $form_manager->get_forms(
+			NEXTGEN_DISPLAY_SETTINGS_SLUG, TRUE
+		);
 
-            $display_type_controller->enqueue_backend_resources($display_type);
+		// Display each form
+		foreach ($forms as $form) {
+
+			// Enqueue the form's static resources
+			$form->enqueue_static_resources();
 
 			// Determine which classes to use for the form's "class" attribute
-			$current = $this->object->is_displayed_gallery_using_display_type($display_type->name);
+			$current = $this->object->is_displayed_gallery_using_display_type($form->get_model()->name);
 			$css_class =  $current ? 'display_settings_form' : 'display_settings_form hidden';
 
-			// Override the display type settings with that of the displayed
-			// gallery
+			// If this form is used to provide the display settings for the current
+			// displayed gallery, then we need to override the forms settings
+			// with the displayed gallery settings
 			if ($current) {
-				$display_type->settings = $this->array_merge_assoc(
-					$display_type->settings,
+				$form->get_model()->settings = $this->array_merge_assoc(
+					$form->get_model()->settings,
 					$this->object->_displayed_gallery->display_settings,
 					TRUE
 				);
 			}
 
-			$retval[] = $this->object->render_partial('display_settings_form', array(
-				'settings'				=>	$display_type_controller->settings_action(
-												$display_type, TRUE
-											),
-				'display_type_name'		=>	$display_type->name,
+			// Output the display settings form
+			$retval[] = $this->object->render_partial('attach_to_post#display_settings_form', array(
+				'settings'				=>	$form->render(),
+				'display_type_name'		=>	$form->get_model()->name,
 				'css_class'				=>	$css_class
 			), TRUE);
-
 		}
 
+		// In addition, we'll render a form that will be displayed when no
+		// display type has been selected in the Attach to Post interface
 		// Render the default "no display type selected" view
 		$css_class = $this->object->_get_selected_display_type_name() ?
 			'display_settings_form hidden' : 'display_settings_form';
-		$retval[] = $this->object->render_partial('no_display_type_selected', array(
+		$retval[] = $this->object->render_partial('attach_to_post#no_display_type_selected', array(
 			'no_display_type_selected'	=>	_('No display type selected'),
 			'css_class'					=>	$css_class
 
 		), TRUE);
 
+		// Return all display setting forms
 		return implode("\n", $retval);
 	}
 
@@ -215,7 +220,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_preview_tab()
 	{
-		return $this->object->render_partial('accordion_tab', array(
+		return $this->object->render_partial('attach_to_post#accordion_tab', array(
 			'id'			=> 'preview_tab',
 			'title'		=>	_('Sort or Exclude Images'),
 			'content'	=>	$this->object->_render_preview_tab_contents()
@@ -229,6 +234,6 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function _render_preview_tab_contents()
 	{
-		return $this->object->render_partial('preview_tab', array(), TRUE);
+		return $this->object->render_partial('attach_to_post#preview_tab', array(), TRUE);
 	}
 }

@@ -27,7 +27,7 @@ class C_Widget_Slideshow extends WP_Widget
         );
 
         $parent->render_partial(
-            'form_slideshow',
+            'widget#form_slideshow',
             array(
                 'self'     => $this,
                 'instance' => $instance,
@@ -67,7 +67,7 @@ class C_Widget_Slideshow extends WP_Widget
         $out = $this->render_slideshow($instance['galleryid'], $instance['width'], $instance['height']);
 
         $parent->render_partial(
-            'display_slideshow',
+            'widget#display_slideshow',
             array(
                 'self'       => $this,
                 'instance'   => $instance,

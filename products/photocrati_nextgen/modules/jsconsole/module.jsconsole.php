@@ -1,7 +1,8 @@
 <?php
 /*
 {
-	Module: photocrati-jsconsole
+	Module: photocrati-jsconsole,
+	Depends: { photocrati-mvc }
 }
  */
 
@@ -28,6 +29,11 @@ class M_JsConsole extends C_Base_Module
 			'I_NextGen_Settings_Controller',
 			'A_JsConsole_Controller'
 		);
+
+		$this->get_registry()->add_adapter(
+			'I_Settings_Manager',
+			'A_JsConsole_Settings'
+		);
 	}
 
 	function _register_hooks()
@@ -38,7 +44,7 @@ class M_JsConsole extends C_Base_Module
 
 	function enqueue_jsconsole()
 	{
-		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		if ($settings->jsconsole_enabled && $settings->jsconsole_session_key && !is_admin()) {
 			wp_register_script(
 				'jsconsole-remote',

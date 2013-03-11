@@ -12,7 +12,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 	function __construct($label, $datamapper_driver_factory_method)
 	{
 		parent::__construct($label);
-		$this->settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+		$this->settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		$this->new_datamapper_driver			= $datamapper_driver_factory_method;
 		$this->new_gallerystorage_driver		= 'ngglegacy_gallery_storage';
 		$this->original_datamapper_driver		= $this->settings->datamapper_driver;
@@ -177,7 +177,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 		$this->assertTrue(is_object($gallery));
 
 		// We'll need the settings utility to get the configured gallerypath
-		$settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		$rel_upload_dir = $settings->gallerypath;
 
 		// Set some path expectations
@@ -676,7 +676,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
      */
     function test_generate_image_size_thumbnail()
     {
-        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
         $orig_image_path = $this->storage->get_image_abspath($this->image);
 
         $image = $this->storage->generate_image_size($this->image, 'thumbnail');
@@ -715,7 +715,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
     function test_generate_image_size_full_with_auto_resize()
     {
-        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
         $orig_imgAutoResize = $settings->imgAutoResize;
         $settings->imgAutoResize = TRUE;
 
@@ -749,7 +749,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
     function test_generate_image_size_thumbnail_with_dimension_parameters()
     {
-        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
 
         $params = array('width' => 50);
         $image = $this->storage->generate_image_size($this->image, 'thumbnail', $params);
@@ -776,7 +776,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
     function test_generate_image_size_watermark()
     {
-        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
         $orig_wm_text = $settings->wmText;
         $settings->wmText = 'Generate Image Size';
 
@@ -793,7 +793,7 @@ abstract class C_Test_NggLegacy_GalleryStorage_Driver_Base extends C_Test_Galler
 
     function test_generate_image_size_skip_parameters()
     {
-        $settings = $this->get_registry()->get_utility('I_NextGen_Settings');
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
         $orig_wm_text = $settings->wmText;
         $settings->wmText = 'Generate Image Size';
 

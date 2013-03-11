@@ -2,7 +2,8 @@
 
 /***
     {
-        Module: photocrati-frame_communication
+        Module: photocrati-frame_communication,
+		Depends: { photocrati-router, photocrati-settings }
     }
 ***/
 
@@ -10,7 +11,6 @@ class M_Frame_Communication extends C_Base_Module
 {
 	function define($context=FALSE)
 	{
-		$this->add_mixin('Mixin_MVC_Controller_Rendering');
 		parent::define(
 			'photocrati-frame_communication',
 			'Frame/iFrame Inter-Communication',
@@ -23,9 +23,11 @@ class M_Frame_Communication extends C_Base_Module
 		);
 	}
 
-	function initialize()
+	function _register_adapters()
 	{
-		$publisher = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
+		$this->get_registry()->add_adapter(
+			'I_Settings_Manager', 'A_Frame_Communication_Settings'
+		);
 	}
 
 	function _register_utilities()
@@ -43,9 +45,11 @@ class M_Frame_Communication extends C_Base_Module
 
 	function enqueue_admin_scripts()
 	{
+		$router = $this->get_registry()->get_utility('I_Router');
+
 		wp_register_script(
 			'frame_event_publisher',
-			$this->static_url('frame_event_publisher.js'),
+			$router->get_static_url('frame_event_publisher.js'),
 			array('jquery')
 		);
 		wp_enqueue_script('frame_event_publisher');

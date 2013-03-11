@@ -97,10 +97,6 @@ if (!class_exists('nggLoader')) {
 				// Look for XML request, before page is render
 				add_action('parse_request',  array(&$this, 'check_request') );
 
-				// Add the script and style files
-				add_action('wp_enqueue_scripts', array(&$this, 'load_scripts') );
-				add_action('wp_enqueue_scripts', array(&$this, 'load_styles') );
-
 			}
 		}
 
@@ -126,9 +122,6 @@ if (!class_exists('nggLoader')) {
                     break;
                 case 'image':
                     require_once (dirname (__FILE__) . '/nggshow.php');
-                    break;
-                case 'ngg-ajax':
-                    require_once (dirname (__FILE__) . '/xml/ajax.php');
                     break;
             }
 
@@ -266,7 +259,6 @@ if (!class_exists('nggLoader')) {
 			require_once (dirname (__FILE__) . '/lib/image.php');					//  59.424
 			require_once (dirname (__FILE__) . '/lib/tags.php');				    // 117.136
 			require_once (dirname (__FILE__) . '/lib/post-thumbnail.php');			//  n.a.
-			require_once (dirname (__FILE__) . '/widgets/widgets.php');				// 298.792
 			require_once (dirname (__FILE__) . '/lib/multisite.php');
 			require_once (dirname (__FILE__) . '/lib/sitemap.php');
 
@@ -302,55 +294,9 @@ if (!class_exists('nggLoader')) {
 
 		}
 
-		function load_scripts() {
-
-			// if you don't want that NGG load the scripts, add this constant
-			if ( defined('NGG_SKIP_LOAD_SCRIPTS') )
-				return;
-
-			// required for the slideshow
-			if ( NGGALLERY_IREXIST == true && $this->options['enableIR'] == '1' && nggGallery::detect_mobile_phone() === false )
-				wp_enqueue_script('swfobject');
-			else {
-				wp_register_script('jquery-cycle', NGGALLERY_URLPATH .'js/jquery.cycle.all.min.js', array('jquery'), '2.9995');
-				wp_enqueue_script('ngg-slideshow', NGGALLERY_URLPATH .'js/ngg.slideshow.min.js', array('jquery-cycle'), '1.06');
-
-			}
-
-			// Load AJAX navigation script, works only with shutter script as we need to add the listener
-			if ( $this->options['galAjaxNav'] ) {
-				if ( ($this->options['thumbEffect'] == "shutter") || function_exists('srel_makeshutter') ) {
-					wp_enqueue_script ( 'ngg_script', NGGALLERY_URLPATH . 'js/ngg.js', array('jquery'), '2.1');
-					wp_localize_script( 'ngg_script', 'ngg_ajax', array('path'		=> NGGALLERY_URLPATH,
-																		'callback'  => trailingslashit( home_url() ) . 'index.php?callback=ngg-ajax',
-																		'loading'	=> __('loading', 'nggallery'),
-					) );
-				}
-			}
-		}
-
 		function load_thickbox_images() {
 			// WP core reference relative to the images. Bad idea
 			echo "\n" . '<script type="text/javascript">tb_pathToImage = "' . site_url() . '/wp-includes/js/thickbox/loadingAnimation.gif";tb_closeImage = "' . site_url() . '/wp-includes/js/thickbox/tb-close.png";</script>'. "\n";
-		}
-
-		function load_styles() {
-            wp_enqueue_style('NextGEN-Defaults', NGGALLERY_URLPATH . 'css/default.css', false, '1.0.0', 'screen');
-
-			// check first the theme folder for a nggallery.css
-			if ( nggGallery::get_theme_css_file() )
-				wp_enqueue_style('NextGEN', nggGallery::get_theme_css_file() , false, '1.0.0', 'screen');
-			else if ($this->options['activateCSS'])
-				wp_enqueue_style('NextGEN', NGGALLERY_URLPATH . 'css/' . $this->options['CSSfile'], false, '1.0.0', 'screen');
-
-			//	activate Thickbox
-			if ($this->options['thumbEffect'] == 'thickbox')
-				wp_enqueue_style( 'thickbox');
-
-			// activate modified Shutter reloaded if not use the Shutter plugin
-			if ( ($this->options['thumbEffect'] == 'shutter') && !function_exists('srel_makeshutter') )
-				wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter-reloaded.css', false, '1.3.4', 'screen');
-
 		}
 
 		function load_options() {

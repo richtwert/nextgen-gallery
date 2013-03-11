@@ -28,7 +28,7 @@ class C_Widget_MediaRSS extends WP_Widget
         );
 
         $parent->render_partial(
-            'form_mediarss',
+            'widget#form_mediarss',
             array(
                 'self'       => $this,
                 'instance'   => $instance,
@@ -58,16 +58,16 @@ class C_Widget_MediaRSS extends WP_Widget
         $after_widget = NULL;
         $after_title = NULL;
         $widget_id = NULL;
-        
+
         extract($args);
 
-        $settings = C_Component_Registry::get_instance()->get_utility('I_NextGen_Settings');
+        $settings = C_Component_Registry::get_instance()->get_utility('I_Settings_Manager');
         $parent = C_Component_Registry::get_instance()->get_utility('I_Widget');
 
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
         $parent->render_partial(
-            'display_mediarss',
+            'widget#display_mediarss',
             array(
                 'self'       => $this,
                 'instance'   => $instance,

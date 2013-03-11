@@ -9,12 +9,11 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	{
         $this->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->add_mixin('Mixin_Basic_Pagination');
-        $this->add_mixin('Mixin_NextGen_Basic_Thumbnails_Settings');
 	}
 
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
-	 * This method deprecated use of the nggShowGallery() function.
+	 * This method deprecates the use of the nggShowGallery() function.
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
 	function index_action($displayed_gallery, $return=FALSE)

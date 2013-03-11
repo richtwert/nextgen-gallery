@@ -26,7 +26,9 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 			'fields'		=> $fields,
 			'post_status'	=> 'any',
 			'datamapper'	=>	TRUE,
-			'posts_per_page'=> -1
+			'posts_per_page'=> -1,
+			'is_select'		=>	TRUE,
+			'is_delete'		=>	FALSE
 		);
 		return $this->object;
 	}
@@ -370,6 +372,38 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		$entity->id_field = $primary_key;
 
 		return $post_id;
+	}
+
+
+	/**
+	 * Determines whether the current statement is SELECT
+	 * @return boolean
+	 */
+	function is_select_statement()
+	{
+		return isset($this->object->_query_args['is_select']) && $this->object->_query_args['is_select'];
+	}
+
+
+	/**
+	 * Determines whether the current statement is DELETE
+	 * @return type
+	 */
+	function is_delete_statement()
+	{
+		return isset($this->object->_query_args['is_delete']) && $this->object->_query_args['is_delete'];
+	}
+
+
+	/**
+	 * Starts a new DELETE statement
+	 */
+	function delete()
+	{
+		$this->object->select();
+		$this->object->_query_args['is_select'] = FALSE;
+		$this->object->_query_args['is_delete'] = TRUE;
+		return $this->object;
 	}
 
 

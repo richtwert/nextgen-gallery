@@ -2,9 +2,11 @@
 /**
  {
 	Module:		photocrati-attach_to_post,
-	Depends:	{ photocrati-gallery_display }
+	Depends:	{ photocrati-nextgen_gallery_display }
  }
  */
+
+define('NEXTGEN_GALLERY_ATTACH_TO_POST_SLUG', 'ngg_attach_to_post');
 
 class M_Attach_To_Post extends C_Base_Module
 {
@@ -26,7 +28,6 @@ class M_Attach_To_Post extends C_Base_Module
 			'http://www.photocrati.com',
 		    $context
 		);
-		$this->add_mixin('Mixin_MVC_Controller_Rendering');
     }
 
 	/**
@@ -38,11 +39,6 @@ class M_Attach_To_Post extends C_Base_Module
 		parent::initialize();
 		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
 		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
-
-		$router = $this->get_registry()->get_utility('I_Router');
-		define('NEXTGEN_GALLERY_ATTACH_TO_POST_URL', $router->get_url('/attach_to_post', FALSE));
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL', $router->get_url('/attach_to_post/preview', FALSE));
-        define('NEXTGEN_GALLERY_ATTACH_TO_POST_DISPLAY_TAB_JS_URL', $router->get_url('/attach_to_post/display_tab_js', FALSE));
 	}
 
 	/**
@@ -54,7 +50,7 @@ class M_Attach_To_Post extends C_Base_Module
 		// Attach to Post interface, used to manage Displayed Galleries
 		$this->get_registry()->add_utility(
 			'I_Attach_To_Post_Controller',
-			'C_Attach_To_Post_Controller'
+			'C_Attach_Controller'
 		);
 	}
 
@@ -63,6 +59,11 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _register_adapters()
 	{
+		// Installs the Attach to Post module
+		$this->get_registry()->add_adapter(
+			'I_Installer', 'A_Attach_To_Post_Installer'
+		);
+
 		// Provides routing for the Attach To Post interface
 		$this->get_registry()->add_adapter(
 			'I_Router', 'A_Attach_To_Post_Routes'
@@ -77,6 +78,12 @@ class M_Attach_To_Post extends C_Base_Module
 		// gallery storage component
 		$this->get_registry()->add_adapter(
 			'I_Gallery_Storage', 'A_Gallery_Storage_Frame_Event'
+		);
+
+		// Adds Attach to Post settings
+		$this->get_registry()->add_adapter(
+			'I_Settings_Manager',
+			'A_Attach_to_Post_Settings'
 		);
 	}
 
@@ -180,10 +187,12 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function enqueue_static_resources()
 	{
+		$router = $this->get_registry()->get_utility('I_Router');
+
 		// Enqueue resources needed at post/page level
 		if (preg_match("/\/wp-admin\/(post|post-new)\.php$/", $_SERVER['SCRIPT_NAME'])) {
 			$this->_enqueue_tinymce_resources();
-			
+
 #			wp_enqueue_style(
 #				'ngg_custom_scrollbar', $this->static_url('jquery.mCustomScrollbar.css')
 #			);
@@ -191,14 +200,14 @@ class M_Attach_To_Post extends C_Base_Module
 #				'ngg_custom_scrollbar', $this->static_url('jquery.mCustomScrollbar.concat.min.js'), array('jquery')
 #			);
 			wp_enqueue_style(
-				'ngg_attach_to_post_dialog', $this->static_url('attach_to_post_dialog.css')
+				'ngg_attach_to_post_dialog', $router->get_static_url('attach_to_post_dialog.css')
 			);
 		}
 
 		elseif (isset($_REQUEST['attach_to_post']) OR
 		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
-			wp_enqueue_script('iframely', $this->static_url('iframely.js'));
-			wp_enqueue_style('iframely', $this->static_url('iframely.css'));
+			wp_enqueue_script('iframely', $router->get_static_url('iframely.js'));
+			wp_enqueue_style('iframely',  $router->get_static_url('iframely.css'));
 		}
 	}
 
@@ -208,7 +217,12 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _enqueue_tinymce_resources()
 	{
-        wp_localize_script('media-editor', 'nextgen_gallery_attach_to_post_url', NEXTGEN_GALLERY_ATTACH_TO_POST_URL);
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_localize_script(
+			'media-editor',
+			'nextgen_gallery_attach_to_post_url',
+			$settings->attach_to_post_url
+		);
 
 		// Registers our tinymce button and plugin for attaching galleries
         if (current_user_can('edit_posts') && current_user_can('edit_pages')) {
@@ -244,7 +258,8 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
-		$plugins[$this->attach_to_post_tinymce_plugin] = $this->static_url('ngg_attach_to_post_tinymce_plugin.js');
+		$router = $this->get_registry()->get_utility('I_Router');
+		$plugins[$this->attach_to_post_tinymce_plugin] = $router->get_static_url('ngg_attach_to_post_tinymce_plugin.js');
 		return $plugins;
 	}
 
@@ -258,9 +273,10 @@ class M_Attach_To_Post extends C_Base_Module
 	function locate_stale_displayed_galleries($post_id)
 	{
 		global $displayed_galleries_to_cleanup;
-		$displayed_galleries_to_cleanup = array();
-		$post = get_post($post_id);
-		$preview_url = preg_quote(NEXTGEN_GALLERY_ATTACH_TO_POST_PREVIEW_URL, '#');
+		$displayed_galleries_to_cleanup	= array();
+		$post							= get_post($post_id);
+		$settings						= $this->get_registry()->get_utility('I_Settings_Manager');
+		$preview_url = preg_quote($settings->gallery_preview_url, '#');
 		if (preg_match_all("#{$preview_url}/id--(\d+)#", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$preview_url = preg_quote($match[0], '/');

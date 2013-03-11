@@ -21,14 +21,6 @@ class M_Security extends C_Base_Module
 		);
 	}
 
-	/**
-	 * Initializes the module
-	 */
-	function initialize()
-	{
-		parent::initialize();
-	}
-
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Component_Factory', 'A_Security_Factory');

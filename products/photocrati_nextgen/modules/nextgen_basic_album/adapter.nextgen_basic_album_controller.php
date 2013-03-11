@@ -199,10 +199,11 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
 	function prettify_pagelink($pagelink)
 	{
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		$regex = implode('', array(
 			'#',
 			'/(gallery|album)',
-			preg_quote(MVC_PARAM_SEPARATOR),
+			preg_quote($settings->router_param_separator),
 			'([^/?]+)',
 			'#'
 		));

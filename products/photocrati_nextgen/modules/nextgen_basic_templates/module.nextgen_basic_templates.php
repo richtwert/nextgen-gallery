@@ -3,7 +3,7 @@
 /***
 {
     Module: photocrati-nextgen_basic_templates,
-    Depends: { photocrati-gallery_display }
+    Depends: { photocrati-nextgen_gallery_display }
 }
  ***/
 
@@ -22,16 +22,6 @@ class M_NextGen_Basic_Templates extends C_Base_Module
 		);
 	}
 
-
-	function _register_adapters()
-	{
-		$this->get_registry()->add_adapter(
-			'I_NextGen_Backend_Controller',
-			'A_NextGen_Basic_Template_Resources'
-		);
-	}
-
-
     function _register_utilities()
     {
         $this->get_registry()->add_utility(
@@ -39,6 +29,14 @@ class M_NextGen_Basic_Templates extends C_Base_Module
             'C_Legacy_Template_Locator'
         );
     }
+
+	function _register_adapters()
+	{
+		$this->get_registry()->add_adapter(
+			'I_Form',
+			'A_NextGen_Basic_Template_Form'
+		);
+	}
 }
 
 new M_NextGen_Basic_Templates();
