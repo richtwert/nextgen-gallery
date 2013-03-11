@@ -6,7 +6,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     function initialize()
     {
 		$this->albums = array();
-        $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
         $this->object->add_mixin('Mixin_NextGen_Basic_Album_Settings');
     }
 

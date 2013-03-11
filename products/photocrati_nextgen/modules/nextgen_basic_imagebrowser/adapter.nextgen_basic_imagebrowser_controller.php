@@ -6,14 +6,6 @@
 class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 {
 	/**
-	 * Adds a mixin to the parent object
-	 */
-    function initialize()
-    {
-        $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
-    }
-
-	/**
 	 * Renders the front-end display for the imagebrowser display type
      *
 	 * @param C_Displayed_Gallery $displayed_gallery
