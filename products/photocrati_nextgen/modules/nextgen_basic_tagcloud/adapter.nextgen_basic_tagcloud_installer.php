@@ -21,7 +21,7 @@ class A_NextGen_Basic_Tagcloud_Installer extends Mixin
     function install_nextgen_basic_tagcloud()
     {
 		$this->object->install_display_type(
-			NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME, array(
+			NEXTGEN_BASIC_TAG_CLOUD_MODULE_NAME, array(
 				'title'					=>	'NextGEN Basic TagCloud',
 				'entity_types'			=>	array('image'),
 				'preview_image_relpath'	=>	'nextgen_basic_tagcloud#preview.gif',

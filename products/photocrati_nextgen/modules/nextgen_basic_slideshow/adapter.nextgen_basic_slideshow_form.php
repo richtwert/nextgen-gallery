@@ -35,7 +35,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             'nextgen_basic_slideshow_flash_rollover_color',
             'nextgen_basic_slideshow_flash_screen_color',
             'show_alternative_view_link',
-            'alternative_view',
+//            'alternative_view',
             'alternative_view_link_text',
             'show_return_link',
             'return_link_text',
@@ -63,19 +63,19 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             $display_type,
             'cycle_effect',
             'Effect',
+			array(
+			'fade' => 'fade',
+			'blindX' => 'blindX',
+			'cover' => 'cover',
+			'scrollUp' => 'scrollUp',
+			'scrollDown' => 'scrollDown',
+			'shuffle' => 'shuffle',
+			'toss' => 'toss',
+			'wipe' => 'wipe'
+			),
             $display_type->settings['cycle_effect'],
             '',
-            FALSE,
-            array(
-                'fade' => 'fade',
-                'blindX' => 'blindX',
-                'cover' => 'cover',
-                'scrollUp' => 'scrollUp',
-                'scrollDown' => 'scrollDown',
-                'shuffle' => 'shuffle',
-                'toss' => 'toss',
-                'wipe' => 'wipe'
-            )
+            FALSE
         );
     }
 
@@ -166,10 +166,10 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             $display_type,
             'flash_stretch_image',
             'Stretch image',
+			array('true' => 'true', 'false' => 'false', 'fit' => 'fit', 'none' => 'none'),
             $display_type->settings['flash_stretch_image'],
             '',
-            empty($display_type->settings['flash_enabled']) ? TRUE : FALSE,
-            array('true' => 'true', 'false' => 'false', 'fit' => 'fit', 'none' => 'none')
+            empty($display_type->settings['flash_enabled']) ? TRUE : FALSE
         );
     }
 
@@ -179,10 +179,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             $display_type,
             'flash_transition_effect',
             'Transition / fade effect',
-            $display_type->settings['flash_transition_effect'],
-            '',
-            empty($display_type->settings['flash_enabled']) ? TRUE : FALSE,
-            array(
+			array(
                 'fade' => 'fade',
                 'bgfade' => 'bgfade',
                 'slowfade' => 'slowfade',
@@ -193,7 +190,10 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
                 'flash' => 'flash',
                 'lines' => 'lines',
                 'random' => 'random'
-            )
+            ),
+            $display_type->settings['flash_transition_effect'],
+            '',
+            empty($display_type->settings['flash_enabled']) ? TRUE : FALSE
         );
     }
 

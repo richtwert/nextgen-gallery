@@ -49,7 +49,8 @@ class Hook_NextGen_Basic_Slideshow_Defaults extends Hook
 			$this->object->_set_default_value($entity, 'settings', 'return_link_text', _('[Show Slideshow]'));
 			$this->object->_set_default_value($entity, 'settings', 'alternative_view', NEXTGEN_GALLERY_BASIC_THUMBNAILS);
 			$this->object->_set_default_value($entity, 'settings', 'show_return_link', 1);
-			$this->object->_set_default_Value($entity, 'settings', 'show_alternative_view_link', $settings->galShowGallery ? 1 : 0);
+			$this->object->_set_default_value($entity, 'settings', 'show_alternative_view_link', $settings->galShowGallery ? 1 : 0);
+			$this->object->_set_default_value($entity, 'settings', 'template', '');
 		}
 	}
 }

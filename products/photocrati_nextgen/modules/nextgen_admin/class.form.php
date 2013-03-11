@@ -103,7 +103,7 @@ class Mixin_Form_Instance_Methods extends Mixin
  */
 class Mixin_Form_Field_Generators extends Mixin
 {
-	function _render_select_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $options)
+	function _render_select_field($display_type, $name, $label, $options=array(), $value, $text = '', $hidden = FALSE)
     {
         return $this->object->render_partial(
             'field_generator/nextgen_settings_field_select',
