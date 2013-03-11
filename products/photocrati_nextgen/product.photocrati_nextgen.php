@@ -127,10 +127,11 @@ class P_Photocrati_NextGen extends C_Base_Product
         $this->get_registry()->load_module('photocrati-nextgen_basic_singlepic');
         $this->get_registry()->load_module('photocrati-nextgen_basic_tagcloud');
         $this->get_registry()->load_module('photocrati-nextgen_basic_album');
-//
-        // Provides sidebar widgets
-//        $this->get_registry()->load_module('photocrati-widget');
-//;
+
+        // Provides sidebar widgets. This module needs a refactor to comply with
+		// overall framework standards. For instance, should use
+		// C_Displayed_Gallery_Renderer and C_Form
+        $this->get_registry()->load_module('photocrati-widget');
 	}
 }
 
