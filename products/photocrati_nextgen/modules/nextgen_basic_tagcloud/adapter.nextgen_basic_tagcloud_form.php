@@ -1,6 +1,6 @@
 <?php
 
-class Mixin_NextGen_Basic_Tagcloud_Settings extends Mixin
+class Mixin_NextGen_Basic_Tagcloud_Settings extends Mixin_Display_Type_Form
 {
     function _get_field_names()
     {
@@ -30,22 +30,6 @@ class Mixin_NextGen_Basic_Tagcloud_Settings extends Mixin
             $types,
             $display_type->settings['display_type'],
             'The display type that the tagcloud will point its results to'
-        );
-    }
-
-    function _render_select_field($display_type, $name, $label, $options, $value, $text = NULL)
-    {
-        return $this->object->render_partial(
-            'nextgen_basic_tagcloud_settings_select',
-            array(
-                'display_type_name' => $display_type->name,
-                'name'    => $name,
-                'label'   => _($label),
-                'options' => $options,
-                'value'   => $value,
-                'text'    => $text
-            ),
-            True
         );
     }
 }

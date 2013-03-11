@@ -2,16 +2,6 @@
 
 class A_NextGen_Basic_Slideshow_Controller extends Mixin
 {
-    public $_settings = array();
-
-	/**
-	 * Adds framework support for thumbnails
-	 */
-	function initialize()
-	{
-        $this->add_mixin('Mixin_NextGen_Basic_Slideshow_Settings');
-	}
-
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
 	 * This method deprecates the use of the nggShowGallery() function.
