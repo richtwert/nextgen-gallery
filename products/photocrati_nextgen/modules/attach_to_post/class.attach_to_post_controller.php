@@ -124,6 +124,10 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 			'ngg_displayed_gallery_preview_url',
 			$settings->gallery_preview_url
 		);
+
+        // Enqueue our settings resources for the display settings
+        wp_enqueue_style('nextgen_gallery_display_settings');
+        wp_enqueue_script('nextgen_gallery_display_settings');
 	}
 
 	/**

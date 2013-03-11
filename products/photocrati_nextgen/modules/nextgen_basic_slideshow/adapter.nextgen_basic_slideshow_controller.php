@@ -74,11 +74,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 		return $displayed_gallery->display_settings['flash_enabled'];
 	}
 
-    function enqueue_backend_resources()
-    {
-        wp_enqueue_script('nextgen_basic_slideshow_settings-js', $this->get_static_url('nextgen_basic_slideshow_settings.js'));
-    }
-
 	/**
 	 * Provides the url of the JavaScript library required for
 	 * NextGEN Basic Slideshow to display

@@ -130,7 +130,34 @@ class M_Gallery_Display extends C_Base_Module
 
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
+
+        add_action('init', array(&$this, '_register_resources'));
 	}
+
+    /**
+     * Registers our static settings resources so the ATP module can find them later
+     */
+    function _register_resources()
+    {
+        $router = $this->get_registry()->get_utility('I_Router');
+
+        wp_register_script(
+            'nextgen_gallery_display_settings',
+            $router->get_static_url('nextgen_gallery_display_settings.js'),
+            array('jquery-ui-accordion')
+        );
+
+        wp_register_style(
+            'nextgen_gallery_display_settings',
+            $router->get_static_url('nextgen_gallery_display_settings.css')
+        );
+
+        wp_register_script(
+            'jquery.nextgen_radio_toggle',
+            $router->get_static_url('jquery.nextgen_radio_toggle.js'),
+            array('jquery')
+        );
+    }
 
 	// TODO: Is this the right place for this?
     function enqueue_galleries_js()

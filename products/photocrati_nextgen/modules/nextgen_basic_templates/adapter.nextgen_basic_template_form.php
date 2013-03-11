@@ -242,10 +242,13 @@ class A_NextGen_Basic_Template_Form extends Mixin
         return $return;
     }
 
-	function enqueue_backend_resources($displayed_gallery)
+	function enqueue_static_resources()
 	{
-		$this->call_parent('enqueue_backend_resources', $displayed_gallery);
-		wp_enqueue_style('ngg_template_settings', $this->get_static_url('nextgen_basic_templates#ngg_template_settings.css'));
+		wp_enqueue_style(
+            'ngg_template_settings',
+            $this->get_static_url('nextgen_basic_templates#ngg_template_settings.css')
+        );
+
         wp_enqueue_script(
             'ngg_template_settings',
             $this->get_static_url('nextgen_basic_templates#ngg_template_settings.js'),

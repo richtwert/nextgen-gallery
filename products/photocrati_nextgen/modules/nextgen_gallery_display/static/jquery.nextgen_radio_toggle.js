@@ -1,9 +1,3 @@
-jQuery(function($){
-	// Activate accordions
-	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
-    $('input, textarea').placeholder();
-});
-
 (function($) {
     // invoke this on your radio-button set with:
     // val: 0|1 - whether to activate on 'on' or 'off'

@@ -10,7 +10,16 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
 		return NEXTGEN_GALLERY_BASIC_SLIDESHOW;
 	}
 
-	/**
+    function enqueue_static_resources()
+    {
+        wp_enqueue_script(
+            'nextgen_basic_slideshow_settings-js',
+            $this->get_static_url('nextgen_basic_slideshow_settings.js'),
+            array('jquery.nextgen_radio_toggle')
+        );
+    }
+
+    /**
      * Returns a list of fields to render on the settings page
      */
     function _get_field_names()
