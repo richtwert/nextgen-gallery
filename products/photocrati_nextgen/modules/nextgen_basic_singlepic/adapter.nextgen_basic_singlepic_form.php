@@ -1,14 +1,22 @@
 <?php
 
-class Mixin_NextGen_Basic_Singlepic_Settings extends Mixin
+class A_NextGen_Basic_SinglePic_Form extends Mixin_Display_Type_Form
 {
+	/**
+	 * Returns the name of the display type
+	 * @return string
+	 */
+	function get_display_type_name()
+	{
+		return NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME;
+	}
 
-    /**
-     * Returns a list of fields to render on the settings page
-     */
-    function _get_field_names()
-    {
-        return array(
+	/**
+	 * Returns the name of the fields to render for the SinglePic
+	 */
+	function _get_field_names()
+	{
+		return array(
             'nextgen_basic_singlepic_dimensions',
             'nextgen_basic_singlepic_link',
             'nextgen_basic_singlepic_float',
@@ -18,9 +26,9 @@ class Mixin_NextGen_Basic_Singlepic_Settings extends Mixin
             'nextgen_basic_singlepic_display_reflection',
             'nextgen_basic_templates_template'
         );
-    }
+	}
 
-    function _render_nextgen_basic_singlepic_dimensions_field($display_type)
+	    function _render_nextgen_basic_singlepic_dimensions_field($display_type)
     {
         return $this->object->render_partial(
             'nextgen_basic_singlepic_settings_dimensions',
@@ -100,35 +108,6 @@ class Mixin_NextGen_Basic_Singlepic_Settings extends Mixin
             'Float',
             array('' => 'None', 'left' => 'Left', 'right' => 'Right'),
             $display_type->settings['float']
-        );
-    }
-
-    function _render_select_field($display_type, $name, $label, $options, $value)
-    {
-        return $this->object->render_partial(
-            'nextgen_basic_singlepic_settings_select',
-            array(
-                'display_type_name' => $display_type->name,
-                'name'    => $name,
-                'label'   => _($label),
-                'options' => $options,
-                'value'   => $value
-            ),
-            True
-        );
-    }
-
-    function _render_radio_field($display_type, $name, $label, $value)
-    {
-        return $this->object->render_partial(
-            'nextgen_basic_singlepic_settings_radio',
-            array(
-                'display_type_name' => $display_type->name,
-                'name'  => $name,
-                'label' => _($label),
-                'value' => $value
-            ),
-            True
         );
     }
 }
