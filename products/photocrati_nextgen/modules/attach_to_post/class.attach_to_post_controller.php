@@ -1,5 +1,8 @@
 <?php
 
+// TODO: Delete this class once you know it's safe to do so. It's currently not
+// in use
+
 /**
  * Provides the ability to create and edit C_Displayed_Galleries
  */

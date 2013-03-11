@@ -139,39 +139,37 @@ class Mixin_Attach_To_Post extends Mixin
 	{
 		$found_preview_pic = FALSE;
 
-		if ($this->object->_validate_request()) {
-            $dyn_thumbs		= $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-			$storage		= $this->object->get_registry()->get_utility('I_Gallery_Storage');
-			$image_mapper	= $this->object->get_registry()->get_utility('I_Image_Mapper');
+		$dyn_thumbs		= $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
+		$storage		= $this->object->get_registry()->get_utility('I_Gallery_Storage');
+		$image_mapper	= $this->object->get_registry()->get_utility('I_Image_Mapper');
 
-			// Get the first entity from the displayed gallery. We will use this
-			// for a preview pic
-			$entity = array_pop($this->object->_displayed_gallery->get_included_entities(1, FALSE, FALSE));
-			$image = FALSE;
-			if ($entity) {
-				// This is an album or gallery
-				if (isset($entity->previewpic)) {
-					$image = (int)$entity->previewpic;
-					if (($image = $image_mapper->find($image))) {
-							$found_preview_pic = TRUE;
-					}
-				}
-
-				// Is this an image
-				else if (isset($entity->galleryid)) {
-					$image = $entity;
-					$found_preview_pic = TRUE;
+		// Get the first entity from the displayed gallery. We will use this
+		// for a preview pic
+		$entity = array_pop($this->object->_displayed_gallery->get_included_entities(1, FALSE, FALSE));
+		$image = FALSE;
+		if ($entity) {
+			// This is an album or gallery
+			if (isset($entity->previewpic)) {
+				$image = (int)$entity->previewpic;
+				if (($image = $image_mapper->find($image))) {
+						$found_preview_pic = TRUE;
 				}
 			}
 
-			// Were we able to find a preview pic? If so, then render it
-			$found_preview_pic = $storage->render_image($image, $dyn_thumbs->get_size_name(array(
-				'width'     =>  200,
-				'height'    =>  200,
-				'quality'   =>  90,
-				'type'		=>	'jpg'
-			), TRUE));
+			// Is this an image
+			else if (isset($entity->galleryid)) {
+				$image = $entity;
+				$found_preview_pic = TRUE;
+			}
 		}
+
+		// Were we able to find a preview pic? If so, then render it
+		$found_preview_pic = $storage->render_image($image, $dyn_thumbs->get_size_name(array(
+			'width'     =>  200,
+			'height'    =>  200,
+			'quality'   =>  90,
+			'type'		=>	'jpg'
+		), TRUE));
 
 		// Render invalid image if no preview pic is found
 		if (!$found_preview_pic) {
