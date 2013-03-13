@@ -19,7 +19,7 @@ class Mixin_Display_Type_Form extends Mixin
 	function get_model()
 	{
 		$mapper = $this->get_registry()->get_utility('I_Display_Type_Mapper');
-		return $mapper->find_by_name($this->object->get_display_type_name());
+		return $mapper->find_by_name($this->object->get_display_type_name(), TRUE);
 	}
 
 	/**
