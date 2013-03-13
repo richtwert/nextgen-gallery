@@ -40,6 +40,13 @@ class C_Fs extends C_Component
 class Mixin_Fs_Instance_Methods extends Mixin
 {
     
+        function add_trailing_slash($path)
+        {
+            if (substr($path, -1) != '/') $path .= '/';
+            return $path;
+        }
+    
+    
         /**
          * Returns a calculated path to a file
          * @param string $path

@@ -136,6 +136,7 @@ class A_Image_Options_Form extends Mixin
 				$fs               = $this->get_registry()->get_utility('I_Fs');
 				$original_dir     = $fs->get_abspath($this->object->get_model()->get('gallerypath'));
 				$new_dir	  = $fs->get_abspath($image_options['gallerypath']);
+                                $image_options['gallerypath'] = $fs->add_trailing_slash($image_options['gallerypath']);
 
 				// If the gallery path has changed...
 				if ($original_dir != $new_dir) {

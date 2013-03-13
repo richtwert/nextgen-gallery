@@ -36,7 +36,7 @@ class A_Gallery_Display_Installer extends Mixin
 		$properties['name'] = $name;
 		foreach ($properties as $key=>$val) {
 			if ($key == 'preview_image_relpath') {
-				$value = $fs->get_static_relpath($val);
+				$val = $fs->find_static_relpath($val);
 			}
 			$display_type->$key = $val;
 		}

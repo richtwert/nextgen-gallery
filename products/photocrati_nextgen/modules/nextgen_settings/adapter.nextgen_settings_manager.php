@@ -37,7 +37,7 @@ class Mixin_NextGen_Settings extends Mixin
 		$gallerypath = str_replace(
 			'%BLOG_ID%',
 			get_current_blog_id(),
-			$global_settings->get('gallerypath', 'wp-content/gallery')
+			$global_settings->get('gallerypath', 'wp-content/gallery/')
 		);
 		$cssfile		= $global_settings->get('wpmuCSSfile', 'nggallery.css');
 		$activateCSS	= $global_settings->get('wpmuStyle', 1);
