@@ -51,22 +51,23 @@
                         style="max-width:none;"
                     />
                 </a>
-								<?php
+                <?php
+                /*
+                    $triggers = $this->get_registry()->get_utility('I_NextGen_Pro_Lightbox_Trigger_Manager');
 
-									$triggers = $this->get_registry()->get_utility('I_NextGen_Pro_Lightbox_Trigger_Manager');
+                    if ($triggers != null && defined('NEXTGEN_PRO_LIGHTBOX_MODULE_NAME') && $this->object->get_registry()->get_utility('I_NextGen_Settings')->thumbEffect == NEXTGEN_PRO_LIGHTBOX_MODULE_NAME)
+                    {
+                        $params = array(
+                            'context' => 'image',
+                            'context-id' => $image->{$image->id_field},
+                            'context-parent' => 'gallery',
+                            'context-parent-id' => $transient_id,
+                        );
 
-									if ($triggers != null && defined('NEXTGEN_PRO_LIGHTBOX_MODULE_NAME') && $this->object->get_registry()->get_utility('I_NextGen_Settings')->thumbEffect == NEXTGEN_PRO_LIGHTBOX_MODULE_NAME)
-									{
-										$params = array(
-											'context' => 'image', 
-											'context-id' => $image->{$image->id_field},
-											'context-parent' => 'gallery', 
-											'context-parent-id' => $transient_id,
-										);
-		
-										echo $triggers->render_trigger_list(null, $params, $this->object);
-									}
-								?>
+                        echo $triggers->render_trigger_list(null, $params, $this->object);
+                    }
+                */
+                ?>
             </div>
         </div>
 
