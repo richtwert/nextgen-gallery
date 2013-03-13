@@ -51,9 +51,38 @@ class A_Image_Options_Form extends Mixin
 			'Tags'						=>	'tags'
 		);
 	}
+        
+        /**
+         * Tries to create the gallery storage directory if it doesn't exist
+         * already
+         * @return string
+         */
+        function _create_gallery_storage_dir()
+        {
+            $retval = TRUE;
+            
+            if (($gallerypath = $this->object->get_model()->get('gallerypath'))) {
+                $fs = $this->get_registry()->get_utility('I_Fs');
+                $gallerypath = $fs->get_abspath($gallerypath);
+                if (!file_exists($gallerypath)) {
+                    @mkdir($gallerypath);
+                    $retval = file_exists($gallerypath);
+                }
+                
+            }
+            
+            return $retval;
+        }
 
+        /*
+         * Renders the form
+         */
 	function render()
 	{
+                if (!$this->object->_create_gallery_storage_dir()) {
+                    $this->object->get_model()->add_error( _('Gallery path does not exist and could not be created'), 'gallerypath');
+                }
+            
 		$settings = $this->object->get_model();
 		return $this->render_partial('nextgen_other_options#image_options_tab', array(
 			'gallery_path_label'			=>	_('Where would you like galleries stored?'),
@@ -93,6 +122,7 @@ class A_Image_Options_Form extends Mixin
 			'backup_images_yes_label'		=>	_('Yes'),
 			'backup_images_no_label'		=>	_('No'),
 			'backup_images'					=>	$settings->imgBackup
+                    
 		), TRUE);
 	}
 
