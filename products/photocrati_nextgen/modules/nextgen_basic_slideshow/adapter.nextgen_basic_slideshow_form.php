@@ -188,7 +188,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             $display_type,
             'flash_transition_effect',
             'Transition / fade effect',
-			array(
+            array(
                 'fade' => 'fade',
                 'bgfade' => 'bgfade',
                 'slowfade' => 'slowfade',
