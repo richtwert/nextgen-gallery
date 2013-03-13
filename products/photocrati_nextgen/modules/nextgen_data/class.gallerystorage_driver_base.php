@@ -249,7 +249,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
      */
     function get_image_dimensions($image, $size='full')
     {
-		$retval = NULL;
+			$retval = NULL;
 
         // If an image id was provided, get the entity
         if (is_numeric($image)) $image = $this->object->_image_mapper->find($image);
@@ -276,20 +276,27 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
                 $retval = $image->meta_data[$size];
             }
 
-			// Didn't exist for meta data. We'll have to compute
-			// TODO: Is this required? If so, should be somehow cache the
-			// dimensions in the meta_data after computing?
-			else {
-				error_log("ATTENTION: Image dimensions for {$size} weren't in image meta_data");
-				$size = getimagesize($this->object->get_image_abspath($image));
-				if ($size) {
-					$retval['width']	= $size[0];
-					$retval['height']	= $size[1];
+				// Didn't exist for meta data. We'll have to compute
+				// TODO: Is this required? If so, should be somehow cache the
+				// dimensions in the meta_data after computing?
+				else {
+					error_log("ATTENTION: Image dimensions for {$size} weren't in image meta_data");
+				
+					$abspath = $this->object->get_image_abspath($image, $size);
+				
+					if (file_exists($abspath))
+					{
+						$dims = getimagesize($abspath);
+						
+						if ($dims) {
+							$retval['width']	= $dims[0];
+							$retval['height']	= $dims[1];
+						}
+					}
 				}
-			}
-        }
+      }
 
-        return $retval;
+    	return $retval;
     }
 
     /**
