@@ -225,7 +225,6 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 
 			foreach ($this->object->get_forms() as $form) {
 				$form->enqueue_static_resources();
-				$tabs[] = $this->object->to_accordion_tab($form);
 				if ($this->object->is_post_request()) {
 					$action = $this->object->_get_action();
 					if ($form->has_method($action)) {
@@ -237,6 +236,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 						}
 					}
 				}
+                                $tabs[] = $this->object->to_accordion_tab($form);
 			}
 
 			// Render the view

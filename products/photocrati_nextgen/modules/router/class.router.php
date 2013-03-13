@@ -99,7 +99,7 @@ class Mixin_Router extends Mixin
 	function get_static_url($path, $module=FALSE)
 	{
 		$fs = $this->get_registry()->get_utility('I_Fs');
-		$path = $fs->get_abspath($path, $module);
+		$path = $fs->find_abspath($path, $module);
 		$base_url = $this->object->get_base_url();
 		$base_url = $this->object->remove_url_segment('/index.php', $base_url);
 		return str_replace(

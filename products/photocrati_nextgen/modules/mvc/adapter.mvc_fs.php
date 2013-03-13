@@ -3,13 +3,14 @@
 class A_MVC_Fs extends Mixin
 {
 	/**
-	 * Gets the absolute path to a static resource
-	 * @param type $path
-	 * @param type $module
-	 * @param type $relative
-	 * @return type
+	 * Gets the absolute path to a static resource. If it doesn't exist,
+         * then NULL is returned
+	 * @param string $path
+	 * @param string $module
+	 * @param string $relative
+	 * @return string|NULL
 	 */
-	function get_static_abspath($path, $module=FALSE, $relative=FALSE)
+	function find_static_abspath($path, $module=FALSE, $relative=FALSE)
 	{
 		$settings	  = $this->get_registry()->get_utility('I_Settings_Manager');
 
@@ -22,17 +23,18 @@ class A_MVC_Fs extends Mixin
 			$static_paths[] = $dir;
 		}
 
-		return $this->object->get_abspath($path, $module, $relative, $static_paths);
+		return $this->object->find_abspath($path, $module, $relative, $static_paths);
 	}
 
 	/**
-	 * Gets the relative path to a static resource
+	 * Gets the relative path to a static resource. If it doesn't exist, then
+         * NULL is returned
 	 * @param string $path
 	 * @param string $module
-	 * @return string
+	 * @return string|NULL
 	 */
-	function get_static_relpath($path, $module=FALSE)
+	function find_static_relpath($path, $module=FALSE)
 	{
-		return $this->object->get_static_abspath($path, $module, TRUE);
+		return $this->object->find_static_abspath($path, $module, TRUE);
 	}
 }

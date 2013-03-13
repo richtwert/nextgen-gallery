@@ -103,8 +103,8 @@ class A_Image_Options_Form extends Mixin
 
 			// Update the gallery path. Moves all images to the new location
 			if (isset($image_options['gallerypath'])) {
-				$fs			  = $this->get_registry()->get_utility('I_Fs');
-				$original_dir = $fs->get_abspath($this->object->get_model()->get('gallerypath'));
+				$fs               = $this->get_registry()->get_utility('I_Fs');
+				$original_dir     = $fs->get_abspath($this->object->get_model()->get('gallerypath'));
 				$new_dir	  = $fs->get_abspath($image_options['gallerypath']);
 
 				// If the gallery path has changed...

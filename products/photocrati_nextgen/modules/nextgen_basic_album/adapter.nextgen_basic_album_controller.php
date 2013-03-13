@@ -65,7 +65,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $displayed_gallery->entity_ids = array();
 			$displayed_gallery->sortorder = array();
             $displayed_gallery->container_ids = ($album === '0' OR $album === 'all') ? array() : array($album);
-			$displayed_gallery->debug = TRUE;
 		}
 
 		// Get the albums

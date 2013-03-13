@@ -39,35 +39,103 @@ class C_Fs extends C_Component
 
 class Mixin_Fs_Instance_Methods extends Mixin
 {
+    
+        /**
+         * Returns a calculated path to a file
+         * @param string $path
+         * @param string $module
+         * @param boolean $relpath
+         * @returns string
+         */
+        function get_abspath($path, $module=FALSE, $relpath=FALSE)
+        {
+            // Wel'l assume that we're to calculate the path relative to
+            // the site document root
+            $retval = $this->object->join_paths(
+                $this->object->get_document_root(),
+                $path
+            );
+            
+            // If a module is provided, then we should calculate the path
+            // relative to the module directory
+            if ($module) {
+                if (($module_dir = $this->get_registry()->get_module_dir($module))) {
+                    $retval = $this->object->join_paths($module_dir, $path);
+                }
+                else {
+                    $retval = $this->object->join_path(
+                        $this->object->get_document_root(), $module, $path
+                    );
+                }
+            }
+            
+            // Return the calculated path relative to the document root
+            if ($relpath) $retval = $this->object->remove_path_segment(
+                $retval, $this->object->get_document_root()
+            );
+            
+            return $retval;
+        }
+        
+        
+        /**
+         * Returns a calculated relpath to a particular file
+         * @param string $path
+         * @param string $module
+         * @return string
+         */
+        function get_relpath($path, $module=FALSE)
+        {
+            return $this->object->get_abspath($path, $module, TRUE);
+        }
+        
+        /**
+         * Removes a path segment from a url or filesystem path
+         * @param string $path
+         * @param string $segment
+         * @return string
+         */
+        function remove_path_segment($path, $segment)
+        {
+            if (substr($segment, -1) == '/') $segment = substr($segment, 0, -1);
+            $parts = explode($segment, $path);
+            return $this->object->join_paths($parts);
+        }
+    
+    
 	/**
-	 * Gets the absolute path to a file/directory for a specific Pope product
+	 * Gets the absolute path to a file/directory for a specific Pope product,
+         * If the path doesn't exist, then NULL is returned
 	 * @param string $path
 	 * @param string $module
+         * @returns string|NULL
 	 */
-	function get_abspath($path, $module=FALSE, $relpath=FALSE, $search_paths=array())
+	function find_abspath($path, $module=FALSE, $relpath=FALSE, $search_paths=array())
 	{
 		$retval = NULL;
 
 		if (file_exists($path))
-			$retval = $path;
+                    $retval = $path;
 
 		else {
 			// Ensure that we weren't passed a module id in the path
-		if (!$module) list($path, $module) = $this->object->parse_formatted_path($path);
+                        if (!$module) list($path, $module) = $this->object->parse_formatted_path($path);
+                       
 
 			// Ensure that we know where to search for the file
 			if (!$search_paths) {
-				$search_paths = $this->object->get_search_paths($path, $module);
+                            $search_paths = $this->object->get_search_paths($path, $module);
 			}
 
 			// Now that know where to search, let's find the file
 			foreach ($search_paths as $dir) {
-				if (($retval = $this->object->_rglob($dir, $path))) {
-					if ($relpath) $retval = str_replace(
-						$this->object->get_document_root(), '', $retval
-					);
-					break;
-				}
+                            if (($retval = $this->object->_rglob($dir, $path))) {
+
+                                if ($relpath) $retval = $this->object->remove_path_segment(
+                                    $retval, $this->object->get_document_root()
+                                );
+                                break;
+                            }
 			}
 		}
 
@@ -128,29 +196,31 @@ class Mixin_Fs_Instance_Methods extends Mixin
 	function _rglob($base_path, $file, $flags=0)
 	{
 		$retval = NULL;
-		$results = file_exists($this->join_paths($base_path, $file));
+		$results = file_exists($this->object->join_paths($base_path, $file));
 
 		// Must be located in a sub-directory
 		if (!$results) {
-			$results = glob($this->join_paths($base_path, '/*'), GLOB_ONLYDIR);
+			$results = glob($this->object->join_paths($base_path, '/*'), GLOB_ONLYDIR);
 			foreach ($results as $dir) {
-				$retval = $this->_rglob($dir, $file, $flags);
+				$retval = $this->object->_rglob($dir, $file, $flags);
 				if ($retval) break;
 			}
 		}
-		else $retval = $this->join_paths($base_path, $file);
+		else $retval = $this->object->join_paths($base_path, $file);
 
 		return $retval;
 	}
 
 	/**
-	 * Gets the relative path to a file/directory for a specific Pope product
+	 * Gets the relative path to a file/directory for a specific Pope product.
+         * If the path doesn't exist, then NULL is returned
 	 * @param type $path
 	 * @param type $module
+         * @returns string|NULL
 	 */
-	function get_relpath($path, $module=FALSE)
+	function find_relpath($path, $module=FALSE)
 	{
-		return $this->object->get_abspath($path, $module, TRUE);
+		return $this->object->find_abspath($path, $module, TRUE);
 	}
 
 
@@ -166,18 +236,18 @@ class Mixin_Fs_Instance_Methods extends Mixin
 		$this->_flatten_array($params, $segments);
 
 		foreach ($segments as $segment) {
-            if (strpos($segment, '/') === 0)
-                $segment = substr($segment, 1);
-			if (substr($segment, -1) === '/')
-                $segment = substr($segment, 0, -1);
-			if ($segment)
-                $retval[] = $segment;
+                    if (strpos($segment, '/') === 0)
+                        $segment = substr($segment, 1);
+                    if (substr($segment, -1) === '/')
+                        $segment = substr($segment, 0, -1);
+                    if ($segment)
+                        $retval[] = $segment;
 		}
 
 		$retval = implode('/', $retval);
-
-		if (strpos($retval, '/') !== 0 && strpos($retval, 'http') !== 0)
-            $retval = '/' . $retval;
+                
+                if (strpos($retval, '/') !== 0 && !preg_match("#^http(s)?://#", $retval))
+                    $retval = '/' . $retval;
 
 		return $retval;
 	}

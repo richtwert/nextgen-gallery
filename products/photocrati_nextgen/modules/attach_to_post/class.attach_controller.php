@@ -173,7 +173,7 @@ class Mixin_Attach_To_Post extends Mixin
 
 		// Render invalid image if no preview pic is found
 		if (!$found_preview_pic) {
-			$filename = $this->object->get_static_abspath('attach_to_post#invalid_image.png');
+			$filename = $this->object->find_static_abspath('attach_to_post#invalid_image.png');
 			$this->set_content_type('image/png');
 			readfile($filename);
 			$this->render();
