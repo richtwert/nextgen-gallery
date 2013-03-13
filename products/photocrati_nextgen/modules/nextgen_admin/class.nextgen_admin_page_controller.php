@@ -100,13 +100,13 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 			'current' => __( 'Current Color' ),
 		));
 		wp_enqueue_script(
-			'nextgen_admin_settings',
-			$this->get_static_url('nextgen_admin_settings.js'),
+			'nextgen_admin_page',
+			$this->get_static_url('nextgen_admin_page.js'),
             array('wp-color-picker')
 		);
 		wp_enqueue_style(
-			'nextgen_admin_settings',
-			$this->get_static_url('nextgen_admin_settings.css'),
+			'nextgen_admin_page',
+			$this->get_static_url('nextgen_admin_page.css'),
             array('wp-color-picker')
 		);
 	}
@@ -228,8 +228,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 				if ($this->object->is_post_request()) {
 					$action = $this->object->_get_action();
 					if ($form->has_method($action)) {
-                                            $form->$action();
-                                            
+                                            $form->$action($this->object->param($form->context));
 					}
 				}
                                 

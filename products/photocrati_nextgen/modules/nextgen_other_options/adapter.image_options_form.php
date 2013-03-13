@@ -126,10 +126,10 @@ class A_Image_Options_Form extends Mixin
 		), TRUE);
 	}
 
-	function save_action()
+	function save_action($image_options)
 	{
 		$save = TRUE;
-		if (($image_options = $this->object->param('image_options'))) {
+		if (($image_options)) {
 
 			// Update the gallery path. Moves all images to the new location
 			if (isset($image_options['gallerypath'])) {

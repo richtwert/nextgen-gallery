@@ -26,7 +26,7 @@ class A_Lightbox_Library_Form extends Mixin
 		), TRUE);
 	}
 
-		function save_action()
+        function save_action()
 	{
 		// Ensure that a lightbox library was selected
 		if (($id = $this->object->param('lightbox_library_id'))) {

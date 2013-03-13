@@ -30,4 +30,15 @@ class Mixin_Display_Type_Form extends Mixin
 	{
 		return $this->object->get_model()->title;
 	}
+        
+        
+        /**
+         * Saves the settings for the display type
+         * @param array $attributes
+         * @return boolean
+         */
+        function save_action($attributes=array())
+        {
+            return $this->object->get_model()->save(array('settings'=>$attributes));
+        }
 }
