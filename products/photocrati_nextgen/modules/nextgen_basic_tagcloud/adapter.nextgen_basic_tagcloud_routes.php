@@ -14,6 +14,7 @@ class A_NextGen_Basic_TagCloud_Routes extends Mixin
 
 	function _add_nextgen_basic_tagcloud_routes()
 	{
-        $this->object->rewrite('nggallery{*}/tags/{\w}{*}', 'nggallery{1}/gallerytag--{2}{3}');
+        $slug = $this->object->get_registry()->get_utility('I_Settings_Manager')->router_param_slug;
+        $this->object->rewrite("{$slug}{*}/tags/{\\w}{*}", "{$slug}{1}/gallerytag--{2}{3}");
 	}
 }

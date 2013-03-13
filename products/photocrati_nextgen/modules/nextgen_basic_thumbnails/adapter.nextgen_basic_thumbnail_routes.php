@@ -14,11 +14,13 @@ class A_NextGen_Basic_Thumbnail_Routes extends Mixin
 
 	function _add_nextgen_basic_thumbnail_routes()
 	{
-		if (defined('NEXTGEN_GALLERY_BASIC_SLIDESHOW')) {
-			$this->object->rewrite("nggallery{*}/slideshow/{*}", "nggallery{1}/show--".NEXTGEN_GALLERY_BASIC_SLIDESHOW."{2}");
-			$this->object->rewrite("nggallery{*}/show--slide/{*}", "nggallery{1}/show--".NEXTGEN_GALLERY_BASIC_SLIDESHOW."/{2}");
-			$this->object->rewrite("nggallery{*}/show--gallery/{*}", "nggallery{1}/show--".NEXTGEN_GALLERY_BASIC_THUMBNAILS."/{2}");
-			$this->object->rewrite("nggallery{*}/page/{\d}{*}", "nggallery{1}/page--{2}{3}");
+		if (defined('NEXTGEN_GALLERY_BASIC_SLIDESHOW'))
+        {
+            $slug = $this->object->get_registry()->get_utility('I_Settings_Manager')->router_param_slug;
+			$this->object->rewrite("{$slug}{*}/slideshow/{*}",     "{$slug}{1}/show--" . NEXTGEN_GALLERY_BASIC_SLIDESHOW  . "{2}");
+			$this->object->rewrite("{$slug}{*}/show--slide/{*}",   "{$slug}{1}/show--" . NEXTGEN_GALLERY_BASIC_SLIDESHOW  . "/{2}");
+			$this->object->rewrite("{$slug}{*}/show--gallery/{*}", "{$slug}{1}/show--" . NEXTGEN_GALLERY_BASIC_THUMBNAILS . "/{2}");
+			$this->object->rewrite("{$slug}{*}/page/{\\d}{*}",     "{$slug}{1}/page--{2}{3}");
 		}
 	}
 }

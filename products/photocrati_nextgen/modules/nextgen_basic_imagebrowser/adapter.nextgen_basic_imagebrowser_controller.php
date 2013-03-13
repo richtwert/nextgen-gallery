@@ -48,7 +48,6 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
     function render_image_browser($displayed_gallery, $picture_list)
     {
         $display_settings = $displayed_gallery->display_settings;
-        $settings    = $this->object->get_registry()->get_utility('I_Settings_Manager');
         $storage     = $this->object->get_registry()->get_utility('I_Gallery_Storage');
         $imap        = $this->object->get_registry()->get_utility('I_Image_Mapper');
         $application = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
