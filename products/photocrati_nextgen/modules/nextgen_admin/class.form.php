@@ -74,7 +74,7 @@ class Mixin_Form_Instance_Methods extends Mixin
 	 * @param array $attributes
 	 * @return type
 	 */
-	function save($attributes=array())
+	function save_action($attributes=array())
 	{
 		return $this->object->get_model()->save($attributes);
 	}
