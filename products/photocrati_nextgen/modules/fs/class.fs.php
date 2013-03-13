@@ -207,7 +207,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
 
 		// Must be located in a sub-directory
 		if (!$results) {
-			$results = (array) glob($this->object->join_paths($base_path, '/*'), GLOB_ONLYDIR);
+			$results = (array) glob($this->object->join_paths($base_path, '/*'), GLOB_ONLYDIR|GLOB_NOSORT);
 			foreach ($results as $dir) {
 				$retval = $this->object->_rglob($dir, $file, $flags);
 				if ($retval) break;
