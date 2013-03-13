@@ -40,6 +40,7 @@ class Mixin_Attach_To_Post extends Mixin
 			$this->object->_displayed_gallery = $mapper->create();
 		}
 	}
+        
 
 
 	function enqueue_backend_resources()
@@ -178,46 +179,6 @@ class Mixin_Attach_To_Post extends Mixin
 			readfile($filename);
 			$this->render();
 		}
-	}
-
-
-	/**
-	 * Validates the request and fetches the associated displayed gallery
-	 * @return boolean
-	 */
-	function _validate_request()
-	{
-		$valid_request = TRUE;
-
-		$security = $this->get_registry()->get_utility('I_Security_Manager');
-		$sec_token = $security->get_request_token('nextgen_edit_displayed_gallery');
-		$sec_actor = $security->get_current_actor();
-
-		if (!$sec_actor->is_allowed('nextgen_edit_displayed_gallery'))
-		{
-			$valid_request = false;
-		}
-
-		if ($valid_request)
-		{
-			// If an ID was passed, then we need to attempt
-			// retrieving the displayed gallery to edit.
-			// If the displayed gallery doesn't exist, then it's an
-			// invalid request
-			if (($id = $this->object->param('id')) && !isset($this->object->_displayed_gallery)) {
-				$mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
-				$this->object->_displayed_gallery = $mapper->find($id, TRUE);
-				if (is_null($this->object->_displayed_gallery)) $valid_request = FALSE;
-				else $this->object->_displayed_gallery->id = $this->object->_displayed_gallery->id();
-			}
-			// No displayed gallery was specified
-			else {
-				$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-				$this->object->_displayed_gallery = $factory->create('displayed_gallery');
-			}
-		}
-
-		return $valid_request;
 	}
 
 	/**

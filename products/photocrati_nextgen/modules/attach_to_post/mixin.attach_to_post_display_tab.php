@@ -10,41 +10,39 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 	 */
 	function display_tab_js_action()
 	{
-		if ($this->object->_validate_request()){
-			$this->object->do_not_cache();
-			$this->object->set_content_type('javascript');
+            $this->object->do_not_cache();
+            $this->object->set_content_type('javascript');
 
-			// Get all entities used by the display tab
-			$context = 'attach_to_post';
-			$gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper',		$context);
-			$album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper',			$context);
-			$display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper',	$context);
-			$source_mapper		= $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper', $context);
-			$security			= $this->get_registry()->get_utility('I_Security_Manager');
+            // Get all entities used by the display tab
+            $context = 'attach_to_post';
+            $gallery_mapper		= $this->get_registry()->get_utility('I_Gallery_Mapper',		$context);
+            $album_mapper		= $this->get_registry()->get_utility('I_Album_Mapper',			$context);
+            $display_type_mapper= $this->get_registry()->get_utility('I_Display_Type_Mapper',	$context);
+            $source_mapper		= $this->get_registry()->get_utility('I_Displayed_Gallery_Source_Mapper', $context);
+            $security			= $this->get_registry()->get_utility('I_Security_Manager');
 
-			// Get the nextgen tags
-			global $wpdb;
-			$tags = $wpdb->get_results(
-					"SELECT DISTINCT name AS 'id', name FROM {$wpdb->terms}
-					WHERE term_id IN (
-						SELECT term_id FROM {$wpdb->term_taxonomy}
-						WHERE taxonomy = 'ngg_tag'
-					)");
-			$all_tags = new stdClass;
-			$all_tags->name = "All";
-			array_unshift($tags, $all_tags);
+            // Get the nextgen tags
+            global $wpdb;
+            $tags = $wpdb->get_results(
+                            "SELECT DISTINCT name AS 'id', name FROM {$wpdb->terms}
+                            WHERE term_id IN (
+                                    SELECT term_id FROM {$wpdb->term_taxonomy}
+                                    WHERE taxonomy = 'ngg_tag'
+                            )");
+            $all_tags = new stdClass;
+            $all_tags->name = "All";
+            array_unshift($tags, $all_tags);
 
-			$this->object->render_view('attach_to_post#display_tab_js', array(
-				'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),
-				'sources'				=>	json_encode($source_mapper->select()->order_by('title')->run_query()),
-				'gallery_primary_key'	=>	$gallery_mapper->get_primary_key_column(),
-				'galleries'				=>	json_encode($gallery_mapper->find_all()),
-				'albums'				=>	json_encode($album_mapper->find_all()),
-				'tags'					=>	json_encode($tags),
-				'display_types'			=>	json_encode($display_type_mapper->find_all()),
-				'sec_token'				=>	$security->get_request_token('nextgen_edit_displayed_gallery')->get_json()
-			));
-		}
+            $this->object->render_view('attach_to_post#display_tab_js', array(
+                    'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),
+                    'sources'				=>	json_encode($source_mapper->select()->order_by('title')->run_query()),
+                    'gallery_primary_key'	=>	$gallery_mapper->get_primary_key_column(),
+                    'galleries'				=>	json_encode($gallery_mapper->find_all()),
+                    'albums'				=>	json_encode($album_mapper->find_all()),
+                    'tags'					=>	json_encode($tags),
+                    'display_types'			=>	json_encode($display_type_mapper->find_all()),
+                    'sec_token'				=>	$security->get_request_token('nextgen_edit_displayed_gallery')->get_json()
+            ));
 	}
 
 
