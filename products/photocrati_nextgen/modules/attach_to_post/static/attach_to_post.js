@@ -78,7 +78,11 @@ jQuery(function($){
 	});
 
 	// Activate accordion for display tab
-	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
+	$('.accordion').accordion({
+        clearStyle: true,
+        autoHeight: false,
+        heightStyle: 'content'
+    });
 
 	// If the active display tab is clicked, then we assume that the user
 	// wants to display the original tab content

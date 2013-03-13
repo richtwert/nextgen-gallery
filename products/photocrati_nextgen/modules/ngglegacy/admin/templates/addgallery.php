@@ -127,7 +127,11 @@
 
 				// JQuery Tabs
 				jQuery('html,body').scrollTop(0);
-				jQuery('#accordion').accordion({ clearStyle: true, autoHeight: false });
+				jQuery('#accordion').accordion({
+                    clearStyle: true,
+                    autoHeight: false,
+                    heightStyle: 'content'
+                });
 
 				// Browse filesystem
 				jQuery("span.browsefiles").show().click(function(){

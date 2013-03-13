@@ -1,6 +1,10 @@
 jQuery(function($){
 	// Activate accordions
-	$('.accordion').accordion({ clearStyle: true, autoHeight: false });
+	$('.accordion').accordion({
+        clearStyle: true,
+        autoHeight: false,
+        heightStyle: 'content'
+    });
 
 	/**** LIGHTBOX EFFECT TAB ****/
 
