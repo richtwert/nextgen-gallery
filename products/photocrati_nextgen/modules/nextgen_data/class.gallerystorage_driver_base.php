@@ -983,7 +983,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 							$destpath_basename = $destpath_info['filename'];
 							$destpath_new = $destpath_dir . DIRECTORY_SEPARATOR . $destpath_basename . $clone_format_extension_str;
 
-							if (rename($destpath, $destpath_new))
+							if ((file_exists($destpath) && rename($destpath, $destpath_new)) || $thumbnail != null)
 							{
 								$destpath = $destpath_new;
 							}
