@@ -72,10 +72,6 @@ class Mixin_Attach_To_Post_Controller extends Mixin
 		wp_enqueue_script('jquery-ui-sortable');
 		wp_enqueue_script('ngg_tabs', $this->get_static_url('attach_to_post#ngg_tabs.js'));
 
-		// Ensure select2
-		wp_enqueue_style('select2', $this->get_static_url('attach_to_post#select2.css'));
-		wp_enqueue_script('select2', $this->get_static_url('attach_to_post#select2.js'));
-
 		// Ensure we have the AJAX module ready
 		wp_enqueue_script('photocrati_ajax', NEXTGEN_GALLERY_AJAX_JS_URL);
 

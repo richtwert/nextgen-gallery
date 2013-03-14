@@ -55,6 +55,10 @@
 display:none;
 }
 
+.gallery_page_ngg_other_options .size_options select {
+	width: 300px;
+}
+
 .description_row{
 	position: relative;
 }

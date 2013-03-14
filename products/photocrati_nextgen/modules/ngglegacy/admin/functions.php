@@ -1446,7 +1446,7 @@ function ngg_refreshSavedSettings()
 			$width			= $settings->thumbwidth;
 			$height			= $settings->thumbheight;
 			$new_dimension	= "{$width}x{$height}";
-			$dimensions		= $settings->thumbnail_dimensions;
+			$dimensions		= (array) $settings->thumbnail_dimensions;
 
 			if (!in_array($new_dimension, $dimensions)) {
 				$dimensions[]	= $new_dimension;

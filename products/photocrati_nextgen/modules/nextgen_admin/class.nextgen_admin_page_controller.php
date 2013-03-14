@@ -109,6 +109,10 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 			$this->get_static_url('nextgen_admin_page.css'),
             array('wp-color-picker')
 		);
+
+		// Ensure select2
+		wp_enqueue_style('select2', $this->get_static_url('nextgen_admin#select2/select2.css'));
+		wp_enqueue_script('select2', $this->get_static_url('nextgen_admin#select2/select2.min.js'));
 	}
 
 	function enqueue_jquery_ui_theme()
