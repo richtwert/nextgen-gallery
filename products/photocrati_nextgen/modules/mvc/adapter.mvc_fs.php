@@ -12,7 +12,12 @@ class A_MVC_Fs extends Mixin
 	 */
 	function find_static_abspath($path, $module = FALSE, $relative = FALSE)
 	{
-		return $this->object->find_abspath($path, $module, $relative);
+                $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+            
+		return $this->object->find_abspath(
+                    $this->object->join_paths($settings->mvc_static_dirname, $path),
+                    $module, $relative
+                );
 	}
 
 	/**
