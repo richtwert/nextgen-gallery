@@ -12,7 +12,7 @@
                     class='ngg_thumbnail_template ngg_settings_template'>
                 <option value=''></option>
                 <?php foreach ($templates as $file => $label) { ?>
-                    <option value="<?php echo $file; ?>" <?php selected($chosen_template, $file, TRUE); ?>><?php echo_h($label); ?></option>
+                    <option value="<?php echo $file; ?>" <?php selected($chosen_file, $file, TRUE); ?>><?php echo_h($label); ?></option>
                 <?php } ?>
             </select>
         </div>

@@ -23,10 +23,10 @@ class A_NextGen_Basic_Template_Form extends Mixin
             case 'photocrati-nextgen_basic_imagebrowser':
                 $prefix = 'imagebrowser';
                 break;
-            case 'photocrati-nextgen_basic_compact_album':
+            case NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM:
                 $prefix = 'album';
                 break;
-            case 'photocrati-nextgen_basic_extended_album':
+            case NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM:
                 $prefix = 'album';
                 break;
             default:
@@ -45,7 +45,7 @@ class A_NextGen_Basic_Template_Form extends Mixin
                 'display_type_name' => $display_type->name,
                 'template_label'    => _('Template'),
                 'template_text'     => _('Use a legacy template when rendering (not recommended).'),
-                'chosen_template'   => $display_type->settings['template'],
+                'chosen_file'       => $display_type->settings['template'],
                 'templates'         => $templates
             ),
             True

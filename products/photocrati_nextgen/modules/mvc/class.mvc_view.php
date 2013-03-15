@@ -92,25 +92,31 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
     
     
     /**
-    * Gets the absolute path of an MVC template file
-    * @param string $path
-    * @param string $module
-    * @return string
-    */
+     * Gets the absolute path of an MVC template file
+     *
+     * @param string $path
+     * @param string $module
+     * @return string
+     */
    function find_template_abspath($path, $module=FALSE)
    {
-        $fs		= $this->get_registry()->get_utility('I_Fs');
-        $settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+       $fs       = $this->get_registry()->get_utility('I_Fs');
+       $settings = $this->get_registry()->get_utility('I_Settings_Manager');
 
-        // We also accept module_name#path, which needs parsing.
-        if (!$module) list($path, $module) = $fs->parse_formatted_path($path);
+       // We also accept module_name#path, which needs parsing.
+       if (!$module)
+           list($path, $module) = $fs->parse_formatted_path($path);
 
-        // Append the suffix
-        $filename	= $path.'.php';
+       // Append the suffix
+       $filename = $path . '.php';
 
-        // Find the template
-        $retval = $fs->find_abspath($fs->join_paths($settings->mvc_template_dirname, $filename), $module);
-        if (!$retval) throw new RuntimeException("{$path} is not a valid MVC template");
-        return $retval;
+       // Find the template
+       $full_path = $fs->join_paths($settings->mvc_template_dirname, $filename);
+       $retval    = $fs->find_abspath($full_path, $module);
+
+       if (!$retval)
+           throw new RuntimeException("{$full_path} is not a valid MVC template");
+
+       return $retval;
    }
 }

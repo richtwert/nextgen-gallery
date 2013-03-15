@@ -111,43 +111,44 @@ class Mixin_Fs_Instance_Methods extends Mixin
     
     
 	/**
-	 * Gets the absolute path to a file/directory for a specific Pope product,
-         * If the path doesn't exist, then NULL is returned
+	 * Gets the absolute path to a file/directory for a specific Pope product
+     *
+     * If the path doesn't exist, then NULL is returned
 	 * @param string $path
 	 * @param string $module
-         * @returns string|NULL
+     * @returns string|NULL
 	 */
 	function find_abspath($path, $module=FALSE, $relpath=FALSE, $search_paths=array())
 	{
 		$retval = NULL;
 
 		if (file_exists($path))
-                    $retval = $path;
+        {
+            $retval = $path;
+        }
 
 		else {
 			// Ensure that we weren't passed a module id in the path
-                        if (!$module) list($path, $module) = $this->object->parse_formatted_path($path);
+            if (!$module)
+                list($path, $module) = $this->object->parse_formatted_path($path);
                        
-
 			// Ensure that we know where to search for the file
-			if (!$search_paths) {
-                            $search_paths = $this->object->get_search_paths($path, $module);
-			}
+			if (!$search_paths)
+                $search_paths = $this->object->get_search_paths($path, $module);
 
 			// Now that know where to search, let's find the file
 			foreach ($search_paths as $dir) {
-                            if (($retval = $this->object->_rglob($dir, $path))) {
+                if (($retval = $this->object->_rglob($dir, $path)))
+                {
+                    if ($relpath)
+                        $retval = $this->object->remove_path_segment($retval, $this->object->get_document_root());
+                    break;
+                }
+            }
+        }
 
-                                if ($relpath) $retval = $this->object->remove_path_segment(
-                                    $retval, $this->object->get_document_root()
-                                );
-                                break;
-                            }
-			}
-		}
-
-		return $retval;
-	}
+        return $retval;
+    }
 
 	/**
 	 * Returns a list of directories to search for a particular filename
@@ -195,12 +196,12 @@ class Mixin_Fs_Instance_Methods extends Mixin
 
 	/**
 	 * Searches for a file recursively
+     *
 	 * @param string $base_path
 	 * @param string $file
-	 * @param int $flags
 	 * @return string
 	 */
-	function _rglob($base_path, $file, $flags=0)
+	function _rglob($base_path, $file)
 	{
 		$retval = NULL;
 		$results = file_exists($this->object->join_paths($base_path, $file));
@@ -208,9 +209,6 @@ class Mixin_Fs_Instance_Methods extends Mixin
 		// Must be located in a sub-directory
 		if (!$results)
         {
-            $settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
-            $fs = $this->object->get_registry()->get_utility('I_Fs');
-
             // the modules cache a list of all their files when they are initialized. Ask POPE for our current
             // modules and inspect their file listing to determine which module provides what we need
             $modules = $this->object->get_registry()->get_module_list();
@@ -220,9 +218,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
 
                 $variations = array(
                     $file,
-                    ltrim($file, DIRECTORY_SEPARATOR),
-                    ltrim($fs->join_paths($settings->mvc_static_dirname, $file), DIRECTORY_SEPARATOR),
-                    ltrim($fs->join_paths($settings->mvc_template_dirname, $file), DIRECTORY_SEPARATOR)
+                    ltrim($file, DIRECTORY_SEPARATOR)
                 );
 
                 foreach ($variations as $variant) {

@@ -12,12 +12,16 @@ class A_MVC_Fs extends Mixin
 	 */
 	function find_static_abspath($path, $module = FALSE, $relative = FALSE)
 	{
-                $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+
+        if (!$module)
+            list($path, $module) = $this->object->parse_formatted_path($path);
             
 		return $this->object->find_abspath(
-                    $this->object->join_paths($settings->mvc_static_dirname, $path),
-                    $module, $relative
-                );
+            $this->object->join_paths($settings->mvc_static_dirname, $path),
+            $module,
+            $relative
+        );
 	}
 
 	/**
@@ -29,6 +33,9 @@ class A_MVC_Fs extends Mixin
 	 */
 	function find_static_relpath($path, $module = FALSE)
 	{
+        if (!$module)
+            list($path, $module) = $this->object->parse_formatted_path($path);
+
 		return $this->object->find_static_abspath($path, $module, TRUE);
 	}
 }
