@@ -64,10 +64,10 @@ class Mixin_Attach_To_Post extends Mixin
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
-			'ngg_attach_to_post', $this->get_static_url('attach_to_post.js')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post#attach_to_post.js')
 		);
 		wp_enqueue_style(
-			'ngg_attach_to_post', $this->get_static_url('attach_to_post.css')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post#attach_to_post.css')
 		);
 
 		// Enqueue our JS templating library, Handlebars
@@ -209,11 +209,11 @@ class Mixin_Attach_To_Post extends Mixin
 	function _get_main_tab_titles()
 	{
 		return array(
-			_('Display Galleries and Images') => 'displayed_tab',
-			_('Create Gallery / Add Images')  => 'create_tab',
-			_('Manage Galleries')			  => 'galleries_tab',
-			_('Manage Albums')				  => 'albums_tab',
-			_('Manage Tags')				  => 'tags_tab',
+			_('Display Galleries / Images') => 'displayed_tab',
+			_('Add Gallery / Images')  => 'create_tab',
+			_('Edit Galleries')			  => 'galleries_tab',
+			_('Edit Albums')				  => 'albums_tab',
+			_('Edit Tags')				  => 'tags_tab',
 		);
 	}
 

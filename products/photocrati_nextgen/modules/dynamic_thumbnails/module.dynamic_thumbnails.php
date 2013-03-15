@@ -2,17 +2,15 @@
 
 /***
  {
-	Module: photocrati-dynamic_thumbnails,
-	Depends: { photocrati-dynamic_thumbnails }
+	Module: photocrati-dynamic_thumbnails
  }
  ***/
-
 class M_Dynamic_Thumbnails extends C_Base_Module
 {
 	function define()
 	{
 		parent::define(
-			'photocrati-dynamic-thumbnails',
+			'photocrati-dynamic_thumbnails',
 			'Dynamic Thumbnails',
 			'Adds support for dynamic thumbnails',
 			'0.1',

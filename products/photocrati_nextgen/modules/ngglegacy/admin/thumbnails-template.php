@@ -29,7 +29,7 @@ if (class_exists('C_Component_Registry'))
         if (empty($thumbnails_template_height_value))
             $thumbnails_template_height_value = $settings->thumbheight;
 
-		if (!is_null($thumb_sizes))
+		if (!is_null($thumb_sizes) && is_array($thumb_sizes))
 		{
 			$size_selected = NULL;
 			$size_select_html = "<select name='{$thumbnails_template_name}' id='{$thumbnails_template_id}' onchange='"

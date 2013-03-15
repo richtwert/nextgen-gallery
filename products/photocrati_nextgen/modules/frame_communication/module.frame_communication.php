@@ -49,7 +49,7 @@ class M_Frame_Communication extends C_Base_Module
 
 		wp_register_script(
 			'frame_event_publisher',
-			$router->get_static_url('frame_event_publisher.js'),
+			$router->get_static_url('frame_communication#frame_event_publisher.js'),
 			array('jquery')
 		);
 		wp_enqueue_script('frame_event_publisher');

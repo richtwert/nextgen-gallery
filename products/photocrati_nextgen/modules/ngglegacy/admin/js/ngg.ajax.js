@@ -45,8 +45,13 @@ nggAjax = {
 			   		}
 
 			    },
-			    error: function (msg) {
-					nggProgressBar.addNote( "<strong>ID " + nggAjax.settings.ids[index] + ":</strong> " + nggAjax.settings.failure, msg.responseText );
+			    error: function (jqXHR, textStatus, errorThrown) {
+			    	var msg = jqXHR.responseText;
+			    	
+			    	if (msg == '') {
+			    		msg = '( ' + errorThrown + ' )';
+			    	}
+					nggProgressBar.addNote( "<strong>ID " + nggAjax.settings.ids[index] + ":</strong> " + nggAjax.settings.failure, msg);
 				},
 				complete: function () {
 					index++;

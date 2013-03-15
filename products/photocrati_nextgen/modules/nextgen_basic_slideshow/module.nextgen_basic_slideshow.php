@@ -92,7 +92,7 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 		$router = $this->get_registry()->get_utility('I_Router');
 		wp_register_script(
 			'jquery.cycle',
-			$router->get_static_url('/jquery.cycle.min.js'),
+			$router->get_static_url('nextgen_basic_slideshow#jquery.cycle.all.min.js'),
 			array('jquery')
 		);
 	}

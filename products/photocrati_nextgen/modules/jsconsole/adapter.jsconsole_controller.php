@@ -26,7 +26,7 @@ class A_JsConsole_Controller extends Mixin
 	 */
 	function _enqueue_jsconsole_settings_resources()
 	{
-		wp_register_script('jsconsole_settings', $this->object->get_static_url('jsconsole_settings.js'), array('jquery'));
+		wp_register_script('jsconsole_settings', $this->object->get_static_url('jsconsole#jsconsole_settings.js'), array('jquery'));
 		wp_enqueue_script('jsconsole_settings');
 	}
 

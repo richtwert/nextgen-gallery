@@ -130,12 +130,12 @@ class Mixin_Display_Type_Controller extends Mixin
 	{
 		wp_enqueue_style(
 			'nextgen_display_settings',
-			$this->object->get_static_url('nextgen_display_settings.css')
+			$this->object->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
 		);
 
 		wp_enqueue_script(
 			'nextgen_display_settings',
-			$this->object->get_static_url('nextgen_display_settings.js')
+			$this->object->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js')
 		);
 	}
 

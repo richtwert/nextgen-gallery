@@ -5,6 +5,8 @@ jQuery(function($){
         autoHeight: false,
         heightStyle: 'content'
     });
+    
+    $('.select2').select2();
 
 	/**** LIGHTBOX EFFECT TAB ****/
 

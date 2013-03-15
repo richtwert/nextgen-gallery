@@ -86,7 +86,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 		wp_enqueue_script('jquery-ui-accordion');
 		wp_enqueue_script(
             'nextgen_display_settings_page_placeholder_stub',
-            $this->get_static_url('jquery.placeholder.min.js'),
+            $this->get_static_url('nextgen_admin#jquery.placeholder.min.js'),
             array('jquery'),
             '2.0.7',
             TRUE
@@ -101,14 +101,18 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 		));
 		wp_enqueue_script(
 			'nextgen_admin_page',
-			$this->get_static_url('nextgen_admin_page.js'),
+			$this->get_static_url('nextgen_admin#nextgen_admin_page.js'),
             array('wp-color-picker')
 		);
 		wp_enqueue_style(
 			'nextgen_admin_page',
-			$this->get_static_url('nextgen_admin_page.css'),
+			$this->get_static_url('nextgen_admin#nextgen_admin_page.css'),
             array('wp-color-picker')
 		);
+
+		// Ensure select2
+		wp_enqueue_style('select2', $this->get_static_url('nextgen_admin#select2/select2.css'));
+		wp_enqueue_script('select2', $this->get_static_url('nextgen_admin#select2/select2.min.js'));
 	}
 
 	function enqueue_jquery_ui_theme()

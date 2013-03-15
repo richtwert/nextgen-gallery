@@ -92,7 +92,7 @@ class Mixin_Form_Instance_Methods extends Mixin
 			}
 		}
 
-		return $this->render_partial('form', array(
+		return $this->object->render_partial('nextgen_admin#form', array(
 			'fields'	=>	$fields
 		), TRUE);
 	}
@@ -106,7 +106,7 @@ class Mixin_Form_Field_Generators extends Mixin
 	function _render_select_field($display_type, $name, $label, $options=array(), $value, $text = '', $hidden = FALSE)
     {
         return $this->object->render_partial(
-            'field_generator/nextgen_settings_field_select',
+            'nextgen_admin#field_generator/nextgen_settings_field_select',
             array(
                 'display_type_name' => $display_type->name,
                 'name'    => $name,
@@ -123,7 +123,7 @@ class Mixin_Form_Field_Generators extends Mixin
     function _render_radio_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE)
     {
         return $this->object->render_partial(
-            'field_generator/nextgen_settings_field_radio',
+            'nextgen_admin#field_generator/nextgen_settings_field_radio',
             array(
                 'display_type_name' => $display_type->name,
                 'name'   => $name,
@@ -147,7 +147,7 @@ class Mixin_Form_Field_Generators extends Mixin
                                   $max = NULL)
     {
         return $this->object->render_partial(
-            'field_generator/nextgen_settings_field_number',
+            'nextgen_admin#field_generator/nextgen_settings_field_number',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,
@@ -166,7 +166,7 @@ class Mixin_Form_Field_Generators extends Mixin
     function _render_text_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $placeholder = '')
     {
         return $this->object->render_partial(
-            'field_generator/nextgen_settings_field_text',
+            'nextgen_admin#field_generator/nextgen_settings_field_text',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,
@@ -183,7 +183,7 @@ class Mixin_Form_Field_Generators extends Mixin
     function _render_color_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE)
     {
         return $this->object->render_partial(
-            'field_generator/nextgen_settings_field_color',
+            'nextgen_admin#field_generator/nextgen_settings_field_color',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,
@@ -206,8 +206,8 @@ class Mixin_Form_Field_Generators extends Mixin
 			'Overriding the thumbnail settings will create an additional set of thumbnails'
         );
 
-        $dimensions_field = $this->render_partial(
-            'field_generator/thumbnail_settings',
+        $dimensions_field = $this->object->render_partial(
+            'nextgen_admin#field_generator/thumbnail_settings',
             array(
                 'display_type_name' => $display_type->name,
                 'name' => 'thumbnail_dimensions',
@@ -316,7 +316,7 @@ class Mixin_Form_Field_Generators extends Mixin
     function _render_width_and_unit_field($display_type)
     {
         return $this->object->render_partial(
-            'field_generator/nextgen_settings_field_width_and_unit',
+            'nextgen_admin#field_generator/nextgen_settings_field_width_and_unit',
             array(
                 'display_type_name' => $display_type->name,
                 'name' => 'width',

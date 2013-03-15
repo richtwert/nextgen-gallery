@@ -31,7 +31,7 @@ class Mixin_Widget extends Mixin
     function echo_widget_random($number, $width = '75', $height = '50', $exclude = 'all', $list = '', $show = 'thumbnail')
     {
         wp_enqueue_style('nextgen_widgets_style', $this->get_static_url('widget#widgets.css'));
-        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_thumbnails.css'));
+        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails.css'));
         $options = array(
             'title'    => FALSE,
             'items'    => $number,
@@ -55,7 +55,7 @@ class Mixin_Widget extends Mixin
     function echo_widget_recent($number, $width = '75', $height = '50', $exclude = 'all', $list = '', $show = 'thumbnail')
     {
         wp_enqueue_style('nextgen_widgets_style', $this->get_static_url('widget#widgets.css'));
-        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_thumbnails.css'));
+        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails.css'));
         $options = array(
             'title'    => FALSE,
             'items'    => $number,
@@ -82,7 +82,7 @@ class Mixin_Widget extends Mixin
     function echo_widget_slideshow($galleryID, $width = '', $height = '')
     {
         wp_enqueue_style('nextgen_widgets_style', $this->get_static_url('widgets.css'));
-        wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_slideshow.css'));
+        wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow.css'));
         $widget = new C_Widget_Slideshow();
         echo $widget->render_slideshow($galleryID, $width, $height);
     }

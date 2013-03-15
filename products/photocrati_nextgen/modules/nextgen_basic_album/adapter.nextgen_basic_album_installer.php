@@ -24,9 +24,9 @@ class A_NextGen_Basic_Album_Installer extends Mixin
 
 		$this->object->install_display_type(
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM, array(
-			'title'					=>	'NextGEN Basic Compact Album',
+			'title'					=>	'NextGEN Basic Extended Album',
 			'entity_types'			=>	array('album', 'gallery'),
-			'preview_image_relpath'	=>	'nextgen_basic_album#compact_preview.gif',
+			'preview_image_relpath'	=>	'nextgen_basic_album#extended_preview.gif',
 			'default_source'		=>	'albums'
 		));
 	}
