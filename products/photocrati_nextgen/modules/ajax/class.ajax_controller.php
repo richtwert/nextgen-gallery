@@ -36,6 +36,7 @@ class C_Ajax_Controller extends C_MVC_Controller
 
 	function js_action()
 	{
+        $this->expires('+1 day');
 		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 		$this->set_content_type('javascript');
 		$this->render_view('ajax#ajax_js', array(
