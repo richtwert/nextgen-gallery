@@ -64,8 +64,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			wp_enqueue_script('jquery.cycle'); // registered in module file
 		}
 
-		wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_slideshow.css'));
-        wp_enqueue_script('waitforimages', $this->get_static_url('jquery.waitforimages.js'));
+		wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow.css'));
+        wp_enqueue_script('waitforimages', $this->get_static_url('nextgen_basic_slideshow#jquery.waitforimages.js'));
 		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
@@ -81,7 +81,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-		return $this->get_static_url('/nextgen_basic_slideshow.js');
+		return $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow.js');
 	}
 
 	/**
@@ -91,6 +91,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return $this->get_static_url('/nextgen_basic_slideshow_init.js');
+		return $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow_init.js');
 	}
 }

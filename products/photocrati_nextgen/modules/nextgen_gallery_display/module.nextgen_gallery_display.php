@@ -143,18 +143,18 @@ class M_Gallery_Display extends C_Base_Module
 
         wp_register_script(
             'nextgen_gallery_display_settings',
-            $router->get_static_url('nextgen_gallery_display_settings.js'),
+            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js'),
             array('jquery-ui-accordion')
         );
 
         wp_register_style(
             'nextgen_gallery_display_settings',
-            $router->get_static_url('nextgen_gallery_display_settings.css')
+            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
         );
 
         wp_register_script(
             'jquery.nextgen_radio_toggle',
-            $router->get_static_url('jquery.nextgen_radio_toggle.js'),
+            $router->get_static_url('nextgen_gallery_display#jquery.nextgen_radio_toggle.js'),
             array('jquery')
         );
     }
@@ -163,7 +163,7 @@ class M_Gallery_Display extends C_Base_Module
     function enqueue_galleries_js()
     {
 		$router = $this->get_registry()->get_utility('I_Router');
-        wp_register_script('nextgen_galleries', $router->get_static_url('nextgen_galleries.js'));
+        wp_register_script('nextgen_galleries', $router->get_static_url('nextgen_gallery_display#nextgen_galleries.js'));
         wp_enqueue_script('nextgen_galleries');
     }
 

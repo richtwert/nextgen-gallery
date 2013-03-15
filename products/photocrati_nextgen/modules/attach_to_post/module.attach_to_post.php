@@ -206,8 +206,8 @@ class M_Attach_To_Post extends C_Base_Module
 
 		elseif (isset($_REQUEST['attach_to_post']) OR
 		  (isset($_REQUEST['page']) && strpos($_REQUEST['page'], 'nggallery') !== FALSE)) {
-			wp_enqueue_script('iframely', $router->get_static_url('iframely.js'));
-			wp_enqueue_style('iframely',  $router->get_static_url('iframely.css'));
+			wp_enqueue_script('iframely', $router->get_static_url('attach_to_post#iframely.js'));
+			wp_enqueue_style('iframely',  $router->get_static_url('attach_to_post#iframely.css'));
 		}
 	}
 
@@ -259,7 +259,7 @@ class M_Attach_To_Post extends C_Base_Module
 	function add_attach_to_post_tinymce_plugin($plugins)
 	{
 		$router = $this->get_registry()->get_utility('I_Router');
-		$plugins[$this->attach_to_post_tinymce_plugin] = $router->get_static_url('ngg_attach_to_post_tinymce_plugin.js');
+		$plugins[$this->attach_to_post_tinymce_plugin] = $router->get_static_url('attach_to_post#ngg_attach_to_post_tinymce_plugin.js');
 		return $plugins;
 	}
 

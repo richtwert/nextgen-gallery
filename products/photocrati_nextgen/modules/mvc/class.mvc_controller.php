@@ -239,18 +239,22 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 	 */
 	function find_template_abspath($path, $module=FALSE)
 	{
-		$fs			= $this->get_registry()->get_utility('I_Fs');
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+		$fs       = $this->get_registry()->get_utility('I_Fs');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
 
 		// We also accept module_name#path, which needs parsing.
-		if (!$module) list($path, $module) = $fs->parse_formatted_path($path);
+		if (!$module)
+            list($path, $module) = $fs->parse_formatted_path($path);
 
 		// Append the suffix
-		$filename	= $path.'.php';
+		$filename = $path . '.php';
 
 		// Find the template
 		$retval = $fs->find_abspath($fs->join_paths($settings->mvc_template_dirname, $filename), $module);
-		if (!$retval) throw new RuntimeException("{$path} is not a valid MVC template");
+
+		if (!$retval)
+            throw new RuntimeException("{$path} is not a valid MVC template");
+
 		return $retval;
 	}
 

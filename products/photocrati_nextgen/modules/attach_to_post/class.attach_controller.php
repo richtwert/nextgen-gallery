@@ -64,10 +64,10 @@ class Mixin_Attach_To_Post extends Mixin
 
 		// Enqueue logic for the Attach to Post interface as a whole
 		wp_enqueue_script(
-			'ngg_attach_to_post', $this->get_static_url('attach_to_post.js')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post#attach_to_post.js')
 		);
 		wp_enqueue_style(
-			'ngg_attach_to_post', $this->get_static_url('attach_to_post.css')
+			'ngg_attach_to_post', $this->get_static_url('attach_to_post#attach_to_post.css')
 		);
 
 		// Enqueue our JS templating library, Handlebars
