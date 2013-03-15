@@ -111,33 +111,40 @@ class Mixin_Fs_Instance_Methods extends Mixin
     
     
 	/**
-	 * Gets the absolute path to a file/directory for a specific Pope product
-     *
-     * If the path doesn't exist, then NULL is returned
+	 * Gets the absolute path to a file/directory for a specific Pope product,
+         * If the path doesn't exist, then NULL is returned
 	 * @param string $path
 	 * @param string $module
-     * @returns string|NULL
+         * @returns string|NULL
 	 */
 	function find_abspath($path, $module=FALSE, $relpath=FALSE, $search_paths=array())
 	{
 		$retval = NULL;
 
 		if (file_exists($path))
-        {
-            $retval = $path;
-        }
+                    $retval = $path;
 
 		else {
 			// Ensure that we weren't passed a module id in the path
-            if (!$module)
-                list($path, $module) = $this->object->parse_formatted_path($path);
+                        if (!$module) list($path, $module) = $this->object->parse_formatted_path($path);
+                       
 
-            // TODO: where do we get the proper module id?
-            $retval = $this->object->_rglob('/', $path);
+			// Ensure that we know where to search for the file
+			if (!$search_paths) {
+                            $search_paths = $this->object->get_search_paths($path, $module);
+			}
 
-            if ($relpath)
-                $retval = $this->object->remove_path_segment($retval, $this->object->get_document_root());
-        }
+			// Now that know where to search, let's find the file
+			foreach ($search_paths as $dir) {
+                            if (($retval = $this->object->_rglob($dir, $path))) {
+
+                                if ($relpath) $retval = $this->object->remove_path_segment(
+                                    $retval, $this->object->get_document_root()
+                                );
+                                break;
+                            }
+			}
+		}
 
 		return $retval;
 	}
