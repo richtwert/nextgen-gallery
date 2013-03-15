@@ -143,14 +143,46 @@
 			
 			var popupDialog = jQuery('<div style="display:none;"><div id="ngg_attach_to_post_dialog" tabindex="-1" action=""></div></div>');
 			popupDialog.appendTo(jQuery(document.body));
+			
+			var win = window;
+			
+			while (win.parent != null && win.parent != win) {
+				win = win.parent;
+			}
+			
+			win = jQuery(win);
+			var winWidth = win.width();
+			var winHeight = win.height();
+			var popupWidth = 1200;
+			var popupHeight = 600;
+			var minWidth = 800;
+			var minHeight = 600;
+			var maxWidth = winWidth - (winWidth * 0.05);
+			var maxHeight = winHeight - (winHeight * 0.05);
+			
+			if (maxWidth < minWidth) {
+				maxWidth = winWidth - 10;
+			}
+			
+			if (maxHeight < minHeight) {
+				maxHeight = winHeight - 10;
+			}
+			
+			if (popupWidth > maxWidth) {
+				popupWidth = maxWidth;
+			}
+			
+			if (popupHeight > maxHeight) {
+				popupHeight = maxHeight;
+			}
 
 			// Open a window, occupying 90% of the screen real estate
 			var popup = this.editor.windowManager.open({
 				file:		attach_to_post_url,
 //				wpDialog: true,
 				id: 'ngg_attach_to_post_dialog',
-				width:		1200,
-				height:		600,
+				width:		popupWidth,
+				height:		popupHeight,
 				inline:		true,
 				title:		"NextGEN Gallery - Attach To Post"
 			});
