@@ -135,7 +135,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
                 $params['thumbnail_size_name']			= $thumbnail_size_name;
-                return $this->object->render_partial('nextgen_basic_thumbnails', $params, $return);
+                return $this->object->render_view('nextgen_basic_thumbnails#index', $params, $return);
             }
 		}
 		else {

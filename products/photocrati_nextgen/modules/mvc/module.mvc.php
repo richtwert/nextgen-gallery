@@ -53,12 +53,13 @@ class M_MVC extends C_Base_Module
 		$this->get_registry()->add_utility('I_Http_Response', 'C_Http_Response_Controller');
     }
 
-	function _register_adapters()
-	{
-		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_MVC_Settings');
-		$this->get_registry()->add_adapter('I_Fs', 'A_MVC_Fs');
-		$this->get_registry()->add_adapter('I_Router', 'A_MVC_Router');
-	}
+    function _register_adapters()
+    {
+            $this->get_registry()->add_adapter('I_Settings_Manager', 'A_MVC_Settings');
+            $this->get_registry()->add_adapter('I_Fs', 'A_MVC_Fs');
+            $this->get_registry()->add_adapter('I_Router', 'A_MVC_Router');
+            $this->get_registry()->add_adapter('I_Component_Factory', 'A_MVC_Factory');
+    }
 
     function handle_exit($exception)
     {
