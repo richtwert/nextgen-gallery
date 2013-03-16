@@ -40,12 +40,12 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 				);
 			}
 
-			$retval = $this->object->render_partial('nextgen_basic_slideshow', $params, $return);
+			$retval = $this->object->render_partial('nextgen_basic_slideshow#nextgen_basic_slideshow', $params, $return);
 		}
 
 		// No images found
 		else {
-			$retval = $this->object->render_partial('no_images_found', array(), $return);
+			$retval = $this->object->render_partial('nextgen_gallery_display#no_images_found', array(), $return);
 		}
 
 		return $retval;

@@ -115,7 +115,7 @@ class Mixin_Attach_To_Post extends Mixin
 	function index_action()
 	{
 		// Enqueue resources
-		$this->object->render_view('attach_to_post', array(
+		$this->object->render_view('attach_to_post#attach_to_post', array(
 			'page_title'	=>	$this->object->_get_page_title(),
 			'tabs'			=>	$this->object->_get_main_tabs(),
 			'tab_titles'	=>	$this->object->_get_main_tab_titles()

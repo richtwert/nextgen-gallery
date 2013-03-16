@@ -25,6 +25,14 @@ class M_Lzw extends C_Base_Module
 	{
 		$this->get_registry()->add_utility('I_Lzw', 'C_Lzw');
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'class.lzw.php',
+            'interface.lzw.php'
+        );
+    }
 }
 
 new M_Lzw;

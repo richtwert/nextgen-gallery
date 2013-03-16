@@ -33,7 +33,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
             }
 		}
 		else {
-			return $this->object->render_partial('no_images_found', array(), $return);
+			return $this->object->render_partial('nextgen_gallery_display#no_images_found', array(), $return);
         }
 
 	}
@@ -171,7 +171,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
             $params['effect_code']         = $this->object->get_effect_code($displayed_gallery);
 
             return $this->object->render_partial(
-                'nextgen_basic_imagebrowser',
+                'nextgen_basic_imagebrowser#nextgen_basic_imagebrowser',
                 $params,
                 TRUE
             );

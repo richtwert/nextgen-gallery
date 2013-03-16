@@ -55,6 +55,14 @@ class M_JsConsole extends C_Base_Module
 			wp_enqueue_script('jsconsole-remote');
 		}
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.jsconsole_controller.php',
+            'adapter.jsconsole_settings.php'
+        );
+    }
 }
 
 new M_JsConsole();

@@ -110,6 +110,20 @@ class M_NextGen_Basic_Album extends C_Base_Module
         unset($params['id']);
         return $this->renderer->display_images($params, $inner_content);
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.nextgen_basic_album.php',
+            'adapter.nextgen_basic_album_controller.php',
+            'adapter.nextgen_basic_album_installer.php',
+            'adapter.nextgen_basic_album_mapper.php',
+            'adapter.nextgen_basic_album_routes.php',
+            'adapter.nextgen_basic_compact_album_form.php',
+            'adapter.nextgen_basic_extended_album_form.php',
+            'mixin.nextgen_basic_album_form.php'
+        );
+    }
 }
 
 

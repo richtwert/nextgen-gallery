@@ -84,7 +84,13 @@ class M_Lazy_Resources extends C_Base_Module
 		$loader->enqueue();
 	}
 
-
+    function set_file_list()
+    {
+        return array(
+            'class.lazy_resource_loader.php',
+            'interface.lazy_resource_loader.php'
+        );
+    }
 }
 
 new M_Lazy_Resources();

@@ -139,7 +139,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             }
 		}
 		else {
-			return $this->object->render_partial("no_images_found", array(), $return);
+			return $this->object->render_partial("nextgen_gallery_display#no_images_found", array(), $return);
 		}
 	}
 

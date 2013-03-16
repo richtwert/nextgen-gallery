@@ -40,6 +40,25 @@ class M_NextGen_Other_Options extends C_Base_Module
 			'A_Watermarking_Ajax_Actions'
 		);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.image_options_form.php',
+            'adapter.lightbox_library_form.php',
+            'adapter.miscellaneous_form.php',
+            'adapter.other_options_controller.php',
+            'adapter.other_options_forms.php',
+            'adapter.other_options_page.php',
+            'adapter.reset_form.php',
+            'adapter.roles_form.php',
+            'adapter.size_options_form.php',
+            'adapter.styles_form.php',
+            'adapter.thumbnail_options_form.php',
+            'adapter.watermarking_ajax_actions.php',
+            'adapter.watermarks_form.php'
+        );
+    }
 }
 
 new M_NextGen_Other_Options;

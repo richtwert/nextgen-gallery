@@ -37,6 +37,15 @@ class M_NextGen_Basic_Templates extends C_Base_Module
 			'A_NextGen_Basic_Template_Form'
 		);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.nextgen_basic_template_form.php',
+            'class.legacy_template_locator.php',
+            'interface.legacy_template_locator.php'
+        );
+    }
 }
 
 new M_NextGen_Basic_Templates();

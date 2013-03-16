@@ -204,6 +204,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
 	function _rglob($base_path, $file)
 	{
 		$retval = NULL;
+
 		$results = file_exists($this->object->join_paths($base_path, $file));
 
 		// Must be located in a sub-directory

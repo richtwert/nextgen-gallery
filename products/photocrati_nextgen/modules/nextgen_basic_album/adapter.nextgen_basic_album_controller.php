@@ -90,7 +90,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
         }
         else {
-            return $this->object->render_partial('no_images_found');
+            return $this->object->render_partial('nextgen_gallery_display#no_images_found');
         }
     }
 

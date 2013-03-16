@@ -41,6 +41,19 @@ class M_Dynamic_Thumbnails extends C_Base_Module
         $this->get_registry()->add_utility('I_Dynamic_Thumbnails_Controller', 'C_Dynamic_Thumbnails_Controller');
 	}
 
+    function set_file_list()
+    {
+        return array(
+            'adapter.dynamic_thumbnails_storage_driver.php',
+            'adapter.dynamic_thumbnail_routes.php',
+            'adapter.dynamic_thumbnail_settings.php',
+            'class.dynamic_thumbnails_controller.php',
+            'class.dynamic_thumbnails_manager.php',
+            'interface.dynamic_thumbnails_controller.php',
+            'interface.dynamic_thumbnails_manager.php'
+        );
+    }
+
 }
 
 new M_Dynamic_Thumbnails();

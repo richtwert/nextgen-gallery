@@ -170,5 +170,23 @@ class M_DataMapper extends C_Base_Module
 			$where .= " AND {$wpdb->posts}.post_name IN ({$names})";
 		}
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.datamapper_factory.php',
+            'adapter.datamapper_settings.php',
+            'class.datamapper.php',
+            'class.custompost_datamapper_driver.php',
+            'class.customtable_datamapper_driver.php',
+            'class.datamapper_driver_base.php',
+            'class.datamapper_model.php',
+            'interface.custompost_datamapper.php',
+            'interface.customtable_datamapper.php',
+            'interface.datamapper_driver.php',
+            'interface.datamapper_model.php',
+            'module.datamapper.php'
+        );
+    }
 }
 new M_DataMapper();

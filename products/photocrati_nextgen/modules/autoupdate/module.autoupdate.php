@@ -747,6 +747,13 @@ class M_AutoUpdate extends C_Base_Module
 
 		return null;
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.autoupdate_settings.php'
+        );
+    }
 }
 
 new M_AutoUpdate();

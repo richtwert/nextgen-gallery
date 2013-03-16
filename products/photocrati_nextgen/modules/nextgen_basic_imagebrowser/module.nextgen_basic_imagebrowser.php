@@ -92,6 +92,19 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
         unset($params['id']);
         return $this->renderer->display_images($params, $inner_content);
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.nextgen_basic_imagebrowser.php',
+            'adapter.nextgen_basic_imagebrowser_controller.php',
+            'adapter.nextgen_basic_imagebrowser_form.php',
+            'adapter.nextgen_basic_imagebrowser_installer.php',
+            'adapter.nextgen_basic_imagebrowser_mapper.php',
+            'adapter.nextgen_basic_imagebrowser_routes.php',
+            'adapter.nextgen_basic_imagebrowser_urls.php'
+        );
+    }
 }
 
 new M_NextGen_Basic_ImageBrowser();

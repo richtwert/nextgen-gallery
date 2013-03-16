@@ -45,6 +45,14 @@ class M_Settings extends C_Base_Module
 
 		return $new_value;
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'class.settings_manager.php',
+            'interface.settings_manager.php'
+        );
+    }
 }
 
 new M_Settings;

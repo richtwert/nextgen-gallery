@@ -50,6 +50,18 @@ class M_Lightbox extends C_Base_Module
 			'A_Lightbox_Installer'
 		);
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.lightbox_factory.php',
+            'adapter.lightbox_installer.php',
+            'class.lightbox_library.php',
+            'class.lightbox_library_mapper.php',
+            'interface.lightbox_library.php',
+            'interface.lightbox_library_mapper.php'
+        );
+    }
 }
 
 new M_Lightbox();

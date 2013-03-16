@@ -73,6 +73,19 @@ class M_MVC extends C_Base_Module
 		if ($this->rethrow)
 			throw $this->rethrow;
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.mvc_factory.php',
+            'adapter.mvc_fs.php',
+            'adapter.mvc_router.php',
+            'adapter.mvc_settings.php',
+            'class.mvc_controller.php',
+            'class.mvc_view.php',
+            'interface.mvc_controller.php'
+        );
+    }
 }
 
 new M_MVC();

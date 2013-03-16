@@ -108,6 +108,18 @@ class M_NextGen_Basic_Slideshow extends C_Base_Module
 		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
         return $renderer->display_images($params, $inner_content);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.nextgen_basic_slideshow.php',
+            'adapter.nextgen_basic_slideshow_controller.php',
+            'adapter.nextgen_basic_slideshow_form.php',
+            'adapter.nextgen_basic_slideshow_installer.php',
+            'adapter.nextgen_basic_slideshow_mapper.php',
+            'adapter.nextgen_basic_slideshow_urls.php'
+        );
+    }
 }
 
 new M_NextGen_Basic_Slideshow();

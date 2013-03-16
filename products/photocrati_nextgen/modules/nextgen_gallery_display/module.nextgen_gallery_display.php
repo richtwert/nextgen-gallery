@@ -205,6 +205,39 @@ class M_Gallery_Display extends C_Base_Module
     {
         return (isset($params[$name])) ? $params[$name] : $default;
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.alternative_view_form.php',
+            'adapter.display_settings_controller.php',
+            'adapter.display_settings_page.php',
+            'adapter.gallery_display_factory.php',
+            'adapter.gallery_display_installer.php',
+            'class.alternative_view_manager.php',
+            'class.displayed_gallery.php',
+            'class.displayed_gallery_mapper.php',
+            'class.displayed_gallery_renderer.php',
+            'class.displayed_gallery_source.php',
+            'class.displayed_gallery_source_mapper.php',
+            'class.display_type.php',
+            'class.display_type_controller.php',
+            'class.display_type_mapper.php',
+            'hook.propagate_thumbnail_dimensions_to_settings.php',
+            'interface.alternative_view_manager.php',
+            'interface.displayed_gallery.php',
+            'interface.displayed_gallery_mapper.php',
+            'interface.displayed_gallery_renderer.php',
+            'interface.displayed_gallery_source.php',
+            'interface.displayed_gallery_source_mapper.php',
+            'interface.display_settings_controller.php',
+            'interface.display_type.php',
+            'interface.display_type_controller.php',
+            'interface.display_type_mapper.php',
+            'mixin.alternative_views.php',
+            'mixin.display_type_form.php'
+        );
+    }
 }
 
 new M_Gallery_Display();

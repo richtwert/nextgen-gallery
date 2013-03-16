@@ -15,7 +15,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 		$image = array_shift($displayed_gallery->get_included_entities(1));
 
         if (!$image)
-            return $this->object->render_partial("no_images_found", array(), $return);
+            return $this->object->render_partial("nextgen_gallery_display#no_images_found", array(), $return);
 
         switch ($display_settings['float']) {
             case 'left':
@@ -87,7 +87,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $params['settings']      = $display_settings;
             $params['thumbnail_url'] = $thumbnail_url;
 
-            return $this->object->render_partial('nextgen_basic_singlepic', $params, $return);
+            return $this->object->render_partial('nextgen_basic_singlepic#nextgen_basic_singlepic', $params, $return);
         }
     }
 

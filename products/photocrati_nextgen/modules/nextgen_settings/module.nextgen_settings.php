@@ -34,6 +34,13 @@ class M_NextGen_Settings extends C_Base_Module
 			'A_NextGen_Settings_Manager'
 		);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.nextgen_settings_manager.php'
+        );
+    }
 }
 
 new M_NextGen_Settings();

@@ -52,6 +52,17 @@ class M_Ajax extends C_Base_Module
 		wp_register_script('photocrati_ajax', $settings->ajax_js_url, array(), NULL);
         wp_enqueue_script('photocrati_ajax');
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.ajax_routes.php',
+            'adapter.ajax_settings.php',
+            'class.ajax_controller.php',
+            'interface.ajax_controller.php',
+            'module.ajax.php'
+        );
+    }
 }
 
 new M_Ajax();

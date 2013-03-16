@@ -54,6 +54,15 @@ class M_Frame_Communication extends C_Base_Module
 		);
 		wp_enqueue_script('frame_event_publisher');
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.frame_communication_settings.php',
+            'class.frame_event_publisher.php',
+            'interface.frame_event_publisher.php'
+        );
+    }
 }
 
 new M_Frame_Communication();

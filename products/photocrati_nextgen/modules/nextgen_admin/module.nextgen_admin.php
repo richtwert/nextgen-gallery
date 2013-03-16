@@ -113,6 +113,28 @@ class M_NextGen_Admin extends C_Base_Module
 	{
 		$this->get_registry()->get_utility('I_Page_Manager')->setup();
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.fs_access_page.php',
+            'adapter.mvc_validation.php',
+            'adapter.nextgen_admin_installer.php',
+            'adapter.nextgen_admin_pages.php',
+            'adapter.nextgen_admin_settings.php',
+            'adapter.nextgen_settings_routes.php',
+            'adapter.stylesheet_ajax_actions.php',
+            'class.form.php',
+            'class.form_manager.php',
+            'class.nextgen_admin_page_controller.php',
+            'class.page_manager.php',
+            'interface.form.php',
+            'interface.form_manager.php',
+            'interface.nextgen_admin_page.php',
+            'interface.nextgen_settings.php',
+            'interface.page_manager.php'
+        );
+    }
 }
 
 new M_NextGen_Admin();

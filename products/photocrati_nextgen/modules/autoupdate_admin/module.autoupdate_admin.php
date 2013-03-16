@@ -317,6 +317,16 @@ class M_AutoUpdate_Admin extends C_Base_Module
     		echo '<p>There are updates available <a class="button-secondary" href="' . esc_url($this->get_update_page_url()) . '">Update Now</a></p>';
     	}
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.autoupdate_admin_ajax.php',
+            'adapter.autoupdate_admin_factory.php',
+            'class.autoupdate_admin_ajax.php',
+            'class.autoupdate_admin_controller.php'
+        );
+    }
 }
 
 new M_AutoUpdate_Admin();

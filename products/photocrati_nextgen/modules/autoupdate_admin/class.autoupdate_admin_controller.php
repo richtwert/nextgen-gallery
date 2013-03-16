@@ -19,7 +19,7 @@ if (class_exists('C_MVC_Controller', false)) {
 		  
 		  function admin_page()
 		  {
-		      $this->render_partial('admin_page', array());
+		      $this->render_partial('autoupdate_admin#admin_page', array());
 		  }
 	}
 }
@@ -58,7 +58,7 @@ else {
 		  
 		  function admin_page()
 		  {
-		      $this->render_partial('admin_page', array());
+		      $this->render_partial('autoupdate_admin#admin_page', array());
 		  }
 	}
 }

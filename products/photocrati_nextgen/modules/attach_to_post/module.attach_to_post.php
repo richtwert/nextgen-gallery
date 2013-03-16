@@ -340,6 +340,21 @@ class M_Attach_To_Post extends C_Base_Module
 	{
 		$this->events->add_event($event);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.attach_to_post_ajax.php',
+            'adapter.attach_to_post_installer.php',
+            'adapter.attach_to_post_routes.php',
+            'adapter.attach_to_post_settings.php',
+            'adapter.gallery_storage_frame_event.php',
+            'class.attach_controller.php',
+            'class.attach_to_post_controller.php',
+            'interface.attach_to_post_controller.php',
+            'mixin.attach_to_post_display_tab.php'
+        );
+    }
 }
 
 new M_Attach_To_Post();

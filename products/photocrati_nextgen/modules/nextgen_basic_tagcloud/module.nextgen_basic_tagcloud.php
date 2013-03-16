@@ -101,6 +101,19 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
         return $renderer->display_images($params, $inner_content);
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.nextgen_basic_tagcloud.php',
+            'adapter.nextgen_basic_tagcloud_controller.php',
+            'adapter.nextgen_basic_tagcloud_form.php',
+            'adapter.nextgen_basic_tagcloud_installer.php',
+            'adapter.nextgen_basic_tagcloud_mapper.php',
+            'adapter.nextgen_basic_tagcloud_routes.php',
+            'adapter.nextgen_basic_tagcloud_urls.php'
+        );
+    }
 }
 
 new M_NextGen_Basic_Tagcloud();

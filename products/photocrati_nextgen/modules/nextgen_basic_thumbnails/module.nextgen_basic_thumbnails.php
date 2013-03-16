@@ -177,6 +177,22 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
         return $renderer->display_images($params, $inner_content);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.ajax_pagination_actions.php',
+            'adapter.nextgen_basic_thumbnails.php',
+            'adapter.nextgen_basic_thumbnails_alternative_views.php',
+            'adapter.nextgen_basic_thumbnails_controller.php',
+            'adapter.nextgen_basic_thumbnails_installer.php',
+            'adapter.nextgen_basic_thumbnails_mapper.php',
+            'adapter.nextgen_basic_thumbnail_form.php',
+            'adapter.nextgen_basic_thumbnail_routes.php',
+            'adapter.nextgen_basic_thumbnail_urls.php',
+            'mixin.nextgen_basic_thumbnails_pagination.php'
+        );
+    }
 }
 
 new M_NextGen_Basic_Thumbnails();

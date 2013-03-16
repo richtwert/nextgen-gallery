@@ -9,7 +9,7 @@ class A_MVC_Validation extends Mixin
 		$retval = '';
 
 		if ($entity->is_invalid()) {
-			$retval = $this->object->render_partial('entity_errors', array(
+			$retval = $this->object->render_partial('nextgen_admin#entity_errors', array(
 				'entity'	=>	$entity
 			), $return);
 		}
@@ -22,7 +22,7 @@ class A_MVC_Validation extends Mixin
 		$retval = '';
 
 		if ($entity->is_valid()) {
-			$retval = $this->object->render_partial('entity_saved', array(
+			$retval = $this->object->render_partial('nextgen_admin#entity_saved', array(
 				'entity'	=>	$entity,
 				'message'	=>	$message
 			));

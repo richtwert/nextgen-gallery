@@ -30,7 +30,7 @@ class C_Widget_Gallery extends WP_Widget
         );
 
         $parent->render_partial(
-            'form_gallery',
+            'widget#form_gallery',
             array(
                 'self'     => $this,
                 'instance' => $instance,
@@ -130,7 +130,7 @@ class C_Widget_Gallery extends WP_Widget
         }
 
         $parent->render_partial(
-            'display_gallery',
+            'widget#display_gallery',
             array(
                 'self'       => $this,
                 'instance'   => $instance,

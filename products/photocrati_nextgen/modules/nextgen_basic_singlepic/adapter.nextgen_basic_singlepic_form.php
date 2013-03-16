@@ -31,7 +31,7 @@ class A_NextGen_Basic_SinglePic_Form extends Mixin_Display_Type_Form
 	    function _render_nextgen_basic_singlepic_dimensions_field($display_type)
     {
         return $this->object->render_partial(
-            'nextgen_basic_singlepic_settings_dimensions',
+            'nextgen_basic_singlepic#nextgen_basic_singlepic_settings_dimensions',
             array(
                 'display_type_name' => $display_type->name,
                 'dimensions_label' => _('Thumbnail dimensions'),
@@ -47,7 +47,7 @@ class A_NextGen_Basic_SinglePic_Form extends Mixin_Display_Type_Form
     function _render_nextgen_basic_singlepic_link_field($display_type)
     {
         return $this->object->render_partial(
-            'nextgen_basic_singlepic_settings_link',
+            'nextgen_basic_singlepic#nextgen_basic_singlepic_settings_link',
             array(
                 'display_type_name' => $display_type->name,
                 'link_label' => _('Link'),
@@ -60,7 +60,7 @@ class A_NextGen_Basic_SinglePic_Form extends Mixin_Display_Type_Form
     function _render_nextgen_basic_singlepic_quality_field($display_type)
     {
         return $this->object->render_partial(
-            'nextgen_basic_singlepic_settings_quality',
+            'nextgen_basic_singlepic#nextgen_basic_singlepic_settings_quality',
             array(
                 'display_type_name' => $display_type->name,
                 'quality_label' => _('Image quality'),

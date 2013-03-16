@@ -38,6 +38,16 @@ class M_Dynamic_Stylesheet extends C_Base_Module
 			'I_Settings_Manager', 'A_Dynamic_Stylesheet_Settings'
 		);
 	}
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.dynamic_stylesheet_routes.php',
+            'adapter.dynamic_stylesheet_settings.php',
+            'class.dynamic_stylesheet_controller.php',
+            'interface.dynamic_stylesheet.php'
+        );
+    }
 }
 
 new M_Dynamic_Stylesheet;

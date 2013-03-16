@@ -40,6 +40,17 @@ class M_Widget extends C_Base_Module
          add_action('widgets_init', create_function('', 'return register_widget("C_Widget_Slideshow");'));
     }
 
+    function set_file_list()
+    {
+        return array(
+            'class.widget.php',
+            'class.widget_gallery.php',
+            'class.widget_mediarss.php',
+            'class.widget_slideshow.php',
+            'interface.widget.php'
+        );
+    }
+
 }
 
 new M_Widget();

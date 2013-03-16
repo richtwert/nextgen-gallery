@@ -38,5 +38,42 @@ class M_NextGen_Data extends C_Base_Module
         $this->get_registry()->add_utility('I_Transients', 'C_NextGen_Transients');
         $this->get_registry()->add_utility('I_Gallery_Storage', 'C_Gallery_Storage');
     }
+
+    function set_file_list()
+    {
+        return array(
+            'adapter.attachment_datamapper.php',
+            'adapter.nextgen_data_factory.php',
+            'adapter.nextgen_data_installer.php',
+            'adapter.parse_image_metadata.php',
+            'class.album.php',
+            'class.gallery.php',
+            'class.image.php',
+            'class.album_mapper.php',
+            'class.gallerystorage_base.php',
+            'class.gallerystorage_driver_base.php',
+            'class.gallery_mapper.php',
+            'class.gallery_storage.php',
+            'class.image_mapper.php',
+            'class.image_wrapper.php',
+            'class.image_wrapper_collection.php',
+            'class.nextgen_metadata.php',
+            'class.nextgen_transients.php',
+            'class.ngglegacy_gallerystorage_driver.php',
+            'class.ngglegacy_thumbnail.php',
+            'class.wordpress_gallerystorage_driver.php',
+            'interface.album.php',
+            'interface.gallery.php',
+            'interface.image.php',
+            'interface.transients.php',
+            'interface.album_mapper.php',
+            'interface.component_config.php',
+            'interface.gallerystorage_driver.php',
+            'interface.gallery_mapper.php',
+            'interface.gallery_storage.php',
+            'interface.gallery_type.php',
+            'interface.image_mapper.php'
+        );
+    }
 }
 new M_NextGen_Data();
