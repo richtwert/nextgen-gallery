@@ -44,6 +44,7 @@ class M_NextGen_Data extends C_Base_Module
     {
         return array(
             'adapter.attachment_datamapper.php',
+            'adapter.customtable_sorting_datamapper.php',
             'adapter.nextgen_data_factory.php',
             'adapter.nextgen_data_installer.php',
             'adapter.parse_image_metadata.php',
