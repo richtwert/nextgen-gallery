@@ -21,7 +21,7 @@ class A_CustomTable_Sorting_DataMapper extends Mixin
 			$order_by_col	= $this->object->_clean_column($order_by);
 
 			// If the order by clause is a column, then it should be backticked
-			if ($this->object->has_column($order_by_col)) $order_by_col = "LENGTH(`{$order_by_col}`)";
+			if ($this->object->has_column($order_by_col)) $order_by_col = "ABS(`{$order_by_col}`)";
 
 			$direction	= $this->object->_clean_column($direction);
 			$order		= "{$order_by_col} {$direction}";
