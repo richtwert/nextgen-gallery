@@ -26,6 +26,7 @@ class M_NextGen_Data extends C_Base_Module
     {
         $this->get_registry()->add_adapter('I_Component_Factory', 'A_NextGen_Data_Factory');
 		$this->get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
+		$this->get_registry()->add_adapter('I_CustomTable_DataMapper', 'A_CustomTable_Sorting_DataMapper');
         $this->get_registry()->add_adapter('I_NextGen_Deactivator', 'A_NextGen_Data_Deactivation');
     }
 
@@ -74,6 +75,25 @@ class M_NextGen_Data extends C_Base_Module
             'interface.gallery_type.php',
             'interface.image_mapper.php'
         );
+    }
+    
+    
+    function _register_hooks()
+    {
+    	add_filter('posts_orderby', array($this, 'wp_query_order_by'), 10, 2);
+    }
+    
+    function wp_query_order_by($order_by, $wp_query)
+    {
+    	if ($wp_query->get('datamapper_attachment'))
+    	{
+    		$order_parts = explode(' ', $order_by);
+    		$order_name = array_shift($order_parts);
+    		
+    		$order_by = 'ABS(' . $order_name . ') ' . implode(' ', $order_parts) . ', ' . $order_by;
+    	}
+    	
+    	return $order_by;
     }
 }
 new M_NextGen_Data();

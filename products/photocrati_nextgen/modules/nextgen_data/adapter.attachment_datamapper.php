@@ -50,4 +50,13 @@ class A_Attachment_DataMapper extends Mixin
 
 		return $attachment_id;
 	}
+	
+	function select($fields='*')
+	{
+    $ret = $this->call_parent('select', $fields);
+    
+    $this->object->_query_args['datamapper_attachment'] = true;
+    
+    return $ret;
+	}
 }
