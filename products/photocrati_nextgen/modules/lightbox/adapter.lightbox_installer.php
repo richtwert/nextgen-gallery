@@ -83,26 +83,26 @@ class A_Lightbox_Installer extends Mixin
 		$this->install_lightbox(
 			'lightbox',
 			"class='ngg_lightbox'",
-			array('jquery.lightbox/jquery.lightbox-0.5.css'),
+			array('lightbox#jquery.lightbox/jquery.lightbox-0.5.css'),
 			array(
-				'jquery.lightbox/jquery.lightbox-0.5.min.js',
-				'jquery.lightbox/nextgen_lightbox_init.js'
+				'lightbox#jquery.lightbox/jquery.lightbox-0.5.min.js',
+				'lightbox#jquery.lightbox/nextgen_lightbox_init.js'
 			),
 			array(
 				'nextgen_lightbox_loading_img_url'	=>
-				$router->get_static_url('jquery.lightbox/lightbox-ico-loading.gif'),
+				$router->get_static_url('lightbox#jquery.lightbox/lightbox-ico-loading.gif'),
 
 				'nextgen_lightbox_close_btn_url'	=>
-				$router->get_static_url('jquery.lightbox/lightbox-btn-close.gif'),
+				$router->get_static_url('lightbox#jquery.lightbox/lightbox-btn-close.gif'),
 
 				'nextgen_lightbox_btn_prev_url'		=>
-				$router->get_static_url('jquery.lightbox/lightbox-btn-prev.gif'),
+				$router->get_static_url('lightbox#jquery.lightbox/lightbox-btn-prev.gif'),
 
 				'nextgen_lightbox_btn_next_url'		=>
-				$router->get_static_url('jquery.lightbox/lightbox-btn-next.gif'),
+				$router->get_static_url('lightbox#jquery.lightbox/lightbox-btn-next.gif'),
 
 				'nextgen_lightbox_blank_img_url'	=>
-				$router->get_static_url('jquery.lightbox/lightbox-blank.gif')
+				$router->get_static_url('lightbox#jquery.lightbox/lightbox-blank.gif')
 			)
 		);
 
@@ -110,11 +110,11 @@ class A_Lightbox_Installer extends Mixin
 		$this->install_lightbox(
 			'fancybox',
 			'class="ngg-fancybox" rel="%GALLERY_NAME%"',
-			array('fancybox/jquery.fancybox-1.3.4.css'),
+			array('lightbox#fancybox/jquery.fancybox-1.3.4.css'),
 			array(
-				'fancybox/jquery.easing-1.3.pack.js',
-				'fancybox/jquery.fancybox-1.3.4.pack.js',
-				'fancybox/nextgen_fancybox_init.js'
+				'lightbox#fancybox/jquery.easing-1.3.pack.js',
+				'lightbox#fancybox/jquery.fancybox-1.3.4.pack.js',
+				'lightbox#fancybox/nextgen_fancybox_init.js'
 			)
 		);
 
@@ -122,8 +122,8 @@ class A_Lightbox_Installer extends Mixin
 		$this->install_lightbox(
 			'highslide',
 			'class="highslide" onclick="return hs.expand(this, galleryOptions);"',
-			array('highslide/highslide.css'),
-			array('highslide/highslide-full.packed.js', 'highslide/nextgen_highslide_init.js'),
+			array('lightbox#highslide/highslide.css'),
+			array('lightbox#highslide/highslide-full.packed.js', 'lightbox#highslide/nextgen_highslide_init.js'),
 			array('nextgen_highslide_graphics_dir' => $router->get_static_url('lightbox#highslide/graphics'))
 		);
 
@@ -131,8 +131,8 @@ class A_Lightbox_Installer extends Mixin
 		$this->install_lightbox(
 			'shutter',
 			'class="shutterset_%GALLERY_NAME%"',
-			array('shutter/shutter.css'),
-			array('shutter/shutter.js', 'shutter/nextgen_shutter.js'),
+			array('lightbox#shutter/shutter.css'),
+			array('lightbox#shutter/shutter.js', 'lightbox#shutter/nextgen_shutter.js'),
 			array(
 				'msgLoading'	=>	'L O A D I N G',
 				'msgClose'		=>	'Click to Close',
@@ -143,16 +143,16 @@ class A_Lightbox_Installer extends Mixin
 		$this->install_lightbox(
 			'shutter 2.0.1',
 			'class="shutterset_%GALLERY_NAME%"',
-			array('shutter_reloaded/shutter.css'),
-			array('shutter_reloaded/shutter.js', 'shutter_reloaded/nextgen_shutter_reloaded.js')
+			array('lightbox#shutter_reloaded/shutter.css'),
+			array('lightbox#shutter_reloaded/shutter.js', 'lightbox#shutter_reloaded/nextgen_shutter_reloaded.js')
 		);
 
 		// Install Thickbox
 		$this->install_lightbox(
 			'thickbox',
 			"class='thickbox' rel='%GALLERY_NAME%'",
-			array(includes_url('/js/thickbox.css')),
-			array(includes_url('/js/thickbox.js'), 'lightbox#thickbox/nextgen_thickbox_init.js')
+			array(includes_url('/js/thickbox/thickbox.css')),
+			array('lightbox#thickbox/nextgen_thickbox_init.js', includes_url('/js/thickbox/thickbox.js'))
 		);
 	}
 
