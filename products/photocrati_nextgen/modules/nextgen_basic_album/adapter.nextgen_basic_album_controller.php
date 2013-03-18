@@ -6,7 +6,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     function initialize()
     {
 		$this->albums = array();
-        $this->object->add_mixin('Mixin_NextGen_Basic_Album_Settings');
+        $this->object->add_mixin('A_NextGen_Basic_Template_Form');
     }
 
     /**
@@ -86,7 +86,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
             // Render legacy template
             $display_settings = $this->prepare_legacy_album_params($display_settings);
-            return $this->legacy_render($display_settings['template'], $display_settings, $return, 'album');
+            return $this->object->legacy_render($display_settings['template'], $display_settings, $return, 'album');
 
         }
         else {
