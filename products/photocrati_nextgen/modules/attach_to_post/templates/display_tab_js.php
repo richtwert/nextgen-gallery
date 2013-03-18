@@ -1460,6 +1460,11 @@ jQuery(function($){
 				else
 					this.displayed_gallery.set('exclusions', this.original_displayed_gallery.get('exclusions'));
 
+                // special exemption: these should default to a reasonable limit
+                if (this.sources.selected_value() == 'random_images' || this.sources.selected_value() == 'recent_images') {
+                    this.displayed_gallery.set('maximum_entity_count', 20);
+                }
+
 				// Reset everything else
 				this.galleries.deselect_all();
 				this.albums.deselect_all();
