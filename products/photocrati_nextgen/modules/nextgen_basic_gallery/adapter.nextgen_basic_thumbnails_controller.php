@@ -17,6 +17,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function index_action($displayed_gallery, $return=FALSE)
 	{
+        $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        $displayed_gallery->display_type = "photocrati-nextgen_basic_slideshow";
+        return $renderer->display_images((array)$displayed_gallery->get_entity());
+        die(var_dump($displayed_gallery->get_entity()));
+        
+        
+        
         $display_settings = $displayed_gallery->display_settings;
         $current_page = (int)$this->param('page', $displayed_gallery->id(), 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);

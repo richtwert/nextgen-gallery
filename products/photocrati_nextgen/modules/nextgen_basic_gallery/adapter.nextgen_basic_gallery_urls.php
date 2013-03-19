@@ -1,8 +1,8 @@
 <?php
 
-class A_NextGen_Basic_Thumbnail_Urls extends Mixin
+class A_NextGen_Basic_Gallery_Urls extends Mixin
 {
-	function initialize()
+    function initialize()
 	{
 		$this->object->add_post_hook(
 			'set_parameter_value',
@@ -18,19 +18,22 @@ class A_NextGen_Basic_Thumbnail_Urls extends Mixin
 		);
 
 	}
-
-
-	function create_parameter_segment($key, $value, $id, $use_prefix)
+    
+    
+    function create_parameter_segment($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		if ($key == 'page') {
+		if ($key == 'show' && $value == NEXTGEN_GALLERY_BASIC_SLIDESHOW)
+			return '/slideshow';
+        elseif ($key == 'page') {
 			return 'page/'.$value;
 		}
 		else
 			return $this->call_parent('create_parameter_segment', $key, $value, $id, $use_prefix);
+
 	}
-
-
-	function _set_nextgen_basic_thumbnail_parameter($key, $value, $id=NULL, $use_prefix=NULL)
+    
+    
+    	function _set_nextgen_basic_thumbnail_parameter($key, $value, $id=NULL, $use_prefix=NULL)
 	{
 		$this->_set_ngglegacy_page_parameter($key, $id);
 	}

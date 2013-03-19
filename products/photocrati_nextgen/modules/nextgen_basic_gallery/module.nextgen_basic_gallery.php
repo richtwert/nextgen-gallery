@@ -1,98 +1,119 @@
 <?php
-
-/***
+/*
 {
-		Module:		photocrati-nextgen_basic_thumbnails,
-		Depends:	{ photocrati-nextgen_gallery_display }
+    Module: photocrati-nextgen_basic_gallery
 }
- ***/
+*/
 
 define(
-	'NEXTGEN_GALLERY_BASIC_THUMBNAILS',
-	'photocrati-nextgen_basic_thumbnails'
+    'NEXTGEN_GALLERY_BASIC_THUMBNAILS',
+    'photocrati-nextgen_basic_thumbnails'
 );
 
-class M_NextGen_Basic_Thumbnails extends C_Base_Module
+define(
+    'NEXTGEN_GALLERY_BASIC_SLIDESHOW',
+    'photocrati-nextgen_basic_slideshow'
+);
+
+
+class M_NextGen_Basic_Gallery extends C_Base_Module
 {
-	function define()
-	{
-		parent::define(
-			NEXTGEN_GALLERY_BASIC_THUMBNAILS,
-			'NextGen Basic Thumbnails',
-			'Provides a thumbnail gallery for NextGEN Gallery',
-			'1.9.6',
-			'http://www.photocrati.com',
-			'Photocrati Media',
-			'http://www.photocrati.com'
-		);
-	}
-
-	function initialize()
-	{
-		parent::initialize();
-		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
-		$form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, $this->module_id);
-	}
-
-	function _register_adapters()
-	{
-		// Provides additional routing
-		$this->get_registry()->add_adapter(
-			'I_Router',
-			'A_NextGen_Basic_Thumbnail_Routes'
-		);
-
-		// Provides NextGen Basic Thumbnail URLs
-		$this->get_registry()->add_adapter(
+    function define()
+    {
+        parent::define(
+            'photocrati-nextgen_basic_gallery',
+            'NextGEN Basic Gallery',
+            "Provides NextGEN Gallery's basic thumbnail/slideshow integrated gallery",
+            '0.2',
+            'http://www.nextgen-gallery.com',
+            'Photocrati Media',
+            'http://www.photocrati.com'
+        );
+    }
+    
+    
+    function initialize()
+    {
+        parent::initialize();
+        $form_manager = $this->get_registry()->get_utility('I_Form_Manager');
+        $form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_BASIC_THUMBNAILS);
+        $form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_BASIC_SLIDESHOW);
+    }
+    
+   
+    function _register_adapters()
+    {
+        // Provides an installer for the module
+        $this->get_registry()->add_adapter(
+            'I_Installer',
+            'A_NextGen_Basic_Gallery_Installer'
+        );
+        
+        // Provides the display type forms
+        $this->get_registry()->add_adapter(
+            'I_Form',
+            'A_NextGen_Basic_Slideshow_Form',
+            NEXTGEN_GALLERY_BASIC_SLIDESHOW
+        );
+        $this->get_registry()->add_adapter(
+            'I_Form',
+            'A_NextGen_Basic_Thumbnail_Form',
+            NEXTGEN_GALLERY_BASIC_THUMBNAILS
+        );
+        
+        // Provides the controllers for the display types
+        $this->get_registry()->add_adapter(
+            'I_Display_Type_Controller',
+            'A_NextGen_Basic_Slideshow_Controller',
+            NEXTGEN_GALLERY_BASIC_SLIDESHOW
+        );
+        $this->get_registry()->add_adapter(
+            'I_Display_Type_Controller',
+            'A_NextGen_Basic_Thumbnail_Controller',
+            NEXTGEN_GALLERY_BASIC_THUMBNAILS
+        );
+        
+        // Provide defaults for the display types
+        $this->get_registry()->add_adapter(
+            'I_Display_Type_Mapper',
+            'A_NextGen_Basic_Gallery_Mapper'
+        );
+        
+        // Provides validation for the display types
+        $this->get_registry()->add_adapter(
+            'I_Display_Type',
+            'A_NextGen_Basic_Gallery_Validation'
+        );
+        
+        // Provides url generation support for the display types
+        $this->get_registry()->add_adapter(
 			'I_Routing_App',
-			'A_NextGen_Basic_Thumbnail_Urls'
+			'A_NextGen_Basic_Gallery_Urls'
 		);
-
-		// Installs the display type
-		$this->get_registry()->add_adapter(
-			'I_Installer',
-			'A_NextGen_Basic_Thumbnails_Installer'
-		);
-
-		// Provides settings fields and frontend rendering
-		$this->get_registry()->add_adapter(
-			'I_Display_Type_Controller',
-			'A_NextGen_Basic_Thumbnails_Controller',
-			$this->module_id
-		);
-
-		$this->get_registry()->add_adapter(
-			'I_Form',
-			'A_NextGen_Basic_Thumbnail_Form',
-			$this->module_id
-		);
-
-		// Provides validation for the display type
-		$this->get_registry()->add_adapter(
-			'I_Display_Type',
-			'A_NextGen_Basic_Thumbnails'
-		);
-
-		// Provides default values for the display type
-		$this->get_registry()->add_adapter(
-			'I_Display_Type_Mapper',
-			'A_NextGen_Basic_Thumbnails_Mapper'
-		);
-
-		// Provides AJAX pagination actions required by the display type
+        
+        // Provides routing logic for the display types
+        $this->get_registry()->add_adapter(
+            'I_Router',
+            'A_NextGen_Basic_Gallery_Routes'
+        );
+        
+        
+        // Provides AJAX pagination actions required by the display types
         $this->get_registry()->add_adapter(
             'I_Ajax_Controller',
             'A_Ajax_Pagination_Actions'
         );
-	}
-
-	function _register_hooks()
+    }
+    
+    function _register_hooks()
 	{
 		add_shortcode('nggallery', array(&$this, 'render'));
 		add_shortcode('nggtags',   array(&$this, 'render_based_on_tags'));
 		add_shortcode('random',    array(&$this, 'render_random_images'));
 		add_shortcode('recent',    array(&$this, 'render_recent_images'));
 		add_shortcode('thumb',	   array(&$this, 'render_thumb_shortcode'));
+        add_shortcode('slideshow',		 array(&$this, 'render_slideshow'));
+		add_shortcode('nggslideshow',	 array(&$this, 'render_slideshow'));
 	}
 
 	/**
@@ -177,22 +198,18 @@ class M_NextGen_Basic_Thumbnails extends C_Base_Module
         $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
         return $renderer->display_images($params, $inner_content);
 	}
+    
+	function render_slideshow($params, $inner_content=NULL)
+	{
+		$params['gallery_ids']    = $this->_get_param('id', NULL, $params);
+        $params['display_type']   = $this->_get_param('display_type', 'photocrati-nextgen_basic_slideshow', $params);
+        $params['gallery_width']  = $this->_get_param('w', NULL, $params);
+        $params['gallery_height'] = $this->_get_param('h', NULL, $params);
+        unset($params['id'], $params['w'], $params['h']);
 
-    function set_file_list()
-    {
-        return array(
-            'adapter.ajax_pagination_actions.php',
-            'adapter.nextgen_basic_thumbnails.php',
-            'adapter.nextgen_basic_thumbnails_alternative_views.php',
-            'adapter.nextgen_basic_thumbnails_controller.php',
-            'adapter.nextgen_basic_thumbnails_installer.php',
-            'adapter.nextgen_basic_thumbnails_mapper.php',
-            'adapter.nextgen_basic_thumbnail_form.php',
-            'adapter.nextgen_basic_thumbnail_routes.php',
-            'adapter.nextgen_basic_thumbnail_urls.php',
-            'mixin.nextgen_basic_thumbnails_pagination.php'
-        );
-    }
+		$renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
+	}    
 }
 
-new M_NextGen_Basic_Thumbnails();
+new M_NextGen_Basic_Gallery;

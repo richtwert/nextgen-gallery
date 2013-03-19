@@ -45,8 +45,7 @@ class M_MVC extends C_Base_Module
     function initialize()
     {
 		parent::initialize();
-        if (!WP_DEBUG)
-            set_exception_handler(array(&$this, 'handle_exit'));
+//            set_exception_handler(array(&$this, 'handle_exit'));
     }
 
     function _register_utilities()
