@@ -221,7 +221,7 @@ class Mixin_Form_Field_Generators extends Mixin
         );
 
         $qualities = array();
-        for ($i = 100; $i > 50; $i--) { $qualities[$i] = "{$i}%"; }
+        for ($i = 100; $i > 40; $i -= 5) { $qualities[$i] = "{$i}%"; }
         $quality_field = $this->_render_select_field(
             $display_type,
             'thumbnail_quality',
@@ -273,7 +273,7 @@ class Mixin_Form_Field_Generators extends Mixin
         );
 
         $qualities = array();
-        for ($i = 100; $i > 50; $i--) { $qualities[$i] = "{$i}%"; }
+        for ($i = 100; $i > 40; $i -= 5) { $qualities[$i] = "{$i}%"; }
         $quality_field = $this->_render_select_field(
             $display_type,
             'image_quality',
