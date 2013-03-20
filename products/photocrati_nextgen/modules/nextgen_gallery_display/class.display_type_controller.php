@@ -12,7 +12,6 @@ class C_Display_Type_Controller extends C_MVC_Controller
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Display_Type_Controller');
-		$this->add_mixin('Mixin_Alternative_Views');
 		$this->implement('I_Display_Type_Controller');
 	}
 

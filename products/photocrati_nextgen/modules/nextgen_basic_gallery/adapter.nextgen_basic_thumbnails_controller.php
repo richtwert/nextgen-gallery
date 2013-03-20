@@ -107,6 +107,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 				$mediarss_link = $this->object->get_router()->get_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
                 $piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
             }
+            
+            // Generate a slideshow link
+            $slideshow_link = '';
+            if ($display_settings['show_slideshow_link']) {
+                $url = $this->object->get_routed_url();
+                $slideshow_link = $this->object->set_param_for($url, 'show', 'slideshow');
+            }
 
             // The render functions require different processing
             if (!empty($display_settings['template']))
@@ -118,8 +125,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                         'next' => (empty($pagination_next)) ? FALSE : $pagination_next,
                         'prev' => (empty($pagination_prev)) ? FALSE : $pagination_prev,
                         'pagination' => $pagination,
-                        'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
-                        'piclens_link' => $piclens_link
+                        'piclens_link'              => $piclens_link,
+                        'show_slideshow_link'       => $display_settings['show_slideshow_link'],
+                        'slideshow_link'            => $display_settings['slideshow_link'],
+                        'slideshow_link_text'       => $display_settings['slideshow_link_text']
                     )
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return, 'gallery');
@@ -129,13 +138,14 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['storage']				= &$storage;
                 $params['images']				= &$images;
                 $params['displayed_gallery_id'] = $gallery_id;
-                $params['transient_id'] = $displayed_gallery->transient_id;
+                $params['transient_id']         = $displayed_gallery->transient_id;
                 $params['current_page']			= $current_page;
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
-                $params['thumbnail_size_name']			= $thumbnail_size_name;
-                return $this->object->render_view('nextgen_basic_thumbnails#index', $params, $return);
+                $params['thumbnail_size_name']	= $thumbnail_size_name;
+                $params['slideshow_link']       = $slideshow_link;
+                return $this->object->render_view('nextgen_basic_gallery#thumbnails/index', $params, $return);
             }
 		}
 		else {
@@ -149,7 +159,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
-        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails.css'));
+        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.css'));
 
 		if ($displayed_gallery->display_settings['show_piclens_link'])
 			wp_enqueue_script('piclens', $this->get_static_url('piclens/lite/piclens.js'));
@@ -167,7 +177,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-        return $this->object->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails.js');
+        return $this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.js');
 	}
 
 	/**
@@ -177,6 +187,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-        return $this->object->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails_init.js');
+        return $this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails_init.js');
 	}
 }

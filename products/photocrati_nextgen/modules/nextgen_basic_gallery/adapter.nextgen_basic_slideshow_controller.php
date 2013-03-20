@@ -28,7 +28,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			$gallery_width					= $displayed_gallery->display_settings['gallery_width'];
 			$gallery_height					= $displayed_gallery->display_settings['gallery_height'];
 			$params['aspect_ratio']			= $gallery_width/$gallery_height;
-			$params['flash_path']			= $this->object->get_static_url('nextgen_basic_slideshow#imagerotator.swf');
+			$params['flash_path']			= $this->object->get_static_url('nextgen_basic_gallery#slideshow/imagerotator.swf');
 
 			// Are we displayed a flash slideshow?
 			if ($displayed_gallery->display_settings['flash_enabled'])
@@ -39,8 +39,14 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 					'/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' .$transient_id
 				);
 			}
+            
+            // Are we to generate a thumbnail link?
+            if ($displayed_gallery->display_settings['show_thumbnail_link']) {
+                $url = $this->object->get_routed_url();
+                $params['thumbnail_link'] = $this->object->set_param_for($url, 'show', 'thumbnail');
+            }
 
-			$retval = $this->object->render_partial('nextgen_basic_slideshow#nextgen_basic_slideshow', $params, $return);
+			$retval = $this->object->render_partial('nextgen_basic_gallery#slideshow/index', $params, $return);
 		}
 
 		// No images found
@@ -61,11 +67,13 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			wp_enqueue_script('swfobject'); // WordPress built-in library
 		}
 		else {
+            $resource = defined('SCRIPT_DEBUG') ? 'jquery.cycle.all.min.js' : "jquery.cycle.all.js";
+            wp_register_script('jquery.cycle', $this->get_static_url("nextgen_basic_gallery#slideshow/{$resource}"));
 			wp_enqueue_script('jquery.cycle'); // registered in module file
 		}
 
-		wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow.css'));
-        wp_enqueue_script('waitforimages', $this->get_static_url('nextgen_basic_slideshow#jquery.waitforimages.js'));
+		wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow.css'));
+        wp_enqueue_script('waitforimages', $this->get_static_url('nextgen_basic_gallery#slideshow/jquery.waitforimages.js'));
 		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
@@ -81,7 +89,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-		return $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow.js');
+		return $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow.js');
 	}
 
 	/**
@@ -91,6 +99,6 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow_init.js');
+		return $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow_init.js');
 	}
 }

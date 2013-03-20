@@ -14,7 +14,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
     {
         wp_enqueue_script(
             'nextgen_basic_slideshow_settings-js',
-            $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow_settings.js'),
+            $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow_settings.js'),
             array('jquery.nextgen_radio_toggle')
         );
     }
@@ -90,7 +90,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
 
     function _render_nextgen_basic_slideshow_gallery_dimensions_field($display_type)
     {
-        return $this->render_partial('nextgen_basic_slideshow#nextgen_basic_slideshow_settings_gallery_dimensions', array(
+        return $this->render_partial('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow_settings_gallery_dimensions', array(
             'display_type_name' => $display_type->name,
             'gallery_dimensions_label' => _('Gallery dimensions'),
             'gallery_width' => $display_type->settings['gallery_width'],
