@@ -133,6 +133,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
 
         if (!empty($display_settings['template']))
         {
+            $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
             $picture->href_link = $picture->get_href_link();
             $picture->previous_image_link = $prev_image_link;
             $picture->previous_pid = $back_pid;
@@ -141,7 +142,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
             $picture->number = $picture_list_pos;
             $picture->total = $total;
             $picture->anchor = $anchor;
-
+            
             return $this->object->legacy_render(
                 $display_settings['template'],
                 array(

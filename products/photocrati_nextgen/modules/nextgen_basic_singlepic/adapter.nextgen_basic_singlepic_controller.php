@@ -67,6 +67,7 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
 
         if (!empty($display_settings['template']))
         {
+            $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
             $params = $this->object->prepare_legacy_parameters(array($image), $displayed_gallery, array('single_image' => TRUE));
 
             // the wrapper is a lazy-loader that calculates variables when requested. We here override those to always

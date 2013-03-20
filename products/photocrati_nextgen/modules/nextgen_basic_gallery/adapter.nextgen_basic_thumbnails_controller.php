@@ -118,6 +118,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             // The render functions require different processing
             if (!empty($display_settings['template']))
             {
+                $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
                 $params = $this->object->prepare_legacy_parameters(
                     $images,
                     $displayed_gallery,

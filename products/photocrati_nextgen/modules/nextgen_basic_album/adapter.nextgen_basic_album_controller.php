@@ -6,7 +6,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     function initialize()
     {
 		$this->albums = array();
-        $this->object->add_mixin('A_NextGen_Basic_Template_Form');
     }
 
     /**
@@ -27,7 +26,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 		// /nggallery/album--id/gallery--id
 
 		// Are we to display a gallery?
-        if ($gallery = $this->param('gallery'))
+        if (($gallery = $this->param('gallery')))
         {
             // basic albums only support one per post
             if (isset($GLOBALS['nggShowGallery']))
@@ -85,6 +84,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $display_settings['storage']      = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
 
             // Render legacy template
+            $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
             $display_settings = $this->prepare_legacy_album_params($display_settings);
             return $this->object->legacy_render($display_settings['template'], $display_settings, $return, 'album');
 
