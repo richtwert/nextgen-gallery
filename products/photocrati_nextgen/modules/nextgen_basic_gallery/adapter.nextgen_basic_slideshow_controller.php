@@ -67,6 +67,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 			wp_enqueue_script('swfobject'); // WordPress built-in library
 		}
 		else {
+            $resource = defined('SCRIPT_DEBUG') ? 'jquery.cycle.all.min.js' : "jquery.cycle.all.js";
+            wp_register_script('jquery.cycle', $this->get_static_url("nextgen_basic_gallery#slideshow/{$resource}"));
 			wp_enqueue_script('jquery.cycle'); // registered in module file
 		}
 
