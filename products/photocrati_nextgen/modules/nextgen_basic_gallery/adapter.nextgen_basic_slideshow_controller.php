@@ -39,6 +39,12 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 					'/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' .$transient_id
 				);
 			}
+            
+            // Are we to generate a thumbnail link?
+            if ($displayed_gallery->display_settings['show_thumbnail_link']) {
+                $url = $this->object->get_routed_url();
+                $params['thumbnail_link'] = $this->object->set_param_for($url, 'show', 'thumbnail');
+            }
 
 			$retval = $this->object->render_partial('nextgen_basic_gallery#slideshow/index', $params, $return);
 		}

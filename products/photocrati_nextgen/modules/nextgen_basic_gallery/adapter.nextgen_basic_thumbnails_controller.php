@@ -17,13 +17,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function index_action($displayed_gallery, $return=FALSE)
 	{
-        $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
-        $displayed_gallery->display_type = "photocrati-nextgen_basic_slideshow";
-        return $renderer->display_images((array)$displayed_gallery->get_entity());
-        die(var_dump($displayed_gallery->get_entity()));
-        
-        
-        
         $display_settings = $displayed_gallery->display_settings;
         $current_page = (int)$this->param('page', $displayed_gallery->id(), 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
@@ -114,6 +107,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 				$mediarss_link = $this->object->get_router()->get_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
                 $piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
             }
+            
+            // Generate a slideshow link
+            $slideshow_link = '';
+            if ($display_settings['show_slideshow_link']) {
+                $url = $this->object->get_routed_url();
+                $slideshow_link = $this->object->set_param_for($url, 'show', 'slideshow');
+            }
 
             // The render functions require different processing
             if (!empty($display_settings['template']))
@@ -125,8 +125,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                         'next' => (empty($pagination_next)) ? FALSE : $pagination_next,
                         'prev' => (empty($pagination_prev)) ? FALSE : $pagination_prev,
                         'pagination' => $pagination,
-                        'alternative_view_link_url' => $display_settings['alternative_view_link_url'],
-                        'piclens_link' => $piclens_link
+                        'piclens_link'              => $piclens_link,
+                        'show_slideshow_link'       => $display_settings['show_slideshow_link'],
+                        'slideshow_link'            => $display_settings['slideshow_link'],
+                        'slideshow_link_text'       => $display_settings['slideshow_link_text']
                     )
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return, 'gallery');
@@ -136,12 +138,13 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['storage']				= &$storage;
                 $params['images']				= &$images;
                 $params['displayed_gallery_id'] = $gallery_id;
-                $params['transient_id'] = $displayed_gallery->transient_id;
+                $params['transient_id']         = $displayed_gallery->transient_id;
                 $params['current_page']			= $current_page;
                 $params['piclens_link']			= $piclens_link;
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
-                $params['thumbnail_size_name']			= $thumbnail_size_name;
+                $params['thumbnail_size_name']	= $thumbnail_size_name;
+                $params['slideshow_link']       = $slideshow_link;
                 return $this->object->render_view('nextgen_basic_gallery#thumbnails/index', $params, $return);
             }
 		}

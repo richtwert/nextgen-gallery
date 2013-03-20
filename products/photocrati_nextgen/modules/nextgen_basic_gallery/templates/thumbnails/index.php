@@ -2,17 +2,11 @@
 	class="ngg-galleryoverview"
 	id="ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>">
 
-	<?php if ($alternative_view): ?>
-	<!-- Slideshow Link -->
-	<div class="slideshowlink">
-		<?php echo $alternative_view_link ?>
-	</div>
-	<?php endif ?>
-
-	<?php if (!empty($return_link)): ?>
+    <?php if (!empty($slideshow_link)): ?>
 	<!-- Return link -->
 	<div class="slideshowlink">
-		<?php echo $return_link ?>
+        <a href='<?php echo $slideshow_link ?>'><?php $slideshow_link_text ?></a>
+		
 	</div>
 	<?php endif ?>
 

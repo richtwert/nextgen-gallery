@@ -1,11 +1,7 @@
-<?php if ($return_link): ?>
+<?php if ($show_thumbnail_link): ?>
 <!-- Thumbnails Link -->
 <div class="slideshowlink">
-	<?php echo $return_link ?>
-</div>
-<?php elseif ($alternative_view_link): ?>
-<div class="slideshowlink">
-	<?php echo $alternative_view_link ?>
+    <a href='<?php echo $thumbnail_link ?>'><?php echo_h($thumbnail_link_text) ?></a>
 </div>
 <?php endif ?>
 

@@ -53,11 +53,8 @@ class Hook_NextGen_Basic_Gallery_Defaults extends Hook
         $this->object->_set_default_value($entity, 'settings', 'flash_background_music', $settings->irAudio);
         $this->object->_set_default_value($entity, 'settings', 'flash_xhtml_validation', $settings->irXHTMLvalid);
         $this->object->_set_default_value($entity, 'settings', 'effect_code', $settings->thumbCode);
-        $this->object->_set_default_value($entity, 'settings', 'alternative_view_link_text', _('[Show Picture List]'));
-        $this->object->_set_default_value($entity, 'settings', 'return_link_text', _('[Show Slideshow]'));
-        $this->object->_set_default_value($entity, 'settings', 'alternative_view', NEXTGEN_GALLERY_BASIC_THUMBNAILS);
-        $this->object->_set_default_value($entity, 'settings', 'show_return_link', 1);
-        $this->object->_set_default_value($entity, 'settings', 'show_alternative_view_link', $settings->galShowGallery ? 1 : 0);
+        $this->object->_set_default_value($entity, 'settings', 'show_thumbnail_link', $settings->galShowGallery ? 1 : 0);
+        $this->object->_set_default_value($entity, 'settings', 'thumbnail_link_text', $settings->galTextGallery);
         $this->object->_set_default_value($entity, 'settings', 'template', '');
     }
     
@@ -77,13 +74,8 @@ class Hook_NextGen_Basic_Gallery_Defaults extends Hook
         $this->object->_set_default_value($entity, 'settings', 'disable_pagination', 0);
 
         // Alternative view support
-        $this->object->_set_default_value($entity, 'settings', 'show_alternative_view_link', $settings->galShowSlide ? 1 : 0);
-        if (defined('NEXTGEN_GALLERY_BASIC_SLIDESHOW')) {
-            $this->object->_set_default_value($entity, 'settings', 'alternative_view', NEXTGEN_GALLERY_BASIC_SLIDESHOW);
-        }
-        $this->object->_set_default_value($entity, 'settings', 'alternative_view_link_text', $settings->galTextSlide);
-        $this->object->_set_default_value($entity, 'settings', 'show_return_link', 1);
-        $this->object->_set_default_value($entity, 'settings', 'return_link_text', $settings->galTextGallery);
+        $this->object->_set_default_value($entity, 'settings', 'show_slideshow_link', $settings->galShowSlide ? 1 : 0);
+        $this->object->_Set_default_value($entity, 'settings', 'slideshow_link_text', $settings->galTextSlide);
 
         // override thumbnail settings
         $this->object->_set_default_value($entity, 'settings', 'override_thumbnail_settings', 0);
