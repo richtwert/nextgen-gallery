@@ -43,7 +43,8 @@ class M_NextGen_Basic_Templates extends C_Base_Module
         return array(
             'adapter.nextgen_basic_template_form.php',
             'class.legacy_template_locator.php',
-            'interface.legacy_template_locator.php'
+            'interface.legacy_template_locator.php',
+            'mixin.nextgen_basic_templates.php'
         );
     }
 }

@@ -355,18 +355,15 @@ class nggAdmin{
 	 */
 	function rotate_image($image, $dir = false, $flip = false) 
 	{
-		if (is_object($image)) {
-			if (isset($image->id)) {
-				$image = $image->id;
-			}
-			elseif (isset($image->pid)) {
-				$image = $image->pid;
-			}
-		}
+        if (is_object($image)) {
+            if (isset($image->id))        $image = $image->id;
+            elseif (isset($image->pid))   $image = $image->pid;
+        }
 
 		$registry = C_Component_Registry::get_instance();
-    $storage  = $registry->get_utility('I_Gallery_Storage');
-    // XXX maybe get rid of this...it's needed to get width/height defaults, placing these directly in generate_image_size could have unwanted consequences
+        $storage  = $registry->get_utility('I_Gallery_Storage');
+    
+        // XXX maybe get rid of this...it's needed to get width/height defaults, placing these directly in generate_image_size could have unwanted consequences
 		$settings = $registry->get_utility('I_Settings_Manager');
 
 		// XXX NextGEN Legacy wasn't handling watermarks or reflections at this stage, so we're forcefully disabling them to maintain compatibility
@@ -381,7 +378,7 @@ class nggAdmin{
 		}
 		// if you didn't define a rotation, we look for the orientation flag in EXIF
 		else if ($dir === false) {
-			$meta = new nggMeta( $image->pid );
+			$meta = new nggMeta( $image);
 			$exif = $meta->get_EXIF();
 
 			if (isset($exif['Orientation'])) {
