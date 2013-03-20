@@ -14,13 +14,13 @@ class A_NextGen_Basic_Thumbnail_Form extends Mixin_Display_Type_Form
 	{
 		wp_enqueue_style(
 			'nextgen_basic_thumbnails_settings',
-			$this->object->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails_settings.css'),
+			$this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails_settings.css'),
 			false
 		);
 
 		wp_enqueue_script(
 			'nextgen_basic_thumbnails_settings',
-			$this->object->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails_settings.js'),
+			$this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails_settings.js'),
 			array('jquery.nextgen_radio_toggle')
 		);
 	}

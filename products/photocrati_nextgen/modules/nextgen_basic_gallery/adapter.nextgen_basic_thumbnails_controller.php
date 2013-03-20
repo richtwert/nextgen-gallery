@@ -142,7 +142,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
                 $params['effect_code']			= $this->object->get_effect_code($displayed_gallery);
                 $params['pagination']			= $pagination;
                 $params['thumbnail_size_name']			= $thumbnail_size_name;
-                return $this->object->render_view('nextgen_basic_thumbnails#index', $params, $return);
+                return $this->object->render_view('nextgen_basic_gallery#thumbnails/index', $params, $return);
             }
 		}
 		else {
@@ -156,7 +156,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
-        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails.css'));
+        wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.css'));
 
 		if ($displayed_gallery->display_settings['show_piclens_link'])
 			wp_enqueue_script('piclens', $this->get_static_url('piclens/lite/piclens.js'));
@@ -174,7 +174,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_lib_url()
 	{
-        return $this->object->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails.js');
+        return $this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.js');
 	}
 
 	/**
@@ -184,6 +184,6 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-        return $this->object->get_static_url('nextgen_basic_thumbnails#nextgen_basic_thumbnails_init.js');
+        return $this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails_init.js');
 	}
 }

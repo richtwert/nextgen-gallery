@@ -69,7 +69,7 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
         );
         $this->get_registry()->add_adapter(
             'I_Display_Type_Controller',
-            'A_NextGen_Basic_Thumbnail_Controller',
+            'A_NextGen_Basic_Thumbnails_Controller',
             NEXTGEN_GALLERY_BASIC_THUMBNAILS
         );
         
