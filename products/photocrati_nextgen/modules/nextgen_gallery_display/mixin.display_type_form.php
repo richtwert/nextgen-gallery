@@ -2,6 +2,8 @@
 
 class Mixin_Display_Type_Form extends Mixin
 {
+	var $_model = null;
+	
 	/**
 	 * Returns the name of the display type. Sub-class should override
 	 * @throws Exception
@@ -18,8 +20,13 @@ class Mixin_Display_Type_Form extends Mixin
 	 */
 	function get_model()
 	{
-		$mapper = $this->get_registry()->get_utility('I_Display_Type_Mapper');
-		return $mapper->find_by_name($this->object->get_display_type_name(), TRUE);
+		if ($this->_model == null)
+		{
+			$mapper = $this->get_registry()->get_utility('I_Display_Type_Mapper');
+			$this->_model = $mapper->find_by_name($this->object->get_display_type_name(), TRUE);
+		}
+		
+		return $this->_model;
 	}
 
 	/**

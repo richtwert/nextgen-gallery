@@ -174,24 +174,27 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
 			$form->enqueue_static_resources();
 
 			// Determine which classes to use for the form's "class" attribute
-			$current = $this->object->is_displayed_gallery_using_display_type($form->get_model()->name);
+			$model = $form->get_model();
+			$current = $this->object->is_displayed_gallery_using_display_type($model->name);
 			$css_class =  $current ? 'display_settings_form' : 'display_settings_form hidden';
 
 			// If this form is used to provide the display settings for the current
 			// displayed gallery, then we need to override the forms settings
 			// with the displayed gallery settings
 			if ($current) {
-				$form->get_model()->settings = $this->array_merge_assoc(
-					$form->get_model()->settings,
+				$settings = $this->array_merge_assoc(
+					$model->settings,
 					$this->object->_displayed_gallery->display_settings,
 					TRUE
 				);
+				
+				$model->settings = $settings;
 			}
-
+			
 			// Output the display settings form
 			$retval[] = $this->object->render_partial('attach_to_post#display_settings_form', array(
 				'settings'				=>	$form->render(),
-				'display_type_name'		=>	$form->get_model()->name,
+				'display_type_name'		=>	$model->name,
 				'css_class'				=>	$css_class
 			), TRUE);
 		}
