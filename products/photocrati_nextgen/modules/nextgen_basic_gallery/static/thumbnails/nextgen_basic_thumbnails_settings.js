@@ -8,10 +8,6 @@ jQuery(function($) {
     $('input[name="photocrati-nextgen_basic_thumbnails[show_piclens_link]"]')
         .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_piclens_link_text'));
 
-    $('input[name="photocrati-nextgen_basic_thumbnails[show_alternative_view_link]"]')
-        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_alternative_view'))
-        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_alt_view_link_text'));
-
-    $('input[name="photocrati-nextgen_basic_thumbnails[show_return_link]"]')
-        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_return_link_text'));
+    $('input[name="photocrati-nextgen_basic_thumbnails[show_slideshow_link]"]')
+        .nextgen_radio_toggle_tr('1', $('#tr_photocrati-nextgen_basic_thumbnails_slideshow_link_text'))
 });

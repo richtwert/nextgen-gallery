@@ -43,12 +43,12 @@
                                         response(select.children("option").map(function() {
                                             var text = $(this).text();
                                             if (this.value && (!request.term || matcher.test(text))) {
+                                                var label = text;
+                                                if (request.term != '' && matcher.test(label)) {
+                                                    label = label.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(request.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
+                                                }
                                                 return {
-                                                    label: text.replace(
-                                                        new RegExp("(?![^&;]+;)(?!<[^<>]*)(" +
-                                                                   $.ui.autocomplete.escapeRegex(request.term) +
-                                                                   ")(?![^<>]*>)(?![^&;]+;)", "gi"
-                                                                  ), "<strong>$1</strong>"),
+                                                    label: label,
                                                     value: text,
                                                     option: this
                                                 };

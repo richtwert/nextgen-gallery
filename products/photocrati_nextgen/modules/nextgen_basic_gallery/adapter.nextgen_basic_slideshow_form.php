@@ -43,11 +43,8 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             'nextgen_basic_slideshow_flash_text_color',
             'nextgen_basic_slideshow_flash_rollover_color',
             'nextgen_basic_slideshow_flash_screen_color',
-            'show_alternative_view_link',
-//            'alternative_view',
-            'alternative_view_link_text',
-            'show_return_link',
-            'return_link_text',
+            'nextgen_basic_slideshow_show_thumbnail_link',
+            'nextgen_basic_slideshow_thumbnail_link_text',
             'nextgen_basic_templates_template',
         );
     }
@@ -288,6 +285,40 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             $display_type->settings['flash_screen_color'],
             '',
             empty($display_type->settings['flash_enabled']) ? TRUE : FALSE
+        );
+    }
+
+    /**
+     * Renders the show_thumbnail_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_slideshow_show_thumbnail_link_field($display_type)
+    {
+        return $this->_render_radio_field(
+            $display_type,
+            'show_thumbnail_link',
+            'Show thumbnail link',
+            $display_type->settings['show_thumbnail_link']
+        );
+    }
+
+    /**
+     * Renders the thumbnail_link_text settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_slideshow_thumbnail_link_text_field($display_type)
+    {
+        return $this->_render_text_field(
+            $display_type,
+            'thumbnail_link_text',
+            'Thumbnail link text',
+            $display_type->settings['thumbnail_link_text'],
+            '',
+            !empty($display_type->settings['show_thumbnail_link']) ? FALSE : TRUE
         );
     }
 }
