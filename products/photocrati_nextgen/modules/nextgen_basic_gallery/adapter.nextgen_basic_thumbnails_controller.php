@@ -17,7 +17,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
 	function index_action($displayed_gallery, $return=FALSE)
-    {       
+    {  
         $display_settings = $displayed_gallery->display_settings;
         $current_page = (int)$this->param('page', $displayed_gallery->id(), 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);

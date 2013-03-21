@@ -21,7 +21,9 @@ class Hook_NextGen_Basic_Gallery_Integration extends Hook
                 $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
                 $displayed_gallery->original_display_type = $displayed_gallery->display_type;
                 $displayed_gallery->display_type = $show;
-                $retval = $renderer->display_images((array)$displayed_gallery->get_entity(), $return);
+                $params = (array)$displayed_gallery->get_entity();
+                unset($params['display_settings']);
+                $retval = $renderer->display_images($params, $return);
                 
                 // Set return value
                 $this->object->set_method_property(
