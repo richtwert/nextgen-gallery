@@ -18,7 +18,7 @@ class A_NextGen_Basic_Album_Installer extends Mixin
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM, array(
 			'title'					=>	'NextGEN Basic Compact Album',
 			'entity_types'			=>	array('album', 'gallery'),
-			'preview_image_relpath'	=>	'nextgen_basic_album#compact_preview.gif',
+			'preview_image_relpath'	=>	'nextgen_basic_album#compact_preview.jpg',
 			'default_source'		=>	'albums'
 		));
 
@@ -26,7 +26,7 @@ class A_NextGen_Basic_Album_Installer extends Mixin
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM, array(
 			'title'					=>	'NextGEN Basic Extended Album',
 			'entity_types'			=>	array('album', 'gallery'),
-			'preview_image_relpath'	=>	'nextgen_basic_album#extended_preview.gif',
+			'preview_image_relpath'	=>	'nextgen_basic_album#extended_preview.jpg',
 			'default_source'		=>	'albums'
 		));
 	}

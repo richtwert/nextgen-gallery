@@ -18,7 +18,7 @@ class A_NextGen_Basic_ImageBrowser_Installer extends Mixin
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER, array(
 				'title'					=>	'NextGEN Basic ImageBrowser',
 				'entity_types'			=>	array('image'),
-				'preview_image_relpath'	=>	'nextgen_basic_imagebrowser#preview.gif',
+				'preview_image_relpath'	=>	'nextgen_basic_imagebrowser#preview.jpg',
 				'default_source'		=>	'galleries'
 			)
 		);
