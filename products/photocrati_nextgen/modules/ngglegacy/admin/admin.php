@@ -311,6 +311,9 @@ class nggAdminPanel{
 //			wp_enqueue_script('ngg_social_media');
 //		}
 
+        // used to retrieve the uri of some module resources
+        $router = C_Component_Registry::get_instance()->get_utility('I_Router');
+
 		wp_register_script('ngg-ajax', NGGALLERY_URLPATH . 'admin/js/ngg.ajax.js', array('jquery'), '1.4.1');
 		wp_localize_script('ngg-ajax', 'nggAjaxSetup', array(
 					'url' => admin_url('admin-ajax.php'),
@@ -359,7 +362,7 @@ class nggAdminPanel{
 				wp_enqueue_script( 'ngg-progressbar' );
 				wp_enqueue_script( 'jquery-ui-dialog' );
 				wp_enqueue_script( 'jquery-ui-sortable' );
-    			wp_register_script('shutter', NGGALLERY_URLPATH .'shutter/shutter.js', false ,'1.3.2');
+    			wp_register_script('shutter', $router->get_static_url('lightbox#shutter/shutter.js'), false ,'1.3.2');
     			wp_localize_script('shutter', 'shutterSettings', array(
     						'msgLoading' => __('L O A D I N G', 'nggallery'),
     						'msgClose' => __('Click to Close', 'nggallery'),
@@ -424,6 +427,9 @@ class nggAdminPanel{
 		if( !isset($_GET['page']) )
 			return;
 
+        // used to retrieve the uri of some module resources
+        $router = C_Component_Registry::get_instance()->get_utility('I_Router');
+
 		switch ($_GET['page']) {
 			case NGGFOLDER :
 				wp_enqueue_style( 'thickbox' );
@@ -441,7 +447,7 @@ class nggAdminPanel{
 				wp_enqueue_style( 'nggadmin' );
             break;
 			case "nggallery-manage-gallery" :
-                wp_enqueue_style('shutter', NGGALLERY_URLPATH .'shutter/shutter.css', false, '1.3.2', 'screen');
+                wp_enqueue_style('shutter', $router->get_static_url('lightbox#shutter/shutter.css'), false, '1.3.2', 'screen');
 			case "nggallery-roles" :
 			case "nggallery-manage-album" :
 				$this->enqueue_jquery_ui_theme();
