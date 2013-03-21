@@ -59,12 +59,20 @@ iframe {
 }
 
 /** Would would you like to display tab? **/
-#source_configuration td{
+#source_configuration td {
 	vertical-align: top;
 }
 
 #source_configuration .chzn-choices input[type=text] {
 	height: auto !important;
+}
+
+#slug_configuration #slug_label {
+    width: 45px;
+}
+
+#slug_configuration #slug_column input[type=text] {
+    width: 498px;
 }
 
 /** Select a display type tab **/

@@ -327,7 +327,8 @@ jQuery(function($){
             display_type: null,
             display_settings: {},
             exclusions: [],
-            sortorder: []
+            sortorder: [],
+            slug: null
         }
     });
 
@@ -570,6 +571,7 @@ jQuery(function($){
 		model: Ngg.DisplayTab.Models.SortDirection
 	});
 
+     Ngg.DisplayTab.Models.Slug = Backbone.Model.extend({});
 
     /*****************************************************************************
      * VIEW CLASSES
@@ -602,8 +604,10 @@ jQuery(function($){
 				placeholder: 'Select a source',
 				width: 500
 			});
-            this.$el.html('<tr><td><label>Sources:</label></td><td id="source_column"></td></tr>');
+
+            this.$el.html('<tr><td><label>Sources</label></td><td id="source_column"></td></tr>');
             this.$el.find('#source_column').append(chosen.render().el);
+
             var selected = this.sources.selected();
 			if (selected.length) {
 				var view_name = _.str.capitalize(selected.pop().id)+"Source";
@@ -617,6 +621,36 @@ jQuery(function($){
         }
     });
 
+    Ngg.DisplayTab.Views.Slug_Config = Backbone.View.extend({
+        el: '#slug_configuration',
+
+        selected_view: null,
+
+        initialize: function() {
+            this.displayed_gallery = Ngg.DisplayTab.instance.displayed_gallery;
+            this.slug = Ngg.DisplayTab.instance.displayed_gallery.get('slug');
+            this.render();
+        },
+
+        render: function() {
+            var self = this;
+
+            var input = $('<input>').attr({
+                type: 'text',
+                name: 'slug',
+                value: this.slug
+            });
+
+            input.change(function() {
+                self.displayed_gallery.set('slug', $(this).val());
+            });
+
+            this.$el.append('<tr><td id="slug_label"><label>Slug</label></td><td id="slug_column"></td></tr>');
+            this.$el.find('#slug_column').append(input);
+
+            return this;
+        }
+    });
 
 	Ngg.DisplayTab.Views.Display_Type_Selector = Backbone.View.extend({
 		el: '#display_type_selector',
@@ -1584,6 +1618,7 @@ jQuery(function($){
         render: function(){
 			this.display_type_selector = new Ngg.DisplayTab.Views.Display_Type_Selector();
 			new Ngg.DisplayTab.Views.Source_Config();
+            new Ngg.DisplayTab.Views.Slug_Config();
 			this.preview_area = new Ngg.DisplayTab.Views.Preview_Area();
 			new Ngg.DisplayTab.Views.SaveButton();
         }
