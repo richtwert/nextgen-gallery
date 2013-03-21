@@ -1,4 +1,4 @@
-<div class="wrap">
+<div class="wrap" id='nextgen_admin_page' style='position: relative; visibility: hidden;'>
 	<h2><?php echo_h($page_heading)?></h2>
 	<?php if ($errors): ?>
 	<?php foreach ($errors as $msg): ?>
@@ -15,7 +15,7 @@
 		<?php echo $form_header."\n"; ?>
 		<?php endif ?>
 		<input type="hidden" name="action"/>
-		<div class="accordion" id="display_settings_accordion">
+		<div class="accordion" id="nextgen_admin_accordion">
 		<?php foreach($tabs as $tab): ?>
 			<?php echo $tab ?>
 		<?php endforeach ?>

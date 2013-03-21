@@ -55,4 +55,9 @@ jQuery(function($){
 	});
 
     $('input.nextgen_settings_field_colorpicker').wpColorPicker();
+    
+    // Show the contents of the page
+    setTimeout(function(){
+        $('#nextgen_admin_page').css('visibility', 'visible');
+    }, 0);
 });
