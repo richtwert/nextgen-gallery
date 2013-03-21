@@ -38,11 +38,8 @@ class A_NextGen_Basic_Thumbnail_Form extends Mixin_Display_Type_Form
             'nextgen_basic_thumbnails_hidden',
             'nextgen_basic_thumbnails_show_piclens_link',
             'nextgen_basic_thumbnails_piclens_link_text',
-//            'show_alternative_view_link',
-//            'alternative_view',
-//            'alternative_view_link_text',
-//            'show_return_link',
-//            'return_link_text',
+            'nextgen_basic_thumbnails_show_slideshow_link',
+            'nextgen_basic_thumbnails_slideshow_link_text',
             'nextgen_basic_templates_template',
         );
     }
@@ -152,6 +149,40 @@ class A_NextGen_Basic_Thumbnail_Form extends Mixin_Display_Type_Form
             'Enable Ajax pagination',
             $display_type->settings['ajax_pagination'],
             'Browse images without reloading the page.'
+        );
+    }
+
+    /**
+     * Renders the show_slideshow_link settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_thumbnails_show_slideshow_link_field($display_type)
+    {
+        return $this->_render_radio_field(
+            $display_type,
+            'show_slideshow_link',
+            'Show slideshow link',
+            $display_type->settings['show_slideshow_link']
+        );
+    }
+
+    /**
+     * Renders the slideshow_link_text settings field
+     *
+     * @param C_Display_Type $display_type
+     * @return string
+     */
+    function _render_nextgen_basic_thumbnails_slideshow_link_text_field($display_type)
+    {
+        return $this->_render_text_field(
+            $display_type,
+            'slideshow_link_text',
+            'Slideshow link text',
+            $display_type->settings['slideshow_link_text'],
+            '',
+            !empty($display_type->settings['show_slideshow_link']) ? FALSE : TRUE
         );
     }
 }
