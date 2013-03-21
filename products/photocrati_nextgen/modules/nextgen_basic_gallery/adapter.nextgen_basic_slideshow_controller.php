@@ -1,6 +1,6 @@
 <?php
 
-class A_NextGen_Basic_Slideshow_Controller extends Mixin
+class A_NextGen_Basic_Slideshow_Controller extends Mixin_NextGen_Basic_Gallery_Controller
 {
 	/**
 	 * Displays the ngglegacy thumbnail gallery.
@@ -8,7 +8,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
 	function index_action($displayed_gallery, $return=FALSE)
-	{
+	{   
 		// Get the images to be displayed
         $current_page = (int)$this->param('page', 1);
 
@@ -42,8 +42,9 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin
             
             // Are we to generate a thumbnail link?
             if ($displayed_gallery->display_settings['show_thumbnail_link']) {
-                $url = $this->object->get_routed_url();
-                $params['thumbnail_link'] = $this->object->set_param_for($url, 'show', 'thumbnail');
+                $params['thumbnail_link'] = $this->object->get_url_for_alternate_display_type(
+                    $displayed_gallery, NEXTGEN_GALLERY_BASIC_THUMBNAILS
+                );
             }
 
 			$retval = $this->object->render_partial('nextgen_basic_gallery#slideshow/index', $params, $return);

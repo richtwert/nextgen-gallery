@@ -3,9 +3,8 @@
 	id="ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>">
 
     <?php if (!empty($slideshow_link)): ?>
-	<!-- Return link -->
 	<div class="slideshowlink">
-        <a href='<?php echo $slideshow_link ?>'><?php $slideshow_link_text ?></a>
+        <a href='<?php echo $slideshow_link ?>'><?php echo $slideshow_link_text ?></a>
 		
 	</div>
 	<?php endif ?>

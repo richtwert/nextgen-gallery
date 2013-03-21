@@ -1,12 +1,13 @@
 <?php
 
-class A_NextGen_Basic_Thumbnails_Controller extends Mixin
+class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_Controller
 {
 	/**
 	 * Adds framework support for thumbnails
 	 */
 	function initialize()
 	{
+        parent::initialize();
         $this->add_mixin('Mixin_NextGen_Basic_Thumbnails_Pagination');
 	}
 
@@ -16,7 +17,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
 	 * @param stdClass|C_Displayed_Gallery|C_DataMapper_Model $displayed_gallery
 	 */
 	function index_action($displayed_gallery, $return=FALSE)
-	{
+    {       
         $display_settings = $displayed_gallery->display_settings;
         $current_page = (int)$this->param('page', $displayed_gallery->id(), 1);
         $offset = $display_settings['images_per_page'] * ($current_page - 1);
@@ -111,8 +112,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin
             // Generate a slideshow link
             $slideshow_link = '';
             if ($display_settings['show_slideshow_link']) {
-                $url = $this->object->get_routed_url();
-                $slideshow_link = $this->object->set_param_for($url, 'show', 'slideshow');
+                $slideshow_link = $this->object->get_url_for_alternate_display_type(
+                    $displayed_gallery, NEXTGEN_GALLERY_BASIC_SLIDESHOW
+                );
             }
 
             // The render functions require different processing

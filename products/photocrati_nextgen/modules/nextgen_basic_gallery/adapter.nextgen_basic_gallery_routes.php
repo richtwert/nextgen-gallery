@@ -16,6 +16,7 @@ class A_NextGen_Basic_Gallery_Routes extends Mixin
     {
         $slug = $this->object->get_registry()->get_utility('I_Settings_Manager')->router_param_slug;
         $this->object->rewrite("{$slug}{*}/slideshow/{*}",     "{$slug}{1}/show--" . NEXTGEN_GALLERY_BASIC_SLIDESHOW  . "{2}");
+        $this->object->rewrite("{$slug}{*}/thumbnails/{*}",    "{$slug}{1}/show--".  NEXTGEN_GALLERY_BASIC_THUMBNAILS . "{2}");
         $this->object->rewrite("{$slug}{*}/show--slide/{*}",   "{$slug}{1}/show--" . NEXTGEN_GALLERY_BASIC_SLIDESHOW  . "/{2}");
         $this->object->rewrite("{$slug}{*}/show--gallery/{*}", "{$slug}{1}/show--" . NEXTGEN_GALLERY_BASIC_THUMBNAILS . "/{2}");
         $this->object->rewrite("{$slug}{*}/page/{\\d}{*}",     "{$slug}{1}/page--{2}{3}");

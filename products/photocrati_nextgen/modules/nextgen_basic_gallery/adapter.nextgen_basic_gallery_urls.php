@@ -22,8 +22,11 @@ class A_NextGen_Basic_Gallery_Urls extends Mixin
     
     function create_parameter_segment($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		if ($key == 'show' && $value == NEXTGEN_GALLERY_BASIC_SLIDESHOW)
-			return '/slideshow';
+		if ($key == 'show') {
+            if ($value == NEXTGEN_GALLERY_BASIC_SLIDESHOW) $value = 'slideshow';
+            elseif ($value == NEXTGEN_GALLERY_BASIC_THUMBNAILS) $value = 'thumbnails';
+            return '/'.$value;
+        }
         elseif ($key == 'page') {
 			return 'page/'.$value;
 		}
@@ -33,7 +36,7 @@ class A_NextGen_Basic_Gallery_Urls extends Mixin
 	}
     
     
-    	function _set_nextgen_basic_thumbnail_parameter($key, $value, $id=NULL, $use_prefix=NULL)
+    function _set_nextgen_basic_thumbnail_parameter($key, $value, $id=NULL, $use_prefix=NULL)
 	{
 		$this->_set_ngglegacy_page_parameter($key, $id);
 	}
@@ -42,6 +45,7 @@ class A_NextGen_Basic_Gallery_Urls extends Mixin
 	function _remove_nextgen_basic_thumbnail_parameter($key, $id=NULL, $url=FALSE)
 	{
 		$this->_set_ngglegacy_page_parameter($key, $id);
+        
 	}
 
 
