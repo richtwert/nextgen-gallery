@@ -60,6 +60,8 @@ class Mixin_MediaRSS_Controller extends Mixin
 		if (!in_array($template, array('mediarss_feed', 'playlist_feed'))) {
 			$template = 'mediarss_feed';
 		}
+		
+		$template = 'mediarss#' . $template;
 
 		// Find the displayed gallery by it's database id
 		if (($id = $this->object->param('id'))) {
