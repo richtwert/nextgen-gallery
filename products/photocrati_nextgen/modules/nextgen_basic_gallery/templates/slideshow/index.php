@@ -60,7 +60,10 @@
     // $out .= "\n".'jQuery.getScript( "' . esc_js( includes_url('js/swfobject.js') ) . '", function() {} );';
     if ($flash_xhtml_validation) $out .= "\n".'<!--';
     if ($flash_xhtml_validation) $out .= "\n".'//<![CDATA[';
+    $out .= 'jQuery(function($) {';
     $out .= $swfobject->javascript();
+    $out .= '
+    });';
     if ($flash_xhtml_validation) $out .= "\n".'//]]>';
     if ($flash_xhtml_validation) $out .= "\n".'-->';
     $out .= "\n".'</script>';
