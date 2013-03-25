@@ -232,17 +232,18 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 				if ($this->object->is_post_request()) {
 					$action = $this->object->_get_action();
 					if ($form->has_method($action)) {
-                                            $form->$action($this->object->param($form->context));
+                        $form->$action($this->object->param($form->context));
 					}
 				}
-                                
-                                if ($form->get_model()->is_invalid()) {
-                                    if (($form_errors = $this->object->show_errors_for($form->get_model(), TRUE))) {
-                                            $errors[] = $form_errors;
-                                    }
-                                    $form->get_model()->clear_errors();
-                                }
-                                $tabs[] = $this->object->to_accordion_tab($form);
+
+                $tabs[] = $this->object->to_accordion_tab($form);
+
+                if ($form->get_model()->is_invalid()) {
+                    if (($form_errors = $this->object->show_errors_for($form->get_model(), TRUE))) {
+                        $errors[] = $form_errors;
+                    }
+                    $form->get_model()->clear_errors();
+                }
 			}
 
 			// Render the view
