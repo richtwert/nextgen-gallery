@@ -57,18 +57,16 @@ class A_Image_Options_Form extends Mixin
          * already
          * @return string
          */
-        function _create_gallery_storage_dir()
+        function _create_gallery_storage_dir($gallerypath=NULL)
         {
             $retval = TRUE;
-            
-            if (($gallerypath = $this->object->get_model()->get('gallerypath'))) {
-                $fs = $this->get_registry()->get_utility('I_Fs');
-                $gallerypath = $fs->get_abspath($gallerypath);
-                if (!file_exists($gallerypath)) {
-                    @mkdir($gallerypath);
-                    $retval = file_exists($gallerypath);
-                }
-                
+
+            if (!$gallerypath) $gallerypath = $this->object->get_model()->get('gallerypath');
+            $fs = $this->get_registry()->get_utility('I_Fs');
+            $gallerypath = $fs->get_abspath($gallerypath);
+            if (!file_exists($gallerypath)) {
+                @mkdir($gallerypath);
+                $retval = file_exists($gallerypath);
             }
             
             return $retval;
@@ -141,15 +139,17 @@ class A_Image_Options_Form extends Mixin
 				// If the gallery path has changed...
 				if ($original_dir != $new_dir) {
 
-					// Try moving files
-					if (is_writable($new_dir)) {
+                    // Try creating the new directory
+                    if ($this->object->_create_gallery_storage_dir($new_dir) AND is_writable($new_dir)) {
+
+					    // Try moving files
 						$this->object->recursive_copy($original_dir, $new_dir);
 						$this->object->recursive_delete($original_dir);
 
 						// Update gallery paths
 						$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 						foreach ($mapper->find_all() as $gallery) {
-							$gallery->gallerypath = $image_options['gallerypath'];
+							$gallery->path = $image_options['gallerypath'];
 							$mapper->save($gallery);
 						}
 					}
@@ -204,17 +204,20 @@ class A_Image_Options_Form extends Mixin
 	function recursive_delete($dir)
 	{
 		$retval = FALSE;
-		while(false !== ( $file = readdir($dir)) ) {
+        $fp = opendir($dir);
+		while(false !== ( $file = readdir($fp)) ) {
 			if (( $file != '.' ) && ( $file != '..' )) {
-				if ( is_dir($dir . '/' . $file) ) {
-					if (!($retval = $this->object->recursive_delete($dir.'/'.$file)))
-						break;
+                $file = $dir.'/'.$file;
+				if ( is_dir($file) ) {
+					$retval = $this->object->recursive_delete($file);
 				}
 				else {
-					if (!($retval = unlink($dir.'/'.$file))) break;
+					$retval = unlink($file);
 				}
 			}
 		}
+        closedir($fp);
+        @rmdir($dir);
 		return $retval;
 	}
 }

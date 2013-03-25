@@ -58,10 +58,13 @@ class Mixin_Fs_Instance_Methods extends Mixin
         {
             // Wel'l assume that we're to calculate the path relative to
             // the site document root
-            $retval = $this->object->join_paths(
-                $this->object->get_document_root(),
-                $path
-            );
+            $retval = $path;
+            if (strpos($path, $this->object->get_document_root()) === FALSE) {
+                $retval = $this->object->join_paths(
+                    $this->object->get_document_root(),
+                    $path
+                );
+            }
             
             // If a module is provided, then we should calculate the path
             // relative to the module directory
