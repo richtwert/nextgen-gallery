@@ -614,9 +614,9 @@ function showDialog() {
 				$thumbURL = "";
 				if ($album->previewpic) {
 					$image = $nggdb->find_image( $album->previewpic );
-					$thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
+                    if ($image) $thumbURL = add_query_arg('timestamp', time(), $image->thumbURL);
 				}
-				$preview_image = ( !is_null($thumbURL) )  ? '<div class="inlinepicture"><img rel="'.$album->previewpic.'" src="' . esc_url( $thumbURL ). '" /></div>' : '';
+				$preview_image = $thumbURL  ? '<div class="inlinepicture"><img rel="'.$album->previewpic.'" src="' . esc_url( $thumbURL ). '" /></div>' : '';
 			}
 
 			// this indicates that we have a album container
