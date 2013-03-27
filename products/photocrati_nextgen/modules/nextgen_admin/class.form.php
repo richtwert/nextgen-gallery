@@ -335,7 +335,8 @@ class Mixin_Form_Field_Generators extends Mixin
     function _get_aspect_ratio_options()
     {
         return array(
-            '0'     => 'Device/Browser default',
+            'first_image' => __('First Image', 'nggallery'),
+            'image_average' => __('Average', 'nggallery'),
             '1.5'   => '3:2 [1.5]',
             '1.333' => '4:3 [1.333]',
             '1.777' => '16:9 [1.777]',
