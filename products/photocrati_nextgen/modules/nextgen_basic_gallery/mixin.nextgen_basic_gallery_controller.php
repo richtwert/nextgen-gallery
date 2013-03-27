@@ -23,10 +23,7 @@ class Mixin_NextGen_Basic_Gallery_Controller extends Mixin
     {
         $url = $this->object->get_routed_url(TRUE);
         $url = $this->object->remove_param_for($url, 'show', $displayed_gallery->id());
-
-        if (!empty($displayed_gallery->display_settings['original_display_type'])
-        &&  $displayed_gallery->display_settings['original_display_type'] != $display_type)
-            $url = $this->object->set_param_for($url, 'show', $display_type, $displayed_gallery->id());
+        $url = $this->object->set_param_for($url, 'show', $display_type, $displayed_gallery->id());
 
         return $url;
     }
