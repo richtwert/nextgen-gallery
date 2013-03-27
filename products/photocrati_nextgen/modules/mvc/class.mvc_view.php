@@ -119,4 +119,24 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
 
        return $retval;
    }
+
+    /**
+     * Adds a template parameter
+     * @param $key
+     * @param $value
+     */
+    function add_param($key, $value)
+   {
+       $this->object->_params[$key] = $value;
+   }
+
+
+    /**
+     * Removes a template parameter
+     * @param $key
+     */
+    function remove_param($key)
+   {
+       unset($this->object->_params[$key]);
+   }
 }
