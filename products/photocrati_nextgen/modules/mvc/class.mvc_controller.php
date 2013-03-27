@@ -8,7 +8,7 @@ class Mixin_MVC_Controller_Defaults extends Mixin
     // Provide a default view
     function index_action($return=FALSE)
     {
-        return $this->render_view('index', array(), $return);
+        return $this->render_view('mvc#index', array(), $return);
     }
 }
 
@@ -238,7 +238,7 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
 	 */
     function render_view($name, $vars=array(),$return=FALSE)
     {
-	$this->object->render();
+	    $this->object->render();
         return $this->object->render_partial($name, $vars, $return);
     }
 
@@ -255,10 +255,12 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
     /**
      * Renders a view
      */
-    function render_partial($template, $params=array(), $return=FALSE)
+    function render_partial($template, $params=array(), $return=FALSE, $context=NULL)
     {
+        // We'll use the name of the view as the context if one hasn't been provided
+        if (is_null($context)) $context = $template;
         $factory = $this->get_registry()->get_utility('I_Component_Factory');
-        $view    = $factory->create('mvc_view', $template, $params, NULL);
+        $view    = $factory->create('mvc_view', $template, $params, NULL, $context);
         return $view->render($return);
     }
 }
