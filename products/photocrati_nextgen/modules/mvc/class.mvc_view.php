@@ -125,7 +125,7 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
      * @param $key
      * @param $value
      */
-    function add_param($key, $value)
+    function set_param($key, $value)
    {
        $this->object->_params[$key] = $value;
    }
@@ -138,5 +138,19 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
     function remove_param($key)
    {
        unset($this->object->_params[$key]);
+   }
+
+    /**
+     * Gets the value of a template parameter
+     * @param $key
+     * @param null $default
+     * @return mixed
+     */
+    function get_param($key, $default=NULL)
+   {
+       if (isset($this->object->_params[$key])) {
+           return $this->object->_params[$key];
+       }
+       else return $default;
    }
 }
