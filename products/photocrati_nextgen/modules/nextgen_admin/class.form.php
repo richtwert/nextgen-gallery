@@ -82,7 +82,7 @@ class Mixin_Form_Instance_Methods extends Mixin
 	/**
 	 * Returns the rendered form
 	 */
-	function render()
+	function render($wrap = TRUE)
 	{
 		$fields = array();
 		foreach ($this->object->_get_field_names() as $field) {
@@ -92,9 +92,14 @@ class Mixin_Form_Instance_Methods extends Mixin
 			}
 		}
 
-		return $this->object->render_partial('nextgen_admin#form', array(
-			'fields'	=>	$fields
-		), TRUE);
+		return $this->object->render_partial(
+            'nextgen_admin#form',
+            array(
+                'fields' => $fields,
+                'wrap'   => $wrap
+            ),
+            TRUE
+        );
 	}
 }
 
@@ -167,6 +172,23 @@ class Mixin_Form_Field_Generators extends Mixin
     {
         return $this->object->render_partial(
             'nextgen_admin#field_generator/nextgen_settings_field_text',
+            array(
+                'display_type_name' => $display_type->name,
+                'name'  => $name,
+                'label' => _($label),
+                'value' => $value,
+                'text' => $text,
+                'hidden' => $hidden,
+                'placeholder' => $placeholder
+            ),
+            True
+        );
+    }
+
+    function _render_textarea_field($display_type, $name, $label, $value, $text = '', $hidden = FALSE, $placeholder = '')
+    {
+        return $this->object->render_partial(
+            'nextgen_admin#field_generator/nextgen_settings_field_textarea',
             array(
                 'display_type_name' => $display_type->name,
                 'name'  => $name,

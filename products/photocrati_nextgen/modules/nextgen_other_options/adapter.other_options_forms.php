@@ -7,8 +7,8 @@ class A_Other_Options_Forms extends Mixin
 		$forms = array(
 			'image_options'			=>	'A_Image_Options_Form',
 			'thumbnail_options'		=>	'A_Thumbnail_Options_Form',
-			'size_options'		=>	'A_Size_Options_Form',
-			'lightbox_effects'		=>	'A_Lightbox_Library_Form',
+			'size_options'		    =>	'A_Size_Options_Form',
+			'lightbox_effects'		=>	'A_Lightbox_Manager_Form',
 			'watermarks'			=>	'A_Watermarks_Form',
 			'styles'				=>	'A_Styles_Form',
 			'roles_and_capabilities'=>	'A_Roles_Form',

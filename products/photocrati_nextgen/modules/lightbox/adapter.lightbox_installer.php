@@ -141,7 +141,7 @@ class A_Lightbox_Installer extends Mixin
 
 		// Install Shutter Reloaded
 		$this->install_lightbox(
-			'shutter 2.0.1',
+			'shutter2',
 			'class="shutterset_%GALLERY_NAME%"',
 			array('lightbox#shutter_reloaded/shutter.css'),
 			array('lightbox#shutter_reloaded/shutter.js', 'lightbox#shutter_reloaded/nextgen_shutter_reloaded.js')

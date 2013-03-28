@@ -75,9 +75,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// plan is to refactor the photocrati-nextgen-legacy module to use it
 		$this->get_registry()->load_module('photocrati-datamapper');
 
-		// Provides a collection of lightbox libraries
-		$this->get_registry()->load_module('photocrati-lightbox');
-
 		/*** NEXTGEN GALLERY MODULES ***/
 		$this->get_registry()->load_module('photocrati-nextgen_settings');
 
@@ -115,6 +112,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
         // Provides cache clearing support
         $this->get_registry()->load_module('photocrati-cache');
+
+        // Provides a collection of lightbox libraries
+        $this->get_registry()->load_module('photocrati-lightbox');
 
 		// Provides support for thumbnail basic templates
 		$this->get_registry()->load_module('photocrati-nextgen_basic_templates');

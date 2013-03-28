@@ -79,5 +79,6 @@ class Mixin_Lightbox_Library_Mapper
 	{
 		$this->object->_set_default_value($entity, 'css_stylesheets', '');
 		$this->object->_set_default_value($entity, 'scripts', '');
+        $this->object->_set_default_value($entity, 'display_settings', array());
 	}
 }

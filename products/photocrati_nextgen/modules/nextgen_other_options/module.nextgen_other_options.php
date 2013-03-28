@@ -45,7 +45,7 @@ class M_NextGen_Other_Options extends C_Base_Module
     {
         return array(
             'adapter.image_options_form.php',
-            'adapter.lightbox_library_form.php',
+            'adapter.lightbox_manager_form.php',
             'adapter.miscellaneous_form.php',
             'adapter.other_options_controller.php',
             'adapter.other_options_forms.php',

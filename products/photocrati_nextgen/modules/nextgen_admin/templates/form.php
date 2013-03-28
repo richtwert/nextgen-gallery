@@ -1,5 +1,5 @@
-<table>
+<?php if ($wrap) { ?><table><?php } ?>
 	<?php foreach($fields as $field): ?>
-	<?php echo $field ?>
+	    <?php echo $field ?>
 	<?php endforeach ?>
-</table>
+<?php if ($wrap) { ?></table><?php } ?>

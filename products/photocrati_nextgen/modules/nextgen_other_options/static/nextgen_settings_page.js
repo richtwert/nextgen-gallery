@@ -10,13 +10,29 @@ jQuery(function($){
 
 	/**** LIGHTBOX EFFECT TAB ****/
 
-	// When the lightbox library is changed, display it's properties
-	$('#lightbox_library').change(function(){
-		var selected = $(this).find(':selected');
-		$('#lightbox_library_code').val(selected.attr('code'));
-		$('#lightbox_library_stylesheets').val(selected.attr('css_stylesheets'));
-		$('#lightbox_library_scripts').val(selected.attr('scripts'));
+    // Only show the currently selected library; hide the rest
+    $('#lightbox_library').change(function() {
+        if ($('#lightbox_library_advanced_toggle').data('currently-hidden') == false) {
+            var name = $(this).find(':selected').data('library-name');
+            $('tbody.lightbox_library_advanced_settings').hide();
+            $('tbody#lightbox_library_' + name).show();
+        }
+
 	}).change();
+
+    // "Show Advanced Settings" toggle; only display the currently selected library
+    $('#lightbox_library_advanced_toggle').bind('click', function(event) {
+        event.preventDefault();
+        if ($(this).data('currently-hidden') == true) {
+            var name = $('#lightbox_library').find(':selected').data('library-name');
+            $('tbody#lightbox_library_' + name).show();
+            $(this).data('currently-hidden', false);
+
+        } else if($(this).data('currently-hidden') == false) {
+            $('tbody.lightbox_library_advanced_settings').hide();
+            $(this).data('currently-hidden', true);
+        }
+    });
 
 	/**** WATERMARK TAB ****/
 
