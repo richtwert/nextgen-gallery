@@ -96,6 +96,19 @@ class M_NextGen_Basic_Album extends C_Base_Module
 		add_shortcode('nggalbum',        array(&$this, 'ngglegacy_shortcode'));
 	}
 
+    /**
+     * Gets a value from the parameter array, and if not available, uses the default value
+     *
+     * @param string $name
+     * @param mixed $default
+     * @param array $params
+     * @return mixed
+     */
+    function _get_param($name, $default, $params)
+    {
+        return (isset($params[$name])) ? $params[$name] : $default;
+    }
+
 	/**
      * Renders the shortcode for rendering an album
      * @param array $params
@@ -107,8 +120,11 @@ class M_NextGen_Basic_Album extends C_Base_Module
         $params['source']           = $this->_get_param('source', 'albums', $params);
         $params['container_ids']    = $this->_get_param('id', NULL, $params);
         $params['display_type']     = $this->_get_param('display_type', NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM, $params);
+
         unset($params['id']);
-        return $this->renderer->display_images($params, $inner_content);
+
+        $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
     }
 
     function set_file_list()

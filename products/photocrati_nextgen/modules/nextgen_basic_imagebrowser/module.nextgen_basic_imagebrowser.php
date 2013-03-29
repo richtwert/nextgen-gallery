@@ -83,14 +83,29 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 		add_shortcode('imagebrowser', array(&$this, 'render_shortcode'));
 	}
 
+    /**
+     * Gets a value from the parameter array, and if not available, uses the default value
+     *
+     * @param string $name
+     * @param mixed $default
+     * @param array $params
+     * @return mixed
+     */
+    function _get_param($name, $default, $params)
+    {
+        return (isset($params[$name])) ? $params[$name] : $default;
+    }
 
 	function render_shortcode($params, $inner_content=NULL)
     {
         $params['gallery_ids']  = $this->_get_param('id', NULL, $params);
         $params['source']       = $this->_get_param('source', 'galleries', $params);
         $params['display_type'] = $this->_get_param('display_type', NEXTGEN_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER, $params);
+
         unset($params['id']);
-        return $this->renderer->display_images($params, $inner_content);
+
+        $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+        return $renderer->display_images($params, $inner_content);
     }
 
     function set_file_list()

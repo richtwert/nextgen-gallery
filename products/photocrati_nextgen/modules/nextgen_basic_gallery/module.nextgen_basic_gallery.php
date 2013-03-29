@@ -116,6 +116,19 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
 		add_shortcode('nggslideshow',	 array(&$this, 'render_slideshow'));
 	}
 
+    /**
+     * Gets a value from the parameter array, and if not available, uses the default value
+     *
+     * @param string $name
+     * @param mixed $default
+     * @param array $params
+     * @return mixed
+     */
+    function _get_param($name, $default, $params)
+    {
+        return (isset($params[$name])) ? $params[$name] : $default;
+    }
+
 	/**
      * Short-cut for rendering an thumbnail gallery
      * @param array $params

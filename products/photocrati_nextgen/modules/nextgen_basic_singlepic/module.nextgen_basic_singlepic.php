@@ -74,6 +74,18 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
 		add_shortcode('singlepic',    array(&$this, 'render_singlepic'));
 	}
 
+    /**
+     * Gets a value from the parameter array, and if not available, uses the default value
+     *
+     * @param string $name
+     * @param mixed $default
+     * @param array $params
+     * @return mixed
+     */
+    function _get_param($name, $default, $params)
+    {
+        return (isset($params[$name])) ? $params[$name] : $default;
+    }
 
 	function render_singlepic($params, $inner_content=NULL)
 	{

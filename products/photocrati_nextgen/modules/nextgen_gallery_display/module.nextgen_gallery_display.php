@@ -164,6 +164,7 @@ class M_Gallery_Display extends C_Base_Module
 
     /**
      * Gets a value from the parameter array, and if not available, uses the default value
+     *
      * @param string $name
      * @param mixed $default
      * @param array $params

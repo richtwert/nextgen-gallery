@@ -83,8 +83,21 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 
 	function _register_hooks()
 	{
-		add_action('tagcloud', array(&$this, 'render_shortcode'));
+		add_shortcode('tagcloud', array(&$this, 'render_shortcode'));
 	}
+
+    /**
+     * Gets a value from the parameter array, and if not available, uses the default value
+     *
+     * @param string $name
+     * @param mixed $default
+     * @param array $params
+     * @return mixed
+     */
+    function _get_param($name, $default, $params)
+    {
+        return (isset($params[$name])) ? $params[$name] : $default;
+    }
 
 	/**
      * Short-cut for rendering a thumbnail gallery based on tags
