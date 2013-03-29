@@ -168,7 +168,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
 			wp_enqueue_script('piclens', $this->get_static_url('nextgen_basic_gallery#thumbnails/piclens/lite/piclens.js'));
 
         if ($displayed_gallery->display_settings['ajax_pagination'])
-            wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->get_static_url('nextgen_basic_gallery#thumbnailsajax_pagination.js'));
+            wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->get_static_url('nextgen_basic_gallery#thumbnails/ajax_pagination.js'));
 
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
