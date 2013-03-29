@@ -1,13 +1,9 @@
 <tr id='tr_<?php print esc_attr("{$display_type_name}_{$name}"); ?>' class='<?php print !empty($hidden) ? 'hidden' : ''; ?>'>
     <td>
-        <label for="<?php print esc_attr($display_type_name . '_' . $name); ?>"
-               class="<?php if (!empty($text)) { echo 'tooltip'; } ?>">
+        <label for="<?php print esc_attr("{$display_type_name}_{$name}"); ?>"
+               <?php if (!empty($text)) { ?>title='<?php print esc_attr($text); ?>'<?php } ?>
+               <?php if (!empty($text)) { ?>class='tooltip'<?php } ?>>
             <?php print $label; ?>
-            <?php if (!empty($text)) { ?>
-                <span>
-                    <?php print $text; ?>
-                </span>
-            <?php } ?>
         </label>
     </td>
     <td>

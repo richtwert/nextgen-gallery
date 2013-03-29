@@ -53,6 +53,7 @@ class Mixin_Attach_To_Post extends Mixin
 		// Enqueue JQuery UI libraries
 		wp_enqueue_script('jquery-ui-tabs');
 		wp_enqueue_script('jquery-ui-sortable');
+        wp_enqueue_script('jquery-ui-tooltip');
 		wp_enqueue_script('ngg_tabs', $this->get_static_url('attach_to_post#ngg_tabs.js'));
 
 		// Ensure select2

@@ -447,6 +447,7 @@ class nggAdminPanel{
 				wp_enqueue_style( 'nggadmin' );
             break;
 			case "nggallery-manage-gallery" :
+                wp_enqueue_script('jquery-ui-tooltip');
                 wp_enqueue_style('shutter', $router->get_static_url('lightbox#shutter/shutter.css'), false, '1.3.2', 'screen');
 			case "nggallery-roles" :
 			case "nggallery-manage-album" :

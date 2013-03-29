@@ -7,5 +7,6 @@ jQuery(function($) {
     });
 
     $('input, textarea').placeholder();
+    $('label.tooltip, span.tooltip').tooltip();
 
 });

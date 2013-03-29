@@ -112,7 +112,7 @@ class M_Gallery_Display extends C_Base_Module
         wp_register_script(
             'nextgen_gallery_display_settings',
             $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js'),
-            array('jquery-ui-accordion')
+            array('jquery-ui-accordion', 'jquery-ui-tooltip')
         );
 
         wp_register_style(

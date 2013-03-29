@@ -98,6 +98,9 @@ function showDialog( windowId, title ) {
 }
 
 jQuery(function (){
+
+    jQuery('span.tooltip, label.tooltip').tooltip();
+
     // load a content via ajax
     jQuery('a.ngg-dialog').click(function() {
     	var dialogs = jQuery('.ngg-overlay-dialog:visible');
@@ -337,8 +340,10 @@ jQuery(document).ready( function($) {
 					<th align="left">&nbsp;</th>
 					<th align="left">&nbsp;</th>
 					<th align="right">
-                        <label for='ngg_settings_parent_id' class='tooltip tooltip-left'><?php _e('Create new page', 'nggallery') ?>:
-                            <span>Clicking <?php _e('Add Page'); ?> will create a new page with the same name as this gallery and will display the gallery on that new page. You can create a sub-page by selecting the parent page from the drop down.</span>
+                        <label for='ngg_settings_parent_id'
+                               class='tooltip'
+                               title="Clicking <?php _e('Add Page'); ?> will create a new page with the same name as this gallery and will display the gallery on that new page. You can create a sub-page by selecting the parent page from the drop down.">
+                            <?php _e('Create new page', 'nggallery') ?>:
                         </label>
                     </th>
 					<th align="left">

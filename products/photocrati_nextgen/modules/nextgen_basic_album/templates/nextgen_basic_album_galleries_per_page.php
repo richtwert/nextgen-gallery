@@ -1,8 +1,9 @@
 <tr>
     <td>
-        <label class="tooltip" for="<?php echo esc_attr($display_type_name)?>_galleries_per_page">
+        <label class="tooltip"
+               for="<?php echo esc_attr($display_type_name)?>_galleries_per_page"
+               title="<?php echo_h($galleries_per_page_help)?>">
             <?php echo_h($galleries_per_page_label) ?>
-            <span><?php echo_h($galleries_per_page_help)?></span>
         </label>
     </td>
     <td>

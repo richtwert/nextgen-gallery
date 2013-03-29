@@ -7,6 +7,7 @@ jQuery(function($){
     });
     
     $('.select2').select2();
+    $('label.tooltip, span.tooltip').tooltip();
 
 	/**** LIGHTBOX EFFECT TAB ****/
 

@@ -31,48 +31,8 @@ table.nextgen_settings_position {
 
 span.tooltip,
 label.tooltip {
-    position: relative;
-    display: inline-block;
     outline: none;
     background-image: url('information.png');
     background-repeat: no-repeat;
     padding-left: 18px;
-}
-
-span.tooltip span,
-label.tooltip span {
-    text-align: left;
-    visibility: hidden;
-    position: absolute;
-    min-width: 250px;
-    bottom: -15px;
-    z-index: 999;
-    padding: 10px;
-    border: 2px solid #ccc;
-    margin-left: 15px;
-    opacity: 1;
-    background-color: #ddd;
-    background-image: -webkit-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-    background-image: -moz-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-    background-image: -ms-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-    background-image: -o-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-    background-image: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
-    box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
-    text-shadow: 0 1px 0 rgba(255,255,255,.4);
-}
-
-span.tooltip-left span,
-label.tooltip-left span {
-    right: 0;
-    left: -160px;
-}
-
-span.tooltip:hover span,
-label.tooltip:hover span
-{
-    visibility: visible;
 }

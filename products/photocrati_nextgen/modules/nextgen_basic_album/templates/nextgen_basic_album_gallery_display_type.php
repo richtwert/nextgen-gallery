@@ -1,8 +1,9 @@
 <tr>
     <td>
-        <label for="<?php echo esc_attr($display_type_name) ?>_gallery_display_type" class="tooltip">
+        <label for="<?php echo esc_attr($display_type_name) ?>_gallery_display_type"
+               class="tooltip"
+               title="<?php echo_h($gallery_display_type_help)?>">
             <?php echo_h($gallery_display_type_label)?>
-            <span><?php echo_h($gallery_display_type_help)?></span>
         </label>
     </td>
     <td>

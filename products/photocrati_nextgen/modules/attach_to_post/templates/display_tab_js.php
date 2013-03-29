@@ -647,8 +647,8 @@ jQuery(function($){
                 self.displayed_gallery.set('slug', $(this).val());
             });
 
-            var tooltip = '<span>Sets an SEO-friendly name to this gallery for URLs</span>';
-            this.$el.append('<tr><td id="slug_label"><label for="field_slug" class="tooltip">Slug' + tooltip + '</label></td><td id="slug_column"></td></tr>');
+            var tooltip = 'Sets an SEO-friendly name to this gallery for URLs';
+            this.$el.append('<tr><td id="slug_label"><label for="field_slug" class="tooltip" title="' + tooltip + '">Slug</label></td><td id="slug_column"></td></tr>');
             this.$el.find('#slug_column').append(input);
 
             return this;
@@ -1628,4 +1628,7 @@ jQuery(function($){
     });
     Ngg.DisplayTab.instance = new Ngg.DisplayTab.App();
     Ngg.DisplayTab.instance.render();
+
+    // Invoke styling libraries
+    $('span.tooltip, label.tooltip').tooltip();
 });

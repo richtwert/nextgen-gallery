@@ -1,9 +1,8 @@
 <table>
     <tr>
         <td class='column1'>
-            <span class='tooltip'>
+            <span class='tooltip' title="<?php echo $reset_warning; ?>">
                 <?php echo $reset_label; ?>
-                <span><?php echo $reset_warning; ?></span>
             </span>
         </td>
         <td>
