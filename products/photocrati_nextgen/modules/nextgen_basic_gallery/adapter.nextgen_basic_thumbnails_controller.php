@@ -105,7 +105,7 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
             // Determine what the piclens link would be
             $piclens_link = '';
             if ($display_settings['show_piclens_link']) {
-				$mediarss_link = $this->object->get_router()->get_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id);
+				$mediarss_link = $this->object->get_router()->get_url('/mediarss?source=displayed_gallery&transient_id=' . $gallery_id, FALSE);
                 $piclens_link = "javascript:PicLensLite.start({feedUrl:'{$mediarss_link}'});";
             }
             
@@ -165,10 +165,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
         wp_enqueue_style('nextgen_basic_thumbnails_style', $this->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.css'));
 
 		if ($displayed_gallery->display_settings['show_piclens_link'])
-			wp_enqueue_script('piclens', $this->get_static_url('piclens/lite/piclens.js'));
+			wp_enqueue_script('piclens', $this->get_static_url('nextgen_basic_gallery#thumbnails/piclens/lite/piclens.js'));
 
         if ($displayed_gallery->display_settings['ajax_pagination'])
-            wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->get_static_url('ajax_pagination.js'));
+            wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->get_static_url('nextgen_basic_gallery#thumbnailsajax_pagination.js'));
 
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
