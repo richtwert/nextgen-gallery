@@ -32,4 +32,20 @@
 			</p>
 		</td>
 	</tr>
+    <tr>
+        <td class='column1'>
+            <?php echo $cache_label; ?>
+        </td>
+        <td>
+            <input type='submit'
+                   name="action_proxy"
+                   class="button delete button-secondary"
+                   data-proxy-value="cache"
+                   data-confirm="<?php echo $cache_confirmation; ?>"
+                   value='<?php echo $cache_label; ?>'
+                />
+        </td>
+    </tr>
+
+    <?php print $slug_field; ?>
 </table>
