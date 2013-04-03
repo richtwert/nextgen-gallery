@@ -67,7 +67,7 @@
 	<td>
         <input type='text'
                id='font_color'
-               name='watermark_options[wmColor'
+               name='watermark_options[wmColor]'
                class='nextgen_settings_field_colorpicker'
                value='<?php print esc_attr($font_color); ?>'
                data-default-color='<?php print esc_attr($font_color); ?>'/>
