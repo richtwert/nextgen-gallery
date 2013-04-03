@@ -134,3 +134,4 @@ class P_Photocrati_NextGen extends C_Base_Product
 }
 
 new P_Photocrati_NextGen();
+

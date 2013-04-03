@@ -61,7 +61,7 @@ class C_NextGEN_Bootstrap
 		// Add the default Pope factory utility, C_Component_Factory
 		$this->_registry->add_utility('I_Component_Factory', 'C_Component_Factory');
 
-		// Load embedded products. Each product is expected any
+		// Load embedded products. Each product is expected to load any
 		// modules required
 		$this->_registry->add_module_path(NEXTGEN_GALLERY_PRODUCT_DIR, true, false);
 		$this->_registry->load_all_products();
@@ -106,7 +106,6 @@ class C_NextGEN_Bootstrap
 	 */
 	function route()
 	{
-        // TODO: get gallery stub from setting
 		$router = $this->_registry->get_utility('I_Router');
 		if (!$router->serve_request() && $router->has_parameter_segments()) {
 			return $router->passthru();
