@@ -2,8 +2,8 @@ jQuery.fn.nggShowSlideshow = function(args) {
   
     var defaults = {
         id: 1,
-        width: 320,
-        height: 240,
+        width: 600,
+        height: 400,
         fx: 'fade',
         domain: '',
         timeout: 5000
