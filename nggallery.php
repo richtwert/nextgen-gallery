@@ -66,6 +66,10 @@ class C_NextGEN_Bootstrap
 		$this->_registry->add_module_path(NEXTGEN_GALLERY_PRODUCT_DIR, true, false);
 		$this->_registry->load_all_products();
 
+        // Give third-party plugins that opportunity to include their own products
+        // and modules
+        do_action('load_nextgen_gallery_modules', $this->_registry);
+
 		// Initializes all loaded modules
 		$this->_registry->initialize_all_modules();
 

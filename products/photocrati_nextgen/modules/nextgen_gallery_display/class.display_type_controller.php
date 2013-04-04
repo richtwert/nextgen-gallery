@@ -144,7 +144,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function index_action($display_type, $return=FALSE)
 	{
-		return $this->object->render_partial('index', array(), $return);
+		return $this->object->render_partial('nextgen_gallery_display#index', array(), $return);
 	}
 
 
