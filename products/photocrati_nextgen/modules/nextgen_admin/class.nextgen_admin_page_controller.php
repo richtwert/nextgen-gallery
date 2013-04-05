@@ -53,7 +53,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 	{
 		if (!$privilege) $privilege = $this->object->get_required_permission();
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
-		$retval = $sec_token = $security->get_request_token($privilege);
+		$retval = $sec_token = $security->get_request_token(str_replace(array(' ', "\n", "\t"), '_', $privilege));
 		$sec_actor = $security->get_current_actor();
 
 		// Ensure that the user has permission to access this page

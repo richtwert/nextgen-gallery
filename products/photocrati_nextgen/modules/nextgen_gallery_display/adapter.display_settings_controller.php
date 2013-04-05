@@ -16,4 +16,9 @@ class A_Display_Settings_Controller extends Mixin
 	{
 		return 'Gallery Settings';
 	}
+	
+	function get_required_permission()
+	{
+		return 'NextGEN Change options';
+	}
 }

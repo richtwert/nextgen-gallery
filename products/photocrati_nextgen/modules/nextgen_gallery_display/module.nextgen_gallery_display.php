@@ -144,7 +144,7 @@ class M_Gallery_Display extends C_Base_Module
 			NGGFOLDER,
 			_('NextGEN Gallery & Album Settings'),
 			_('Gallery Settings'),
-			'NextGEN Manage gallery',
+			'NextGEN Change options',
 			NEXTGEN_DISPLAY_SETTINGS_SLUG,
 			array(&$this->controller, 'index_action')
 		);

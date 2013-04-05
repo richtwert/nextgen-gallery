@@ -21,4 +21,9 @@ class A_Other_Options_Controller extends Mixin
 	{
 		return 'Other Options';
 	}
+	
+	function get_required_permission()
+	{
+		return 'NextGEN Change options';
+	}
 }

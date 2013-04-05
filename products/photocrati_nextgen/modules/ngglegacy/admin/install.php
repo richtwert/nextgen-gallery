@@ -33,6 +33,7 @@ function nggallery_install () {
 	$role->add_cap('NextGEN Edit album');
 	$role->add_cap('NextGEN Change style');
 	$role->add_cap('NextGEN Change options');
+	$role->add_cap('NextGEN Attach Interface');
 
 	// upgrade function changed in WordPress 2.3
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -277,4 +278,5 @@ function nggallery_uninstall() {
 	ngg_remove_capability("NextGEN Edit album");
 	ngg_remove_capability("NextGEN Change style");
 	ngg_remove_capability("NextGEN Change options");
+	ngg_remove_capability("NextGEN Attach Interface");
 }
