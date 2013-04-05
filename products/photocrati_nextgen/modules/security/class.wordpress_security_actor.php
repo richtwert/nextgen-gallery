@@ -79,7 +79,7 @@ class Mixin_WordPress_Security_Action_Converter extends Mixin
 			}
 			case 'nextgen_edit_displayed_gallery':
 			{
-				$capability_name = 'edit_posts';
+				$capability_name = 'NextGEN Attach Interface';
 				
 				break;
 			}

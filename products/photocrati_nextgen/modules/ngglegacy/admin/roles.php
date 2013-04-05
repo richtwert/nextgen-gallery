@@ -18,6 +18,7 @@ if ( !empty($_POST) ) {
 	ngg_set_capability($_POST['edit_album'],"NextGEN Edit album");
 	ngg_set_capability($_POST['change_style'],"NextGEN Change style");
 	ngg_set_capability($_POST['change_options'],"NextGEN Change options");
+	ngg_set_capability($_POST['attach_interface'],"NextGEN Attach Interface");
 }
 
 ?>
@@ -61,6 +62,10 @@ if ( !empty($_POST) ) {
 			<tr valign="top">
 				<th scope="row"><?php _e('Change options', 'nggallery') ;?>:</th>
 				<td><label for="change_options"><select name="change_options" id="change_options"><?php wp_dropdown_roles( ngg_get_role('NextGEN Change options') ); ?></select></label></td>
+			</tr>
+			<tr valign="top">
+				<th scope="row"><?php _e('NextGEN Attach Interface', 'nggallery') ;?>:</th>
+				<td><label for="attach_interface"><select name="attach_interface" id="attach_interface"><?php wp_dropdown_roles( ngg_get_role('NextGEN Attach Interface') ); ?></select></label></td>
 			</tr>
 			</table>
 	</div>

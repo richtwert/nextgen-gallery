@@ -41,15 +41,19 @@ class A_NextGen_Admin_Installer extends Mixin
 
 	function install_nextgen_admin_module()
 	{
-		foreach ($this->object->capabilities as $cap) {
-			$this->object->add_capability($cap);
-		}
+		// this is incorrect because it's using the page slug which is the DEFAULT permission but not the one used currently
+		// needs to be reworked to function properly...maybe as part of the security module
+#		foreach ($this->object->capabilities as $cap) {
+#			$this->object->add_capability($cap);
+#		}
 	}
 
 	function uninstall_nextgen_admin_module()
 	{
-		foreach ($this->object->capabilities as $cap) {
-			$this->object->remove_capability($cap);
-		}
+		// this is incorrect because it's using the page slug which is the DEFAULT permission but not the one used currently
+		// needs to be reworked to function properly...maybe as part of the security module
+#		foreach ($this->object->capabilities as $cap) {
+#			$this->object->remove_capability($cap);
+#		}
 	}
 }
