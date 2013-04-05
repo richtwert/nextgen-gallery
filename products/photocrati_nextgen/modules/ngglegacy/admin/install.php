@@ -189,8 +189,8 @@ function ngg_default_options() {
     $ngg_options['irURL']				= path_join(NGGALLERY_URLPATH, 'imagerotator.swf');
 	$ngg_options['irXHTMLvalid']		= false;
 	$ngg_options['irAudio']				= '';
-	$ngg_options['irWidth']				= 320;
-	$ngg_options['irHeight']			= 240;
+	$ngg_options['irWidth']				= 600;
+	$ngg_options['irHeight']			= 400;
  	$ngg_options['irShuffle']			= true;
  	$ngg_options['irLinkfromdisplay']	= true;
 	$ngg_options['irShownavigation']	= false;

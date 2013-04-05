@@ -15,6 +15,18 @@
 
 		if ($cycle_interval == 0)
 			$cycle_interval = 1;
+    
+    if ($flash_background_color && $flash_background_color[0] == '#')
+    	$flash_background_color = substr($flash_background_color, 1);
+    	
+    if ($flash_text_color && $flash_text_color[0] == '#')
+    	$flash_text_color = substr($flash_text_color, 1);
+    	
+    if ($flash_rollover_color && $flash_rollover_color[0] == '#')
+    	$flash_rollover_color = substr($flash_rollover_color, 1);
+    	
+    if ($flash_screen_color && $flash_screen_color[0] == '#')
+    	$flash_screen_color = substr($flash_screen_color, 1);
 
     // init the flash output
     $swfobject = new swfobject( $flash_path, 'so' . $displayed_gallery_id, $width, $height, '7.0.0', 'false');
@@ -39,6 +51,7 @@
     $swfobject->add_flashvars( 'overstretch', $flash_stretch_image, 'false', 'string');
     $swfobject->add_flashvars( 'rotatetime', $cycle_interval, 5, 'int');
     $swfobject->add_flashvars( 'transition', $flash_transition_effect, 'random', 'string');
+    	
     $swfobject->add_flashvars( 'backcolor', $flash_background_color, 'FFFFFF', 'string', '0x');
     $swfobject->add_flashvars( 'frontcolor', $flash_text_color, '000000', 'string', '0x');
     $swfobject->add_flashvars( 'lightcolor', $flash_rollover_color, '000000', 'string', '0x');
