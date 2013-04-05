@@ -106,10 +106,10 @@ class Mixin_Display_Type_Controller extends Mixin
 	function enqueue_frontend_resources($displayed_gallery)
 	{
 		// Enqueue the display type library
-		wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url());
+		wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url($displayed_gallery));
 
 		// Enqueue the display type initialization routine
-		wp_enqueue_script($displayed_gallery->display_type . '_init', $this->object->_get_js_init_url());
+		wp_enqueue_script($displayed_gallery->display_type . '_init', $this->object->_get_js_init_url($displayed_gallery));
 
         $this->object->_add_script_data(
             $displayed_gallery->display_type . '_init',
@@ -142,7 +142,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	/**
 	 * Renders the frontend display of the display type
 	 */
-	function index_action($display_type, $return=FALSE)
+	function index_action($displayed_gallery, $return=FALSE)
 	{
 		return $this->object->render_partial('nextgen_gallery_display#index', array(), $return);
 	}
