@@ -24,14 +24,25 @@ class M_Installer extends C_Base_Module
 	{
 		$this->get_registry()->add_utility('I_Installer', 'C_Module_Installer');
 	}
+	
+	function _register_hooks()
+	{
+		add_action('init', array($this, 'init_wp'), 99);
+	}
+	
+	function init_wp()
+	{
+		// XXX uncomment this when settings' save() is functional
+		//$this->get_registry()->get_utility('I_Installer')->perform_automatic_install();
+	}
 
-    function set_file_list()
-    {
-        return array(
-            'class.module_installer.php',
-            'interface.installer.php'
-        );
-    }
+  function set_file_list()
+  {
+      return array(
+          'class.module_installer.php',
+          'interface.installer.php'
+      );
+  }
 }
 
 new M_Installer;
