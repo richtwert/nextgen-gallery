@@ -21,7 +21,7 @@ class Mixin_Settings_Installer extends Mixin
 	function perform_automatic_install()
 	{
 		$list = $this->object->_get_product_install_list();
-		$list_old = $this->object->global_settings->get('product_install_list');
+		$list_old = $this->object->settings->product_install_list;
 		$run_install = false;
 		$run_uninstall = false;
 		
@@ -75,7 +75,7 @@ class Mixin_Settings_Installer extends Mixin
 		$list = $this->object->_get_product_install_list();
 		
 		
-		$this->object->global_settings->product_install_list = $list;
+		$this->object->settings->product_install_list = $list;
 		
 		$this->object->global_settings->save();
 		$this->object->settings->save();

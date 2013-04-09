@@ -32,8 +32,7 @@ class M_Installer extends C_Base_Module
 	
 	function init_wp()
 	{
-		// XXX uncomment this when settings' save() is functional
-		//$this->get_registry()->get_utility('I_Installer')->perform_automatic_install();
+		$this->get_registry()->get_utility('I_Installer')->perform_automatic_install();
 	}
 
   function set_file_list()
