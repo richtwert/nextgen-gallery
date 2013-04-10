@@ -570,7 +570,7 @@ button.ui-button::-moz-focus-inner {
 
 .ui-dialog .ui-dialog-titlebar-close span {
     display: block;
-    margin: 1px;
+    /*margin: 1px; -- breaks WP 3.6 */
 }
 
 .ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus {
