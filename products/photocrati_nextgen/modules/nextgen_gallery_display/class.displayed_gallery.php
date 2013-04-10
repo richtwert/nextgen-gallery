@@ -326,7 +326,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		$album_key		= $album_mapper->get_primary_key_column();
 		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
 		$gallery_key	= $gallery_mapper->get_primary_key_column();
-		$select			= $id_only ? $album_key : '*';
+		$select			= $id_only ? $album_key.", sortorder" : '*';
 		$retval			= array();
 
 		// If no exclusions are specified, are entity_ids are specified,

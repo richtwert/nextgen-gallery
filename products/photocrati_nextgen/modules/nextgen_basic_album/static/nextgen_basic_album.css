@@ -84,3 +84,8 @@
     font-size: 11px;
     margin-top: 2px;
 }
+
+.ngg-clear {
+    clear: both;
+    float: none;
+}

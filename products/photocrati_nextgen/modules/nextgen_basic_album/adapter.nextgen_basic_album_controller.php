@@ -55,6 +55,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
 		// If we're viewing a sub-album, then we use that album as a container instead
 		else if (($album = $this->param('album'))) {
+
 			// Are we to display a sub-album?
             if (!is_numeric($album))
             {
@@ -83,6 +84,20 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $display_settings['current_page'] = $current_page;
             $display_settings['entities']     = &$entities;
             $display_settings['storage']      = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
+
+            // Add pagination, if needed. Not supported yet
+            if (FALSE) {// $display_settings['galleries_per_page']) {
+                $pagination_result = $this->object->create_pagination(
+                    $current_page,
+                    $displayed_gallery->get_entity_count(),
+                    $display_settings['galleries_per_page'],
+                    urldecode($this->object->param('ajax_pagination_referrer'))
+                );
+                $this->object->remove_param('ajax_pagination_referrer');
+                $display_settings['pagination_prev'] = $pagination_result['prev'];
+                $display_settings['pagination_next'] = $pagination_result['next'];
+                $display_settings['pagination']      = $pagination_result['output'];
+            }
 
             // Render legacy template
             $this->object->add_mixin('Mixin_NextGen_Basic_Templates');

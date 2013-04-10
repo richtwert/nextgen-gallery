@@ -36,6 +36,7 @@ Follow variables are useable :
  	<?php endforeach; ?>
 
 	<!-- Pagination -->
+    <br class="ngg-clear"/>
  	<?php echo $pagination ?>
 </div>
 

@@ -88,6 +88,12 @@ class M_NextGen_Basic_Album extends C_Base_Module
 			'A_NextGen_Basic_Extended_Album_Form',
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
 		);
+
+        // Creates special parameter segments
+        $this->get_registry()->add_adapter(
+            'I_Routing_App',
+            'A_NextGen_Basic_Album_Urls'
+        );
     }
 
 	function _register_hooks()
@@ -135,6 +141,7 @@ class M_NextGen_Basic_Album extends C_Base_Module
             'adapter.nextgen_basic_album_installer.php',
             'adapter.nextgen_basic_album_mapper.php',
             'adapter.nextgen_basic_album_routes.php',
+            'adapter.nextgen_basic_album_urls.php',
             'adapter.nextgen_basic_compact_album_form.php',
             'adapter.nextgen_basic_extended_album_form.php',
             'mixin.nextgen_basic_album_form.php'
