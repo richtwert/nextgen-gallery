@@ -97,6 +97,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Load the NextGEN Gallery Admin interface
 		$this->get_registry()->load_module('photocrati-nextgen_admin');
 
+        // Load the pagination module
+        $this->_get_registry()->load_module('photocrati-nextgen_pagination');
+
 		// Load the Gallery Display module, used to display galleries and albums
 		$this->get_registry()->load_module('photocrati-nextgen_gallery_display');
 		$this->get_registry()->load_module('photocrati-attach_to_post');

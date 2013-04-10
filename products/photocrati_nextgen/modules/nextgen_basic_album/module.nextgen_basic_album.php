@@ -1,11 +1,11 @@
 <?php
 
-/**
+/*
 {
     Module:		photocrati-nextgen_basic_album,
-    Depends:  	{ photocrati-nextgen_gallery_display, photocrati-nextgen_basic_templates }
+    Depends:  	{ photocrati-nextgen_gallery_display, photocrati-nextgen_basic_templates, photocrati-nextgen_pagination }
 }
- **/
+ */
 
 define('NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM', 'photocrati-nextgen_basic_compact_album');
 define('NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM', 'photocrati-nextgen_basic_extended_album');

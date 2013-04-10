@@ -3,7 +3,7 @@
 /**
  * Contains function(s) to generate a basic pagination widget
  */
-class Mixin_NextGen_Basic_Thumbnails_Pagination extends Mixin
+class Mixin_NextGen_Basic_Pagination extends Mixin
 {
 
     /**

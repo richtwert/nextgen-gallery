@@ -1,7 +1,8 @@
 <?php
 /*
 {
-    Module: photocrati-nextgen_basic_gallery
+    Module: photocrati-nextgen_basic_gallery,
+    Depends: { photocrati-nextgen_pagination }
 }
 */
 

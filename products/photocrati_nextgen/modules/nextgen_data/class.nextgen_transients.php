@@ -47,4 +47,10 @@ class C_NextGen_Transients extends C_Component
 
     }
 
+    function delete_all()
+    {
+        global $wpdb;
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_ngg_%'");
+    }
+
 }

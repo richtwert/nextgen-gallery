@@ -533,10 +533,16 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 		// Reorder entities according to order specified in entity_ids
 		foreach ($entity_ids as $entity_id) {
-			if (substr($entity_id, 0, 1) == 'a')
-				$retval[] = array_shift($albums);
-			else
-				$retval[] = array_shift($galleries);
+			if (substr($entity_id, 0, 1) == 'a') {
+                $album = array_shift($albums);
+                if ($album) $retval[] = $album;
+            }
+
+			else {
+                $gallery = array_shift($galleries);
+                if ($gallery) $retval[] = $gallery;
+            }
+
 		}
 
 		// Sort the entities
