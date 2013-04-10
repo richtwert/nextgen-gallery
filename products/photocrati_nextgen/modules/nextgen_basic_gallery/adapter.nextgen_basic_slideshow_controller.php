@@ -29,6 +29,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin_NextGen_Basic_Gallery_C
 			$gallery_height					= $displayed_gallery->display_settings['gallery_height'];
 			$params['aspect_ratio']			= $gallery_width/$gallery_height;
 			$params['flash_path']			= $this->object->get_static_url('nextgen_basic_gallery#slideshow/imagerotator.swf');
+			$params['placeholder']			= $this->object->get_static_url('nextgen_basic_gallery#slideshow/placeholder.gif');
 
 			// Are we displayed a flash slideshow?
 			if ($displayed_gallery->display_settings['flash_enabled'])
