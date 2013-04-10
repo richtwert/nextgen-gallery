@@ -35,4 +35,5 @@ label.tooltip {
     background-image: url('information.png');
     background-repeat: no-repeat;
     padding-left: 18px;
+    padding-bottom: 1px;
 }
