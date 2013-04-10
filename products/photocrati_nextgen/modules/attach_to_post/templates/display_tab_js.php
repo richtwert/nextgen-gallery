@@ -421,12 +421,13 @@ jQuery(function($){
     **/
     Ngg.DisplayTab.Models.Tag_Collection        = Ngg.Models.SelectableItems.extend({
         model: Ngg.DisplayTab.Models.Tag,
-
+        /*
 		selected_ids: function(){
 			return this.selected().map(function(item){
 				return item.get('name');
 			});
 		},
+        */
 
 		action: 'get_existing_image_tags'
     });

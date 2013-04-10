@@ -28,6 +28,11 @@ class A_NextGen_Data_Installer extends Mixin
                 else
                     $mapper->delete()->run_query();
             }
+
+            // Remove ngg tags
+            global $wpdb;
+            $wpdb->query("DELETE FROM {$wpdb->terms} WHERE term_id IN (SELECT term_id FROM {$wpdb->term_taxonomy} WHERE taxonomy='ngg_tag')");
+            $wpdb->query("DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy='ngg_tag'");
         }
     }
 }

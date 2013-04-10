@@ -115,7 +115,8 @@ class A_Attach_To_Post_Ajax extends Mixin
 			foreach (get_terms('ngg_tag', $params) as $term) {
 				$response['items'][] = array(
 					'id'	=>	$term,
-					'title'	=>	$term
+					'title'	=>	$term,
+                    'name'  =>  $term
 				);
 			}
 			$response['total'] = count(get_terms('ngg_tag', array('fields' => 'ids')));

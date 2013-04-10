@@ -31,6 +31,7 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
                             )");
             $all_tags = new stdClass;
             $all_tags->name = "All";
+            $all_tags->id   = "All";
             array_unshift($tags, $all_tags);
 
             $this->object->render_view('attach_to_post#display_tab_js', array(
