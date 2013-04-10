@@ -13,22 +13,31 @@ jQuery.fn.nggShowSlideshow = function(args) {
     var selector = this.selector;
 	
     jQuery(selector + '-loader').empty().remove();
-	
+		
+		var container = jQuery(selector);
     var gallery = jQuery(selector + '-image-list');
     var self = this;
 
     jQuery(gallery).waitForImages(function() {
         var list = gallery.contents().detach();
+        var placeholder = container.attr('data-placeholder');
+        
         gallery.remove();
 
         list.appendTo(self);
 
         self.show();
+        
+        if (placeholder) {
+        	self.prepend('<img class="image-placeholder" src="' + placeholder + '" >');
+        }
 
         if (self.children().length > 1) {
             self.cycle({
                 fx: s.fx,
-                containerResize: 1,
+                slideExpr: '.ngg-gallery-slideshow-image',
+                slideResize: false,
+        				containerResize: false,
                 fit: 1,
                 timeout: s.timeout
             });
