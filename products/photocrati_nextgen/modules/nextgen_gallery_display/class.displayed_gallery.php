@@ -565,16 +565,25 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	 */
 	function get_entity_count($returns='included')
 	{
+        $retval = 0;
+
 		// Is this an image query?
 		$source_obj = $this->object->get_source();
 		if (in_array('image', $source_obj->returns)) {
-			return count($this->object->_get_image_entities($source_obj, FALSE, FALSE, TRUE, $returns));
+			$retval =  count($this->object->_get_image_entities($source_obj, FALSE, FALSE, TRUE, $returns));
 		}
 
 		// Is this a gallery/album query?
 		elseif (in_array('gallery', $source_obj->returns)) {
-			return count($this->object->_get_album_and_gallery_entities($source_obj, FALSE, FALSE, TRUE, $returns));
+			$retval = count($this->object->_get_album_and_gallery_entities($source_obj, FALSE, FALSE, TRUE, $returns));
 		}
+
+        if (isset($this->object->maximum_entity_count)) {
+            $max = intval($this->object->maximum_entity_count);
+            if ($retval > $max) $retval = $max;
+        }
+
+        return $retval;
 	}
 
 	/**
