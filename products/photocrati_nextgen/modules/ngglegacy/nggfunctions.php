@@ -133,6 +133,47 @@ function nggCreateImageBrowser($picturelist, $template = '') {
 }
 
 /**
+ * nggShowRelatedGallery() - create a gallery based on the tags
+ *
+ * @access public
+ * @param string $taglist list of tags as csv
+ * @param integer $maxImages (optional) limit the number of images to show
+ * @return the content
+ */
+function nggShowRelatedGallery($taglist, $maxImages = 0) {
+
+    $ngg_options = nggGallery::get_option('ngg_options');
+
+    // get now the related images
+    $picturelist = nggTags::find_images_for_tags($taglist, 'RAND');
+
+    // go on if not empty
+    if ( empty($picturelist) )
+        return;
+
+    // cut the list to maxImages
+    if ( $maxImages > 0 )
+        array_splice($picturelist, $maxImages);
+
+    // *** build the gallery output
+    $out   = '<div class="ngg-related-gallery">';
+    foreach ($picturelist as $picture) {
+
+        // get the effect code
+        $thumbcode = $picture->get_thumbcode( __('Related images for', 'nggallery') . ' ' . get_the_title());
+
+        $out .= '<a href="' . $picture->imageURL . '" title="' . stripslashes(nggGallery::i18n($picture->description, 'pic_' . $picture->pid . '_description')) . '" ' . $thumbcode . ' >';
+        $out .= '<img title="' . stripslashes(nggGallery::i18n($picture->alttext, 'pic_' . $picture->pid . '_alttext')) . '" alt="' . stripslashes(nggGallery::i18n($picture->alttext, 'pic_' . $picture->pid . '_alttext')) . '" src="' . $picture->thumbURL . '" />';
+        $out .= '</a>' . "\n";
+    }
+    $out .= '</div>' . "\n";
+
+    $out = apply_filters('ngg_show_related_gallery_content', $out, $taglist);
+
+    return $out;
+}
+
+/**
  * nggShowRelatedImages() - return related images based on category or tags
  *
  * @access public
