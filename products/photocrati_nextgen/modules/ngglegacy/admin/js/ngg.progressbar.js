@@ -22,7 +22,6 @@
 			if ( $( "#" + s.id + "_dialog" ).length == 0) {
 				s.header = (s.header.length > 0) ? s.header : '' ;
 				$("body").append('<div id="' + s.id + '_dialog"><div id="' + s.id + '" class="progressborder"><div class="' + s.id + '"><span>0%</span></div></div></div>');
-   	            $('html,body').scrollTop(0); // works only in IE, FF
                 // we open the dialog
                 $( "#" + s.id + "_dialog" ).dialog({
             		width: 640,
@@ -87,6 +86,17 @@
 			var rvalue = Math.round (step * width) + "%" ;
 			$("#" + s.id + " div").width( value );
 			$("#" + s.id + " span").html( rvalue );
+
+            // Try to restore ATP tabs
+            $(this.find_parent(window).document).scrollTop(0);
+            var tinymce_frame = $(this.find_parent(window).frameElement).parent();
+            var css_top = tinymce_frame.css('top');
+            setTimeout(function(){
+                tinymce_frame.css('top', 0);
+            }, 1);
+            setTimeout(function(){
+                tinymce_frame.css('top', css_top);
+            }, 3);
 		},
 
 		finished: function() {
@@ -125,25 +135,6 @@
 				$('.nggform').delay(4000).submit();
 			else
 				$('.nggform').submit();
-
-			// This is a hack to make these windows work properly in the
-			// Attach to Post interface. I don't like this fix, but it's the
-			// best I could come up with at the time. :(
-			try {
-				var parent_window = nggProgressBar.find_parent(window);
-				var $parent_document = jQuery(parent_window.document);
-				var windows = parent_window.tinyMCE.activeEditor.windowManager.windows;
-				for (var index in windows) {
-					var $window = $parent_document.find('#'+windows[index].id);
-					var height = $window.height();
-					$window.height(0);
-					setTimeout(function(){
-						$window.height(height);
-					}, 0);
-				}
-			}
-			catch (Exception) {
-			}
 		}
 	};
 })(jQuery);
