@@ -55,7 +55,7 @@
 display:none;
 }
 
-.gallery_page_ngg_other_options .size_options select {
+.gallery_page_ngg_other_options select.thumbnail_dimensions {
 	width: 300px;
 }
 
