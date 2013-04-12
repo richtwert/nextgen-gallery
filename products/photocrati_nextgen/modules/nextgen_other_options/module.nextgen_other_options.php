@@ -52,7 +52,6 @@ class M_NextGen_Other_Options extends C_Base_Module
             'adapter.other_options_page.php',
             'adapter.reset_form.php',
             'adapter.roles_form.php',
-            'adapter.size_options_form.php',
             'adapter.styles_form.php',
             'adapter.thumbnail_options_form.php',
             'adapter.watermarking_ajax_actions.php',
