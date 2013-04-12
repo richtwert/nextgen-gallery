@@ -15,6 +15,7 @@ class A_Thumbnail_Options_Form extends Mixin
 	function render()
 	{
 		$settings = $this->object->get_model();
+		
 		return $this->render_partial('nextgen_other_options#thumbnail_options_tab', array(
 			'thumbnail_dimensions_label'		=>	_('Default thumbnail dimensions:'),
 			'thumbnail_dimensions_help'		=>	_('When generating thumbnails, what image dimensions do you desire?'),
@@ -22,7 +23,10 @@ class A_Thumbnail_Options_Form extends Mixin
 			'thumbnail_dimensions_height'		=>	$settings->thumbheight,
 			'thumbnail_quality_label'		=>	_('Adjust Thumbnail Quality?'),
 			'thumbnail_quality_help'		=>	_('When generating thumbnails, what image quality do you desire?'),
-			'thumbnail_quality'				=>	$settings->thumbquality
+			'thumbnail_quality'				=>	$settings->thumbquality,
+			'size_list_label'		=>	_('Size List'),
+			'size_list_help'		=>	_('List of default sizes used for thumbnails and images'),
+			'size_list'		=>	$settings->thumbnail_dimensions,
 		), TRUE);
 	}
 
