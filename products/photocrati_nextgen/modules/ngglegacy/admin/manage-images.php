@@ -349,9 +349,9 @@ jQuery(document).ready( function($) {
 					<th align="left">
 					<select name="parent_id" style="width:95%" id='ngg_settings_parent_id'>
 						<option value="0"><?php _e ('Main page (No parent)', 'nggallery'); ?></option>
-						<?php if (get_post()): ?>
-						<?php parent_dropdown (); ?>
-						<?php endif ?>
+						<?php foreach (get_pages() as $page): ?>
+                        <option value="<?php echo esc_attr($page->ID)?>"><?php echo esc_html($page->post_title)?></option>
+                        <?php endforeach ?>
 					</select>
 					<input class="button-secondary action" type="submit" name="addnewpage" value="<?php _e ('Add page', 'nggallery'); ?>" id="group"/>
 					</th>
