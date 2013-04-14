@@ -1,8 +1,23 @@
-<div class='ngg-imagebrowser' id='<?php echo $anchor; ?>'>
+<?php
+
+$this->include_template('nextgen_gallery_display#container/before');
+
+?>
+	<div class='ngg-imagebrowser' id='<?php echo $anchor; ?>'>
 
     <h3><?php echo esc_attr($image->alttext); ?></h3>
 
-    <div class='pic'>
+		<?php
+		
+		$template_params = array(
+				'index' => 0,
+				'class' => 'pic',
+				'image' => $image,
+			);
+			
+		$this->include_template('nextgen_gallery_display#image/before', $template_params);
+		
+		?>
         <a href='<?php echo esc_attr($storage->get_image_url($image)); ?>'
            title='<?php echo esc_attr($image->description); ?>'
            data-image-id='<?php echo esc_attr($image->pid); ?>'
@@ -11,7 +26,11 @@
                  alt='<?php echo esc_attr($image->alttext); ?>'
                  src='<?php echo esc_attr($storage->get_image_url($image)); ?>'/>
         </a>
-    </div>
+	  <?php
+
+		$this->include_template('nextgen_gallery_display#image/after', $template_params);
+
+		?>
 
     <div class='ngg-imagebrowser-nav'>
 
@@ -45,3 +64,8 @@
     </div>
 
 </div>
+<?php
+
+$this->include_template('nextgen_gallery_display#container/after');
+
+?>
