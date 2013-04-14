@@ -92,6 +92,26 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
     
     
     /**
+     * Renders a sub-template for the view
+     * @param string $template
+     * @param string $__return
+     * @return string|NULL
+     */
+    function include_template($template, $params = null, $__return=FALSE)
+    {
+    		if ($params == null) {
+    			$params = array();
+    		}
+    		
+    		$params['template_origin'] = $this->object->_template;
+    		
+        extract($params);
+        
+        include($this->object->get_template_abspath($template));
+    }
+    
+    
+    /**
      * Gets the absolute path of an MVC template file
      *
      * @param string $path
