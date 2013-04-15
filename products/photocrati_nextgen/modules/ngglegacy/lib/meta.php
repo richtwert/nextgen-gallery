@@ -507,7 +507,7 @@ class nggMeta{
             // try to read the date / time from the exif
 			foreach (array('DateTimeDigitized', 'DateTimeOriginal', 'FileDateTime') as $key) {
 				if (isset($this->exif_data['EXIF'][$key])) {
-					$date_time = strtofime($this->exif_data['EXIF'][$key]);
+					$date_time = strtotime($this->exif_data['EXIF'][$key]);
                     break;
 				}
 			}
