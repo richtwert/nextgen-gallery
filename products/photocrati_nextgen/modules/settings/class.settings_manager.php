@@ -148,7 +148,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	 * @param string $context
 	 * @return C_Settings_Manager
 	 */
-	static function &get_instance($context=FALSE)
+	static function &get_instance($context)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();

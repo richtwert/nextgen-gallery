@@ -5,7 +5,7 @@ class C_Attach_Controller extends C_NextGen_Admin_Page_Controller
 	static $_instances = array();
 	var	   $_displayed_gallery;
 
-	static function &get_instance($context='attach_to_post')
+	static function &get_instance($context)
 	{
 		if (!isset(self::$_instances[$context])) {
 			$klass = get_class();
@@ -115,21 +115,13 @@ class Mixin_Attach_To_Post extends Mixin
 	 */
 	function index_action()
 	{
+        if ($this->object->_displayed_gallery->is_new()) $this->object->expires("+2 hour");
+
 		// Enqueue resources
 		$this->object->render_view('attach_to_post#attach_to_post', array(
 			'page_title'	=>	$this->object->_get_page_title(),
 			'tabs'			=>	$this->object->_get_main_tabs(),
 			'tab_titles'	=>	$this->object->_get_main_tab_titles()
-		));
-	}
-
-	function preview_tab_css($return=FALSE)
-	{
-		$settings = $this->object->get_registry()->get_utlity('I_Settings_Manager');
-		$this->object->set_content_type('css');
-		$this->object->do_not_cache();
-		return $this->object->render_view('attach_to_post#preview_tab_css', array(
-			// Need to determine what parameters to include
 		));
 	}
 
