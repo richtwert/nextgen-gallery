@@ -86,6 +86,11 @@
 <?php else: ?>
 	<!-- Display JQuery Cycle Slideshow -->
 	<div class="ngg-slideshow-image-list ngg-slideshow-nojs" id="<?php echo_h($anchor)?>-image-list">
+		<?php
+	
+		$this->include_template('nextgen_gallery_display#list/before');
+	
+		?>
 		<?php for ($i=0; $i<count($images); $i++): ?>
 
 			<?php
@@ -121,8 +126,19 @@
 				}
 			}
 			?>
-
-			<div id="ngg-image-<?php echo_h($i)?>" class="ngg-gallery-slideshow-image" <?php print $image->style; ?>>
+			
+			<?php
+			
+			$template_params = array(
+					'index' => $i,
+					'class' => 'ngg-gallery-slideshow-image'
+				);
+			$template_params = array_merge(get_defined_vars(), $template_params);
+			
+			$this->include_template('nextgen_gallery_display#image/before', $template_params);
+			
+			?>
+			
 				<img
 					title="<?php echo esc_attr($image->description)?>"
 					alt="<?php echo esc_attr($image->alttext)?>"
@@ -131,10 +147,27 @@
 					height="<?php echo esc_attr($image_size['height'])?>"
 					style="max-width:none;"
 				/>
-			</div>
+				
+			<?php
+			
+			$this->include_template('nextgen_gallery_display#image/after', $template_params);
+			
+			?>
+			
 		<?php endfor ?>
+			
+		<?php
+		
+		$this->include_template('nextgen_gallery_display#list/after');
+		
+		?>
 	</div>
 
+	<?php
+
+	$this->include_template('nextgen_gallery_display#container/before');
+
+	?>
 	<div
 		class="ngg-galleryoverview ngg-slideshow"
 		id="<?php echo_h($anchor)?>"
@@ -148,6 +181,11 @@
 			<img src="<?php echo_h(NGGALLERY_URLPATH) ?>images/loader.gif" alt="" />
 		</div>
 	</div>
+	<?php
+
+	$this->include_template('nextgen_gallery_display#container/after');
+
+	?>
 	<script type="text/javascript">
 	//<![CDATA[
 	jQuery('#<?php echo_h($anchor)?>-image-list').hide().removeClass('ngg-slideshow-nojs');
