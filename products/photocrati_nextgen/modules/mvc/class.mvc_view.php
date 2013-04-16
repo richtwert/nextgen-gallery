@@ -104,10 +104,20 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
     		}
     		
     		$params['template_origin'] = $this->object->_template;
-    		
-        extract($params);
         
-        include($this->object->get_template_abspath($template));
+        $target = $this->object->get_template_abspath($template);
+        $origin_target = $this->object->get_template_abspath($this->object->_template);
+        
+        if ($origin_target != $target)
+        {
+        	if (isset($params['target'])) {
+        		unset($params['target']);
+        	}
+        	
+        	extract($params);
+        	
+		      include($target);
+        }
     }
     
     
@@ -129,7 +139,7 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
 
        // Append the suffix
        $filename = $path . '.php';
-
+       
        // Find the template
        $full_path = $fs->join_paths($settings->mvc_template_dirname, $filename);
        $retval    = $fs->find_abspath($full_path, $module);
