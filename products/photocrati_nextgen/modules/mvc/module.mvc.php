@@ -82,7 +82,9 @@ class M_MVC extends C_Base_Module
             'adapter.mvc_settings.php',
             'class.mvc_controller.php',
             'class.mvc_view.php',
-            'interface.mvc_controller.php'
+            'class.mvc_view_element.php',
+            'interface.mvc_controller.php',
+            'interface.mvc_view.php'
         );
     }
 }

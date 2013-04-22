@@ -170,6 +170,8 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
             $params['previous_image_link'] = $prev_image_link;
             $params['next_image_link']     = $next_image_link;
             $params['effect_code']         = $this->object->get_effect_code($displayed_gallery);
+                
+            $params = $this->object->prepare_display_parameters($displayed_gallery, $params);
 
             return $this->object->render_partial(
                 'nextgen_basic_imagebrowser#nextgen_basic_imagebrowser',

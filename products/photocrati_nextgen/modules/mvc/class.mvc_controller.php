@@ -259,8 +259,15 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
     {
         // We'll use the name of the view as the context if one hasn't been provided
         if (is_null($context)) $context = $template;
-        $factory = $this->get_registry()->get_utility('I_Component_Factory');
-        $view    = $factory->create('mvc_view', $template, $params, NULL, $context);
+        $view = $this->object->create_view($template, $params, $context);
         return $view->render($return);
+    }
+    
+    function create_view($template, $params=array(), $context=NULL)
+    {
+			$factory = $this->get_registry()->get_utility('I_Component_Factory');
+			$view    = $factory->create('mvc_view', $template, $params, NULL, $context);
+    	
+    	return $view;
     }
 }

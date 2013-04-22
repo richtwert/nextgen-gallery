@@ -5,10 +5,13 @@ class C_MVC_View extends C_Component
     var $_template = '';
     var $_engine   = '';
     var $_params   = array();
+		var $_queue = array();
+		
     
     function define($params, $context=FALSE)
     {
         parent::define($context);
+        $this->implement('I_MVC_View');
         $this->add_mixin('Mixin_Mvc_View_Instance_Methods');
     }
     
@@ -71,53 +74,149 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
      * @param string $__return
      * @return string|NULL
      */
-    function render($__return=FALSE)
+    function render($return = FALSE)
     {
-        // We use underscores to prefix local variables to avoid conflicts wth
-        // template vars
-        $__content = NULL;
-        extract($this->object->get_template_vars());
-        
-        if ($__return) ob_start();
-        
-        include($this->object->get_template_abspath());
-        
-        if ($__return) {
-            $__content = ob_get_contents();
-            ob_end_clean();
-        }
-        
-        return $__content;
+			$element = $this->object->render_object();
+
+			$content = $this->object->rasterize_object($element);
+
+			if (!$return) {
+				echo $content;
+			}
+
+			return $content;
     }
     
     
-    /**
-     * Renders a sub-template for the view
-     * @param string $template
-     * @param string $__return
-     * @return string|NULL
-     */
-    function include_template($template, $params = null, $__return=FALSE)
+    function render_object()
     {
-    		if ($params == null) {
-    			$params = array();
+      // We use underscores to prefix local variables to avoid conflicts wth
+      // template vars
+    	$__element = $this->start_element($this->object->_template, 'template', $this);
+  		
+      extract($this->object->get_template_vars());
+      
+      include($this->object->get_template_abspath());
+        
+      $this->end_element();
+      
+      return $__element;
+    }
+    
+    
+    function rasterize_object($element)
+    {
+    	return $element->rasterize();
+    }
+    
+    
+    function start_element($id, $type = null, $context = null)
+    {
+    	if ($type == null)
+    	{
+    		$type = 'element';
+    	}
+    	
+    	$count = count($this->object->_queue);
+    	$element = new C_MVC_View_Element($id, $type);
+    	
+    	if ($context != null)
+    	{
+    		if (!is_array($context))
+    		{
+    			$context = array('object' => $context);
     		}
     		
-    		$params['template_origin'] = $this->object->_template;
-        
-        $target = $this->object->get_template_abspath($template);
-        $origin_target = $this->object->get_template_abspath($this->object->_template);
-        
-        if ($origin_target != $target)
-        {
-        	if (isset($params['target'])) {
-        		unset($params['target']);
-        	}
-        	
-        	extract($params);
-        	
-		      include($target);
-        }
+    		foreach ($context as $context_name => $context_value)
+    		{
+    			$element->set_context($context_name, $context_value);
+    		}
+    	}
+    	
+    	$this->object->_queue[] = $element;
+    	
+    	if ($count > 0)
+    	{
+    		$old_element = $this->object->_queue[$count - 1];
+    		
+    		$content = ob_get_contents();
+    		ob_clean();
+    		
+    		$old_element->append($content);
+    		$old_element->append($element);
+    	}
+    	
+    	ob_start();
+    	
+    	return $element;
+    }
+    
+    function end_element()
+    {
+    	$content = ob_get_clean();
+    	
+    	$element = array_pop($this->object->_queue);
+    	
+    	if ($content != null)
+    	{
+    		$element->append($content);
+    	}
+    	
+    	return $element;
+    }
+    
+    /**
+     * Renders a sub-template for the view
+     * @param string $__template
+     * @param array $__params
+     * @param string $__return
+     * @return NULL
+     */
+    function include_template($__template, $__params = null, $__return=FALSE)
+    {
+      // We use underscores to prefix local variables to avoid conflicts wth
+      // template vars
+			if ($__params == null) {
+				$__params = array();
+			}
+
+			$__params['template_origin'] = $this->object->_template;
+
+			$__target = $this->object->get_template_abspath($__template);
+			$__origin_target = $this->object->get_template_abspath($this->object->_template);
+			$__image_before_target = $this->object->get_template_abspath('nextgen_gallery_display#image/before');
+			$__image_after_target = $this->object->get_template_abspath('nextgen_gallery_display#image/after');
+
+			if ($__origin_target != $__target)
+			{
+				if ($__target == $__image_before_target)
+				{
+					$__image = isset($__params['image']) ? $__params['image'] : null;
+					
+					$this->start_element('nextgen_gallery.image_panel', 'item', $__image);
+				}
+				
+				if ($__target == $__image_after_target)
+				{
+					$this->end_element();
+				}
+				
+				extract($__params);
+	
+				include($__target);
+				
+				if ($__target == $__image_before_target)
+				{
+					$__image = isset($__params['image']) ? $__params['image'] : null;
+					
+					$this->start_element('nextgen_gallery.image', 'item', $__image);
+				}
+				
+				if ($__target == $__image_after_target)
+				{
+					$this->end_element();
+				}
+			}
     }
     
     

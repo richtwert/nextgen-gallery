@@ -80,14 +80,15 @@
     if ($flash_xhtml_validation) $out .= "\n".'//]]>';
     if ($flash_xhtml_validation) $out .= "\n".'-->';
     $out .= "\n".'</script>';
-	echo apply_filters('ngg_show_slideshow_content', $out, $displayed_gallery_id, $width, $height);
+    
+    echo apply_filters('ngg_show_slideshow_content', $out, $displayed_gallery_id, $width, $height);
 	?>
 
 <?php else: ?>
 	<!-- Display JQuery Cycle Slideshow -->
 	<div class="ngg-slideshow-image-list ngg-slideshow-nojs" id="<?php echo_h($anchor)?>-image-list">
 		<?php
-	
+    
 		$this->include_template('nextgen_gallery_display#list/before');
 	
 		?>

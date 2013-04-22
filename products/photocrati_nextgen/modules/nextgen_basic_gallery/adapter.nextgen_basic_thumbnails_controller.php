@@ -148,6 +148,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
                 $params['pagination']			= $pagination;
                 $params['thumbnail_size_name']	= $thumbnail_size_name;
                 $params['slideshow_link']       = $slideshow_link;
+                
+                $params = $this->object->prepare_display_parameters($displayed_gallery, $params);
+                
                 return $this->object->render_view('nextgen_basic_gallery#thumbnails/index', $params, $return);
             }
 		}

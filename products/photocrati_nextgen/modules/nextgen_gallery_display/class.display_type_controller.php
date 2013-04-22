@@ -137,7 +137,27 @@ class Mixin_Display_Type_Controller extends Mixin
 			$this->object->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js')
 		);
 	}
-
+	
+	
+	function create_view($template, $params=array(), $context=NULL)
+	{
+		$view = $this->call_parent('create_view', $template, $params, $context);
+		
+		return $view;
+	}
+	
+	
+	function prepare_display_parameters($displayed_gallery, $params = null)
+	{
+		if ($params == null)
+		{
+			$params = array();
+		}
+		
+		$params['displayed_gallery'] = $displayed_gallery;
+		
+		return $params;
+	}
 
 	/**
 	 * Renders the frontend display of the display type

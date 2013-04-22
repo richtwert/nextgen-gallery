@@ -47,6 +47,8 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin_NextGen_Basic_Gallery_C
                     $displayed_gallery, NEXTGEN_GALLERY_BASIC_THUMBNAILS
                 );
             }
+                
+      $params = $this->object->prepare_display_parameters($displayed_gallery, $params);
 
 			$retval = $this->object->render_partial('nextgen_basic_gallery#slideshow/index', $params, $return);
 		}

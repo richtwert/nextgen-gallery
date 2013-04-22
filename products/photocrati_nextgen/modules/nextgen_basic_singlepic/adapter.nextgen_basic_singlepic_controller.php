@@ -87,6 +87,8 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $params['inner_content'] = $displayed_gallery->inner_content;
             $params['settings']      = $display_settings;
             $params['thumbnail_url'] = $thumbnail_url;
+                
+            $params = $this->object->prepare_display_parameters($displayed_gallery, $params);
 
             return $this->object->render_partial('nextgen_basic_singlepic#nextgen_basic_singlepic', $params, $return);
         }
