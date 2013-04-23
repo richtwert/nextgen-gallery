@@ -1,6 +1,6 @@
 <?php
 
-$this->include_template('nextgen_gallery_display#container/before');
+$this->start_element('nextgen_gallery.gallery_container', 'container', $displayed_gallery);
 
 ?>
 <div
@@ -24,7 +24,7 @@ $this->include_template('nextgen_gallery_display#container/before');
 	<?php endif ?>
 	<?php
 
-	$this->include_template('nextgen_gallery_display#list/before');
+	$this->start_element('nextgen_gallery.image_list_container', 'container', $images);
 
 	?>
 	<!-- Thumbnails -->
@@ -39,16 +39,16 @@ $this->include_template('nextgen_gallery_display#container/before');
         <?php endif; ?>
 
 			<?php
-			
-			$template_params = array(
-					'index' => $i,
-					'class' => 'ngg-gallery-thumbnail-box',
-					'image' => $image,
-				);
-			
-			$this->include_template('nextgen_gallery_display#image/before', $template_params);
-			
+
+			$this->start_element('nextgen_gallery.image_panel', 'item', $image);
+
 			?>
+			<div id="<?php echo_h('ngg-image-' . $i) ?>" class="<?php echo_h($class) ?>" <?php if (isset($image->style)) echo $image->style; ?>>
+				<?php
+
+				$this->start_element('nextgen_gallery.image', 'item', $image);
+
+				?>
         <div class="ngg-gallery-thumbnail">
             <a href="<?php echo esc_attr($storage->get_image_url($image))?>"
                title="<?php echo esc_attr($image->description)?>"
@@ -63,29 +63,17 @@ $this->include_template('nextgen_gallery_display#container/before');
                     style="max-width:none;"
                 />
             </a>
-            <?php
-            /*
-                $triggers = $this->get_registry()->get_utility('I_NextGen_Pro_Lightbox_Trigger_Manager');
-
-                if ($triggers != null && defined('NEXTGEN_PRO_LIGHTBOX_MODULE_NAME') && $this->object->get_registry()->get_utility('I_NextGen_Settings')->thumbEffect == NEXTGEN_PRO_LIGHTBOX_MODULE_NAME)
-                {
-                    $params = array(
-                        'context' => 'image',
-                        'context-id' => $image->{$image->id_field},
-                        'context-parent' => 'gallery',
-                        'context-parent-id' => $transient_id,
-                    );
-
-                    echo $triggers->render_trigger_list(null, $params, $this->object);
-                }
-            */
-            ?>
         </div>
-				
+				<?php
+
+				$this->end_element();
+
+				?>
+			</div> 
 			<?php
-			
-			$this->include_template('nextgen_gallery_display#image/after', $template_params);
-			
+
+			$this->end_element();
+
 			?>
 
         <?php if ($number_of_columns > 0): ?>
@@ -97,7 +85,7 @@ $this->include_template('nextgen_gallery_display#container/before');
 	<?php endfor ?>
 	<?php
 
-	$this->include_template('nextgen_gallery_display#list/after');
+	$this->end_element();
 
 	?>
 
@@ -110,6 +98,6 @@ $this->include_template('nextgen_gallery_display#container/before');
 </div>
 <?php
 
-$this->include_template('nextgen_gallery_display#container/after');
+$this->end_element();
 
 ?>
