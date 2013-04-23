@@ -109,16 +109,17 @@ class Mixin_Display_Type_Controller extends Mixin
 		wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url($displayed_gallery));
 
 		// Enqueue the display type initialization routine
-		wp_enqueue_script('ngg_common', $this->object->_get_js_init_url($displayed_gallery));
+		wp_enqueue_script('ngg_common', $this->object->get_router()->get_url('/ngg_common.js'));
 
         $this->object->_add_script_data(
-            $displayed_gallery->display_type . '_init',
+            'ngg_common',
             'galleries.gallery_' . $displayed_gallery->id(),
             (array)$displayed_gallery->get_entity(),
             FALSE
         );
 
-        $this->object->enqueue_lightbox_resources($displayed_gallery);
+        if ($displayed_gallery->use_lightbox_effect)
+            $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
 
 	/**
@@ -170,34 +171,6 @@ class Mixin_Display_Type_Controller extends Mixin
         return $this->object->render_view('nextgen_gallery_display#common_js', array(), $return);
     }
 
-
-	/**
-	 * Renders the settings form for the display type
-	 */
-	function settings_action($display_type, $return)
-	{
-		// Get the fields for this gallery type
-		$fields = array();
-		foreach ($this->object->_get_field_names() as $field) {
-			$render_method = "_render_{$field}_field";
-			if ($this->object->has_method($render_method))
-				$fields[] = $this->object->$render_method($display_type);
-		}
-
-		// Render the display type settings template
-		return $this->object->render_partial('nextgen_gallery_display#display_type_settings', array(
-			'fields'		=> $fields,
-		), $return);
-	}
-
-	/**
-	 * Returns the name of the fields to
-	 */
-	function _get_field_names()
-	{
-		return array();
-	}
-
 	/**
 	 * Returns the url for the JavaScript library required
 	 * @return null|string
@@ -205,15 +178,6 @@ class Mixin_Display_Type_Controller extends Mixin
 	function _get_js_lib_url()
 	{
 		return NULL;
-	}
-
-	/**
-	 * Returns the url for the JavaScript initialization code required
-	 * @return null|string
-	 */
-	function _get_js_init_url()
-	{
-        return $this->object->get_router()->get_url('/ngg_common.js');
 	}
 
 
