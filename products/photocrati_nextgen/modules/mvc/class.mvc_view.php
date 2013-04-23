@@ -24,7 +24,7 @@ class C_MVC_View extends C_Component
     {
         parent::initialize($context);
         $this->_template    = $template;
-        $this->_params      = $params;
+        $this->_params      = (array) $params;
         $this->_engine      = $engine;
     }
 }
