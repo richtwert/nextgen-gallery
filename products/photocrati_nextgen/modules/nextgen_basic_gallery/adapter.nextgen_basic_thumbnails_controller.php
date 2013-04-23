@@ -185,14 +185,4 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
 	{
         return $this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails.js');
 	}
-
-	/**
-	 * Provides the url of the JavaScript resource used to initialize
-	 * NextGEN Basic Thumbnails to display
-	 * @return string
-	 */
-	function _get_js_init_url()
-	{
-        return $this->object->get_static_url('nextgen_basic_gallery#thumbnails/nextgen_basic_thumbnails_init.js');
-	}
 }

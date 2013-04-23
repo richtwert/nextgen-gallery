@@ -95,14 +95,4 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin_NextGen_Basic_Gallery_C
 	{
 		return $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow.js');
 	}
-
-	/**
-	 * Provides the url of the JavaScript resource used to initialize
-	 * NextGEN Basic Slideshow to display
-	 * @return string
-	 */
-	function _get_js_init_url()
-	{
-		return $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow_init.js');
-	}
 }

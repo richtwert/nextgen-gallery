@@ -87,6 +87,11 @@ class M_Gallery_Display extends C_Base_Module
 			'I_Page_Manager',
 			'A_Display_Settings_Page'
 		);
+
+        $this->get_registry()->add_adapter(
+            'I_Router',
+            'A_Gallery_Display_Routes'
+        );
 	}
 
 	/**
@@ -183,6 +188,7 @@ class M_Gallery_Display extends C_Base_Module
             'adapter.display_settings_page.php',
             'adapter.gallery_display_factory.php',
             'adapter.gallery_display_installer.php',
+            'adapter.gallery_display_routes.php',
             'class.alternative_view_manager.php',
             'class.displayed_gallery.php',
             'class.displayed_gallery_mapper.php',

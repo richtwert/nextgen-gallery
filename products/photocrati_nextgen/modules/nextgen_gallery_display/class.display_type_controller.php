@@ -109,7 +109,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url($displayed_gallery));
 
 		// Enqueue the display type initialization routine
-		wp_enqueue_script($displayed_gallery->display_type . '_init', $this->object->_get_js_init_url($displayed_gallery));
+		wp_enqueue_script('ngg_common', $this->object->_get_js_init_url($displayed_gallery));
 
         $this->object->_add_script_data(
             $displayed_gallery->display_type . '_init',
@@ -167,6 +167,17 @@ class Mixin_Display_Type_Controller extends Mixin
 		return $this->object->render_partial('nextgen_gallery_display#index', array(), $return);
 	}
 
+    /**
+     * Renders a common JS file for all displayed galleries
+     * @param bool $return
+     * @return mixed
+     */
+    function common_js_action($return=FALSE)
+    {
+        $this->object->set_content_type('javascript');
+        return $this->object->render_view('nextgen_gallery_display#common_js', array(), $return);
+    }
+
 
 	/**
 	 * Renders the settings form for the display type
@@ -210,7 +221,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return NULL;
+		return $this->object->get_url('/ngg_common.js');
 	}
 
 

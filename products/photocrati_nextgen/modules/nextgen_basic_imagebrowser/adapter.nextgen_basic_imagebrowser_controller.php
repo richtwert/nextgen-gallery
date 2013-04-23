@@ -194,15 +194,4 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         );
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
     }
-
-    /**
-     * Provides the url of the JavaScript resource used to initialize NextGEN Basic Imagebrowsers to display
-     *
-     * @return string
-     */
-    function _get_js_init_url()
-    {
-        return $this->object->get_static_url('nextgen_basic_imagebrowser#init.js');
-    }
-
 }
