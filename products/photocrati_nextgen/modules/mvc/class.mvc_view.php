@@ -5,10 +5,10 @@ class C_MVC_View extends C_Component
     var $_template = '';
     var $_engine   = '';
     var $_params   = array();
-		var $_queue = array();
+    var $_queue = array();
 		
     
-    function define($params, $context=FALSE)
+    function define($template, $params=array(), $engine='php', $context=FALSE)
     {
         parent::define($context);
         $this->implement('I_MVC_View');

@@ -139,14 +139,6 @@ class Mixin_Display_Type_Controller extends Mixin
 	}
 	
 	
-	function create_view($template, $params=array(), $context=NULL)
-	{
-		$view = $this->call_parent('create_view', $template, $params, $context);
-		
-		return $view;
-	}
-	
-	
 	function prepare_display_parameters($displayed_gallery, $params = null)
 	{
 		if ($params == null)
@@ -221,7 +213,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function _get_js_init_url()
 	{
-		return $this->object->get_url('/ngg_common.js');
+        return $this->object->get_router()->get_url('/ngg_common.js');
 	}
 
 
