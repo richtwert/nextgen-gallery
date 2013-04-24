@@ -43,7 +43,7 @@ $this->start_element('nextgen_gallery.gallery_container', 'container', $displaye
 			$this->start_element('nextgen_gallery.image_panel', 'item', $image);
 
 			?>
-			<div id="<?php echo_h('ngg-image-' . $i) ?>" class="<?php echo_h($class) ?>" <?php if (isset($image->style)) echo $image->style; ?>>
+			<div id="<?php echo_h('ngg-image-' . $i) ?>" class="ngg-gallery-thumbnail-box" <?php if (isset($image->style)) echo $image->style; ?>>
 				<?php
 
 				$this->start_element('nextgen_gallery.image', 'item', $image);
