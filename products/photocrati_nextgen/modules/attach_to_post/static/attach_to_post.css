@@ -261,7 +261,7 @@ table {
 /**
  * Make the active tab still clickable
  **/
-.ui-tabs-nav li a.ui-state-active, .ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+.ui-tabs .ui-tabs-nav li.ui-tabs-active a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-tabs-loading a {
 	cursor: pointer;
 }
 

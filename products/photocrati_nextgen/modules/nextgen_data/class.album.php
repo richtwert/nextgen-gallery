@@ -1,16 +1,5 @@
 <?php
 
-/**
- * Represents a named collection of galleries
- *
- * * Properties:
- * - source				(gallery, album, recent_images, random_images, etc)
- * - container_ids		(gallery ids, album ids, tag ids, etc)
- * - display_type		(name of the display type being used)
- * - display_settings	(settings for the display type)
- * - exclusions			(excluded entity ids)
- * - entity_ids			(specific images/galleries to include, sorted)
- */
 class C_Album extends C_DataMapper_Model
 {
     var $_mapper_interface = 'I_Album_Mapper';
