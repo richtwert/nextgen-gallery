@@ -166,36 +166,42 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 			// look like /nggallery/album--slug.
             $id_field = $gallery->id_field;
 			if ($gallery->is_album) {
-				$gallery->pagelink = $this->object->set_param_for(
-					$this->object->get_routed_url(TRUE),
-					'album',
-					$gallery->slug
-				);
+                if ($gallery->pageid > 0) $gallery->pagelink = get_post_permalink($gallery->pageid);
+                else {
+                    $gallery->pagelink = $this->object->set_param_for(
+                        $this->object->get_routed_url(TRUE),
+                        'album',
+                        $gallery->slug
+                    );
+                }
 			}
 
 			// Otherwise, if it's a gallery then it will look like
 			// /nggallery/album--slug/gallery--slug
 			else {
-				$pagelink = $this->object->get_routed_url(TRUE);
-				$parent_album = $this->object->get_parent_album_for($gallery->$id_field);
-				if ($parent_album) {
-					$pagelink = $this->object->set_param_for(
-						$pagelink,
-						'album',
-						$parent_album->slug
-					);
-				}
-				$gallery->pagelink = $this->object->set_param_for(
-					$pagelink,
-					'gallery',
-					$gallery->slug
-				);
+                if ($gallery->pageid > 0) $gallery->pagelink = get_post_permalink($gallery->pageid);
+                else {
+                    $pagelink = $this->object->get_routed_url(TRUE);
+                    $parent_album = $this->object->get_parent_album_for($gallery->$id_field);
+                    if ($parent_album) {
+                        $pagelink = $this->object->set_param_for(
+                            $pagelink,
+                            'album',
+                            $parent_album->slug
+                        );
+                    }
+                    $gallery->pagelink = $this->object->set_param_for(
+                        $pagelink,
+                        'gallery',
+                        $gallery->slug
+                    );
+                }
 			}
 
 			// The router by default will generate param segments that look like,
 			// /gallery--foobar. We need to convert these to the admittingly
 			// nicer links that ngglegacy uses
-			$gallery->pagelink = $this->object->prettify_pagelink($gallery->pagelink);
+            if ($gallery->pageid <= 0) $gallery->pagelink = $this->object->prettify_pagelink($gallery->pagelink);
 
             // Let plugins modify the gallery
             $gallery = apply_filters('ngg_album_galleryobject', $gallery);
