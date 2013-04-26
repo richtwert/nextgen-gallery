@@ -128,20 +128,6 @@ class C_NextGEN_Bootstrap
 	static function activate()
 	{
 		self::get_pope_installer()->install();
-//		// Grant NextGEN capabilities for Administator role
-//		$role = get_role('administrator');
-//		$caps = array(
-//			NEXTGEN_GALLERY_OVERVIEW_CAP,
-//			'NextGEN Use TinyMCE',
-//			NEXTGEN_GALLERY_UPLOAD_IMAGE_CAP,
-//			NEXTGEN_GALLERY_MANAGE_GALLERY_CAP,
-//			NEXTGEN_GALLERY_MANAGE_TAGS_CAP,
-//			'NextGEN Manage others gallery',
-//			NEXTGEN_GALLERY_MANAGE_ALBUM_CAP,
-//			'NextGEN Change style',
-//			NEXTGEN_GALLERY_CHANGE_OPTIONS_CAP
-//		);
-//		foreach ($caps as $cap) $role->add_cap($cap);
 	}
 
 	/**

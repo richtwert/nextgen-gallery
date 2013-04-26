@@ -289,7 +289,7 @@ jQuery(document).ready( function($) {
 					<select <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery page id' ); ?>  name="pageid" style="width:95%">
 						<option value="0" ><?php _e('Not linked', 'nggallery') ?></option>
                         <?php foreach (get_pages() as $page): ?>
-                            <option value="<?php echo esc_attr($page->ID)?>"><?php echo esc_html($page->post_title)?></option>
+                            <option <?php selected($gallery->pageid, $page->ID) ?> value="<?php echo esc_attr($page->ID)?>"><?php echo esc_html($page->post_title)?></option>
                         <?php endforeach ?>
 					</select>
 					</th>
