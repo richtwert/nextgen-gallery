@@ -8,6 +8,8 @@
 ***/
 
 define('NEXTGEN_DISPLAY_SETTINGS_SLUG', 'ngg_display_settings');
+define('NEXTGEN_DISPLAY_PRIORITY_BASE', 1000);
+define('NEXTGEN_DISPLAY_PRIORITY_STEP', 200);
 
 class M_Gallery_Display extends C_Base_Module
 {

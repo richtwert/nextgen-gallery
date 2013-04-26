@@ -19,6 +19,11 @@ class A_NextGen_Basic_Album extends Mixin
             );
         }
     }
+    
+		function get_order()
+		{
+			return NEXTGEN_DISPLAY_PRIORITY_BASE + NEXTGEN_DISPLAY_PRIORITY_STEP;
+		}
 }
 
 /**
