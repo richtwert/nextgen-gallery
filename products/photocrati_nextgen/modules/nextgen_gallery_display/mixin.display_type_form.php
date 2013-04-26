@@ -4,6 +4,12 @@ class Mixin_Display_Type_Form extends Mixin
 {
 	var $_model = null;
 	
+
+  function initialize()
+  {
+  	$this->object->implement('I_Display_Type_Form');
+  }
+  
 	/**
 	 * Returns the name of the display type. Sub-class should override
 	 * @throws Exception
