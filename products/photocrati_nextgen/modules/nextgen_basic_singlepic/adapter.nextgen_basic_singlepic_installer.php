@@ -19,7 +19,8 @@ class A_NextGen_Basic_SinglePic_Installer extends Mixin
 			'title'					=>	'NextGEN Basic SinglePic',
 			'entity_types'			=>	array('image'),
 			'preview_image_relpath'	=>	'nextgen_basic_singlepic#preview.gif',
-			'default_source'		=>	'galleries'
+			'default_source'		=>	'galleries',
+			'view_order' => NEXTGEN_DISPLAY_PRIORITY_BASE + 60
 		));
 	}
 }

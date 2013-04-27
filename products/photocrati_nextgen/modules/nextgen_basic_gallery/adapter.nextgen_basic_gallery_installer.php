@@ -20,7 +20,8 @@ class A_NextGen_Basic_Gallery_Installer extends Mixin
                 'title'					=>	'NextGEN Basic Thumbnails',
                 'entity_types'			=>	array('image'),
                 'preview_image_relpath'	=>	'nextgen_basic_gallery#thumb_preview.jpg',
-                'default_source'		=>	'galleries'
+                'default_source'		=>	'galleries',
+								'view_order' => NEXTGEN_DISPLAY_PRIORITY_BASE
             )
         );
         
@@ -29,7 +30,8 @@ class A_NextGen_Basic_Gallery_Installer extends Mixin
                 'title'					=>	'NextGEN Basic Slideshow',
                 'entity_types'			=>	array('image'),
                 'preview_image_relpath'	=>	'nextgen_basic_gallery#slideshow_preview.jpg',
-                'default_source'		=>	'galleries'
+                'default_source'		=>	'galleries',
+								'view_order' => NEXTGEN_DISPLAY_PRIORITY_BASE + 10
             )
         );
     }

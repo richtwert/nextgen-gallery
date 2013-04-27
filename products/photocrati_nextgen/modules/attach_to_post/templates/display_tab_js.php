@@ -737,7 +737,7 @@ jQuery(function($){
 					display_order = order_base;
 				var display_step = Math.floor(display_order / order_step);
 				if (current_step > 0 && display_step > current_step) {
-					this.$el.append('<li class="clear"/>');
+					this.$el.append('<li class="clear" style="height: 10px" />');
 				}
 				current_step = display_step;
 				this.$el.append(display_type.render().el);

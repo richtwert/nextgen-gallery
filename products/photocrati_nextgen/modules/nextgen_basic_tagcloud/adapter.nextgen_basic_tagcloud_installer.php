@@ -25,7 +25,8 @@ class A_NextGen_Basic_Tagcloud_Installer extends Mixin
 				'title'					=>	'NextGEN Basic TagCloud',
 				'entity_types'			=>	array('image'),
 				'preview_image_relpath'	=>	'nextgen_basic_tagcloud#preview.gif',
-				'default_source'		=>	'tags'
+				'default_source'		=>	'tags',
+				'view_order' => NEXTGEN_DISPLAY_PRIORITY_BASE + 100
 			)
 
 		);
