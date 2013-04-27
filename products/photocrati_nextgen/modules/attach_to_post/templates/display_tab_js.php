@@ -661,6 +661,8 @@ jQuery(function($){
 
 		initialize: function(){
 			this.display_types	= Ngg.DisplayTab.instance.display_types;
+			this.display_type_order_base	= Ngg.DisplayTab.instance.display_type_order_base;
+			this.display_type_order_step	= Ngg.DisplayTab.instance.display_type_order_step;
 			this.sources		= Ngg.DisplayTab.instance.sources;
 			this.render();
 		},
@@ -707,8 +709,13 @@ jQuery(function($){
 
 		render: function(){
 			var selected_source = this.sources.selected();
+			var current_step = 0;
 			selected_source = selected_source.length > 0 ? selected_source[0] : false;
 			this.$el.empty();
+			
+			var order_base = this.display_type_order_base;
+			var order_step = this.display_type_order_step;
+			
 			this.display_types.each(function(item){
 				if (selected_source && !item.is_compatible_with_source(selected_source)) {
 
@@ -725,6 +732,14 @@ jQuery(function($){
 					item.set('selected', true);
 					this.selection_changed(item.id);
 				}
+				var display_order = item.get('view_order');
+				if (!display_order)
+					display_order = order_base;
+				var display_step = Math.floor(display_order / order_step);
+				if (current_step > 0 && display_step > current_step) {
+					this.$el.append('<li class="clear" style="height: 10px" />');
+				}
+				current_step = display_step;
 				this.$el.append(display_type.render().el);
 			}, this);
 			return this;
@@ -1440,6 +1455,8 @@ jQuery(function($){
 			this.display_types = new Ngg.DisplayTab.Models.Display_Type_Collection(
 				<?php echo $display_types ?>
 			);
+			this.display_type_order_base = <?php echo NEXTGEN_DISPLAY_PRIORITY_BASE; ?>;
+			this.display_type_order_step = <?php echo NEXTGEN_DISPLAY_PRIORITY_STEP; ?>;
 			this.entities = new Ngg.DisplayTab.Models.Entity_Collection();
 			this.entities.extra_data.displayed_gallery = this.displayed_gallery;
 

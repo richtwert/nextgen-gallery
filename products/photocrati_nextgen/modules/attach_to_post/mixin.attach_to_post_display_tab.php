@@ -36,6 +36,10 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
         $all_tags->name = "All";
         $all_tags->id   = "All";
         array_unshift($tags, $all_tags);
+        
+        $display_types = $display_type_mapper->find_all();
+        
+        usort($display_types, array($this->object, '_display_type_list_sort'));
 
         $this->object->render_view('attach_to_post#display_tab_js', array(
                 'displayed_gallery'		=>	json_encode($this->object->_displayed_gallery->get_entity()),
@@ -44,9 +48,33 @@ class Mixin_Attach_To_Post_Display_Tab extends Mixin
                 'galleries'				=>	json_encode($gallery_mapper->find_all()),
                 'albums'				=>	json_encode($album_mapper->find_all()),
                 'tags'					=>	json_encode($tags),
-                'display_types'			=>	json_encode($display_type_mapper->find_all()),
+                'display_types'			=>	json_encode($display_types),
                 'sec_token'				=>	$security->get_request_token('nextgen_edit_displayed_gallery')->get_json()
         ));
+	}
+	
+	function _display_type_list_sort($type_1, $type_2)
+	{
+		$order_1 = $type_1->view_order;
+		$order_2 = $type_2->view_order;
+		
+		if ($order_1 == null) {
+			$order_1 = NEXTGEN_DISPLAY_PRIORITY_BASE;
+		}
+		
+		if ($order_2 == null) {
+			$order_2 = NEXTGEN_DISPLAY_PRIORITY_BASE;
+		}
+		
+		if ($order_1 > $order_2) {
+			return 1;
+		}
+		
+		if ($order_1 < $order_2) {
+			return -1;
+		}
+		
+		return 0;
 	}
 
 
