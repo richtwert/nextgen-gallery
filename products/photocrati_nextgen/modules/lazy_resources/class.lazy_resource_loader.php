@@ -30,25 +30,12 @@ class C_Lazy_Resource_Loader extends C_Component
 
 
 	/**
-	 * Initializes the loader by collecting the scripts and styles to lazy load
-	 */
-	function initialize()
-	{
-		parent::initialize();
-		wp_print_scripts();
-		ob_start();
-		wp_print_styles();
-		$this->style_urls = $this->_parse_resource_urls(ob_get_contents());
-		ob_end_clean();
-	}
-
-	/**
 	 * Parses HTML for urls of static resources
 	 */
 	function _parse_resource_urls($html)
 	{
 		$urls = array();
-		if (preg_match_all("/(src|href)=['\"]([^'\"]+)/", $html, $matches, PREG_SET_ORDER)) {
+		if (preg_match_all("/(href)=['\"]([^'\"]+)/", $html, $matches, PREG_SET_ORDER)) {
 			foreach($matches as $match) {
 				if (isset($match[2])) {
 					$urls[] = $match[2];
@@ -68,6 +55,12 @@ class Mixin_Lazy_Resource_Loader extends Mixin
 	 */
 	function enqueue($return=FALSE)
 	{
+        wp_print_scripts();
+        ob_start();
+        wp_print_styles();
+        $this->style_urls = array_merge($this->style_urls, $this->_parse_resource_urls(ob_get_contents()));
+        ob_end_clean();
+
 		$out = array();
 
 		if ($this->script_urls OR $this->style_urls) {

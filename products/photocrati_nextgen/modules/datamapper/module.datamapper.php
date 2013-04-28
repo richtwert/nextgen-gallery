@@ -37,6 +37,7 @@ class M_DataMapper extends C_Base_Module
         add_filter('posts_groupby', array(&$this, 'set_custom_wp_query_groupby'), 50, 2);
 	}
 
+
 	/**
 	 * Sets a custom SQL query for the WP_Query class, when the Custom Post
 	 * DataMapper implementation is used

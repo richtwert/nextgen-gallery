@@ -99,8 +99,6 @@ class M_Gallery_Display extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
-        add_action('wp_enqueue_scripts', array(&$this, 'enqueue_galleries_js'));
-
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
 
@@ -114,31 +112,27 @@ class M_Gallery_Display extends C_Base_Module
     {
         $router = $this->get_registry()->get_utility('I_Router');
 
-        wp_register_script(
-            'nextgen_gallery_display_settings',
-            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js'),
-            array('jquery-ui-accordion', 'jquery-ui-tooltip')
-        );
+        // These shouldn't ALWAYS be enqueued
+//        wp_register_script(
+//            'nextgen_gallery_display_settings',
+//            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js'),
+//            array('jquery-ui-accordion', 'jquery-ui-tooltip')
+//        );
+//
+//        wp_register_style(
+//            'nextgen_gallery_display_settings',
+//            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
+//        );
+//
+//        wp_register_script(
+//            'jquery.nextgen_radio_toggle',
+//            $router->get_static_url('nextgen_gallery_display#jquery.nextgen_radio_toggle.js'),
+//            array('jquery')
+//        );
 
-        wp_register_style(
-            'nextgen_gallery_display_settings',
-            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
-        );
-
-        wp_register_script(
-            'jquery.nextgen_radio_toggle',
-            $router->get_static_url('nextgen_gallery_display#jquery.nextgen_radio_toggle.js'),
-            array('jquery')
-        );
+        wp_register_script('ngg_common', $router->get_url('/ngg_common.js'));
     }
 
-	// TODO: Is this the right place for this?
-    function enqueue_galleries_js()
-    {
-		$router = $this->get_registry()->get_utility('I_Router');
-        wp_register_script('nextgen_galleries', $router->get_static_url('nextgen_gallery_display#nextgen_galleries.js'));
-        wp_enqueue_script('nextgen_galleries');
-    }
 
 	/**
 	 * Adds the display settings page to wp-admin

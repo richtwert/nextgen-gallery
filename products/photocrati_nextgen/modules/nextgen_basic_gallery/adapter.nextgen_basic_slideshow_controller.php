@@ -78,6 +78,10 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin_NextGen_Basic_Gallery_C
 
 		wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_gallery#slideshow/nextgen_basic_slideshow.css'));
         wp_enqueue_script('waitforimages', $this->get_static_url('nextgen_basic_gallery#slideshow/jquery.waitforimages.js'));
+
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_enqueue_style('nggallery', $this->object->get_static_url('ngglegacy#'.$settings->CSSfile));
+
 		$this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 

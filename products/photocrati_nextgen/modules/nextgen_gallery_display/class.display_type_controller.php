@@ -105,12 +105,22 @@ class Mixin_Display_Type_Controller extends Mixin
 	 */
 	function enqueue_frontend_resources($displayed_gallery)
 	{
+        // This script provides common JavaScript among all display types
+        wp_enqueue_script('ngg_common');
+
 		// Enqueue the display type library
 		wp_enqueue_script($displayed_gallery->display_type, $this->object->_get_js_lib_url($displayed_gallery));
 
-		// Enqueue the display type initialization routine
-		wp_enqueue_script('ngg_common', $this->object->get_router()->get_url('/ngg_common.js'));
+        // Add "galleries = {};"
+        $this->object->_add_script_data(
+            'ngg_common',
+            'galleries',
+            new stdClass,
+            TRUE,
+            FALSE
+        );
 
+        // Add "galleries.gallery_1 = {};"
         $this->object->_add_script_data(
             'ngg_common',
             'galleries.gallery_' . $displayed_gallery->id(),
@@ -123,6 +133,7 @@ class Mixin_Display_Type_Controller extends Mixin
 	}
 
 	/**
+     * TODO: Is this method still used?
 	 * Enqueues resources for a particular display type
 	 * @param C_Display_Type $display_type
 	 */
@@ -207,7 +218,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		$retval = FALSE;
 
 		// wp_localize_script allows you to add data to the DOM, associated
-		// with a particular script. You can even call wp_localie_script
+		// with a particular script. You can even call wp_localize_script
 		// multiple times to add multiple objects to the DOM. However, there
 		// are a few problems with wp_localize_script:
 		//
@@ -236,10 +247,12 @@ class Mixin_Display_Type_Controller extends Mixin
 				$data .= $addition;
 				$retval = TRUE;
 			}
-			else if (strpos($data, "{$object_name} = ") === FALSE) {
+			else if (strpos($data, $object_name) === FALSE) {
 				$data .= $addition;
 				$retval = TRUE;
 			}
+
+            $script->extra['data'] = $data;
 		}
 
 		return $retval;

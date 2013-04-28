@@ -74,6 +74,10 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
     function enqueue_frontend_resources($displayed_gallery)
     {
         wp_enqueue_style('photocrati-nextgen_basic_tagcloud-style', $this->get_static_url('nextgen_basic_tagcloud#nextgen_basic_tagcloud.css'));
+
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_enqueue_style('nggallery', $this->object->get_static_url('ngglegacy#'.$settings->CSSfile));
+
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
     }
 

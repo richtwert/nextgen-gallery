@@ -238,8 +238,13 @@ class A_NextGen_Basic_Album_Controller extends Mixin
      */
     function enqueue_frontend_resources($displayed_gallery)
     {
-        wp_enqueue_style('nextgen_basic_album_style', $this->get_static_url('nextgen_basic_album#nextgen_basic_album.css'));
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
+
+        wp_enqueue_style('nextgen_basic_album_style', $this->get_static_url('nextgen_basic_album#nextgen_basic_album.css'));
+
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_enqueue_style('nggallery', $this->object->get_static_url('ngglegacy#'.$settings->CSSfile));
+
     }
 
 }

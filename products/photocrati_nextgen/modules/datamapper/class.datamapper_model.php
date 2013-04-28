@@ -12,6 +12,7 @@ class C_DataMapper_Model extends C_Component
 	{
 		parent::define($context);
 		$this->add_mixin('Mixin_Validation');
+        $this->add_mixin('Mixin_DataMapper_Model_Instance_Methods');
 		$this->add_mixin('Mixin_DataMapper_Model_Validation');
 		$this->implement('I_DataMapper_Model');
 	}
@@ -37,14 +38,6 @@ class C_DataMapper_Model extends C_Component
 	function get_mapper()
 	{
 		return $this->_mapper;
-	}
-
-	/**
-	 * Returns the associated entity
-	 */
-	function &get_entity()
-	{
-		return $this->_stdObject;
 	}
 
 
@@ -150,4 +143,15 @@ class Mixin_DataMapper_Model_Validation extends Mixin
 	{
 		return $this->object->is_valid();
 	}
+}
+
+class Mixin_DataMapper_Model_Instance_Methods extends Mixin
+{
+    /**
+     * Returns the associated entity
+     */
+    function &get_entity()
+    {
+        return $this->object->_stdObject;
+    }
 }

@@ -173,6 +173,9 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
         if ($displayed_gallery->display_settings['ajax_pagination'])
             wp_enqueue_script('nextgen-basic-thumbnails-ajax-pagination', $this->object->get_static_url('nextgen_basic_gallery#thumbnails/ajax_pagination.js'));
 
+        $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+        wp_enqueue_style('nggallery', $this->object->get_static_url('ngglegacy#'.$settings->CSSfile));
+
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 	}
 
