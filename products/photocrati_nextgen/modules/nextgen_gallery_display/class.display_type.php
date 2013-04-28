@@ -88,4 +88,9 @@ class Mixin_Display_Type_Instance_Methods extends Mixin
 
 		return $success;
 	}
+	
+	function get_order()
+	{
+		return NEXTGEN_DISPLAY_PRIORITY_BASE;
+	}
 }
