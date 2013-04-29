@@ -72,6 +72,7 @@ class Mixin_Dynamic_Stylesheet_Instance_Methods extends Mixin
 	{
 		if (($index = $this->object->get_css_template_index($name)) !== FALSE) {
 			$lazy_resources	= $this->get_registry()->get_utility('I_Lazy_Resource_Loader');
+            if (is_subclass_of($data, 'C_DataMapper_Model')) $data = $data->get_entity();
 			$data			= $this->object->encode($data);
 			$lazy_resources->style_urls[] = $this->get_router()->get_url("{$this->object->_app}/$index/{$data}");
 		}
