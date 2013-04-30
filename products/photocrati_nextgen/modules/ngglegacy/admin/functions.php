@@ -176,6 +176,9 @@ class nggAdmin{
 				nggGallery::show_error(__('Database error. Could not add gallery!','nggallery'));
 				return;
 			}
+            else {
+                do_action('ngg_created_new_gallery', $gallery_id);
+            }
 			$created_msg = _n( 'Gallery', 'Galleries', 1, 'nggallery' ) . ' <strong>' . esc_html( $galleryname ) . '</strong> ' . __('successfully created!','nggallery') . '<br />';
 		}
 
@@ -204,6 +207,7 @@ class nggAdmin{
 
 		// add images to database
 		$image_ids = nggAdmin::add_Images($gallery_id, $new_images);
+        do_action('ngg_after_new_images_added', $gallery_id, $image_ids);
 
 		//add the preview image if needed
 		nggAdmin::set_gallery_preview ( $gallery_id );
@@ -763,7 +767,7 @@ class nggAdmin{
 			return false;
 
 		$defaultpath = $ngg->options['gallerypath'];
-		$zipurl = $_POST['zipurl'];
+		$zipurl = isset($_POST['zipurl']) ? $_POST['zipurl'] : '';
 
 		// if someone entered a URL try to upload it
 		if (!empty($zipurl) && (function_exists('curl_init')) ) {

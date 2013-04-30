@@ -16,7 +16,7 @@ class A_WordPress_Routing_App extends Mixin
     function is_postname_required_in_url()
     {
         global $wp_query;
-        return !$wp_query->is_single();
+        return !$wp_query->is_single() && in_the_loop();
     }
 
     function parse_url($url)
