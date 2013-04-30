@@ -57,9 +57,10 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         }
 
         $params = $display_settings;
-        $params['inner_content'] = $displayed_gallery->inner_content;
-        $params['storage']       = &$storage;
-        $params['tagcloud']      = wp_generate_tag_cloud($tags, $args);
+        $params['inner_content']        = $displayed_gallery->inner_content;
+        $params['storage']              = &$storage;
+        $params['tagcloud']             = wp_generate_tag_cloud($tags, $args);
+        $params['displayed_gallery_id'] = $displayed_gallery->id();
                 
         $params = $this->object->prepare_display_parameters($displayed_gallery, $params);
         
