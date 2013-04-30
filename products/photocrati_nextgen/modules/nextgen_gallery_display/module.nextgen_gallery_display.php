@@ -114,24 +114,22 @@ class M_Gallery_Display extends C_Base_Module
     {
         $router = $this->get_registry()->get_utility('I_Router');
 
-        if (is_admin()) {
-            wp_register_script(
-                'nextgen_gallery_display_settings',
-                $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js'),
-                array('jquery-ui-accordion', 'jquery-ui-tooltip')
-            );
+        wp_register_script(
+            'nextgen_gallery_display_settings',
+            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js'),
+            array('jquery-ui-accordion', 'jquery-ui-tooltip')
+        );
 
-            wp_register_style(
-                'nextgen_gallery_display_settings',
-                $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
-            );
+        wp_register_style(
+            'nextgen_gallery_display_settings',
+            $router->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
+        );
 
-            wp_register_script(
-                'jquery.nextgen_radio_toggle',
-                $router->get_static_url('nextgen_gallery_display#jquery.nextgen_radio_toggle.js'),
-                array('jquery')
-            );
-        }
+        wp_register_script(
+            'jquery.nextgen_radio_toggle',
+            $router->get_static_url('nextgen_gallery_display#jquery.nextgen_radio_toggle.js'),
+            array('jquery')
+        );
 
         wp_register_script('ngg_common', $router->get_url('/ngg_common.js'));
     }
