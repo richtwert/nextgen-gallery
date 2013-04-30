@@ -97,7 +97,13 @@ $this->start_element('nextgen_gallery.gallery_container', 'container', $displaye
 	<?php endif ?>
 </div>
 <?php
-
 $this->end_element();
-
 ?>
+<script type="text/javascript">
+(function($){
+    $('#ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>').css('opacity', 0.0);
+    $(document).on('lazy_resources_loaded', function(){
+        $('#ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>').css('opacity', 1.0);
+    });
+})(jQuery);
+</script>
