@@ -139,14 +139,24 @@ class Mixin_Fs_Instance_Methods extends Mixin
 			if (!$search_paths)
                 $search_paths = $this->object->get_search_paths($path, $module);
 
-			// Now that know where to search, let's find the file
-			foreach ($search_paths as $dir) {
-                if (($retval = $this->object->_rglob($dir, $path)))
-                {
-                    if ($relpath)
-                        $retval = $this->object->remove_path_segment($retval, $this->object->get_document_root());
+            // See if the file is located under one of the search paths directly
+            foreach ($search_paths as $dir) {
+                if (file_exists($this->object->join_paths($dir, $path))) {
+                    $retval = $this->object->join_paths($dir, $path);
                     break;
                 }
+            }
+
+            // Use rglob to find the file
+            if (!$retval) foreach ($search_paths as $dir) {
+                if (($retval = $this->object->_rglob($dir, $path))) {
+                    break;
+                }
+            }
+
+            // Return the relative path if we're to do so
+            if ($relpath) {
+                $retval = $this->object->remove_path_segment($retval, $this->object->get_document_root());
             }
         }
 

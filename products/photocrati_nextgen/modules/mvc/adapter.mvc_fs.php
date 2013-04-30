@@ -17,7 +17,7 @@ class A_MVC_Fs extends Mixin
         if (!$module)
             list($path, $module) = $this->object->parse_formatted_path($path);
 
-            return $this->object->find_abspath(
+        return $this->object->find_abspath(
             $this->object->join_paths($settings->mvc_static_dirname, $path),
             $module,
             $relative
