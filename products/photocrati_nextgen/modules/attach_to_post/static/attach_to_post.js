@@ -11,7 +11,6 @@ function adjust_height_for_frame(frame, callback)
 	// Adjust height of the frame
 	var $frame			= jQuery(frame);
 	var new_height		= $frame.contents().find('#wpbody').height();
-	//new_height += 60; // needed for IE8 and Firefox. Could probably be tweaked
 	var current_height	= $frame.height();
 	if (current_height != new_height) {
 		var frame_id = $frame.attr('id');

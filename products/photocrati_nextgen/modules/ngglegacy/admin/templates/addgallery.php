@@ -140,13 +140,17 @@
 					  root: jQuery("#galleryfolder").val()
 					}, function(folder) {
 						jQuery("#galleryfolder").val( folder );
+
+                        if (top != window) {
+                            if (typeof(parent.adjust_height_for_frame) != 'undefined') {
+                                setTimeout(function(){
+                                    parent.adjust_height_for_frame(window.frameElement);
+                                }, 100);
+                            }
+                        }
+
 					});
 					jQuery("#file_browser").show('slide');
-					if (top != window) {
-						if (typeof(parent.adjust_height_for_frame) != 'undefined') {
-							parent.adjust_height_for_frame(window.frameElement);
-						}
-					}
 				});
 
 			$(this).data('ready', true);

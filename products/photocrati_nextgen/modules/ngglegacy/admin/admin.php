@@ -383,7 +383,7 @@ class nggAdminPanel{
 			case "nggallery-add-gallery" :
 				wp_enqueue_script( 'jquery-ui-accordion' );
 				wp_enqueue_script( 'multifile', NGGALLERY_URLPATH .'admin/js/jquery.MultiFile.js', array('jquery'), '1.4.4' );
-        wp_enqueue_script( 'ngg-plupload-handler' );
+                wp_enqueue_script( 'ngg-plupload-handler' );
 				wp_enqueue_script( 'ngg-ajax' );
 				wp_enqueue_script( 'ngg-progressbar' );
                 wp_enqueue_script( 'jquery-ui-dialog' );
