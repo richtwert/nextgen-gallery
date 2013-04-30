@@ -67,5 +67,12 @@ $this->include_template('nextgen_gallery_display#container/before');
 <?php
 
 $this->include_template('nextgen_gallery_display#container/after');
-
 ?>
+<script type="text/javascript">
+(function($){
+    $('#<?php echo $anchor ?>').css('opacity', 0.0);
+    $(document).on('lazy_resources_loaded', function(){
+        $('#<?php echo $anchor ?>').css('opacity', 1.0);
+    });
+})(jQuery);
+</script>

@@ -118,7 +118,7 @@ class A_NextGen_Basic_ImageBrowser_Controller extends Mixin
         );
 
         // css class
-        $anchor = 'ngg-imagebrowser-' . $picture->galleryid . '-' . (get_the_ID() == false) ? 0 : get_the_ID();
+        $anchor = 'ngg-imagebrowser-' . $picture->galleryid . '-' . (get_the_ID() == false ? 0 : get_the_ID());
 
         // try to read EXIF data, but fallback to the db presets
         $meta = new C_NextGen_Metadata($picture);
