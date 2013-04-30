@@ -1,15 +1,15 @@
-<?php if (!empty($image)) { ?>
-		<?php
-		
-		$template_params = array(
-				'index' => 0,
-				'class' => 'ngg-gallery-singlepic-image',
-				'image' => $image,
-			);
-		
-		$this->include_template('nextgen_gallery_display#image/before', $template_params);
-		
-		?>
+<?php if (!empty($image)): ?>
+    <?php
+
+    $template_params = array(
+            'index' => 0,
+            'class' => 'ngg-gallery-singlepic-image',
+            'image' => $image,
+        );
+
+    $this->include_template('nextgen_gallery_display#image/before', $template_params);
+
+    ?>
     <a href="<?php echo esc_attr($settings['link']); ?>"
        title="<?php echo esc_attr($image->description)?>"
        data-image-id='<?php echo esc_attr($image->pid); ?>'
@@ -21,9 +21,16 @@
              <?php if (!empty($settings['width']))  { ?>width="<?php echo esc_attr($settings['width']); ?>"<?php } ?>
              <?php if (!empty($settings['height'])) { ?>height="<?php echo esc_attr($settings['height']); ?>"<?php } ?>/></a>
     <?php if (!is_null($inner_content)) { ?><span><?php echo $inner_content; ?></span><?php } ?>
-		<?php
-		
-		$this->include_template('nextgen_gallery_display#image/after', $template_params);
-		
-		?>
-<?php } ?>
+    <?php $this->include_template('nextgen_gallery_display#image/after', $template_params); ?>
+
+    <script type="text/javascript">
+        (function($){
+            $('a[data-image-id="<?php echo esc_attr($image->pid)?>"]').css('opacity', 0.0);
+            $(document).on('lazy_resources_loaded', function(){
+                $('a[data-image-id="<?php echo esc_attr($image->pid)?>"]').css('opacity', 1.0);
+            });
+        })(jQuery);
+    </script>
+<?php else: ?>
+    <p>No image found</p>
+<?php endif ?>
