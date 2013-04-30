@@ -69,6 +69,7 @@ class Mixin_Router extends Mixin
 				$parts['query'] = $this->object->get_querystring();
 			else
 				$parts['query'] = $this->object->join_querystrings($parts['query'], $this->object->get_querystring());
+
 			$retval = $this->object->construct_url_from_parts($parts);
 
 		}

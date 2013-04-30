@@ -10,19 +10,13 @@ class A_WordPress_Router extends Mixin
 		$parts = parse_url($this->object->get_base_url());
 		if (isset($parts['path'])) $this->object->context = $parts['path'];
 
+
 		$this->object->add_post_hook(
 			'get_url',
 			'Construct url for WordPress, considering permalinks',
 			get_class(),
 			'_modify_url_for_wordpress'
 		);
-
-        $this->add_post_hook(
-            'get_url',
-            'Make Wordpress specific URI adjustments',
-            'Hook_WordPress_Include_Post',
-            '_modify_generated_url'
-        );
 	}
 
 	function _modify_url_for_wordpress()

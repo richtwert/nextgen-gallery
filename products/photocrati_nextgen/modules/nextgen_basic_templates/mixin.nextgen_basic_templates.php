@@ -24,24 +24,11 @@ class Mixin_NextGen_Basic_Templates extends Mixin
         {
             // render the template
             extract($vars);
-            if ($return)
-            {
-                if ($template_abspath)
-                {
-                    ob_start();
-                    include($template_abspath);
-                    $retval = ob_get_contents();
-                    ob_end_clean();
-                }
-            }
-            else {
-                if ($template_abspath)
-                {
-                    include ($template_abspath);
-                }
-                else {
-                    echo $retval;
-                }
+            if ($return) ob_start();
+            include ($template_abspath);
+            if ($return) {
+                $retval = ob_get_contents();
+                ob_end_clean();
             }
         }
 

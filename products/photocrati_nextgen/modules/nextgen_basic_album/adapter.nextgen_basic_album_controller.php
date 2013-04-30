@@ -102,8 +102,11 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             // Render legacy template
             $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
             $display_settings = $this->prepare_legacy_album_params($display_settings);
-            return $this->object->legacy_render($display_settings['template'], $display_settings, $return, 'album');
+            $retval = $this->object->legacy_render($display_settings['template'], $display_settings, TRUE, 'album');
+            $retval .= "<script type='text/javascript'>jQuery('.ngg-albumoverview').css('opacity', 0.0);</script>";
 
+            if ($return) return $retval;
+            else echo($retval);
         }
         else {
             return $this->object->render_partial('nextgen_gallery_display#no_images_found');
@@ -231,6 +234,12 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 		return preg_replace($regex, '/\2', $pagelink);
 	}
 
+
+    function _get_js_lib_url()
+    {
+        return $this->object->get_static_url('nextgen_basic_album#init.js');
+    }
+
     /**
      * Enqueues all static resources required by this display type
      *
@@ -240,7 +249,8 @@ class A_NextGen_Basic_Album_Controller extends Mixin
     {
         $this->call_parent('enqueue_frontend_resources', $displayed_gallery);
 
-        wp_enqueue_style('nextgen_basic_album_style', $this->get_static_url('nextgen_basic_album#nextgen_basic_album.css'));
+        wp_enqueue_style('nextgen_basic_album_style', $this->object->get_static_url('nextgen_basic_album#nextgen_basic_album.css'));
+        wp_enqueue_script('jquery.dotdotdot', $this->object->get_static_url('nextgen_basic_album#jquery.dotdotdot-1.5.7-packed.js'), array('jquery'));
 
         $settings = $this->get_registry()->get_utility('I_Settings_Manager');
         wp_enqueue_style('nggallery', $this->object->get_static_url('ngglegacy#'.$settings->CSSfile));

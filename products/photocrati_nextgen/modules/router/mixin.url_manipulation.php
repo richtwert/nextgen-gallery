@@ -35,21 +35,83 @@ class Mixin_Url_Manipulation extends Mixin
 		return $retval;
 	}
 
+
+    /**
+     * Flattens an array of arrays to a single array
+     * @param array $array
+     * @param array $parent (optional)
+     * @param bool $exclude_duplicates (optional - defaults to TRUE)
+     * @return array
+     */
+    function _flatten_array($array, $parent=NULL, $exclude_duplicates=TRUE)
+    {
+        if (is_array($array)) {
+
+            // We're to add each element to the parent array
+            if ($parent) {
+                foreach ($array as $index => $element) {
+                    foreach ($this->_flatten_array($array) as $sub_element) {
+                        if ($exclude_duplicates) {
+                            if (!in_array($sub_element, $parent)) {
+                                $parent[] = $sub_element;
+                            }
+                        }
+                        else $parent[] = $sub_element;
+                    }
+                }
+                $array = $parent;
+            }
+
+            // We're starting the process..
+            else {
+                $index = 0;
+                while (isset($array[$index])) {
+                    $element = $array[$index];
+                    if (is_array($element)) {
+                        $array = $this->_flatten_array($element, $array);
+                        unset($array[$index]);
+                    }
+                    $index += 1;
+                }
+                $array = array_values($array);
+            }
+        }
+        else {
+            $array = array($array);
+        }
+
+        return $array;
+    }
+
+
 	function join_querystrings()
 	{
 		$parts	= array();
 		$retval = array();
 		$params = func_get_args();
-		$this->_flatten_array($params, $parts);
+		$parts = $this->_flatten_array($params);
 		foreach ($parts as $part) {
-			$retval[] = str_replace(
-				array('?', '&', '/'),
-				array('', '', ''),
-				$part
-			);
+            $part = explode("&", $part);
+            foreach ($part as $segment) {
+                $segment = explode("=", $segment);
+                $key = $segment[0];
+                $value = isset($segment[1]) ? $segment[1] : '';
+                $retval[$key] = $value;
+
+            }
 		}
-		return implode('&', array_unique($parts));
+		return $this->object->assoc_array_to_querystring($retval);
 	}
+
+    function assoc_array_to_querystring($arr)
+    {
+        $retval = array();
+        foreach ($arr as $key => $val) {
+            if (strlen($key))
+                $retval[] = strlen($val) ? "{$key}={$val}" : $key;
+        }
+        return implode("&", $retval);
+    }
 
 
 	/**

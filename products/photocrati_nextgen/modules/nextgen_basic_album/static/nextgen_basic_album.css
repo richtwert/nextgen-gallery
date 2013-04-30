@@ -80,9 +80,9 @@
 }
 
 .ngg-album-compact h4 .ngg-album-desc {
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    height: 80px;
     overflow: hidden;
+    display: block;
 }
 
 .ngg-album-compact p {

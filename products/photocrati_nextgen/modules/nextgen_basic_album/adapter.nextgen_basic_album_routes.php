@@ -42,7 +42,5 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 
 		// Perform rewrites
 		$app->do_rewrites();
-
-//        die($app->get_app_request_uri());
 	}
 }
