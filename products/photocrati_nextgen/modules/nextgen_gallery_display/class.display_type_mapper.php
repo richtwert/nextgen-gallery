@@ -107,5 +107,6 @@ class Mixin_Display_Type_Mapper extends Mixin
 		$this->_set_default_value($entity, 'settings', 'show_alternative_view_link', '');
 		$this->_set_default_value($entity, 'preview_image_relpath', '');
 		$this->_set_default_value($entity, 'default_source', '');
+        $this->_set_default_value($entity, 'view_order', NEXTGEN_DISPLAY_PRIORITY_BASE);
 	}
 }
