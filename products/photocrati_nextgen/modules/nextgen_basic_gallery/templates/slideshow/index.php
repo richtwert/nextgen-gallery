@@ -65,24 +65,28 @@
     $swfobject->add_flashvars( 'audio', $flash_background_music, '', 'string');
     $swfobject->add_flashvars( 'width', $width, '260');
     $swfobject->add_flashvars( 'height', $height, '320');
-    // create the output
-    $out  = '<div class="slideshow">' . $swfobject->output() . '</div>';
-    // add now the script code
-    $out .= "\n".'<script type="text/javascript" defer="defer">';
-    // load script via jQuery afterwards
-    // $out .= "\n".'jQuery.getScript( "' . esc_js( includes_url('js/swfobject.js') ) . '", function() {} );';
-    if ($flash_xhtml_validation) $out .= "\n".'<!--';
-    if ($flash_xhtml_validation) $out .= "\n".'//<![CDATA[';
-    $out .= 'jQuery(function($) {';
-    $out .= $swfobject->javascript();
-    $out .= '
-    });';
-    if ($flash_xhtml_validation) $out .= "\n".'//]]>';
-    if ($flash_xhtml_validation) $out .= "\n".'-->';
-    $out .= "\n".'</script>';
-    
-    echo apply_filters('ngg_show_slideshow_content', $out, $displayed_gallery_id, $width, $height);
-	?>
+    ?>
+
+    <div class="slideshow" id="gallery_<?php echo_h($displayed_gallery_id) ?>">
+        <?php echo $swfobject->output(); ?>
+    </div>
+    <script type="text/javascript" defer="defer">
+        <?php if ($flash_xhtml_validation): ?>
+        <!--
+        // <![CDATA[
+        <?php endif ?>
+        jQuery('#gallery_<?php $displayed_gallery_id ?>').css('opacity', 0.0);
+        (function($){
+            $(document).on('lazy_resources_loaded', function(){
+                <?php echo $swfobject->javascript(); ?>
+                $('#gallery_<?php $displayed_gallery_id ?>').css('opacity', 1.0);
+            });
+        })(jQuery);
+        <?php if ($flash_xhtml_validation): ?>
+        // ]]>
+        -->
+        <?php endif ?>
+    </script>
 
 <?php else: ?>
 	<!-- Display JQuery Cycle Slideshow -->
@@ -191,16 +195,18 @@
 	//<![CDATA[
 	jQuery('#<?php echo_h($anchor)?>-image-list').hide().removeClass('ngg-slideshow-nojs');
 
-    jQuery(document).ready(function() {
-		jQuery('#<?php echo_h($anchor); ?>').nggShowSlideshow({
-			id: '<?php echo_h($displayed_gallery_id); ?>',
-			fx: '<?php echo_h($cycle_effect); ?>',
-			width: <?php echo_h($gallery_width); ?>,
-			height: <?php echo_h($gallery_height); ?>,
-			domain: '<?php echo_h(trailingslashit(home_url())); ?>',
-			timeout: <?php echo_h(intval($cycle_interval) * 1000); ?>
-		});
-	});
+    (function($){
+        $(document).on('lazy_resources_loaded', function(){
+            jQuery('#<?php echo_h($anchor); ?>').nggShowSlideshow({
+                id: '<?php echo_h($displayed_gallery_id); ?>',
+                fx: '<?php echo_h($cycle_effect); ?>',
+                width: <?php echo_h($gallery_width); ?>,
+                height: <?php echo_h($gallery_height); ?>,
+                domain: '<?php echo_h(trailingslashit(home_url())); ?>',
+                timeout: <?php echo_h(intval($cycle_interval) * 1000); ?>
+            });
+        });
+    })(jQuery);
 	//]]>
 	</script>
 <?php endif ?>
