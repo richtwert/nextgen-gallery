@@ -132,26 +132,13 @@ class Mixin_Display_Type_Controller extends Mixin
             $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
 
-	/**
-     * TODO: Is this method still used?
-	 * Enqueues resources for a particular display type
-	 * @param C_Display_Type $display_type
-	 */
-	function enqueue_backend_resources($display_type)
-	{
-		wp_enqueue_style(
-			'nextgen_display_settings',
-			$this->object->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.css')
-		);
-
-		wp_enqueue_script(
-			'nextgen_display_settings',
-			$this->object->get_static_url('nextgen_gallery_display#nextgen_gallery_display_settings.js')
-		);
-	}
-	
-	
-	function prepare_display_parameters($displayed_gallery, $params = null)
+    /**
+     * Ensures that the minimum configuration of parameters are sent to a view
+     * @param $displayed_gallery
+     * @param null $params
+     * @return array|null
+     */
+    function prepare_display_parameters($displayed_gallery, $params = null)
 	{
 		if ($params == null)
 		{
@@ -257,6 +244,62 @@ class Mixin_Display_Type_Controller extends Mixin
 
 		return $retval;
 	}
+
+    // Returns the longest and widest dimensions from a list of entities
+    function get_entity_statistics($entities, $named_size, $style_images=FALSE)
+    {
+        $longest        = $widest = 0;
+        $storage        = $this->get_registry()->get_utility('I_Gallery_Storage');
+        $image_mapper   = FALSE; // we'll fetch this if needed
+
+        // Calculate longest and
+        foreach ($entities as $entity) {
+
+            // Get the image
+            $image = FALSE;
+            if (isset($entity->pid)) {
+                $image = $entity;
+            }
+            elseif (isset($entity->previewpic)) {
+                if (!$image_mapper) $image_mapper = $this->get_registry()->get_utility('I_Image_Mapper');
+                $image = $image_mapper->find($entity->previewpic);
+            }
+
+            // Once we have the image, get it's dimensions
+            if ($image) {
+                $dimensions = $storage->get_image_dimensions($image, $named_size);
+                if ($dimensions['width']  > $widest)    $widest     = $dimensions['width'];
+                if ($dimensions['height'] > $longest)   $longest    = $dimensions['height'];
+            }
+        }
+
+        // Second loop to style images
+        if ($style_images) foreach ($entities as &$entity) {
+
+            // Get the image
+            $image = FALSE;
+            if (isset($entity->pid)) {
+                $image = $entity;
+            }
+            elseif (isset($entity->previewpic)) {
+                if (!$image_mapper) $image_mapper = $this->get_registry()->get_utility('I_Image_Mapper');
+                $image = $image_mapper->find($entity->previewpic);
+            }
+
+            // Once we have the image, get it's dimension and calculate margins
+            if ($image) {
+                $dimensions = $storage->get_image_dimensions($image, $named_size);
+                $entity->top = ($longest - $dimensions['height'])/2;
+                $entity->left = ($widest - $dimensions['width'])/2;
+            }
+        }
+
+        return array(
+            'entities'  =>  $entities,
+            'longest'   =>  $longest,
+            'widest'    =>  $widest
+        );
+    }
 }
 
 
