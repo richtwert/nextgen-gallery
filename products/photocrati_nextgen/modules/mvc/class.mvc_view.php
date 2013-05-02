@@ -92,7 +92,7 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
     {
       // We use underscores to prefix local variables to avoid conflicts wth
       // template vars
-    	$__element = $this->start_element($this->object->_template, 'template', $this);
+    	$__element = $this->start_element($this->object->_template, 'template', $this->object);
   		
       extract($this->object->get_template_vars());
       
