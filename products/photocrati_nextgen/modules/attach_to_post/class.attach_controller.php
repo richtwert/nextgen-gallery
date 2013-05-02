@@ -40,8 +40,6 @@ class Mixin_Attach_To_Post extends Mixin
 			$this->object->_displayed_gallery = $mapper->create();
 		}
 	}
-        
-
 
 	function enqueue_backend_resources()
 	{
@@ -139,7 +137,7 @@ class Mixin_Attach_To_Post extends Mixin
 
 		// Get the first entity from the displayed gallery. We will use this
 		// for a preview pic
-		$entity = array_pop($this->object->_displayed_gallery->get_included_entities(1, FALSE, FALSE));
+		$entity = array_pop($this->object->_displayed_gallery->get_included_entities(1));
 		$image = FALSE;
 		if ($entity) {
 			// This is an album or gallery
@@ -167,7 +165,7 @@ class Mixin_Attach_To_Post extends Mixin
 
 		// Render invalid image if no preview pic is found
 		if (!$found_preview_pic) {
-			$filename = $this->object->find_static_abspath('attach_to_post#invalid_image.png');
+            $filename = $this->object->get_static_abspath('attach_to_post#invalid_image.png');
 			$this->set_content_type('image/png');
 			readfile($filename);
 			$this->render();

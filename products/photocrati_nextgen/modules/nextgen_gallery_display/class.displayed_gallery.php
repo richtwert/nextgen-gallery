@@ -204,7 +204,6 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 				);
 				$sort_direction = $this->object->order_direction == 'ASC' ? 'DESC' : 'ASC';
 			}
-
 			$mapper->select($select);
 
 			// Filter based on entity_ids selection
@@ -276,7 +275,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 			// Container ids are tags
 			if ($source_obj->name == 'tags') {
-				$term_ids = $this->object->_get_term_ids_for_tags($this->object->container_ids);
+				$term_ids = $this->object->get_term_ids_for_tags($this->object->container_ids);
                 if ($term_ids) {
 				    $mapper->where(array("{$image_key} IN %s",get_objects_in_term($term_ids, 'ngg_tag')));
                 }
@@ -681,9 +680,12 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	 * @param array $tags
 	 * @return array
 	 */
-	function _get_term_ids_for_tags($tags)
+	function get_term_ids_for_tags($tags=FALSE)
 	{
 		global $wpdb;
+
+        // If no tags were provided, get them from the container_ids
+        if (!$tags) $tags = $this->object->container_ids;
 
 		// Convert container ids to a string suitable for WHERE IN
 		$container_ids = array();
