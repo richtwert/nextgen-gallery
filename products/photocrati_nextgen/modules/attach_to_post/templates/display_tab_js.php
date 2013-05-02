@@ -106,7 +106,7 @@ jQuery(function($){
         selection_changed: function(){
             // Get selected options from DOM
             var selections = _.map(this.$el.find(':selected'), function(element){
-                return $(element).attr('value');
+                return $(element).val();
             });
 
             // Set the 'selected' attribute for each item in the collection
@@ -132,7 +132,7 @@ jQuery(function($){
 				});
                 this.$el.append(option.render().el);
             }, this);
-			if (this.multiple) this.$el.attr('multiple', 'multiple');
+			if (this.multiple) this.$el.prop('multiple', true);
 			if (this.width) this.$el.width(this.width);
             return this;
         },
@@ -155,7 +155,7 @@ jQuery(function($){
             render: function(){
                 var self = this;
                 this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&').replace(/\\'/g, "'"));
-                this.$el.attr({
+                this.$el.prop({
                     value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
                     selected: self.model.get('selected') == true
                 });
@@ -636,7 +636,7 @@ jQuery(function($){
         render: function() {
             var self = this;
 
-            var input = $('<input>').attr({
+            var input = $('<input>').prop({
                 type: 'text',
                 name: 'slug',
                 value: this.slug,
@@ -765,7 +765,7 @@ jQuery(function($){
 					alt: this.model.get('alt')
 				});
 				var inner_div = $('<div/>');
-				var radio_button = $('<input/>').attr({
+				var radio_button = $('<input/>').prop({
  					type: 'radio',
 					value: this.model.get('name'),
 					title: this.model.get('title'),
@@ -1121,7 +1121,7 @@ jQuery(function($){
 				},
 
 				render: function(){
-					this.$el.attr({
+					this.$el.prop({
 						value: this.model.get('value'),
 						href: '#'
 					});
@@ -1203,8 +1203,8 @@ jQuery(function($){
 						this.$el.attr('type', 'checkbox');
 						this.type_set = true;
 					}
-					if (this.model.is_excluded()) this.$el.attr('checked', 'checked');
-					else this.$el.removeAttr('checked');
+					if (this.model.is_excluded()) this.$el.prop('checked', true);
+					else this.$el.prop('checked', false);
 					return this;
 				}
 			})
@@ -1291,7 +1291,7 @@ jQuery(function($){
 
 		render: function(){
 			var self = this;
-			var edit_field = $('<input/>').attr({
+			var edit_field = $('<input/>').prop({
 				type: 'text',
 				value: this.maximum_entity_count,
 				name: 'maximum_entity_count'
@@ -1319,7 +1319,7 @@ jQuery(function($){
 
 		render: function(){
 			var self = this;
-			var edit_field = $('<input/>').attr({
+			var edit_field = $('<input/>').prop({
 				type: 'text',
 				value: this.maximum_entity_count,
 				name: 'maximum_entity_count'
@@ -1588,7 +1588,7 @@ jQuery(function($){
 				});
 
 				// A change has been made using the "Manage Tags" page
-				Frame_Event_Publisher.listen_for('attach_to_post:manage_tags', function(data){
+				Frame_Event_Publisher.listen_for('attach_to_post:manage_tags attach_to_post:manage_images', function(data){
 					// Refresh the list of tags
 					app.tags.reset();
 					app.tags.fetch();

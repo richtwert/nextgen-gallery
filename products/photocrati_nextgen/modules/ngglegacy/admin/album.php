@@ -309,7 +309,7 @@ jQuery(document).ready(
 			connectWith: ['#galleryContainer']
 		} );
 
-		jQuery('a.min').live('click', toggleContent);
+		jQuery('a.min').on('click', toggleContent);
 
 		// Hide used galleries
 		jQuery('a#toggle_used').click(function()

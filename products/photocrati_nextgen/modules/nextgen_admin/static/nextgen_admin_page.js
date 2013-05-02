@@ -38,7 +38,7 @@ jQuery(function($){
     
     
 	// Toggle the advanced settings
-	$('.nextgen_advanced_toggle_link').live('click', function(e){
+	$('.nextgen_advanced_toggle_link').on('click', function(e){
 		e.preventDefault();
 		var form_id = '#'+$(this).attr('rel');
 		var btn = $(this);
