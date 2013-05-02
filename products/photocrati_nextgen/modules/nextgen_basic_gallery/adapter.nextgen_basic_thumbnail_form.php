@@ -57,10 +57,10 @@ class A_NextGen_Basic_Thumbnail_Form extends Mixin_Display_Type_Form
             'images_per_page',
             'Images per page',
             $display_type->settings['images_per_page'],
-            '',
+            '"0" will display all images at once',
             FALSE,
             '# of images',
-            1
+            0
         );
     }
 

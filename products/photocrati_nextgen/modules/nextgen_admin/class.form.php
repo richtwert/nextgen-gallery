@@ -225,7 +225,7 @@ class Mixin_Form_Field_Generators extends Mixin
             'override_thumbnail_settings',
             'Override thumbnail settings',
             $display_type->settings['override_thumbnail_settings'],
-			'Overriding the thumbnail settings will create an additional set of thumbnails'
+			"This does not affect existing thumbnails; overriding the thumbnail settings will create an additional set of thumbnails. To change the size of existing thumbnails please visit 'Manage Galleries' and choose 'Create new thumbnails' for all images in the gallery."
         );
 
         $dimensions_field = $this->object->render_partial(
