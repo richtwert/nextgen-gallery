@@ -91,7 +91,7 @@ class A_NextGen_Basic_Template_Form extends Mixin
 		$gallery_map  = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
 		$image_key	  = $image_map->get_primary_key_column();
 		$gallery_key  = $gallery_map->get_primary_key_column();
-        $pid          = (int)$this->param('pid');
+        $pid          = $this->object->param('pid');
 
         // because picture_list implements ArrayAccess any array-specific actions must be taken on
         // $picture_list->container or they won't do anything
@@ -112,9 +112,7 @@ class A_NextGen_Basic_Template_Form extends Mixin
         foreach ($images as $image) {
             $new_image = new C_Image_Wrapper($image, $displayed_gallery);
             if ($pid == $new_image->$image_key)
-            {
                 $current_pid = $new_image;
-            }
             $picture_list[] = $new_image;
         }
         reset($picture_list->container);
