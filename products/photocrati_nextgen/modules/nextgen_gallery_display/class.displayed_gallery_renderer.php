@@ -214,8 +214,13 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
      * Renders a displayed gallery on the frontend
      * @param C_Displayed_Gallery|stdClass $displayed_gallery
      */
-    function render($displayed_gallery, $return=FALSE)
+    function render($displayed_gallery, $return=FALSE, $mode = null)
     {
+    		if ($mode == null)
+    		{
+    			$mode = 'normal';
+    		}
+    		
         // Save the displayed gallery as a transient
         $displayed_gallery->transient_id = $displayed_gallery->to_transient();
 
@@ -223,9 +228,16 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
         $controller = $this->get_registry()->get_utility(
             'I_Display_Type_Controller', $displayed_gallery->display_type
         );
+        
+        $current_mode = $controller->get_render_mode();
+        $controller->set_render_mode($mode);
 
         // Render the displayed gallery!
         $controller->enqueue_frontend_resources($displayed_gallery);
-        return $controller->index_action($displayed_gallery, $return);
+        $ret = $controller->index_action($displayed_gallery, $return);
+        
+        $controller->set_render_mode($current_mode);
+        
+        return $ret;
     }
 }
