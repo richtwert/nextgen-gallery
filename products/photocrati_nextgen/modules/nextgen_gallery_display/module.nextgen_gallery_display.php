@@ -94,6 +94,8 @@ class M_Gallery_Display extends C_Base_Module
             'I_Router',
             'A_Gallery_Display_Routes'
         );
+        
+		$this->get_registry()->add_adapter('I_MVC_View', 'A_Gallery_Display_View');
 	}
 
 	/**
@@ -184,6 +186,7 @@ class M_Gallery_Display extends C_Base_Module
             'adapter.gallery_display_factory.php',
             'adapter.gallery_display_installer.php',
             'adapter.gallery_display_routes.php',
+            'adapter.gallery_display_view.php',
             'class.alternative_view_manager.php',
             'class.displayed_gallery.php',
             'class.displayed_gallery_mapper.php',

@@ -57,6 +57,8 @@ class C_Display_Type_Controller extends C_MVC_Controller
  */
 class Mixin_Display_Type_Controller extends Mixin
 {
+	var $_render_mode;
+	
 	/**
 	 * Enqueues static resources required for lightbox effects
 	 * @param type $displayed_gallery
@@ -131,14 +133,24 @@ class Mixin_Display_Type_Controller extends Mixin
         if ($displayed_gallery->use_lightbox_effect)
             $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
+	
+	function get_render_mode()
+	{
+		return $this->object->_render_mode;
+	}
+	
+	function set_render_mode($mode)
+	{
+		$this->object->_render_mode = $mode;
+	}
 
-    /**
-     * Ensures that the minimum configuration of parameters are sent to a view
-     * @param $displayed_gallery
-     * @param null $params
-     * @return array|null
-     */
-    function prepare_display_parameters($displayed_gallery, $params = null)
+	/**
+	* Ensures that the minimum configuration of parameters are sent to a view
+	* @param $displayed_gallery
+	* @param null $params
+	* @return array|null
+	*/
+	function prepare_display_parameters($displayed_gallery, $params = null)
 	{
 		if ($params == null)
 		{
@@ -146,6 +158,7 @@ class Mixin_Display_Type_Controller extends Mixin
 		}
 		
 		$params['displayed_gallery'] = $displayed_gallery;
+		$params['render_mode'] = $this->object->get_render_mode();
 		
 		return $params;
 	}
