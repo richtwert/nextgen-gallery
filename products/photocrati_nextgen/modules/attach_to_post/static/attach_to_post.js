@@ -11,7 +11,14 @@ function adjust_height_for_frame(frame, callback)
 	// Adjust height of the frame
 	var $frame			= jQuery(frame);
 	var new_height		= $frame.contents().find('#wpbody').height();
+    var parent_height   = jQuery(parent.document).height();
 	var current_height	= $frame.height();
+
+    // If the height is less than the parent window height, then use
+    // the parent window height instead
+    if (new_height < parent_height) new_height = parent_height;
+
+    // If the height has changed, then use the new height
 	if (current_height != new_height) {
 		var frame_id = $frame.attr('id');
 		
