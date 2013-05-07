@@ -77,8 +77,14 @@ jQuery(function($){
                 img.attr('src', src + '?' + new Date().getTime());
                 $(self).removeAttr('disabled').html(orig_html);
                 $('body').css('cursor', 'default');
+            },
+            error: function(xob, err, code) {        
+                $(self).removeAttr('disabled').html(orig_html);
+                $('body').css('cursor', 'default');
             }
         });
+        
+        return false;
     });
 	/**** STYLES TAB ****/
 
