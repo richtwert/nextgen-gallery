@@ -32,10 +32,9 @@ body {
     vertical-align: middle;
 }
 
-.ngg-slideshow img {    
+.ngg-slideshow img {
+	max-width: 100% !important; 
 	width: auto;
-	max-width: 100% !important;
-	max-height: 100% !important;
 	height: auto;
 }
 
