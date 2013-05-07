@@ -5,11 +5,23 @@ class A_NggLegacy_Installer extends Mixin
 	function initialize()
 	{
 		$this->object->add_post_hook(
+			'install',
+			get_class(),
+			get_class(),
+			'install_ngglegacy'
+		);
+		
+		$this->object->add_post_hook(
 			'uninstall',
 			get_class(),
 			get_class(),
 			'uninstall_ngglegacy'
 		);
+	}
+
+	function install_ngglegacy()
+	{
+		nggallery_install();
 	}
 
 	function uninstall_ngglegacy()
