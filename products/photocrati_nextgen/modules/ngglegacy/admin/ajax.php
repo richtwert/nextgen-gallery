@@ -143,10 +143,12 @@ function ngg_rotateImage() {
 			$result = nggAdmin::rotate_image($id, 'CCW');
 		break;
 		case 'fv' :
-			$result = nggAdmin::rotate_image($id, 0, 'V');
+			// Note: H/V have been inverted here to make it more intuitive
+			$result = nggAdmin::rotate_image($id, 0, 'H');
 		break;
 		case 'fh' :
-			$result = nggAdmin::rotate_image($id, 0, 'H');
+			// Note: H/V have been inverted here to make it more intuitive
+			$result = nggAdmin::rotate_image($id, 0, 'V');
 		break;
 	}
 

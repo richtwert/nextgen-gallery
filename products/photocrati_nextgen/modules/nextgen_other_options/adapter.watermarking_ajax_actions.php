@@ -25,6 +25,7 @@ class A_Watermarking_Ajax_Actions extends Mixin
 		// Temporarily update the watermark options. Generate a new image based
 		// on these settings
 		if (($watermark_options = $this->param('watermark_options'))) {
+			$watermark_options['wmFont'] = trim($watermark_options['wmFont']);
 			$settings->set($watermark_options);
 			$storage->generate_image_size($image, $size);
 			$thumbnail_url	= $storage->get_image_url($image, $size);

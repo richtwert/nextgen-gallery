@@ -84,6 +84,6 @@ class Mixin_Widget extends Mixin
         wp_enqueue_style('nextgen_widgets_style', $this->get_static_url('widgets.css'));
         wp_enqueue_style('nextgen_basic_slideshow_style', $this->get_static_url('nextgen_basic_slideshow#nextgen_basic_slideshow.css'));
         $widget = new C_Widget_Slideshow();
-        echo $widget->render_slideshow($galleryID, $width, $height);
+        $widget->render_slideshow($galleryID, $width, $height);
     }
 }

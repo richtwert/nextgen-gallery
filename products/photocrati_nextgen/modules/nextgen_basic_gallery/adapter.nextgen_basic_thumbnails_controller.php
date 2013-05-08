@@ -129,10 +129,10 @@ class A_NextGen_Basic_Thumbnails_Controller extends Mixin_NextGen_Basic_Gallery_
                         'next' => (empty($pagination_next)) ? FALSE : $pagination_next,
                         'prev' => (empty($pagination_prev)) ? FALSE : $pagination_prev,
                         'pagination' => $pagination,
-                        'piclens_link'              => $piclens_link,
-                        'show_slideshow_link'       => $display_settings['show_slideshow_link'],
-                        'slideshow_link'            => $display_settings['slideshow_link'],
-                        'slideshow_link_text'       => $display_settings['slideshow_link_text']
+                        'piclens_link'              => @$piclens_link,
+                        'show_slideshow_link'       => @$display_settings['show_slideshow_link'],
+                        'slideshow_link'            => @$display_settings['slideshow_link'],
+                        'slideshow_link_text'       => @$display_settings['slideshow_link_text']
                     )
                 );
                 return $this->object->legacy_render($display_settings['template'], $params, $return, 'gallery');
