@@ -20,6 +20,17 @@
 	</tr>
 	<tr>
 		<td>
+			<label for="thumbnail_crop">
+				<?php echo_h($thumbnail_crop_label) ?>
+			</label>
+		</td>
+		<td colspan="2">
+			<input type="checkbox" name="thumbnail_settings[thumbfix]" id="thumbnail_crop" value="1" <?php checked('1', $thumbnail_crop); ?> />
+			<p class="description"><?php echo_h($thumbnail_crop_help)?></p>
+		</td>
+	</tr>
+	<tr>
+		<td>
 			<label for="thumbnail_quality">
 				<?php echo_h($thumbnail_quality_label) ?>
 			</label>
