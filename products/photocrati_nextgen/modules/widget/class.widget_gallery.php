@@ -67,59 +67,23 @@ class C_Widget_Gallery extends WP_Widget
         $widget_id = NULL;
 
         extract($args);
-
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
-        $parent      = C_Component_Registry::get_instance()->get_utility('I_Widget');
-        $image_map   = C_Component_Registry::get_instance()->get_utility('I_Image_Mapper');
-        $gallery_map = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
+        $renderer = C_Component_Registry::get_instance()->get_utility('I_Displayed_Gallery_Renderer');
+        $factory  = C_Component_Registry::get_instance()->get_utility('I_Component_Factory');
+        $view     = $factory->create('mvc_view', '');
 
-        // if there's fewer images than our maximum, lower the # to display
-        $count = $image_map->count();
-        if ($count < $instance['items'])
-            $instance['items'] = $count;
+        $container_ids = array();
+        $exclusions    = array();
+        $source        = $instance['type'];
 
-        // begin building our query
-        $query = $image_map->select();
-
-        // random display
-        if ($instance['type'] == 'random')
-        {
-            $query->order_by('rand()');
-            $query->limit($instance['items']);
-        }
-        else {
-            // 'recent' display
-            $query->order_by($image_map->get_primary_key_column(), 'DESC');
-            $query->limit($instance['items'], 0);
-        }
-
-        // thanks to Kay Germer for the idea & addon code
         if ((!empty($instance['list'])) && ($instance['exclude'] != 'all'))
         {
-            $instance['list'] = explode(',', $instance['list']);
-            $instance['list'] = "'" . implode("', '", $instance['list']) . "'";
-
             if ($instance['exclude'] == 'denied')
-                @$query->where("galleryid NOT IN ({$instance['list']})");
-
+                $exclusions = $instance['list'];
             if ($instance['exclude'] == 'allow')
-                @$query->where("galleryid IN ({$instance['list']})");
-
-            // Limit the output to the current author, can be used on author template pages
-            if ($instance['exclude'] == 'user_id')
-            {
-                @$tmp = $gallery_map->select($gallery_map->get_primary_key_column())->where("author IN ({$instance['list']})")->run_query();
-                $gallery_ids = array();
-                foreach ($tmp as $t) {
-                    $gallery_ids[] = $t->{$gallery_map->get_primary_key_column()};
-                }
-                $gallery_ids = implode(',', $gallery_ids);
-                @$query->where("galleryid IN ({$gallery_ids})");
-            }
+                $container_ids = $instance['list'];
         }
-
-        $image_list = $query->run_query();
 
         // IE8 webslice support if needed
         if ($instance['webslice'])
@@ -129,19 +93,23 @@ class C_Widget_Gallery extends WP_Widget
             $after_widget  = '</div>' . $after_widget;
         }
 
-        $parent->render_partial(
-            'widget#display_gallery',
-            array(
-                'self'       => $this,
-                'instance'   => $instance,
-                'title'      => $title,
-                'image_list' => $image_list,
-                'before_widget' => $before_widget,
-                'before_title'  => $before_title,
-                'after_widget'  => $after_widget,
-                'after_title'   => $after_title,
-                'widget_id'     => $widget_id
-            )
-        );
+        echo $renderer->display_images(array(
+            'source' => $source,
+            'container_ids' => $container_ids,
+            'exclusions' => $exclusions,
+            'display_type' => NEXTGEN_GALLERY_BASIC_THUMBNAILS,
+            'images_per_page' => $instance['items'],
+            'maximum_entity_count' => $instance['items'],
+            'template' => $view->get_template_abspath('widget#display_gallery'),
+            'widget_setting_title'         => $title,
+            'widget_setting_before_widget' => $before_widget,
+            'widget_setting_before_title'  => $before_title,
+            'widget_setting_after_widget'  => $after_widget,
+            'widget_setting_after_title'   => $after_title,
+            'widget_setting_width'         => $instance['width'],
+            'widget_setting_height'        => $instance['height'],
+            'widget_setting_show_setting'  => $instance['show'],
+            'widget_setting_widget_id'     => $widget_id
+        ));
     }
 }

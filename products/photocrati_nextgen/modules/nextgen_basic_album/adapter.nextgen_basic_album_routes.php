@@ -34,7 +34,6 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 			$app->rewrite("{$slug}/{\\w}/{\\w}/{\\w}{*}", "{$slug}/album--{1}/gallery--{2}/{3}{4}");
 		}
 		elseif (preg_match($regex, $original_display_type)) {
-			$displayed_gallery->id(NULL);
 			$app->rewrite("{$slug}/album--{\\w}",                    "{$slug}/{1}");
 			$app->rewrite("{$slug}/album--{\\w}/gallery--{\\w}",     "{$slug}/{1}/{2}");
 			$app->rewrite("{$slug}/album--{\\w}/gallery--{\\w}/{*}", "{$slug}/{1}/{2}/{3}");
