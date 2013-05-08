@@ -196,7 +196,7 @@ class Mixin_Displayed_Gallery_Renderer extends Mixin
             if ($displayed_gallery->validate()) {
 
                 // Set a temporary id
-                $displayed_gallery->id(md5(serialize($displayed_gallery)));
+                $displayed_gallery->id($displayed_gallery->to_transient());
 
                 // Display!
                 return $this->object->render($displayed_gallery, TRUE);

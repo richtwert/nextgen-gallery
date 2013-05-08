@@ -177,7 +177,7 @@ class Mixin_Routing_App extends Mixin
             $this->object->_rewrite_patterns = array();
 
 		// Process each rewrite rule
-		 // start rewriting urls
+		// start rewriting urls
 		foreach ($this->object->_rewrite_patterns as $pattern => $details) {
 
 			// Remove this pattern from future processing for this request
