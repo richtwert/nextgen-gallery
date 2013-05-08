@@ -35,7 +35,7 @@ class A_WordPress_Routing_App extends Mixin
 
     function add_post_permalink_to_url($generated_url)
     {
-        $post_parts         = $this->parse_url(get_post_permalink());
+        $post_parts         = $this->parse_url(get_permalink());
         $generated_parts    = $this->parse_url($generated_url);
 
         // Combine querystrings

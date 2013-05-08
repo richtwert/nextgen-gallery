@@ -497,33 +497,30 @@ class nggMeta{
 	 *
 	 * @return
 	 */
-	function get_date_time() {
+    function get_date_time() {
 
-        $date_time = false;
+        $date_time = time();
 
-		// get exif - data
-		if ( isset( $this->exif_data['EXIF']) ) {
+        // get exif - data
+        if ( isset( $this->exif_data['EXIF']) ) {
 
             // try to read the date / time from the exif
-			foreach (array('DateTimeDigitized', 'DateTimeOriginal', 'FileDateTime') as $key) {
-				if (isset($this->exif_data['EXIF'][$key])) {
-					$date_time = strtotime($this->exif_data['EXIF'][$key]);
+            foreach (array('DateTimeDigitized', 'DateTimeOriginal', 'FileDateTime') as $key) {
+                if (isset($this->exif_data['EXIF'][$key])) {
+                    $date_time = strtotime($this->exif_data['EXIF'][$key]);
                     break;
-				}
-			}
+                }
+            }
+        } else {
+            // if no other date available, get the filetime
+            $date_time = @filectime($this->image->imagePath );
+        }
 
-			if (!$date_time) $date_time = $this->exif_date2ts($date_time);
+        // Return the MySQL format
+        $date_time = date( 'Y-m-d H:i:s', $date_time );
 
-		} else {
-			// if no other date available, get the filetime
-			$date_time = @filectime($this->image->imagePath );
-		}
-
-		// Return the MySQL format
-		$date_time = date( 'Y-m-d H:i:s', $date_time );
-
-		return $date_time;
-	}
+        return $date_time;
+    }
 
 	/**
 	 * This function return the most common metadata, via a filter we can add more
