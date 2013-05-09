@@ -350,7 +350,6 @@ class M_Attach_To_Post extends C_Base_Module
             'adapter.attach_to_post_settings.php',
             'adapter.gallery_storage_frame_event.php',
             'class.attach_controller.php',
-            'class.attach_to_post_controller.php',
             'interface.attach_to_post_controller.php',
             'mixin.attach_to_post_display_tab.php'
         );

@@ -40,6 +40,24 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
         $form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_BASIC_THUMBNAILS);
         $form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_BASIC_SLIDESHOW);
     }
+
+		function set_file_list()
+		{
+			return array(
+				'adapter.ajax_pagination_actions.php',
+				'adapter.nextgen_basic_gallery_installer.php',
+				'adapter.nextgen_basic_gallery_mapper.php',
+				'adapter.nextgen_basic_gallery_routes.php',
+				'adapter.nextgen_basic_gallery_urls.php',
+				'adapter.nextgen_basic_gallery_validation.php',
+				'adapter.nextgen_basic_slideshow_controller.php',
+				'adapter.nextgen_basic_slideshow_form.php',
+				'adapter.nextgen_basic_thumbnail_form.php',
+				'adapter.nextgen_basic_thumbnails_controller.php',
+				'hook.nextgen_basic_gallery_integration.php',
+				'mixin.nextgen_basic_gallery_controller.php'
+			);
+		}
     
    
     function _register_adapters()
