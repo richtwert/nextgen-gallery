@@ -69,9 +69,10 @@ class C_Widget_Gallery extends WP_Widget
         extract($args);
         $title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title'], $instance, $this->id_base);
 
-        $renderer = C_Component_Registry::get_instance()->get_utility('I_Displayed_Gallery_Renderer');
-        $factory  = C_Component_Registry::get_instance()->get_utility('I_Component_Factory');
-        $view     = $factory->create('mvc_view', '');
+        $renderer  = C_Component_Registry::get_instance()->get_utility('I_Displayed_Gallery_Renderer');
+        $factory   = C_Component_Registry::get_instance()->get_utility('I_Component_Factory');
+        $dynthumbs = C_Component_Registry::get_instance()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $view      = $factory->create('mvc_view', '');
 
         $container_ids = array();
         $exclusions    = array();
@@ -93,6 +94,12 @@ class C_Widget_Gallery extends WP_Widget
             $after_widget  = '</div>' . $after_widget;
         }
 
+        // they're probably a small dimension, so use the dynamic thumbnails manager to prevent squishing
+        $thumbnail_size_name = $dynthumbs->get_size_name(array(
+            'width'  => $instance['width'],
+            'height' => $instance['height']
+        ));
+
         echo $renderer->display_images(array(
             'source' => $source,
             'container_ids' => $container_ids,
@@ -101,6 +108,7 @@ class C_Widget_Gallery extends WP_Widget
             'images_per_page' => $instance['items'],
             'maximum_entity_count' => $instance['items'],
             'template' => $view->get_template_abspath('widget#display_gallery'),
+            'thumbnail_size_name'          => $thumbnail_size_name,
             'widget_setting_title'         => $title,
             'widget_setting_before_widget' => $before_widget,
             'widget_setting_before_title'  => $before_title,
