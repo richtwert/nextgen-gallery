@@ -18,6 +18,13 @@ class M_NextGen_Pagination extends C_Base_Module
             "http://www.photocrati.com"
         );
     }
+
+		function set_file_list()
+		{
+			return array(
+				'mixin.nextgen_basic_pagination.php'
+			);
+		}
 }
 
 new M_NextGen_Pagination;

@@ -180,14 +180,12 @@ class M_Gallery_Display extends C_Base_Module
     function set_file_list()
     {
         return array(
-            'adapter.alternative_view_form.php',
             'adapter.display_settings_controller.php',
             'adapter.display_settings_page.php',
             'adapter.gallery_display_factory.php',
             'adapter.gallery_display_installer.php',
             'adapter.gallery_display_routes.php',
             'adapter.gallery_display_view.php',
-            'class.alternative_view_manager.php',
             'class.displayed_gallery.php',
             'class.displayed_gallery_mapper.php',
             'class.displayed_gallery_renderer.php',

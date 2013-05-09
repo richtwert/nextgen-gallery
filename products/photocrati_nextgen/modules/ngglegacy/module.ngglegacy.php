@@ -37,6 +37,13 @@ class M_NggLegacy extends C_Base_Module
 		include_once(path_join(dirname(__FILE__), 'nggallery.php'));
 	}
 
+  function set_file_list()
+  {
+  	return array(
+  		'adapter.ngglegacy_installer.php'
+  	);
+  }
+
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter(
