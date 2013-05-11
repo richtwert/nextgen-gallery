@@ -14,7 +14,7 @@
                 this.options = $.extend(this.defaults, options);
 
                 // Display the sticky Gritter notification
-                this.gritter_id = $.gritter.add({
+                this.gritter_id = this.find_gritter(window).add({
                     progressBar: this,
                     sticky: true,
                     title:  this.options.title,
@@ -47,7 +47,18 @@
             },
 
             close: function(){
-                $.gritter.remove(this.gritter_id);
+                this.find_gritter(window).remove(this.gritter_id);
+            },
+
+            find_gritter: function(win){
+                var retval = win;
+                try {
+                    while (retval.document !== retval.parent.document) retval = retval.parent;
+                }
+                catch (ex){
+                    if (typeof(console) != "undefined") console.log(ex);
+                }
+                return retval.jQuery.gritter
             }
         };
 

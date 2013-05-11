@@ -101,7 +101,8 @@
                        }
                     });
 
-                    uploader.bind("FileUploaded", function(up){
+                    uploader.bind("FileUploaded", function(up, file){
+                       jQuery('#'+file.id).remove();
                        up.progressBar.set(up.total.percent);
                     });
 
