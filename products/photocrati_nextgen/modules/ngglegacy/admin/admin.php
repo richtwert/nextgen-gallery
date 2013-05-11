@@ -351,6 +351,10 @@ class nggAdminPanel{
 		wp_register_script('ngg-progressbar', NGGALLERY_URLPATH .'admin/js/ngg.progressbar.js', array('jquery'), '2.0.1');
         wp_register_script('jquery-ui-autocomplete', NGGALLERY_URLPATH .'admin/js/jquery.ui.autocomplete.min.js', array('jquery-ui-core', 'jquery-ui-widget'), '1.8.15');
 
+        // Enqueue the new Gritter-based progress bars
+        wp_enqueue_style('ngg_progressbar');
+        wp_enqueue_script('ngg_progressbar');
+
 		switch ($_GET['page']) {
 			case NGGFOLDER :
 				wp_enqueue_script( 'postbox' );

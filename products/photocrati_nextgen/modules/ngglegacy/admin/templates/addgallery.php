@@ -6,6 +6,7 @@
 			var resize_height	= <?php echo $image_height ?>;
 			var resize_width	= <?php echo $image_width ?>;
 
+
 			jQuery(document).ready(function($) {
 				if ($(this).data('ready')) return;
 
@@ -87,30 +88,22 @@
 							}
 					});
 
-					uploader.bind('BeforeUpload', function(up, file) {
-						uploadStart(file);
-					});
+                    uploader.bind('StateChanged', function(up){
+                       if (up.state == plupload.STARTED) {
+                           up.progressBar = $.nggProgressBar({
+                               title: "Uploading images"
+                           });
+                       }
+                       else if (up.state == plupload.STOPPED) {
+                           if (typeof(up.progressBar) != "undefined") {
+                               up.progressBar.close();
+                           }
+                       }
+                    });
 
-					uploader.bind('UploadProgress', function(up, file) {
-						uploadProgress(file, file.loaded, file.size);
-					});
-
-					uploader.bind('Error', function(up, err) {
-						uploadError(err.file, err.code, err.message);
-
-						up.refresh();
-					});
-
-					uploader.bind('FileUploaded', function(up, file, response) {
-						$('html, body').animate({
-							scrollTop: $('#' + file.id).position().top - 20
-						});
-						uploadSuccess(file, response);
-					});
-
-					uploader.bind('UploadComplete', function(up, file) {
-						uploadComplete(file);
-					});
+                    uploader.bind("FileUploaded", function(up){
+                       up.progressBar.set(up.total.percent);
+                    });
 
 					// on load change the upload to plupload
 					uploader.init();
