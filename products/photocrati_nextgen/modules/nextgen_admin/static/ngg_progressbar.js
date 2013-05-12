@@ -3,8 +3,7 @@
     $.nggProgressBar = function(options){
         var progressBar = {
             defaults: {
-                starting_value: 0,
-                ready: function(){}
+                starting_value: 0
             },
 
             // Initializes the progress bar
@@ -19,17 +18,10 @@
                     sticky: true,
                     title:  this.options.title,
                     text:   "<div class='ngg_progressbar'><div></div></div>",
-                    after_open: function(el){
-                        var obj = $(el).data('nggProgressBar');
-                        obj.ready();
-                    }
                 });
-                this.gritter_el = $('#gritter-item-'+this.gritter_id);
-                this.status_el = this.gritter_el.find('.ngg_progressbar:first div');
-                this.gritter_el.data('nggProgressBar', this);
 
-                // Set the ready callback
-                this.ready = this.options.ready;
+                // Find the gritter element added
+                this.find_gritter_el(window);
 
                 // Set the starting value
                 this.set(this.options.starting_value);
@@ -42,15 +34,16 @@
 
             // Increases the progress bar by a percentage point
             increase: function() {
-              debugger;
               this.status_el.css("width");
             },
 
+            // Closes the progress bar
             close: function(){
                 this.find_gritter(window).remove(this.gritter_id);
             },
 
-            find_gritter: function(win){
+            // Finds the parent window
+            find_parent: function(win){
                 var retval = win;
                 try {
                     while (retval.document !== retval.parent.document) retval = retval.parent;
@@ -58,7 +51,28 @@
                 catch (ex){
                     if (typeof(console) != "undefined") console.log(ex);
                 }
-                return retval.jQuery.gritter
+                return retval;
+            },
+
+            // Finds the gritter library
+            find_gritter: function(win){
+               return this.find_parent(win).jQuery.gritter
+            },
+
+
+            // Finds the gritter element
+            find_gritter_el: function(win){
+                debugger;
+                var selector = '#gritter-item-'+this.gritter_id;
+                this.gritter_el = $(selector);
+                if (this.gritter_el.length == 0) {
+                    this.gritter_el = this.find_parent(win).jQuery(selector);
+                }
+
+                this.status_el = this.gritter_el.find('.ngg_progressbar:first div');
+                this.gritter_el.data('nggProgressBar', this);
+
+                return this.gritter_el;
             }
         };
 

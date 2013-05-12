@@ -39,6 +39,11 @@ class M_NextGen_Other_Options extends C_Base_Module
 			'I_Ajax_Controller',
 			'A_Watermarking_Ajax_Actions'
 		);
+
+        $this->get_registry()->add_adapter(
+            'I_Ajax_Controller',
+            'A_Stylesheet_Ajax_Actions'
+        );
 	}
 
     function set_file_list()
@@ -55,7 +60,8 @@ class M_NextGen_Other_Options extends C_Base_Module
             'adapter.styles_form.php',
             'adapter.thumbnail_options_form.php',
             'adapter.watermarking_ajax_actions.php',
-            'adapter.watermarks_form.php'
+            'adapter.watermarks_form.php',
+            'adapter.stylesheet_ajax_actions.php',
         );
     }
 }

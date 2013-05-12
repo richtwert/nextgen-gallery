@@ -88,7 +88,14 @@
 							}
 					});
 
+                    // Ensure that plupload sends the selected gallery
+                    upload.bind('BeforeUpload', function(up){
+                        up.settings.multipart_params.galleryselect = jQuery('#galleryselect').val();
+                    });
+
+                    // Hide/show the progress bar
                     uploader.bind('StateChanged', function(up){
+
                        if (up.state == plupload.STARTED) {
                            up.progressBar = $.nggProgressBar({
                                title: "Uploading images"
@@ -96,11 +103,31 @@
                        }
                        else if (up.state == plupload.STOPPED) {
                            if (typeof(up.progressBar) != "undefined") {
+                               var gallery_id = up.settings.multipart_params.galleryselect;
+
+                               // Close the current progress bar
                                up.progressBar.close();
+                               up.refresh();
+
+                               // Open another progress bar to generate thumbnails
+                               up.progressBar = $.nggProgressBar({
+                                  title: "Generating thumbnails"
+                               });
+
+                               // Generate the thumbnails
+                               var params = {
+                                 action: 'generate_thumbnails',
+                                 gallery_id: gallery_id
+                               };
+                               jQuery.post(photocrati_ajax_url, params, function(data){
+                                   debugger;
+                                   console.log(data);
+                               });
                            }
                        }
                     });
 
+                    // Increment the progress bar
                     uploader.bind("FileUploaded", function(up, file){
                        jQuery('#'+file.id).remove();
                        up.progressBar.set(up.total.percent);
