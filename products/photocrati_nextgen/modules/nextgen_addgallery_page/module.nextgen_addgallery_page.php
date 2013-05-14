@@ -40,6 +40,8 @@ class M_NextGen_AddGallery_Page extends C_Base_Module
         wp_register_script('plupload.queue', $router->get_static_url('nextgen_addgallery_page#plupload_queue/jquery.plupload.queue.js'), array('plupload-all'));
         wp_register_style('plupload.queue', $router->get_static_url('nextgen_addgallery_page#plupload_queue/css/jquery.plupload.queue.css'));
         wp_register_style('nextgen_addgallery_page', $router->get_static_url('nextgen_addgallery_page#styles.css'));
+        wp_register_script('jquery.filetree', $router->get_static_url('nextgen_addgallery_page#jquery.filetree/jquery.filetree.js'), array('jquery'));
+        wp_register_style('jquery.filetree', $router->get_static_url('nextgen_addgallery_page#jquery.filetree/jquery.filetree.css'));
     }
 }
 new M_NextGen_AddGallery_Page();

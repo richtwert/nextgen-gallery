@@ -3,7 +3,10 @@
     $.nggProgressBar = function(options){
         var progressBar = {
             defaults: {
-                starting_value: 0
+                starting_value: 0,
+                infinite: false,
+                in_progress_text: 'In progress...',
+                finished_text: 'Done!'
             },
 
             // Initializes the progress bar
@@ -23,23 +26,39 @@
                 // Find the gritter element added
                 this.find_gritter_el(window);
 
+                // Is this an infinite progress bar?
+                if (this.options.infinite) {
+                    this.gritter_el.find('.ngg_progressbar').addClass('infinite');
+                }
+
                 // Set the starting value
                 this.set(this.options.starting_value);
             },
 
-            set: function(percent){
-              percent = percent + "%";
-              this.status_el.css("width", percent).text(percent);
-            },
+            set: function(percent, text){
+              // You can set the percentage of completion, as well as the text message to appear
+              if (typeof(text) == 'undefined') text = percent;
 
-            // Increases the progress bar by a percentage point
-            increase: function() {
-              this.status_el.css("width");
+              // You can optionally just pass in a message, and we'll assume that it's an infinite progress bar
+              // and use 100 completion, with the message as the text
+              if (isNaN(percent)) {
+                  text = percent;
+                  percent = 100;
+              }
+              percent = percent + "%";
+              this.status_el.animate({
+                  width: percent
+              }).text(text);
             },
 
             // Closes the progress bar
-            close: function(){
-                this.find_gritter(window).remove(this.gritter_id);
+            close: function(delay){
+                if (typeof(delay) == 'undefined') delay = 1000;
+                var gritter     = this.find_gritter(window)
+                var gritter_id  = this.gritter_id;
+                setTimeout(function(){
+                    gritter.remove(gritter_id);
+                }, delay);
             },
 
             // Finds the parent window
@@ -62,7 +81,6 @@
 
             // Finds the gritter element
             find_gritter_el: function(win){
-                debugger;
                 var selector = '#gritter-item-'+this.gritter_id;
                 this.gritter_el = $(selector);
                 if (this.gritter_el.length == 0) {

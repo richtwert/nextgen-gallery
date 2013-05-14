@@ -7,8 +7,17 @@ class A_Import_Folder_Form extends Mixin
         return "Import Folder";
     }
 
+    function enqueue_static_resources()
+    {
+        wp_enqueue_style('jquery.filetree');
+        wp_enqueue_style('ngg_progressbar');
+        wp_enqueue_script('jquery.filetree');
+        wp_enqueue_script('ngg_progressbar');
+    }
+
     function render()
     {
-        return 'here';
+        return $this->object->render_partial('import_folder', array(
+        ), TRUE);
     }
 }
