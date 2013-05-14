@@ -5,11 +5,6 @@
  */
 class Mixin_Settings_Manager_Instance_Methods extends Mixin
 {
-	function _to_named_constant($property)
-	{
-		return $this->object->_get_constant_prefix().(preg_replace("/[^\w]/", "_", strtoupper($property)));
-	}
-
 	/**
 	 * Returns the name of the WordPress option where settings are stored
 	 * @return type
@@ -17,12 +12,6 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	function _get_option_name()
 	{
 		return 'module_settings';
-	}
-
-
-	function _get_constant_prefix()
-	{
-		return 'POPE_MOD_';
 	}
 
 
@@ -36,8 +25,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	{
 		$retval = $default;
 		if ($this->object->is_set($property)) {
-			$constant = $this->object->_to_named_constant($property);
-			$retval  = defined($constant) ? eval("return {$constant};") : $this->object->_options[$property];
+			$retval  = $this->object->_options[$property];
 		}
 		return $retval;
 	}
@@ -69,8 +57,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	 */
 	function is_set($property)
 	{
-
-		return $this->object->__isset($property);
+		return isset($this->object->_options[$property]);
 	}
 
 	/**
@@ -171,6 +158,11 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 		parent::initialize();
 		$this->load();
 	}
+	
+	function group($name)
+	{
+		return $this->get_registry()->get_utility('I_Settings_Manager', $name);
+	}
 
 	/**
 	 * Determines whether a particular setting has been set
@@ -179,8 +171,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	 */
 	function __isset($property)
 	{
-		$constant = $this->object->_to_named_constant($property);
-		return defined($constant) OR isset($this->_options[$property]);
+		return $this->object->is_set($property);
 	}
 
 	/**
