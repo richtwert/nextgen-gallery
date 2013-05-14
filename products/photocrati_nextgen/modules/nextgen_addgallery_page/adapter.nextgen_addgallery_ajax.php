@@ -37,7 +37,13 @@ class A_NextGen_AddGallery_Ajax extends Mixin
             $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
 
             try{
-                if (($image = $storage->upload_image($gallery_id))) {
+                if ($storage->is_zip()) {
+                    if (($results = $storage->upload_zip($gallery_id))) {
+                        $retval = $results;
+                    }
+                    else $retval['error'] = 'Failed to extract images from ZIP';
+                }
+                elseif (($image = $storage->upload_image($gallery_id))) {
                     $retval['image_id'] = $image->id();
                 }
                 else {
@@ -108,9 +114,8 @@ class A_NextGen_AddGallery_Ajax extends Mixin
             $storage = $this->get_registry()->get_utility('I_Gallery_Storage');
             $fs      = $this->get_registry()->get_utility('I_Fs');
             try {
-                $gallery_id = $storage->import_gallery_from_fs($fs->join_paths($fs->get_document_root(), 'wp-content', $folder));
-                if ($gallery_id) $retval['gallery_id'] = $gallery_id;
-                else $retval['error'] = "Could not import folder. No images found.";
+                $retval = $storage->import_gallery_from_fs($fs->join_paths($fs->get_document_root(), 'wp-content', $folder));
+                if (!$retval) $retval = array('error' => "Could not import folder. No images found.");
             }
             catch (Exception $ex) {
                 $retval['error'] = $ex->getMessage();

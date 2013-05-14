@@ -187,11 +187,17 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 			//         )
 			//
 			$file = $_FILES['file'];
-			$retval = $this->object->upload_base64_image(
-				$gallery,
-				file_get_contents($file['tmp_name']),
-				$filename ? $filename : (isset($file['name']) ? $file['name'] : FALSE)
-			);
+
+            if ($this->object->is_zip()) {
+                $retval = $this->object->upload_zip($gallery);
+            }
+            else {
+                $retval = $this->object->upload_base64_image(
+                    $gallery,
+                    file_get_contents($file['tmp_name']),
+                    $filename ? $filename : (isset($file['name']) ? $file['name'] : FALSE)
+                );
+            }
 		}
 		elseif ($data) {
 			$retval = $this->object->upload_base64_image(

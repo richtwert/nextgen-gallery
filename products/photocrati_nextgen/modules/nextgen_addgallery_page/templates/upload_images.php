@@ -106,6 +106,11 @@
                         }
                     },
 
+                    BeforeUpload: function(up){
+                        up.settings.multipart_params.gallery_id   = $gallery_id.val();
+                        up.settings.multipart_params.gallery_name = $gallery_name.val();
+                    },
+
                     // When a gallery has been created, use the same gallery for each request going forward
                     FileUploaded: function(up, file, info){
                         var response = info.response;
@@ -117,7 +122,6 @@
                     },
 
                     Error: function(up, args){
-                        debugger;
                         console.log(args);
                     }
                 };

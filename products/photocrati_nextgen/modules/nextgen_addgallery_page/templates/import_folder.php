@@ -48,7 +48,7 @@
                     alert(response.error);
                 }
                 else {
-                    progress_bar.set('Done!');
+                    progress_bar.set('Done! Successfully imported '+response.image_ids.length+' images.');
                 }
                 progress_bar.close();
             });
