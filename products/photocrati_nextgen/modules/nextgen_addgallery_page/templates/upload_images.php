@@ -33,6 +33,7 @@
                 var $gallery_id = $('#gallery_id');
                 var $gallery_name = $('#gallery_name').show();
                 var $gallery_selection = $('#gallery_selection').detach();
+                window.uploaded_image_ids = [];
 
                 // Override some final plupload options
                 plupload_options.url = photocrati_ajax_url;
@@ -100,6 +101,10 @@
                     // Refresh the interface after a successful upload
                     StateChanged: function(up){
                         if (up.state == plupload.STOPPED) {
+                            $.gritter.add({
+                                title: "Upload complete",
+                                text: window.uploaded_image_ids.length + " were uploaded successfully."
+                            });
                             setTimeout(function(){
                                 reinit_plupload(up);
                             }, 3000);
@@ -114,10 +119,10 @@
                     // When a gallery has been created, use the same gallery for each request going forward
                     FileUploaded: function(up, file, info){
                         var response = info.response;
-                        console.log(response);
                         if (typeof(response) != 'object') {
                             response = JSON.parse(info.response);
                         }
+                        window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
                         up.settings.multipart_params.gallery_id = response.gallery_id;
                     },
 

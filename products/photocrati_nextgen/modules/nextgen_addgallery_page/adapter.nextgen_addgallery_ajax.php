@@ -44,7 +44,7 @@ class A_NextGen_AddGallery_Ajax extends Mixin
                     else $retval['error'] = 'Failed to extract images from ZIP';
                 }
                 elseif (($image = $storage->upload_image($gallery_id))) {
-                    $retval['image_id'] = $image->id();
+                    $retval['image_ids'] = array($image->id());
                 }
                 else {
                     $retval['error'] = 'Image generation failed';
