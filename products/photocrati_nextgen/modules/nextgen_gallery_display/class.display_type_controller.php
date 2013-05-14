@@ -157,6 +157,7 @@ class Mixin_Display_Type_Controller extends Mixin
 			$params = array();
 		}
 		
+		$params['display_type_rendering'] = true;
 		$params['displayed_gallery'] = $displayed_gallery;
 		$params['render_mode'] = $this->object->get_render_mode();
 		
