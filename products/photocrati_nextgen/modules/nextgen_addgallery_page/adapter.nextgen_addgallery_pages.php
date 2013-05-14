@@ -1,6 +1,6 @@
 <?php
 
-class A_NextGen_Admin_Pages extends Mixin
+class A_NextGen_AddGallery_Pages extends Mixin
 {
     function initialize()
     {

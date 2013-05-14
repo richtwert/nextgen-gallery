@@ -66,7 +66,6 @@ class Mixin_Page_Manager extends Mixin
 				'I_NextGen_Admin_Page',
 				$slug
 			);
-            var_dump($properties);
 			if ($properties['add_menu']) {
 				add_submenu_page(
 					$properties['parent'],

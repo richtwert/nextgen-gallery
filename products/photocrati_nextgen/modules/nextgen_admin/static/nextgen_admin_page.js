@@ -1,4 +1,11 @@
 jQuery(function($){
+    // Activate accordions
+    $('.accordion').accordion({
+        clearStyle: true,
+        autoHeight: false,
+        heightStyle: 'content'
+    });
+
      // When a submit button is clicked...
 	$('input[type="submit"]').click(function(e){
 		var $button = $(this);
@@ -55,9 +62,11 @@ jQuery(function($){
 	});
 
     $('input.nextgen_settings_field_colorpicker').wpColorPicker();
-    
-    // Show the contents of the page
-    setTimeout(function(){
-        $('#nextgen_admin_page').css('visibility', 'visible');
-    }, 0);
 });
+
+(function($){
+    $(window).on('lazy_resources_loaded', function(){
+        $('#nextgen_admin_page').css('visibility', 'visible');
+    });
+
+})(jQuery);

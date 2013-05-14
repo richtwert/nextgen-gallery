@@ -98,7 +98,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-nextgen_admin');
 
         // Load the NextGEN Gallery Admin pages
-        $this->get_registry()->load_module('photocrati-nextgen_admin_pages');
+        $this->get_registry()->load_module('photocrati-nextgen_addgallery_page');
 
         // Load the pagination module
         $this->_get_registry()->load_module('photocrati-nextgen_pagination');

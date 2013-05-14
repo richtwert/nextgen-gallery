@@ -11,4 +11,15 @@ class A_NextGen_AddGallery_Controller extends Mixin
     {
         return 'NextGEN Upload images';
     }
+
+    function enqueue_backend_resources()
+    {
+        $this->call_parent('enqueue_backend_resources');
+        wp_enqueue_style('nextgen_addgallery_page');
+    }
+
+    function show_save_button()
+    {
+        return FALSE;
+    }
 }

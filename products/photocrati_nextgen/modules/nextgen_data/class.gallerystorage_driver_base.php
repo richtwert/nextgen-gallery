@@ -56,7 +56,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
     function _get_gallery_id($gallery_obj_or_id)
     {
         $retval = NULL;
-
         $gallery_key = $this->object->_gallery_mapper->get_primary_key_column();
         if (is_object($gallery_obj_or_id)) {
             if (isset($gallery_obj_or_id->$gallery_key)) {
@@ -453,6 +452,13 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;
 			$image_key			= $this->object->_image_mapper->get_primary_key_column();
+
+            // If we can't write to the directory, then there's no point in continuing
+            if (!is_writable($upload_dir)) {
+                throw new E_InsufficientWriteAccessException(
+                    FALSE, $abs_filename, FALSE, $ex
+                );
+            }
 
 			// Save the image
 			if ($this->object->_image_mapper->save($image)) {
