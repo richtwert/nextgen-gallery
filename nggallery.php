@@ -25,6 +25,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
  * 4) Once all Products (and their associated modules) have been loaded (or in
  * otherwords, "included"), the modules are initialized.
  */
+
 class C_NextGEN_Bootstrap
 {
 	var $_registry = NULL;

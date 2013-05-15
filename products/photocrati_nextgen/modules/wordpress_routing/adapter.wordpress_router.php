@@ -35,6 +35,7 @@ class A_WordPress_Router extends Mixin
 			$this->get_registry()->get_utility('I_Fs')->get_document_root(),
 			$retval
 		);
+
 		if ($retval && file_exists($filename) && $retval != $base_url) {
 
 			// Remove index.php from the url

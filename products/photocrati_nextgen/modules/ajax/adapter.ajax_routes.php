@@ -16,15 +16,8 @@ class A_Ajax_Routes extends Mixin
 
 	function add_ajax_routes()
 	{
-		$app	= $this->object->create_app('/photocrati_ajax');
+		$app = $this->object->create_app('/photocrati_ajax');
 		$app->route('/js',	'I_Ajax_Controller#js');
 		$app->route('/',	'I_Ajax_Controller#index');
-	}
-
-	function get_ajax_url()
-	{
-		return $this->object->get_url(
-			$this->get_registry()->get_utility('I_Settings_Manager')->ajax_slug, FALSE
-		);
 	}
 }
