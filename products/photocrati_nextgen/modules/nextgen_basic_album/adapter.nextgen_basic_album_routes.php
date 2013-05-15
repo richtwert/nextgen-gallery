@@ -20,8 +20,7 @@ class A_NextGen_Basic_Album_Routes extends Mixin
 		$display_type = $displayed_gallery->display_type;
 
 		// Get router
-		$router = $this->object->get_registry()->get_utility('I_Router');
-		$app    = $router->get_routed_app();
+		$app    = $this->get_routed_app();
 
         $slug = $this->object->get_registry()->get_utility('I_Settings_Manager')->router_param_slug;
 

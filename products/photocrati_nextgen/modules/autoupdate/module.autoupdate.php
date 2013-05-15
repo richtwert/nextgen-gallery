@@ -8,6 +8,8 @@
 
 class M_AutoUpdate extends C_Base_Module
 {
+    var $_api_url = NULL;
+
 	function define()
 	{
 		parent::define(
@@ -21,13 +23,6 @@ class M_AutoUpdate extends C_Base_Module
 		);
 	}
 
-
-	function initialize()
-	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
-		$this->api_url = $settings->autoupdate_api_url;
-	}
-
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter(
@@ -35,6 +30,20 @@ class M_AutoUpdate extends C_Base_Module
 			'A_AutoUpdate_Settings'
 		);
 	}
+
+    /**
+     * Gets the API url
+     * @return string
+     */
+    function _get_api_url()
+    {
+        if (is_null($this->_api_url)) {
+            $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+            $this->_api_url = $settings->autoupdate_api_url;
+        }
+
+        return $this->_api_url;
+    }
 
 
 	function _register_hooks()
@@ -243,7 +252,7 @@ class M_AutoUpdate extends C_Base_Module
 
 	function check_license()
 	{
-		return $this->api_request($this->api_url, 'cklic');
+		return $this->api_request($this->_get_api_url(), 'cklic');
 	}
 
 
@@ -269,7 +278,7 @@ class M_AutoUpdate extends C_Base_Module
 			$params['product-list'] = $product_list;
 		}
 
-		$result = $this->api_request($this->api_url, 'inlic', $params);
+		$result = $this->api_request($this->_get_api_url(), 'inlic', $params);
 
 		return $result;
 	}
@@ -302,7 +311,7 @@ class M_AutoUpdate extends C_Base_Module
 
 		if ($list_use != null)
 		{
-			$return = $this->api_request($this->api_url, 'ckups', array('product-list' => $list_use));
+			$return = $this->api_request($this->_get_api_url(), 'ckups', array('product-list' => $list_use));
 		}
 
 		return $return;
@@ -319,7 +328,7 @@ class M_AutoUpdate extends C_Base_Module
 		}
 
 		$return = $this->api_request(
-								$this->api_url, 'dlpkg',
+								$this->_get_api_url(), 'dlpkg',
 								array(
 									'product-list' => array($module_info['product-id'] => $module_info['product-version']),
 									'module-list' => array($module_info['module-id'] => $module_info['module-version']),

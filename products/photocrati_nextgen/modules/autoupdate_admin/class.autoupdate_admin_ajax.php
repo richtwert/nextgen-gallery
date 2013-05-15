@@ -164,11 +164,6 @@ class C_AutoUpdate_Admin_Ajax extends C_Component
 		
 		$this->add_mixin('Mixin_AutoUpdate_Admin_Ajax');
 	}
-
-	function initialize($context = FALSE)
-	{
-		parent::initialize($context);
-	}
 }
 
 }

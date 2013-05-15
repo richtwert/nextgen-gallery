@@ -24,15 +24,6 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
         );
     }
 
-	function initialize()
-	{
-		parent::initialize();
-		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
-		$form_manager->add_form(
-			NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_BASIC_TAG_CLOUD_MODULE_NAME
-		);
-	}
-
 
     function _register_adapters()
     {
@@ -79,6 +70,12 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 			'A_NextGen_Basic_TagCloud_Form',
 			$this->module_id
 		);
+
+        // Provides the forms for the settings
+        $this->get_registry()->add_adapter(
+            'I_Settings_Manager',
+            'A_NextGen_Basic_TagCloud_Forms'
+        );
     }
 
 	function _register_hooks()
@@ -121,6 +118,7 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
             'adapter.nextgen_basic_tagcloud.php',
             'adapter.nextgen_basic_tagcloud_controller.php',
             'adapter.nextgen_basic_tagcloud_form.php',
+            'adapter.nextgen_basic_tagcloud_forms.php',
             'adapter.nextgen_basic_tagcloud_installer.php',
             'adapter.nextgen_basic_tagcloud_mapper.php',
             'adapter.nextgen_basic_tagcloud_routes.php',

@@ -4,6 +4,8 @@ class A_Attach_to_Post_Settings extends Mixin
 {
 	function initialize()
 	{
+        // TODO: Investigate this code. The router uses the I_Settings_Manager utility, but it looks like the..
+        // I_Settings_Manager utility requires the router. Ugh.
 		$router = $this->get_registry()->get_utility('I_Router');
 		$settings = array(
 			'attach_to_post_url'				=> $router->get_url('/attach_to_post', FALSE),

@@ -24,7 +24,7 @@ class A_Ajax_Routes extends Mixin
 	function get_ajax_url()
 	{
 		return $this->object->get_url(
-			$this->get_registry()->get_utility('I_Settings')->ajax_slug, FALSE
+			$this->get_registry()->get_utility('I_Settings_Manager')->ajax_slug, FALSE
 		);
 	}
 }

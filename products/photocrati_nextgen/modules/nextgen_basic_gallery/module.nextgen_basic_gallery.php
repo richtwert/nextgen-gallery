@@ -31,20 +31,12 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
-    
-    
-    function initialize()
-    {
-        parent::initialize();
-        $form_manager = $this->get_registry()->get_utility('I_Form_Manager');
-        $form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_BASIC_THUMBNAILS);
-        $form_manager->add_form(NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_BASIC_SLIDESHOW);
-    }
 
 		function set_file_list()
 		{
 			return array(
 				'adapter.ajax_pagination_actions.php',
+                'adapter.nextgen_basic_gallery_forms.php',
 				'adapter.nextgen_basic_gallery_installer.php',
 				'adapter.nextgen_basic_gallery_mapper.php',
 				'adapter.nextgen_basic_gallery_routes.php',
@@ -121,6 +113,12 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
         $this->get_registry()->add_adapter(
             'I_Ajax_Controller',
             'A_Ajax_Pagination_Actions'
+        );
+
+        // Adds the settings forms
+        $this->get_registry()->add_adapter(
+            'I_Settings_Manager',
+            'A_NextGen_Basic_Gallery_Forms'
         );
     }
     

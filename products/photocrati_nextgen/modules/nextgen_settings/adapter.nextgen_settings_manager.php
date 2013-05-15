@@ -43,9 +43,6 @@ class Mixin_NextGen_Settings extends Mixin
 		$activateCSS	= $global_settings->get('wpmuStyle', 1);
 		unset($global_settings);
 
-		// Get the router
-		$router = $this->get_registry()->get_utility('I_Router');
-
 		// Set the defaults
 		$defaults = array (
 			'gallerypath'    => $gallerypath,

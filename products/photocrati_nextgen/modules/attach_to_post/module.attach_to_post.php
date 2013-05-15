@@ -11,6 +11,7 @@ define('NEXTGEN_GALLERY_ATTACH_TO_POST_SLUG', 'ngg_attach_to_post');
 class M_Attach_To_Post extends C_Base_Module
 {
 	var $attach_to_post_tinymce_plugin  = 'NextGEN_AttachToPost';
+    var $_event_publisher               = NULL;
 
 	/**
 	 * Defines the module
@@ -30,16 +31,19 @@ class M_Attach_To_Post extends C_Base_Module
 		);
     }
 
-	/**
-	 * Initializes the module, and sets up the required route for the Attach
-	 * to Post interface
-	 */
-	function initialize()
-	{
-		parent::initialize();
-		$this->renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
-		$this->events   = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
-	}
+    /**
+     * Gets the Frame Event Publisher
+     * @return C_Component
+     */
+    function _get_frame_event_publisher()
+    {
+        if (is_null($this->_event_publisher)) {
+            $this->_event_publisher = $this->get_registry()->get_utility('I_Frame_Event_Publisher', 'attach_to_post');
+        }
+
+        return $this->_event_publisher;
+    }
+
 
 	/**
 	 * Registers requires the utilites that this module provides
@@ -155,7 +159,8 @@ class M_Attach_To_Post extends C_Base_Module
                         // Get the content for the displayed gallery
                         $content = '<p>'._('Invalid Displayed Gallery').'</p>';
                         if ($displayed_gallery) {
-                            $content = $this->renderer->render($displayed_gallery, TRUE);
+                            $renderer = $this->get_registry()->get_utility('I_Displayed_Gallery_Renderer');
+                            $content = $renderer->render($displayed_gallery, TRUE);
                         }
 
                         // Replace the placeholder with the displayed gallery content
@@ -312,7 +317,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function new_gallery_event($gallery_id)
 	{
-		$this->events->add_event(array(
+        $this->_get_frame_event_publisher()->add_event(array(
 			'event'		=>	'new_gallery',
 			'gallery_id'=>	intval($gallery_id)
 		));
@@ -325,7 +330,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function images_added_event($gallery_id, $image_ids=array())
 	{
-		$this->events->add_event(array(
+        $this->_get_frame_event_publisher()->add_event(array(
 			'event'			=>	'images_added',
 			'gallery_id'		=>	intval($gallery_id)
 		));
@@ -338,7 +343,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function nextgen_page_event($event)
 	{
-		$this->events->add_event($event);
+        $this->_get_frame_event_publisher()->add_event($event);
 	}
 
     function set_file_list()

@@ -14,8 +14,7 @@ class A_Attach_To_Post_Routes extends Mixin
 
 	function add_attach_to_post_routes()
 	{
-		$router   = $this->object->get_registry()->get_utility('I_Router');
-		$app = $router->create_app('/attach_to_post');
+		$app = $this->object->create_app('/attach_to_post');
 		$app->rewrite('/preview/{id}',			'/preview/id--{id}');
 		$app->rewrite('/display_tab_js/{id}',	'/display_tab_js/id--{id}');
 		$app->route('/preview',			'I_Attach_To_Post_Controller#preview');

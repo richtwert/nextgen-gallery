@@ -2,6 +2,8 @@
 
 class A_Ajax_Settings extends Mixin
 {
+    // TODO: Investigate this code. The router uses the I_Settings_Manager utility, but it looks like the..
+    // I_Settings_Manager utility requires the router. Ugh.
 	function initialize()
 	{
 		$router = $this->get_registry()->get_utility('I_Router');

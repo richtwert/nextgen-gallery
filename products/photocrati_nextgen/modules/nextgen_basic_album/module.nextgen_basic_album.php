@@ -25,20 +25,6 @@ class M_NextGen_Basic_Album extends C_Base_Module
         );
     }
 
-	function initialize()
-	{
-		parent::initialize();
-		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
-		$form_manager->add_form(
-			NEXTGEN_DISPLAY_SETTINGS_SLUG,
-			NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM
-		);
-		$form_manager->add_form(
-			NEXTGEN_DISPLAY_SETTINGS_SLUG,
-			NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM
-		);
-	}
-
 
     function _register_adapters()
     {
@@ -94,6 +80,11 @@ class M_NextGen_Basic_Album extends C_Base_Module
             'I_Routing_App',
             'A_NextGen_Basic_Album_Urls'
         );
+
+        $this->get_registry()->add_adapter(
+            'I_Form_Manager',
+            'A_NextGen_Basic_Album_Forms'
+        );
     }
 
 	function _register_hooks()
@@ -138,6 +129,7 @@ class M_NextGen_Basic_Album extends C_Base_Module
         return array(
             'adapter.nextgen_basic_album.php',
             'adapter.nextgen_basic_album_controller.php',
+            'adapter.nextgen_basic_album_forms.php',
             'adapter.nextgen_basic_album_installer.php',
             'adapter.nextgen_basic_album_mapper.php',
             'adapter.nextgen_basic_album_routes.php',

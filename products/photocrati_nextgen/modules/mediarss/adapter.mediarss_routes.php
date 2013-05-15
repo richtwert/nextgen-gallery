@@ -14,7 +14,7 @@ class A_MediaRSS_Routes extends Mixin
 
 	function add_mediarss_routes()
 	{
-		$app = $this->get_registry()->get_utility('I_Router')->create_app('/mediarss');
+		$app = $this->create_app('/mediarss');
         $app->route(
             '/',
             array(

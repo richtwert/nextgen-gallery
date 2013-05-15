@@ -26,15 +26,6 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 		);
 	}
 
-	function initialize()
-	{
-		parent::initialize();
-		$form_manager = $this->get_registry()->get_utility('I_Form_Manager');
-		$form_manager->add_form(
-			NEXTGEN_DISPLAY_SETTINGS_SLUG, NEXTGEN_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER
-		);
-	}
-
 	/**
 	 * Register adapters required for the NextGen Basic ImageBrowser
 	 */
@@ -76,6 +67,12 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
 			'A_NextGen_Basic_ImageBrowser_Form',
 			$this->module_id
 		);
+
+        // Provides the setting forms
+        $this->get_registry()->add_adapter(
+            'I_Settings_Manager',
+            'A_NextGen_Basic_ImageBrowser_Forms'
+        );
 	}
 
 	function _register_hooks()
@@ -114,6 +111,7 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
             'adapter.nextgen_basic_imagebrowser.php',
             'adapter.nextgen_basic_imagebrowser_controller.php',
             'adapter.nextgen_basic_imagebrowser_form.php',
+            'adapter.nextgen_basic_imagebrowser_forms.php',
             'adapter.nextgen_basic_imagebrowser_installer.php',
             'adapter.nextgen_basic_imagebrowser_mapper.php',
             'adapter.nextgen_basic_imagebrowser_routes.php',

@@ -26,11 +26,6 @@ class M_NextGen_Admin extends C_Base_Module
 		);
 	}
 
-	function initialize()
-	{
-		parent::initialize();
-	}
-
 	/**
 	 * Register utilities necessary for this module (and the plugin)
 	 */
