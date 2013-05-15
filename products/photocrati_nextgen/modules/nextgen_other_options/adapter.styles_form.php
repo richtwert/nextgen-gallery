@@ -12,13 +12,18 @@ class A_Styles_Form extends Mixin
 		return 'Styles';
 	}
 
+    function get_stylesheet_directory()
+    {
+        return NGGALLERY_ABSPATH . "css";
+    }
+
 	function get_cssfiles()
 	{
 		/** THIS FUNCTION WAS TAKEN FROM NGGLEGACY **/
 		$cssfiles = array ();
 
 		// Files in nggallery/css directory
-		$plugin_root = NGGALLERY_ABSPATH . "css";
+		$plugin_root = $this->object->get_stylesheet_directory();
 
 		$plugins_dir = @ dir($plugin_root);
 		if ($plugins_dir) {
@@ -36,7 +41,6 @@ class A_Styles_Form extends Mixin
 						}
 					}
 				} else {
-                    if ($file === 'default.css') { continue; }
 					if (preg_match('|\.css$|', $file))
 						$plugin_files[] = $file;
 				}
@@ -90,6 +94,7 @@ class A_Styles_Form extends Mixin
 	function render()
 	{
 		return $this->object->render_partial('nextgen_other_options#styling_tab', array(
+            'stylesheet_directory'      =>  $this->object->get_stylesheet_directory(),
 			'select_stylesheet_label'	=>	'What stylesheet would you like to use?',
 			'stylesheets'				=>	$this->object->get_cssfiles(),
 			'activated_stylesheet'		=>	$this->object->get_model()->CSSfile,

@@ -17,6 +17,11 @@
 				><?php echo_h($p['Name'])?></option>
 			<?php endforeach ?>
 			</select>
+            <p class="description">
+                The appearance of your galleries can be customized through the use of stylesheets, found in:<br/>
+                <strong><?php echo_h($stylesheet_directory) ?></strong><br/>
+                All stylesheets must contain a <a href='#' onclick='javascript:alert("/*\nCSS Name: Example\nDescription: This is an example stylesheet\nAuthor: John Smith\nVersion: 1.0\n*/");'>file header</a>
+            </p>
 		</td>
 	</tr>
 	<tr>
