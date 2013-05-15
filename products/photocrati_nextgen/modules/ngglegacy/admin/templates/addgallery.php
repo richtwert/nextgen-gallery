@@ -6,6 +6,7 @@
 			var resize_height	= <?php echo $image_height ?>;
 			var resize_width	= <?php echo $image_width ?>;
 
+
 			jQuery(document).ready(function($) {
 				if ($(this).data('ready')) return;
 
@@ -87,30 +88,50 @@
 							}
 					});
 
-					uploader.bind('BeforeUpload', function(up, file) {
-						uploadStart(file);
-					});
+                    // Ensure that plupload sends the selected gallery
+                    upload.bind('BeforeUpload', function(up){
+                        up.settings.multipart_params.galleryselect = jQuery('#galleryselect').val();
+                    });
 
-					uploader.bind('UploadProgress', function(up, file) {
-						uploadProgress(file, file.loaded, file.size);
-					});
+                    // Hide/show the progress bar
+                    uploader.bind('StateChanged', function(up){
 
-					uploader.bind('Error', function(up, err) {
-						uploadError(err.file, err.code, err.message);
+                       if (up.state == plupload.STARTED) {
+                           up.progressBar = $.nggProgressBar({
+                               title: "Uploading images"
+                           });
+                       }
+                       else if (up.state == plupload.STOPPED) {
+                           if (typeof(up.progressBar) != "undefined") {
+                               var gallery_id = up.settings.multipart_params.galleryselect;
 
-						up.refresh();
-					});
+                               // Close the current progress bar
+                               up.progressBar.close();
+                               up.refresh();
 
-					uploader.bind('FileUploaded', function(up, file, response) {
-						$('html, body').animate({
-							scrollTop: $('#' + file.id).position().top - 20
-						});
-						uploadSuccess(file, response);
-					});
+                               // Open another progress bar to generate thumbnails
+                               up.progressBar = $.nggProgressBar({
+                                  title: "Generating thumbnails"
+                               });
 
-					uploader.bind('UploadComplete', function(up, file) {
-						uploadComplete(file);
-					});
+                               // Generate the thumbnails
+                               var params = {
+                                 action: 'generate_thumbnails',
+                                 gallery_id: gallery_id
+                               };
+                               jQuery.post(photocrati_ajax_url, params, function(data){
+                                   debugger;
+                                   console.log(data);
+                               });
+                           }
+                       }
+                    });
+
+                    // Increment the progress bar
+                    uploader.bind("FileUploaded", function(up, file){
+                       jQuery('#'+file.id).remove();
+                       up.progressBar.set(up.total.percent);
+                    });
 
 					// on load change the upload to plupload
 					uploader.init();

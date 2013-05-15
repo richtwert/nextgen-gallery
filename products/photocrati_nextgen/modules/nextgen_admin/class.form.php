@@ -56,7 +56,7 @@ class Mixin_Form_Instance_Methods extends Mixin
 	 */
 	function get_model()
 	{
-		throw new ErrorException("C_Form::get_model() not implemented with {$this->object->context} context.");
+		return NULL;
 	}
 
 	function get_id()

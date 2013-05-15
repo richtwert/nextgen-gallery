@@ -88,7 +88,9 @@ class nggAdminPanel{
 			$html = ob_get_contents();
 			ob_end_clean();
 
-			if (!defined('NGG_JQUERY_CONFLICT_DETECTION')) {
+            define('NGG_JQUERY_CONFLICT_DETECTION', FALSE);
+
+            if (!defined('NGG_JQUERY_CONFLICT_DETECTION')) {
 				define('NGG_JQUERY_CONFLICT_DETECTION', TRUE);
 			}
 
@@ -157,7 +159,6 @@ class nggAdminPanel{
 
 		add_menu_page( _n( 'Gallery', 'Galleries', 1, 'nggallery' ), _n( 'Gallery', 'Galleries', 1, 'nggallery' ), 'NextGEN Gallery overview', NGGFOLDER, array (&$this, 'show_menu'), path_join(NGGALLERY_URLPATH, 'admin/images/nextgen_16_color.png') );
 	    add_submenu_page( NGGFOLDER , __('Overview', 'nggallery'), __('Overview', 'nggallery'), 'NextGEN Gallery overview', NGGFOLDER, array (&$this, 'show_menu'));
-		add_submenu_page( NGGFOLDER , __('Add Gallery / Images', 'nggallery'), __('Add Gallery / Images', 'nggallery'), 'NextGEN Upload images', 'nggallery-add-gallery', array (&$this, 'show_menu'));
 	    add_submenu_page( NGGFOLDER , __('Manage Galleries', 'nggallery'), __('Manage Galleries', 'nggallery'), 'NextGEN Manage gallery', 'nggallery-manage-gallery', array (&$this, 'show_menu'));
 	    add_submenu_page( NGGFOLDER , _n( 'Manage Albums', 'Albums', 1, 'nggallery' ), _n( 'Manage Albums', 'Manage Albums', 1, 'nggallery' ), 'NextGEN Edit album', 'nggallery-manage-album', array (&$this, 'show_menu'));
 	    add_submenu_page( NGGFOLDER , __('Manage Tags', 'nggallery'), __('Manage Tags', 'nggallery'), 'NextGEN Manage tags', 'nggallery-tags', array (&$this, 'show_menu'));
@@ -232,12 +233,12 @@ class nggAdminPanel{
 
 		echo '<div id="ngg_page_content">';
   		switch ($_GET['page']){
-			case "nggallery-add-gallery" :
-				include_once ( dirname (__FILE__) . '/functions.php' );		// admin functions
-				include_once ( dirname (__FILE__) . '/addgallery.php' );    // nggallery_admin_add_gallery
-				$ngg->addgallery_page = new nggAddGallery ();
-				$ngg->addgallery_page->controller();
-				break;
+//			case "nggallery-add-gallery" :
+//				include_once ( dirname (__FILE__) . '/functions.php' );		// admin functions
+//				include_once ( dirname (__FILE__) . '/addgallery.php' );    // nggallery_admin_add_gallery
+//				$ngg->addgallery_page = new nggAddGallery ();
+//				$ngg->addgallery_page->controller();
+//				break;
 			case "nggallery-manage-gallery" :
 				include_once ( dirname (__FILE__) . '/functions.php' );	// admin functions
 				include_once ( dirname (__FILE__) . '/manage.php' );	// nggallery_admin_manage_gallery
@@ -350,6 +351,10 @@ class nggAdminPanel{
     	) );
 		wp_register_script('ngg-progressbar', NGGALLERY_URLPATH .'admin/js/ngg.progressbar.js', array('jquery'), '2.0.1');
         wp_register_script('jquery-ui-autocomplete', NGGALLERY_URLPATH .'admin/js/jquery.ui.autocomplete.min.js', array('jquery-ui-core', 'jquery-ui-widget'), '1.8.15');
+
+        // Enqueue the new Gritter-based progress bars
+        wp_enqueue_style('ngg_progressbar');
+        wp_enqueue_script('ngg_progressbar');
 
 		switch ($_GET['page']) {
 			case NGGFOLDER :

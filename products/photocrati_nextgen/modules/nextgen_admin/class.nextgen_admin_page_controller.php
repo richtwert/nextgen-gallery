@@ -214,6 +214,11 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 		return 'nextgen_admin#nextgen_admin_page';
 	}
 
+    function show_save_button()
+    {
+        return TRUE;
+    }
+
 	/**
 	 * Renders a NextGEN Admin Page using jQuery Accordions
 	 */
@@ -238,11 +243,13 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 
                 $tabs[] = $this->object->to_accordion_tab($form);
 
-                if ($form->get_model()->is_invalid()) {
-                    if (($form_errors = $this->object->show_errors_for($form->get_model(), TRUE))) {
-                        $errors[] = $form_errors;
+                if ($form->has_method('get_model') && $form->get_model()) {
+                    if ($form->get_model()->is_invalid()) {
+                        if (($form_errors = $this->object->show_errors_for($form->get_model(), TRUE))) {
+                            $errors[] = $form_errors;
+                        }
+                        $form->get_model()->clear_errors();
                     }
-                    $form->get_model()->clear_errors();
                 }
 			}
 
@@ -252,7 +259,8 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 				'tabs'				=>	$tabs,
 				'errors'			=>	$errors,
 				'success'			=>	$success,
-				'form_header'		=>  $token->get_form_html()
+				'form_header'		=>  $token->get_form_html(),
+                'show_save_button'  =>  $this->object->show_save_button()
 			));
 		}
 

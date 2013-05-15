@@ -1,11 +1,5 @@
 jQuery(function($){
-	// Activate accordions
-	$('.accordion').accordion({
-        clearStyle: true,
-        autoHeight: false,
-        heightStyle: 'content'
-    });
-    
+
     $('.select2').select2();
     $('label.tooltip, span.tooltip').tooltip();
 

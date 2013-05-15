@@ -75,11 +75,6 @@ class M_NextGen_Admin extends C_Base_Module
 			'A_MVC_Validation'
 		);
 
-		$this->get_registry()->add_adapter(
-			'I_Ajax_Controller',
-			'A_Stylesheet_Ajax_Actions'
-		);
-
         $this->get_registry()->add_adapter(
 			'I_Router',
 			'A_NextGen_Settings_Routes'
@@ -92,7 +87,7 @@ class M_NextGen_Admin extends C_Base_Module
 
 		$this->get_registry()->add_adapter(
 			'I_Page_Manager',
-			'A_NextGen_Admin_Pages'
+			'A_NextGen_Admin_Default_Pages'
 		);
 	}
 
@@ -101,9 +96,27 @@ class M_NextGen_Admin extends C_Base_Module
 	 */
 	function _register_hooks()
 	{
+        // Register scripts
+        add_action('init', array(&$this, 'register_scripts'));
+
 		// Provides menu options for managing NextGEN Settings
 		add_action('admin_menu', array(&$this, 'add_menu_pages'), 999);
 	}
+
+
+    function register_scripts()
+    {
+        $router = $this->get_registry()->get_utility('I_Router');
+        wp_register_script('gritter', $router->get_static_url('nextgen_admin#gritter/gritter.min.js'), array('jquery'));
+        wp_register_style('gritter',  $router->get_static_url('nextgen_admin#gritter/css/gritter.css'));
+        wp_register_script('ngg_progressbar', $router->get_static_url('nextgen_admin#ngg_progressbar.js'), array('gritter'));
+        wp_register_style('ngg_progressbar', $router->get_static_url('nextgen_admin#ngg_progressbar.css'), array('gritter'));
+        $match = preg_quote("/wp-admin/post.php", "#");
+        if (preg_match("#{$match}#", $_SERVER['REQUEST_URI'])) {
+            wp_enqueue_script('ngg_progressbar');
+            wp_enqueue_style('ngg_progressbar');
+        }
+    }
 
 	/**
 	 * Adds menu pages to manage NextGen Settings
@@ -120,10 +133,9 @@ class M_NextGen_Admin extends C_Base_Module
             'adapter.fs_access_page.php',
             'adapter.mvc_validation.php',
             'adapter.nextgen_admin_installer.php',
-            'adapter.nextgen_admin_pages.php',
+            'adapter.nextgen_admin_default_pages.php',
             'adapter.nextgen_admin_settings.php',
             'adapter.nextgen_settings_routes.php',
-            'adapter.stylesheet_ajax_actions.php',
             'class.form.php',
             'class.form_manager.php',
             'class.nextgen_admin_page_controller.php',

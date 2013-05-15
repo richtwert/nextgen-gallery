@@ -94,8 +94,11 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Depends on photocrati-nextgen_data
 		$this->get_registry()->load_module('photocrati-dynamic_thumbnails');
 
-		// Load the NextGEN Gallery Admin interface
+		// Load the NextGEN Gallery Admin interface base classes
 		$this->get_registry()->load_module('photocrati-nextgen_admin');
+
+        // Load the NextGEN Gallery Admin pages
+        $this->get_registry()->load_module('photocrati-nextgen_addgallery_page');
 
         // Load the pagination module
         $this->_get_registry()->load_module('photocrati-nextgen_pagination');

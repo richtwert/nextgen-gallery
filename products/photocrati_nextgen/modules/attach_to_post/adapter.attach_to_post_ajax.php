@@ -11,10 +11,12 @@ class A_Attach_To_Post_Ajax extends Mixin
 	/**
 	 * Retrieves the attach to post controller
 	 */
-	function initialize()
-	{
-		$this->attach_to_post = $this->object->get_registry()->get_utility('I_Attach_To_Post_Controller');
-	}
+    function get_attach_to_post()
+    {
+        if (is_null($this->attach_to_post))
+            $this->attach_to_post = $this->object->get_registry()->get_utility('I_Attach_To_Post_Controller');
+        return $this->attach_to_post;
+    }
 
 
 	/**
@@ -27,7 +29,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 
 		if ($this->object->validate_ajax_request())
 		{
-			$response['sources'] = $this->attach_to_post->get_sources();
+			$response['sources'] = $this->get_attach_to_post()->get_sources();
 		}
 
 		return $response;
@@ -204,7 +206,7 @@ class A_Attach_To_Post_Ajax extends Mixin
 			// Save the changes
 			if ($displayed_gallery) {
 				if ($displayed_gallery->save()) $response['displayed_gallery'] = $displayed_gallery->get_entity();
-				else $response['validation_errors'] = $this->attach_to_post->show_errors_for($displayed_gallery, TRUE);
+				else $response['validation_errors'] = $this->get_attach_to_post()->show_errors_for($displayed_gallery, TRUE);
 			}
 			else
 			{

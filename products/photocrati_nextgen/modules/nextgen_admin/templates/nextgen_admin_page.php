@@ -20,8 +20,10 @@
 			<?php echo $tab ?>
 		<?php endforeach ?>
 		</div>
+        <?php if ($show_save_button): ?>
 		<p>
 			<input type="submit" name='action_proxy' value="Save" class="button-primary"/>
 		</p>
+        <?php endif ?>
 	</form>
 </div>
