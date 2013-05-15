@@ -246,7 +246,7 @@ class Mixin_Attach_To_Post extends Mixin
 	 */
 	function _render_create_tab()
 	{
-		return $this->object->_render_ngg_page_in_frame('nggallery-add-gallery', 'create_tab');
+		return $this->object->_render_ngg_page_in_frame('ngg_addgallery', 'create_tab');
 	}
 
 
