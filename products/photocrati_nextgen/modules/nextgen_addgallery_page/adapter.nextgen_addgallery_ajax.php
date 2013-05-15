@@ -7,7 +7,7 @@ class A_NextGen_AddGallery_Ajax extends Mixin
         $retval = array();
 
         $gallery_id     = intval($this->param('gallery_id'));
-        $gallery_name   = $this->param('gallery_name');
+        $gallery_name   = urldecode($this->param('gallery_name'));
         $error          = FALSE;
 
         // We need to create a gallery

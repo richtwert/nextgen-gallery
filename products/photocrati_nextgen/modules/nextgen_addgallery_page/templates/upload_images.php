@@ -15,6 +15,23 @@
 <script type="text/javascript">
     (function($){
         $(window).on('lazy_resources_loaded', function(){
+            window.urlencode = function(str){
+                str = (str + '').toString();
+
+                // Tilde should be allowed unescaped in future versions of PHP (as reflected below), but if you want to reflect current
+                // PHP behavior, you would need to add ".replace(/~/g, '%7E');" to the following.
+                return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
+                    replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+            };
+
+            // Sets the plupload url with necessary parameters in the QS
+            window.set_plupload_url = function(gallery_id, gallery_name) {
+                var qs = "?gallery_id="+urlencode(gallery_id);
+                qs += "&gallery_name="+urlencode(gallery_name);
+                return photocrati_ajax_url+qs;
+            };
+
+            // Reinitializes plupload
             window.reinit_plupload = function(up){
                 $("#uploader").animate({
                     'opacity': 0.0,
@@ -28,6 +45,7 @@
                 }, 'slow');
             };
 
+            // Initializes plupload
             window.init_plupload = function() {
                 var plupload_options =  <?php echo $plupload_options ?>;
                 var $gallery_id = $('#gallery_id');
@@ -75,8 +93,7 @@
                             e.preventDefault();
 
                             var uploader = $('#uploader').pluploadQueue();
-                            uploader.settings.multipart_params.gallery_id   = $gallery_id.val();
-                            uploader.settings.multipart_params.gallery_name = $gallery_name.val();
+                            uploader.settings.url = window.set_plupload_url($gallery_id.val(), $gallery_name.val());
 
                             if ($gallery_id.val() == 0 && $gallery_name.val().length == 0) {
                                 $gallery_name.addClass('error');
@@ -111,11 +128,6 @@
                         }
                     },
 
-                    BeforeUpload: function(up){
-                        up.settings.multipart_params.gallery_id   = $gallery_id.val();
-                        up.settings.multipart_params.gallery_name = $gallery_name.val();
-                    },
-
                     // When a gallery has been created, use the same gallery for each request going forward
                     FileUploaded: function(up, file, info){
                         var response = info.response;
@@ -123,7 +135,7 @@
                             response = JSON.parse(info.response);
                         }
                         window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
-                        up.settings.multipart_params.gallery_id = response.gallery_id;
+                        up.settings.url = window.set_plupload_url(response.gallery_id, $gallery_name.val());
                     },
 
                     Error: function(up, args){
