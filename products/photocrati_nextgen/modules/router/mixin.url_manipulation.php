@@ -139,7 +139,7 @@ class Mixin_Url_Manipulation extends Mixin
 	function strip_param_segments($request_uri, $remove_slug=TRUE)
 	{
 		$retval		 = $request_uri ? $request_uri : '/';
-		$settings	 = $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings	 = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
 		$sep		 = preg_quote($settings->router_param_separator, '#');
 		$param_regex = "#((?<id>\w+){$sep})?(?<key>\w+){$sep}(?<value>.+)/?$#";
 		$slug		 = $settings->router_param_slug && $remove_slug ? '/' . preg_quote($settings->router_param_slug,'#') : '';
