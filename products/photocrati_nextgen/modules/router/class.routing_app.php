@@ -412,7 +412,7 @@ class Mixin_Routing_App extends Mixin
     function _route_to_regex($route)
     {
 		// Get the settings manager
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings = $this->object->_settings;
 		$param_slug = $settings->router_param_slug;
 
         // convert route to RegEx pattern
@@ -473,7 +473,7 @@ class Mixin_Routing_App extends Mixin
 	function get_parameter($key, $id=NULL, $default=NULL, $segment=FALSE, $url=FALSE)
 	{
 		$retval				= $default;
-		$settings			= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings			= $this->object->_settings;
 		$quoted_key			= preg_quote($key,'#');
 		$id					= $id ? preg_quote($id,'#') : "[^/]+";
 		$param_prefix		= preg_quote($settings->router_param_prefix,'#');
@@ -512,7 +512,7 @@ class Mixin_Routing_App extends Mixin
 		$retval		= $this->object->remove_parameter($key, $id, $url);
 
 		// Get the settings manager
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings	= $this->object->_settings;
 		$param_slug = $settings->router_param_slug;
 
 		// We're modifying a url passed in
@@ -561,7 +561,7 @@ class Mixin_Routing_App extends Mixin
 	function remove_parameter($key, $id=NULL, $url=FALSE)
 	{
 		$retval			= $url;
-		$settings		= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings		= $this->object->_settings;
 		$param_sep		= $settings->router_param_separator;
 		$param_prefix	= $settings->router_param_prefix ? preg_quote($settings->router_param_prefix, '#') : '';
 		$param_slug		= $settings->router_param_slug ? preg_quote($settings->router_param_slug, '#') : FALSE;
@@ -614,7 +614,7 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function add_parameter_to_app_request_uri($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings	= $this->object->_settings;
 		$param_slug = $settings->router_param_slug;
 		
 		$uri		= $this->object->get_app_request_uri();
@@ -636,7 +636,7 @@ class Mixin_Routing_App extends Mixin
 	 */
 	function create_parameter_segment($key, $value, $id=NULL, $use_prefix=FALSE)
 	{
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings	= $this->object->_settings;
 		if ($use_prefix) $key = $settings->router_param_prefix.$key;
 		if ($value === TRUE) $value = 1;
 		elseif ($value == FALSE) $value = 0; // null and false values
@@ -707,7 +707,7 @@ class Mixin_Routing_App extends Mixin
 	function get_postdata()
 	{
 		$retval		= '/' . urldecode(file_get_contents("php://input"));
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings	= $this->object->_settings;
 		$retval = str_replace(
 			array('&', '='),
 			array('/', $settings->router_param_separator),
@@ -721,7 +721,7 @@ class Mixin_Routing_App extends Mixin
 	function get_formatted_querystring()
 	{
 		$retval		= '/'.$this->object->get_router()->get_querystring();
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings	= $this->object->_settings;
 		$retval		= str_replace(
 			array('&', '='),
 			array('/', $settings->router_param_separator),
@@ -734,7 +734,7 @@ class Mixin_Routing_App extends Mixin
 	function has_parameter_segments()
 	{
 		$retval			= FALSE;
-		$settings		= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+		$settings		= $this->object->_settings;
 		$request_uri	= $this->object->get_app_request_uri();
 		$sep			= preg_quote($settings->router_param_separator,'#');
 
@@ -790,6 +790,7 @@ class C_Routing_App extends C_Component
 {
     static $_instances		= array();
 	var    $_request_uri	= FALSE;
+	var $_settings = null;
 
     function define($context= FALSE)
     {
@@ -797,6 +798,23 @@ class C_Routing_App extends C_Component
 		$this->add_mixin('Mixin_Url_Manipulation');
         $this->add_mixin('Mixin_Routing_App');
 		$this->implement('I_Routing_App');
+    }
+    
+    function initialize()
+    {
+			$this->_settings = $this->object->get_routing_settings();
+    }
+    
+    function get_routing_settings()
+    {
+			$settings	= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
+			
+			$object = new stdClass();
+			$object->router_param_separator = $settings->router_param_separator;
+			$object->router_param_slug = $settings->router_param_slug;
+			$object->router_param_prefix = $settings->router_param_prefix;
+			
+			return $object;
     }
 
     static function &get_instance($context = False)
