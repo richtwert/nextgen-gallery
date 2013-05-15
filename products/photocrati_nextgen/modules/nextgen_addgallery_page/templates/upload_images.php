@@ -136,6 +136,14 @@
                         }
                         window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
                         up.settings.url = window.set_plupload_url(response.gallery_id, $gallery_name.val());
+
+                        // If we created a new gallery, ensure it's now in the drop-down list, and select it
+                        if ($gallery_id.find('option[value="'+response.gallery_id+'"]').length == 0) {
+                            var option = $('<option/>').attr('value', response.gallery_id).text(response.gallery_name);
+                            $gallery_id.append(option);
+                            $gallery_id.val(response.gallery_id);
+                            option.attr('selected', 'selected');
+                        }
                     },
 
                     Error: function(up, args){

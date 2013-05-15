@@ -582,8 +582,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             array_shift($files);
             if (!empty($files)) {
 
-                // Get the FS utility
+                // Get needed utilities
                 $fs = $this->get_registry()->get_utility('I_Fs');
+                $gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 
                 // Sometimes users try importing a directory, which actually has all images under another directory
                 $first_file_abspath = $fs->join_paths($abspath, $files[0]);
@@ -592,7 +593,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
                 // If no gallery has been specified, then use the directory name as the gallery name
                 if (!$gallery_id) {
                     // Create the gallery
-                    $gallery_mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
                     $gallery = $gallery_mapper->create(array(
                         'title'         =>  basename($abspath),
                     ));
@@ -614,6 +614,11 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
                         $retval['image_ids'][] = $image->{$image->id_field};
                     }
 
+
+                    // Add the gallery name to the result
+                    $gallery = $gallery_mapper->find($gallery_id);
+                    $retval['gallery_name'] = $gallery->title;
+                    unset($gallery);
                 }
             }
         }

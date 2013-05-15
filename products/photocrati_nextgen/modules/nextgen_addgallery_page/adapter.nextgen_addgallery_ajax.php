@@ -63,6 +63,7 @@ class A_NextGen_AddGallery_Ajax extends Mixin
         }
 
         if ($error) header('HTTP/1.1 400 Bad Request');
+        else $retval['gallery_name'] = $gallery_name;
 
         return $retval;
     }
