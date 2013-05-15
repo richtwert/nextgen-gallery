@@ -19,7 +19,7 @@
 		</td>
 	</tr>
 
-    <tr>
+    <tr class="watermark_field hidden">
         <td>
             <?php echo $position_label; ?>
         </td>
@@ -44,7 +44,7 @@
         </td
     </tr>
 
-    <tr>
+    <tr class="watermark_field hidden">
         <td>
             <?php echo $offset_label; ?>
         </td>
@@ -67,7 +67,7 @@
     </tr>
 
     <?php if (!is_null($thumbnail_url)) { ?>
-        <tr>
+        <tr class="watermark_field hidden">
             <td>
                 <?php echo $preview_label; ?>
             </td>
@@ -78,7 +78,7 @@
         </tr>
     <?php } ?>
 
-	<tr>
+    <tr class="watermark_field hidden">
 		<td colspan="2">
 			<a
 				id="watermark_customization"

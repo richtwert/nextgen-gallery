@@ -99,7 +99,7 @@ class Mixin_NextGen_Settings extends Mixin
 			'wmPos'    => 'botRight',             // Postion
 			'wmXpos'   => 5,                      // X Pos
 			'wmYpos'   => 5,                      // Y Pos
-			'wmType'   => 'text',                 // Type : 'image' / 'text'
+			'wmType'   => 0,                 // Type : 'image' / 'text'
 			'wmPath'   => '',                     // Path to image
 			'wmFont'   => 'arial.ttf',            // Font type
 			'wmSize'   => 10,                     // Font Size

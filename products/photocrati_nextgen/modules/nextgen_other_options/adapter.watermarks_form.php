@@ -35,6 +35,7 @@ class A_Watermarks_Form extends Mixin
 	{
 		// We do this so that an adapter can add new sources
 		return array(
+            'Do Not Watermark'  =>  0,
 			'Using an Image'	=>	'image',
 			'Using Text'		=>	'text',
 		);
@@ -49,7 +50,9 @@ class A_Watermarks_Form extends Mixin
 		$retval = array();
 		foreach ($this->object->_get_watermark_sources() as $label => $value) {
 			$method = "_render_watermark_{$value}_fields";
-			$retval[$value] = $this->object->call_method($method);
+            if ($this->object->has_method($method)) {
+                $retval[$value] = $this->object->call_method($method);
+            }
 		}
 		return $retval;
 	}
