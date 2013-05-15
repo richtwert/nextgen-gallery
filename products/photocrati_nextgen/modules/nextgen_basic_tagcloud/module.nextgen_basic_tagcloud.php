@@ -73,7 +73,7 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
 
         // Provides the forms for the settings
         $this->get_registry()->add_adapter(
-            'I_Settings_Manager',
+            'I_Form_Manager',
             'A_NextGen_Basic_TagCloud_Forms'
         );
     }

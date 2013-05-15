@@ -117,7 +117,7 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
 
         // Adds the settings forms
         $this->get_registry()->add_adapter(
-            'I_Settings_Manager',
+            'I_Form_Manager',
             'A_NextGen_Basic_Gallery_Forms'
         );
     }
