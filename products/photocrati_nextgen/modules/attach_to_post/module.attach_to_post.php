@@ -87,7 +87,7 @@ class M_Attach_To_Post extends C_Base_Module
 		// Adds Attach to Post settings
 		$this->get_registry()->add_adapter(
 			'I_Settings_Manager',
-			'A_Attach_to_Post_Settings'
+			'A_Attach_to_Post_Settings', $this->module_id			
 		);
 	}
 
@@ -222,7 +222,7 @@ class M_Attach_To_Post extends C_Base_Module
 	 */
 	function _enqueue_tinymce_resources()
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-attach_to_post');
         wp_localize_script(
 			'media-editor',
 			'nextgen_gallery_attach_to_post_url',
@@ -280,7 +280,7 @@ class M_Attach_To_Post extends C_Base_Module
 		global $displayed_galleries_to_cleanup;
 		$displayed_galleries_to_cleanup	= array();
 		$post							= get_post($post_id);
-		$settings						= $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings						= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-attach_to_post');
 		$preview_url = preg_quote($settings->gallery_preview_url, '#');
 		if (preg_match_all("#{$preview_url}/id--(\d+)#", html_entity_decode($post->post_content), $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {

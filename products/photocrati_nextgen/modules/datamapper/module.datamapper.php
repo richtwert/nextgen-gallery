@@ -24,7 +24,7 @@ class M_DataMapper extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Component_Factory', 'A_DataMapper_Factory');
-		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_DataMapper_Settings');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_DataMapper_Settings', $this->module_id);
 
 	}
 

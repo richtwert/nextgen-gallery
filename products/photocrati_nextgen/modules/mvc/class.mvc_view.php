@@ -230,7 +230,7 @@ class Mixin_Mvc_View_Instance_Methods extends Mixin
    function find_template_abspath($path, $module=FALSE)
    {
        $fs       = $this->get_registry()->get_utility('I_Fs');
-       $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+       $settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-mvc');
 
        // We also accept module_name#path, which needs parsing.
        if (!$module)

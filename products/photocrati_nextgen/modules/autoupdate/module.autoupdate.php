@@ -23,11 +23,19 @@ class M_AutoUpdate extends C_Base_Module
 		);
 	}
 
+
+	function initialize()
+	{
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-auto_update');
+		$this->api_url = $settings->autoupdate_api_url;
+	}
+
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter(
 			'I_Settings_Manager',
-			'A_AutoUpdate_Settings'
+			'A_AutoUpdate_Settings',
+			$this->module_id
 		);
 	}
 
