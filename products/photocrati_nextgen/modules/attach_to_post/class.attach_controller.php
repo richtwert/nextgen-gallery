@@ -89,7 +89,7 @@ class Mixin_Attach_To_Post extends Mixin
 		);
 
 		// Enqueue the backbone app for the display tab
-		$settings			= $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings			= $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-attach_to_post');
 		$preview_url		= $settings->gallery_preview_url;
 		$display_tab_js_url	= $settings->attach_to_post_display_tab_js_url;
 		if ($this->object->_displayed_gallery->id()) {

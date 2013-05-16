@@ -32,7 +32,7 @@ class M_JsConsole extends C_Base_Module
 
 		$this->get_registry()->add_adapter(
 			'I_Settings_Manager',
-			'A_JsConsole_Settings'
+			'A_JsConsole_Settings', $this->module_id
 		);
 	}
 
@@ -44,7 +44,7 @@ class M_JsConsole extends C_Base_Module
 
 	function enqueue_jsconsole()
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-jsconsole');
 		if ($settings->jsconsole_enabled && $settings->jsconsole_session_key && !is_admin()) {
 			wp_register_script(
 				'jsconsole-remote',

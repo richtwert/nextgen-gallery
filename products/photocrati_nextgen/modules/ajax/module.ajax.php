@@ -24,7 +24,7 @@ class M_Ajax extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Router', 'A_Ajax_Routes');
-		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Ajax_Settings');
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Ajax_Settings', $this->module_id);
 	}
 
 	function _register_utilities()
@@ -48,7 +48,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-ajax');
 		wp_register_script('photocrati_ajax', $settings->ajax_js_url, array(), NULL);
         wp_enqueue_script('photocrati_ajax');
 	}

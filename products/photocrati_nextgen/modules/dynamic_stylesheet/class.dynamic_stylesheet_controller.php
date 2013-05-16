@@ -17,8 +17,8 @@ class C_Dynamic_Stylesheet_Controller extends C_MVC_Controller
 	function initialize()
 	{
 		parent::initialize();
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
-		$this->_app =$settings->get('dynamic_stylesheet_slug');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-dynamic_stylesheet');
+		$this->_app = $settings->get('dynamic_stylesheet_slug');
 	}
 
 	static function &get_instance($context=FALSE)

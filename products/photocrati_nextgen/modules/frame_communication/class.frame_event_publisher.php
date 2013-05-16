@@ -15,7 +15,7 @@ class C_Frame_Event_Publisher extends C_Component
 	function initialize()
 	{
 		parent::initialize();
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-frame_communication');
 		$this->setting_name = $settings->frame_communication_option_name;
 	}
 

@@ -26,7 +26,7 @@ class M_Frame_Communication extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter(
-			'I_Settings_Manager', 'A_Frame_Communication_Settings'
+			'I_Settings_Manager', 'A_Frame_Communication_Settings', $this->module_id
 		);
 	}
 

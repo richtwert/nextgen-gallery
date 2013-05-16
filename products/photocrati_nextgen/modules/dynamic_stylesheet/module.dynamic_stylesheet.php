@@ -35,7 +35,7 @@ class M_Dynamic_Stylesheet extends C_Base_Module
 			'I_Router', 'A_Dynamic_Stylesheet_Routes'
 		);
 		$this->get_registry()->add_adapter(
-			'I_Settings_Manager', 'A_Dynamic_Stylesheet_Settings'
+			'I_Settings_Manager', 'A_Dynamic_Stylesheet_Settings', $this->module_id
 		);
 	}
 

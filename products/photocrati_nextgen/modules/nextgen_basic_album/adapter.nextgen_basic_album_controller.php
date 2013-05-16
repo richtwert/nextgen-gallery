@@ -222,7 +222,7 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
 	function prettify_pagelink($pagelink)
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-router');
 		$regex = implode('', array(
 			'#',
 			'/(gallery|album)',
