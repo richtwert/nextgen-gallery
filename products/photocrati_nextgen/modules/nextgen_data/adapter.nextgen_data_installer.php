@@ -12,7 +12,7 @@ class A_NextGen_Data_Installer extends Mixin
         );
 	}
 
-    function uninstall_nextgen_data($hard)
+    function uninstall_nextgen_data($hard=FALSE)
     {
         if ($hard) {
             $mappers = array(

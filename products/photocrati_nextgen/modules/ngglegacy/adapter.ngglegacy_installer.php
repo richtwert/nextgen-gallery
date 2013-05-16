@@ -21,6 +21,7 @@ class A_NggLegacy_Installer extends Mixin
 
 	function install_ngglegacy()
 	{
+        include_once('admin/install.php');
 		nggallery_install();
 	}
 
