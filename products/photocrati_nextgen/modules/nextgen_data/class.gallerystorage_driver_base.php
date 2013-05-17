@@ -605,6 +605,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
                 if ($gallery_id) {
                     $retval = array('gallery_id' => $gallery_id, 'image_ids' => array());
                     foreach ($files as $file) {
+                        if (!preg_match("/\.(jpg|jpeg|gif|png)/i", $file)) continue;
                         $file_abspath = $fs->join_paths($abspath, $file);
                         $image = $this->object->upload_base64_image(
                             $gallery_id,
