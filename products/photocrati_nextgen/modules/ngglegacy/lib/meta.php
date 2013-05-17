@@ -78,6 +78,8 @@ class nggMeta{
 
 		$meta = $this->image->meta_data;
 
+        if (!isset($meta['saved'])) $meta['saved'] = FALSE;
+
 		//check if we already import the meta data to the database
 		if (!is_array($meta) || ($meta['saved'] != true))
 			return false;
