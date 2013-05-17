@@ -66,7 +66,7 @@ jQuery(function($){
 
 (function($){
     $(window).on('lazy_resources_loaded', function(){
-        $('#nextgen_admin_page').css('visibility', 'visible');
+        $('#ngg_page_content').css('visibility', 'visible');
     });
 
 })(jQuery);

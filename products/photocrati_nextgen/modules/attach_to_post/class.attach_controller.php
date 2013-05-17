@@ -113,6 +113,7 @@ class Mixin_Attach_To_Post extends Mixin
 	 */
 	function index_action()
 	{
+        xdebug_start_trace();
         if ($this->object->_displayed_gallery->is_new()) $this->object->expires("+2 hour");
 
 		// Enqueue resources
@@ -121,6 +122,7 @@ class Mixin_Attach_To_Post extends Mixin
 			'tabs'			=>	$this->object->_get_main_tabs(),
 			'tab_titles'	=>	$this->object->_get_main_tab_titles()
 		));
+        xdebug_stop_trace();
 	}
 
 
