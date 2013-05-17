@@ -159,12 +159,6 @@ class A_NextGen_Settings_Manager extends Mixin
 
 	function is_global_context()
 	{
-		$retval		= FALSE;
-		$context	= $this->object->context;
-		if ($context) {
-			if (!is_array($context)) $context = array($context);
-			$retval = in_array('global', $context);
-		}
-		return $retval;
+		return $this->object->has_context('global');
 	}
 }
