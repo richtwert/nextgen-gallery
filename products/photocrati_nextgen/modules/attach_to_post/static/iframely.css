@@ -18,3 +18,8 @@
 	float: none;
 	padding: 0px;
 }
+
+#iframely h2,
+#iframely #icon-nextgen-gallery {
+    display: none;
+}

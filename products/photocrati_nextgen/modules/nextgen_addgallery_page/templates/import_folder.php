@@ -7,6 +7,10 @@
 <script type="text/javascript">
     var selected_folder = null;
     jQuery(function($){
+        // Only run this function once!
+        if (typeof($(window).data('ready')) == 'undefined')
+            $(window).data('ready', true);
+        else return;
 
         // Render file browser
         $('#file_browser').fileTree({

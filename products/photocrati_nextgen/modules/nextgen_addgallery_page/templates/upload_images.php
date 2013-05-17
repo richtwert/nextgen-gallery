@@ -14,6 +14,11 @@
 </div>
 <script type="text/javascript">
     (function($){
+        // Only run this function once!
+        if (typeof($(window).data('ready')) == 'undefined')
+            $(window).data('ready', true);
+        else return;
+
         $(window).on('lazy_resources_loaded', function(){
             window.urlencode = function(str){
                 str = (str + '').toString();
