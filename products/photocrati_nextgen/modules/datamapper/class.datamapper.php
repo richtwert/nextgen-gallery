@@ -14,7 +14,7 @@ class Mixin_DataMapper extends Mixin
 	 */
 	function _get_driver_factory_method($context=FALSE)
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-datamapper');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-datamapper');
 		if (!isset($settings->datamapper_driver)) throw new DataMapperDriverNotSelectedException();
 		return $settings->datamapper_driver;
 	}

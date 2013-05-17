@@ -48,7 +48,7 @@ class M_Ajax extends C_Base_Module
 	 */
 	function enqueue_scripts()
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-ajax');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-ajax');
 		wp_register_script('photocrati_ajax', $settings->ajax_js_url, array(), NULL);
         wp_enqueue_script('photocrati_ajax');
 	}

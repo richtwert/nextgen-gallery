@@ -23,13 +23,6 @@ class M_AutoUpdate extends C_Base_Module
 		);
 	}
 
-
-	function initialize()
-	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-auto_update');
-		$this->api_url = $settings->autoupdate_api_url;
-	}
-
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter(
@@ -46,7 +39,7 @@ class M_AutoUpdate extends C_Base_Module
     function _get_api_url()
     {
         if (is_null($this->_api_url)) {
-            $settings = $this->get_registry()->get_utility('I_Settings_Manager');
+            $settings = $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-auto_update');
             $this->_api_url = $settings->autoupdate_api_url;
         }
 

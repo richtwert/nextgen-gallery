@@ -146,6 +146,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 
 	function define($context=FALSE)
 	{
+        if ($context == 'default') $context = 'app';
 		parent::define($context);
 		$this->add_mixin('Mixin_Settings_Manager_Instance_Methods');
 		$this->add_mixin('Mixin_Validation');

@@ -21,7 +21,7 @@ class M_Settings extends C_Base_Module
 
 	function _register_utilities()
 	{
-		$this->get_registry()->add_utility('I_Settings_Manager', 'C_Settings_Manager');
+        $this->get_registry()->add_utility('I_Settings_Manager', 'C_Settings_Manager');
 	}
 
 	function _register_hooks()

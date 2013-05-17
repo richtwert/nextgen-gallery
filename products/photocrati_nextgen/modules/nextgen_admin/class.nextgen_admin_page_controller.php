@@ -117,7 +117,7 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 
 	function enqueue_jquery_ui_theme()
 	{
-		$settings = $this->get_registry()->get_utility('I_Settings_Manager')->group('photocrati-nextgen_admin');
+		$settings = $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-nextgen_admin');
 		wp_enqueue_style(
 			$settings->jquery_ui_theme,
 			is_ssl() ?

@@ -26,9 +26,6 @@ class A_Upload_Images_Form extends Mixin
     {
         $retval = array();
 
-        // Get the settings manager
-        //$settings   = $this->get_registry()->get_utility('I_Settings_Manager');
-
         // Generate default Plupload options
         $retval['runtimes']             = 'html5,gears,flash,silverlight,browserplus,html4';
         $retval['max_file_size']        = strval(round( (int) wp_max_upload_size() / 1024 )).'kb';

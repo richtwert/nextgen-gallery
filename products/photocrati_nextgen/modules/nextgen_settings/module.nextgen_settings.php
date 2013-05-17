@@ -31,8 +31,15 @@ class M_NextGen_Settings extends C_Base_Module
 	{
 		$this->get_registry()->add_adapter(
 			'I_Settings_Manager',
-			'A_NextGen_Settings_Manager'
+			'A_NextGen_Settings_Manager',
+            'global'
 		);
+
+        $this->get_registry()->add_adapter(
+            'I_Settings_Manager',
+            'A_NextGen_Settings_Manager',
+            'app'
+        );
 	}
 
     function set_file_list()
