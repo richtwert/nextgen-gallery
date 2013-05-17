@@ -31,19 +31,19 @@ class M_Security extends C_Base_Module
 		$this->get_registry()->add_utility('I_Security_Manager', 'C_WordPress_Security_Manager');
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.security_factory.php',
-            'class.security_actor.php',
-            'class.security_manager.php',
-            'class.security_token.php',
-            'class.wordpress_security_actor.php',
-            'class.wordpress_security_manager.php',
-            'class.wordpress_security_token.php',
-            'interface.security_actor.php',
-            'interface.security_manager.php',
-            'interface.security_token.php'
+            'A_Security_Factory' => 'adapter.security_factory.php',
+            'C_Security_Actor' => 'class.security_actor.php',
+            'C_Security_Manager' => 'class.security_manager.php',
+            'C_Security_Token' => 'class.security_token.php',
+            'C_Wordpress_Security_Actor' => 'class.wordpress_security_actor.php',
+            'C_Wordpress_Security_Manager' => 'class.wordpress_security_manager.php',
+            'C_Wordpress_Security_Token' => 'class.wordpress_security_token.php',
+            'I_Security_Actor' => 'interface.security_actor.php',
+            'I_Security_Manager' => 'interface.security_manager.php',
+            'I_Security_Token' => 'interface.security_token.php'
         );
     }
 

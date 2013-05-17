@@ -39,13 +39,13 @@ class M_Dynamic_Stylesheet extends C_Base_Module
 		);
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.dynamic_stylesheet_routes.php',
-            'adapter.dynamic_stylesheet_settings.php',
-            'class.dynamic_stylesheet_controller.php',
-            'interface.dynamic_stylesheet.php'
+            'A_Dynamic_Stylesheet_Routes' => 'adapter.dynamic_stylesheet_routes.php',
+            'A_Dynamic_Stylesheet_Settings' => 'adapter.dynamic_stylesheet_settings.php',
+            'C_Dynamic_Stylesheet_Controller' => 'class.dynamic_stylesheet_controller.php',
+            'I_Dynamic_Stylesheet' => 'interface.dynamic_stylesheet.php'
         );
     }
 }

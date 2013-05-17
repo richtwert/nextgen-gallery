@@ -29,12 +29,12 @@ class M_Test extends C_Base_Module
 		$this->get_registry()->add_adapter('I_Router', 'A_Test_Routes');
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.test_routes.php',
-            'class.test_controller.php',
-            'interface.test_controller.php'
+            'A_Test_Routes' => 'adapter.test_routes.php',
+            'C_Test_Controller' => 'class.test_controller.php',
+            'I_Test_Controller' => 'interface.test_controller.php'
         );
     }
 }

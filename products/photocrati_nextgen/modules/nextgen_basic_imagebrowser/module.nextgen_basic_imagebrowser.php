@@ -105,17 +105,17 @@ class M_NextGen_Basic_ImageBrowser extends C_Base_Module
         return $renderer->display_images($params, $inner_content);
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.nextgen_basic_imagebrowser.php',
-            'adapter.nextgen_basic_imagebrowser_controller.php',
-            'adapter.nextgen_basic_imagebrowser_form.php',
-            'adapter.nextgen_basic_imagebrowser_forms.php',
-            'adapter.nextgen_basic_imagebrowser_installer.php',
-            'adapter.nextgen_basic_imagebrowser_mapper.php',
-            'adapter.nextgen_basic_imagebrowser_routes.php',
-            'adapter.nextgen_basic_imagebrowser_urls.php'
+            'A_Nextgen_Basic_Imagebrowser' => 'adapter.nextgen_basic_imagebrowser.php',
+            'A_Nextgen_Basic_Imagebrowser_Controller' => 'adapter.nextgen_basic_imagebrowser_controller.php',
+            'A_Nextgen_Basic_Imagebrowser_Form' => 'adapter.nextgen_basic_imagebrowser_form.php',
+            'A_Nextgen_Basic_Imagebrowser_Forms' => 'adapter.nextgen_basic_imagebrowser_forms.php',
+            'A_Nextgen_Basic_Imagebrowser_Installer' => 'adapter.nextgen_basic_imagebrowser_installer.php',
+            'A_Nextgen_Basic_Imagebrowser_Mapper' => 'adapter.nextgen_basic_imagebrowser_mapper.php',
+            'A_Nextgen_Basic_Imagebrowser_Routes' => 'adapter.nextgen_basic_imagebrowser_routes.php',
+            'A_Nextgen_Basic_Imagebrowser_Urls' => 'adapter.nextgen_basic_imagebrowser_urls.php'
         );
     }
 }

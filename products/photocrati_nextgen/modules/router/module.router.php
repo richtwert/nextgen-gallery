@@ -31,18 +31,18 @@ class M_Router extends C_Base_Module
 		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Router_Settings', $this->module_id);
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.router_settings.php',
-            'adapter.routing_app_factory.php',
-            'class.router.php',
-            'class.http_response_controller.php',
-            'class.routing_app.php',
-            'interface.router.php',
-            'interface.http_response.php',
-            'interface.routing_app.php',
-            'mixin.url_manipulation.php'
+            'A_Router_Settings' => 'adapter.router_settings.php',
+            'A_Routing_App_Factory' => 'adapter.routing_app_factory.php',
+            'C_Router' => 'class.router.php',
+            'C_Http_Response_Controller' => 'class.http_response_controller.php',
+            'C_Routing_App' => 'class.routing_app.php',
+            'I_Router' => 'interface.router.php',
+            'I_Http_Response' => 'interface.http_response.php',
+            'I_Routing_App' => 'interface.routing_app.php',
+            'Mixin_Url_Manipulation' => 'mixin.url_manipulation.php'
         );
     }
 }

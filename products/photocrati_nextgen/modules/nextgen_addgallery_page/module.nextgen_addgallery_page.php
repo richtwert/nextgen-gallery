@@ -21,6 +21,18 @@ class M_NextGen_AddGallery_Page extends C_Base_Module
             'http://www.photocrati.com'
         );
     }
+    
+    function get_type_list()
+    {
+    	return array(
+    		'A_Import_Folder_Form' => 'adapter.import_folder_form.php',
+    		'A_Nextgen_Addgallery_Ajax' => 'adapter.nextgen_addgallery_ajax.php',
+    		'A_Nextgen_Addgallery_Controller' => 'adapter.nextgen_addgallery_controller.php',
+    		'A_Nextgen_Addgallery_Forms' => 'adapter.nextgen_addgallery_forms.php',
+    		'A_Nextgen_Addgallery_Pages' => 'adapter.nextgen_addgallery_pages.php',
+    		'A_Upload_Images_Form' => 'adapter.upload_images_form.php',
+    	);
+    }
 
     function _register_adapters()
     {

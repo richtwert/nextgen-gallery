@@ -32,12 +32,12 @@ class M_MediaRss extends C_Base_Module
 		);
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.mediarss_routes.php',
-            'class.mediarss_controller.php',
-            'interface.mediarss_controller.php'
+            'A_Mediarss_Routes' => 'adapter.mediarss_routes.php',
+            'C_Mediarss_Controller' => 'class.mediarss_controller.php',
+            'I_Mediarss_Controller' => 'interface.mediarss_controller.php'
         );
     }
 

@@ -32,22 +32,22 @@ class M_NextGen_Basic_Gallery extends C_Base_Module
         );
     }
 
-		function set_file_list()
+		function get_type_list()
 		{
 			return array(
-				'adapter.ajax_pagination_actions.php',
-                'adapter.nextgen_basic_gallery_forms.php',
-				'adapter.nextgen_basic_gallery_installer.php',
-				'adapter.nextgen_basic_gallery_mapper.php',
-				'adapter.nextgen_basic_gallery_routes.php',
-				'adapter.nextgen_basic_gallery_urls.php',
-				'adapter.nextgen_basic_gallery_validation.php',
-				'adapter.nextgen_basic_slideshow_controller.php',
-				'adapter.nextgen_basic_slideshow_form.php',
-				'adapter.nextgen_basic_thumbnail_form.php',
-				'adapter.nextgen_basic_thumbnails_controller.php',
-				'hook.nextgen_basic_gallery_integration.php',
-				'mixin.nextgen_basic_gallery_controller.php'
+				'A_Ajax_Pagination_Actions' => 'adapter.ajax_pagination_actions.php',
+                'A_Nextgen_Basic_Gallery_Forms' => 'adapter.nextgen_basic_gallery_forms.php',
+				'A_Nextgen_Basic_Gallery_Installer' => 'adapter.nextgen_basic_gallery_installer.php',
+				'A_Nextgen_Basic_Gallery_Mapper' => 'adapter.nextgen_basic_gallery_mapper.php',
+				'A_Nextgen_Basic_Gallery_Routes' => 'adapter.nextgen_basic_gallery_routes.php',
+				'A_Nextgen_Basic_Gallery_Urls' => 'adapter.nextgen_basic_gallery_urls.php',
+				'A_Nextgen_Basic_Gallery_Validation' => 'adapter.nextgen_basic_gallery_validation.php',
+				'A_Nextgen_Basic_Slideshow_Controller' => 'adapter.nextgen_basic_slideshow_controller.php',
+				'A_Nextgen_Basic_Slideshow_Form' => 'adapter.nextgen_basic_slideshow_form.php',
+				'A_Nextgen_Basic_Thumbnail_Form' => 'adapter.nextgen_basic_thumbnail_form.php',
+				'A_Nextgen_Basic_Thumbnails_Controller' => 'adapter.nextgen_basic_thumbnails_controller.php',
+				'Hook_Nextgen_Basic_Gallery_Integration' => 'hook.nextgen_basic_gallery_integration.php',
+				'Mixin_Nextgen_Basic_Gallery_Controller' => 'mixin.nextgen_basic_gallery_controller.php'
 			);
 		}
     

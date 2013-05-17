@@ -112,17 +112,17 @@ class M_NextGen_Basic_Tagcloud extends C_Base_Module
         return $renderer->display_images($params, $inner_content);
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.nextgen_basic_tagcloud.php',
-            'adapter.nextgen_basic_tagcloud_controller.php',
-            'adapter.nextgen_basic_tagcloud_form.php',
-            'adapter.nextgen_basic_tagcloud_forms.php',
-            'adapter.nextgen_basic_tagcloud_installer.php',
-            'adapter.nextgen_basic_tagcloud_mapper.php',
-            'adapter.nextgen_basic_tagcloud_routes.php',
-            'adapter.nextgen_basic_tagcloud_urls.php'
+            'A_Nextgen_Basic_Tagcloud' => 'adapter.nextgen_basic_tagcloud.php',
+            'A_Nextgen_Basic_Tagcloud_Controller' => 'adapter.nextgen_basic_tagcloud_controller.php',
+            'A_Nextgen_Basic_Tagcloud_Form' => 'adapter.nextgen_basic_tagcloud_form.php',
+            'A_Nextgen_Basic_Tagcloud_Forms' => 'adapter.nextgen_basic_tagcloud_forms.php',
+            'A_Nextgen_Basic_Tagcloud_Installer' => 'adapter.nextgen_basic_tagcloud_installer.php',
+            'A_Nextgen_Basic_Tagcloud_Mapper' => 'adapter.nextgen_basic_tagcloud_mapper.php',
+            'A_Nextgen_Basic_Tagcloud_Routes' => 'adapter.nextgen_basic_tagcloud_routes.php',
+            'A_Nextgen_Basic_Tagcloud_Urls' => 'adapter.nextgen_basic_tagcloud_urls.php'
         );
     }
 }

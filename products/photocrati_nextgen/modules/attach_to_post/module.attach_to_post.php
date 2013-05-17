@@ -346,17 +346,17 @@ class M_Attach_To_Post extends C_Base_Module
         $this->_get_frame_event_publisher()->add_event($event);
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.attach_to_post_ajax.php',
-            'adapter.attach_to_post_installer.php',
-            'adapter.attach_to_post_routes.php',
-            'adapter.attach_to_post_settings.php',
-            'adapter.gallery_storage_frame_event.php',
-            'class.attach_controller.php',
-            'interface.attach_to_post_controller.php',
-            'mixin.attach_to_post_display_tab.php'
+            'A_Attach_To_Post_Ajax' => 'adapter.attach_to_post_ajax.php',
+            'A_Attach_To_Post_Installer' => 'adapter.attach_to_post_installer.php',
+            'A_Attach_To_Post_Routes' => 'adapter.attach_to_post_routes.php',
+            'A_Attach_To_Post_Settings' => 'adapter.attach_to_post_settings.php',
+            'A_Gallery_Storage_Frame_Event' => 'adapter.gallery_storage_frame_event.php',
+            'C_Attach_Controller' => 'class.attach_controller.php',
+            'I_Attach_To_Post_Controller' => 'interface.attach_to_post_controller.php',
+            'Mixin_Attach_To_Post_Display_Tab' => 'mixin.attach_to_post_display_tab.php'
         );
     }
 }

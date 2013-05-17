@@ -318,13 +318,13 @@ class M_AutoUpdate_Admin extends C_Base_Module
     	}
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.autoupdate_admin_ajax.php',
-            'adapter.autoupdate_admin_factory.php',
-            'class.autoupdate_admin_ajax.php',
-            'class.autoupdate_admin_controller.php'
+            'A_Autoupdate_Admin_Ajax' => 'adapter.autoupdate_admin_ajax.php',
+            'A_Autoupdate_Admin_Factory' => 'adapter.autoupdate_admin_factory.php',
+            'C_Autoupdate_Admin_Ajax' => 'class.autoupdate_admin_ajax.php',
+            'C_Autoupdate_Admin_Controller' => 'class.autoupdate_admin_controller.php'
         );
     }
 }

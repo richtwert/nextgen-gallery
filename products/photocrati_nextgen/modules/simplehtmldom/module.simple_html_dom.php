@@ -23,7 +23,7 @@ class M_Simple_Html_Dom extends C_Base_Module
         );
     }
 
-		function set_file_list()
+		function get_type_list()
 		{
 			return array(
 			);

@@ -55,12 +55,12 @@ class M_Frame_Communication extends C_Base_Module
 		wp_enqueue_script('frame_event_publisher');
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.frame_communication_settings.php',
-            'class.frame_event_publisher.php',
-            'interface.frame_event_publisher.php'
+            'A_Frame_Communication_Settings' => 'adapter.frame_communication_settings.php',
+            'C_Frame_Event_Publisher' => 'class.frame_event_publisher.php',
+            'I_Frame_Event_Publisher' => 'interface.frame_event_publisher.php'
         );
     }
 }

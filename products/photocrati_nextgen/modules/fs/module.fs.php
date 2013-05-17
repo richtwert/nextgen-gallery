@@ -24,11 +24,11 @@ class M_Fs extends C_Base_Module
 		$this->get_registry()->add_utility('I_Fs', 'C_Fs');
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'class.fs.php',
-            'interface.fs.php'
+            'C_Fs' => 'class.fs.php',
+            'I_Fs' => 'interface.fs.php'
         );
     }
 }

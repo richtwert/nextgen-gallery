@@ -124,19 +124,19 @@ class M_NextGen_Basic_Album extends C_Base_Module
         return $renderer->display_images($params, $inner_content);
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.nextgen_basic_album.php',
-            'adapter.nextgen_basic_album_controller.php',
-            'adapter.nextgen_basic_album_forms.php',
-            'adapter.nextgen_basic_album_installer.php',
-            'adapter.nextgen_basic_album_mapper.php',
-            'adapter.nextgen_basic_album_routes.php',
-            'adapter.nextgen_basic_album_urls.php',
-            'adapter.nextgen_basic_compact_album_form.php',
-            'adapter.nextgen_basic_extended_album_form.php',
-            'mixin.nextgen_basic_album_form.php'
+            'A_Nextgen_Basic_Album' => 'adapter.nextgen_basic_album.php',
+            'A_Nextgen_Basic_Album_Controller' => 'adapter.nextgen_basic_album_controller.php',
+            'A_Nextgen_Basic_Album_Forms' => 'adapter.nextgen_basic_album_forms.php',
+            'A_Nextgen_Basic_Album_Installer' => 'adapter.nextgen_basic_album_installer.php',
+            'A_Nextgen_Basic_Album_Mapper' => 'adapter.nextgen_basic_album_mapper.php',
+            'A_Nextgen_Basic_Album_Routes' => 'adapter.nextgen_basic_album_routes.php',
+            'A_Nextgen_Basic_Album_Urls' => 'adapter.nextgen_basic_album_urls.php',
+            'A_Nextgen_Basic_Compact_Album_Form' => 'adapter.nextgen_basic_compact_album_form.php',
+            'A_Nextgen_Basic_Extended_Album_Form' => 'adapter.nextgen_basic_extended_album_form.php',
+            'Mixin_Nextgen_Basic_Album_Form' => 'mixin.nextgen_basic_album_form.php'
         );
     }
 }

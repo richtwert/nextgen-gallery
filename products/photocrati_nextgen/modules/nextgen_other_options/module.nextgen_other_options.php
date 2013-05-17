@@ -46,22 +46,22 @@ class M_NextGen_Other_Options extends C_Base_Module
         );
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.image_options_form.php',
-            'adapter.lightbox_manager_form.php',
-            'adapter.miscellaneous_form.php',
-            'adapter.other_options_controller.php',
-            'adapter.other_options_forms.php',
-            'adapter.other_options_page.php',
-            'adapter.reset_form.php',
-            'adapter.roles_form.php',
-            'adapter.styles_form.php',
-            'adapter.thumbnail_options_form.php',
-            'adapter.watermarking_ajax_actions.php',
-            'adapter.watermarks_form.php',
-            'adapter.stylesheet_ajax_actions.php',
+            'A_Image_Options_Form' => 'adapter.image_options_form.php',
+            'A_Lightbox_Manager_Form' => 'adapter.lightbox_manager_form.php',
+            'A_Miscellaneous_Form' => 'adapter.miscellaneous_form.php',
+            'A_Other_Options_Controller' => 'adapter.other_options_controller.php',
+            'A_Other_Options_Forms' => 'adapter.other_options_forms.php',
+            'A_Other_Options_Page' => 'adapter.other_options_page.php',
+            'A_Reset_Form' => 'adapter.reset_form.php',
+            'A_Roles_Form' => 'adapter.roles_form.php',
+            'A_Styles_Form' => 'adapter.styles_form.php',
+            'A_Thumbnail_Options_Form' => 'adapter.thumbnail_options_form.php',
+            'A_Watermarking_Ajax_Actions' => 'adapter.watermarking_ajax_actions.php',
+            'A_Watermarks_Form' => 'adapter.watermarks_form.php',
+            'A_Stylesheet_Ajax_Actions' => 'adapter.stylesheet_ajax_actions.php',
         );
     }
 }

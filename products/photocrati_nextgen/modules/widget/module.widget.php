@@ -40,14 +40,14 @@ class M_Widget extends C_Base_Module
          add_action('widgets_init', create_function('', 'return register_widget("C_Widget_Slideshow");'));
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'class.widget.php',
-            'class.widget_gallery.php',
-            'class.widget_mediarss.php',
-            'class.widget_slideshow.php',
-            'interface.widget.php'
+            'C_Widget' => 'class.widget.php',
+            'C_Widget_Gallery' => 'class.widget_gallery.php',
+            'C_Widget_Mediarss' => 'class.widget_mediarss.php',
+            'C_Widget_Slideshow' => 'class.widget_slideshow.php',
+            'I_Widget' => 'interface.widget.php'
         );
     }
 
