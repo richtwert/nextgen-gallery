@@ -58,16 +58,16 @@ class M_Lightbox extends C_Base_Module
         $this->get_registry()->add_adapter('I_Installer', 'A_Lightbox_Installer');
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.lightbox_factory.php',
-            'adapter.lightbox_installer.php',
-            'adapter.lightbox_library_form.php',
-            'class.lightbox_library.php',
-            'class.lightbox_library_mapper.php',
-            'interface.lightbox_library.php',
-            'interface.lightbox_library_mapper.php'
+            'A_Lightbox_Factory' => 'adapter.lightbox_factory.php',
+            'A_Lightbox_Installer' => 'adapter.lightbox_installer.php',
+            'A_Lightbox_Library_Form' => 'adapter.lightbox_library_form.php',
+            'C_Lightbox_Library' => 'class.lightbox_library.php',
+            'C_Lightbox_Library_Mapper' => 'class.lightbox_library_mapper.php',
+            'I_Lightbox_Library' => 'interface.lightbox_library.php',
+            'I_Lightbox_Library_Mapper' => 'interface.lightbox_library_mapper.php'
         );
     }
 }

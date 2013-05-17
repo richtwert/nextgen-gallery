@@ -56,11 +56,11 @@ class M_JsConsole extends C_Base_Module
 		}
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.jsconsole_controller.php',
-            'adapter.jsconsole_settings.php'
+            'A_Jsconsole_Controller' => 'adapter.jsconsole_controller.php',
+            'A_Jsconsole_Settings' => 'adapter.jsconsole_settings.php'
         );
     }
 }

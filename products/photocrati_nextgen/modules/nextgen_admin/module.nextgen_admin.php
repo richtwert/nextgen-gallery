@@ -122,24 +122,24 @@ class M_NextGen_Admin extends C_Base_Module
 		$this->get_registry()->get_utility('I_Page_Manager')->setup();
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.fs_access_page.php',
-            'adapter.mvc_validation.php',
-            'adapter.nextgen_admin_installer.php',
-            'adapter.nextgen_admin_default_pages.php',
-            'adapter.nextgen_admin_settings.php',
-            'adapter.nextgen_settings_routes.php',
-            'class.form.php',
-            'class.form_manager.php',
-            'class.nextgen_admin_page_controller.php',
-            'class.page_manager.php',
-            'interface.form.php',
-            'interface.form_manager.php',
-            'interface.nextgen_admin_page.php',
-            'interface.nextgen_settings.php',
-            'interface.page_manager.php'
+            'A_Fs_Access_Page' => 'adapter.fs_access_page.php',
+            'A_Mvc_Validation' => 'adapter.mvc_validation.php',
+            'A_Nextgen_Admin_Installer' => 'adapter.nextgen_admin_installer.php',
+            'A_Nextgen_Admin_Default_Pages' => 'adapter.nextgen_admin_default_pages.php',
+            'A_Nextgen_Admin_Settings' => 'adapter.nextgen_admin_settings.php',
+            'A_Nextgen_Settings_Routes' => 'adapter.nextgen_settings_routes.php',
+            'C_Form' => 'class.form.php',
+            'C_Form_Manager' => 'class.form_manager.php',
+            'C_Nextgen_Admin_Page_Controller' => 'class.nextgen_admin_page_controller.php',
+            'C_Page_Manager' => 'class.page_manager.php',
+            'I_Form' => 'interface.form.php',
+            'I_Form_Manager' => 'interface.form_manager.php',
+            'I_Nextgen_Admin_Page' => 'interface.nextgen_admin_page.php',
+            'I_Nextgen_Settings' => 'interface.nextgen_settings.php',
+            'I_Page_Manager' => 'interface.page_manager.php'
         );
     }
 }

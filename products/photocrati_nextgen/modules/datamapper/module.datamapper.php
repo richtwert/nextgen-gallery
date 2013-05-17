@@ -172,21 +172,21 @@ class M_DataMapper extends C_Base_Module
 		}
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.datamapper_factory.php',
-            'adapter.datamapper_settings.php',
-            'class.datamapper.php',
-            'class.custompost_datamapper_driver.php',
-            'class.customtable_datamapper_driver.php',
-            'class.datamapper_driver_base.php',
-            'class.datamapper_model.php',
-            'interface.custompost_datamapper.php',
-            'interface.customtable_datamapper.php',
-            'interface.datamapper_driver.php',
-            'interface.datamapper_model.php',
-            'module.datamapper.php'
+            'A_Datamapper_Factory' => 'adapter.datamapper_factory.php',
+            'A_Datamapper_Settings' => 'adapter.datamapper_settings.php',
+            'C_Datamapper' => 'class.datamapper.php',
+            'C_Custompost_Datamapper_Driver' => 'class.custompost_datamapper_driver.php',
+            'C_Customtable_Datamapper_Driver' => 'class.customtable_datamapper_driver.php',
+            'C_Datamapper_Driver_Base' => 'class.datamapper_driver_base.php',
+            'C_Datamapper_Model' => 'class.datamapper_model.php',
+            'I_Custompost_Datamapper' => 'interface.custompost_datamapper.php',
+            'I_Customtable_Datamapper' => 'interface.customtable_datamapper.php',
+            'I_Datamapper_Driver' => 'interface.datamapper_driver.php',
+            'I_Datamapper_Model' => 'interface.datamapper_model.php',
+            'M_Datamapper' => 'module.datamapper.php'
         );
     }
 }

@@ -1,26 +1,5 @@
 <?php
 
-class C_MediaRSS_Controller extends C_MVC_Controller
-{
-	static $_instances = array();
-
-	function define($context=FALSE)
-	{
-		parent::define($context);
-		$this->add_mixin('Mixin_MediaRSS_Controller');
-		$this->implement('I_MediaRSS_Controller');
-	}
-
-	static function get_instance($context=FALSE)
-	{
-		if (!isset(self::$_instances[$context])) {
-			$klass = get_class();
-			self::$_instances[$context] = new $klass($context);
-		}
-		return self::$_instances[$context];
-	}
-}
-
 class Mixin_MediaRSS_Controller extends Mixin
 {
 	/**
@@ -169,3 +148,25 @@ class Mixin_MediaRSS_Controller extends Mixin
 		return "Images from: ".implode(', ', $gallery_titles);
 	}
 }
+
+class C_MediaRSS_Controller extends C_MVC_Controller
+{
+	static $_instances = array();
+
+	function define($context=FALSE)
+	{
+		parent::define($context);
+		$this->add_mixin('Mixin_MediaRSS_Controller');
+		$this->implement('I_MediaRSS_Controller');
+	}
+
+	static function get_instance($context=FALSE)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
+	}
+}
+

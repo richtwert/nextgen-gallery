@@ -35,11 +35,11 @@ class M_Installer extends C_Base_Module
 		$this->get_registry()->get_utility('I_Installer')->perform_automatic_install();
 	}
 
-  function set_file_list()
+  function get_type_list()
   {
       return array(
-          'class.module_installer.php',
-          'interface.installer.php'
+          'C_Module_Installer' => 'class.module_installer.php',
+          'I_Installer' => 'interface.installer.php'
       );
   }
 }

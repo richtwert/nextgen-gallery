@@ -16,7 +16,7 @@ require_once('template_helper.php');
 /**
  * Indicates that a clean exit occurred. Handled by set_exception_handler
  */
-if (!class_exists('E_Clean_Exit')) {
+if (!class_exists('E_Clean_Exit', false)) {
 	class E_Clean_Exit extends RuntimeException
 	{
 
@@ -73,18 +73,18 @@ class M_MVC extends C_Base_Module
 			throw $this->rethrow;
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.mvc_factory.php',
-            'adapter.mvc_fs.php',
-            'adapter.mvc_router.php',
-            'adapter.mvc_settings.php',
-            'class.mvc_controller.php',
-            'class.mvc_view.php',
-            'class.mvc_view_element.php',
-            'interface.mvc_controller.php',
-            'interface.mvc_view.php'
+            'A_Mvc_Factory' => 'adapter.mvc_factory.php',
+            'A_Mvc_Fs' => 'adapter.mvc_fs.php',
+            'A_Mvc_Router' => 'adapter.mvc_router.php',
+            'A_Mvc_Settings' => 'adapter.mvc_settings.php',
+            'C_Mvc_Controller' => 'class.mvc_controller.php',
+            'C_Mvc_View' => 'class.mvc_view.php',
+            'C_Mvc_View_Element' => 'class.mvc_view_element.php',
+            'I_Mvc_Controller' => 'interface.mvc_controller.php',
+            'I_Mvc_View' => 'interface.mvc_view.php'
         );
     }
 }

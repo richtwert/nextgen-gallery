@@ -177,34 +177,34 @@ class M_Gallery_Display extends C_Base_Module
         return (isset($params[$name])) ? $params[$name] : $default;
     }
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.display_settings_controller.php',
-            'adapter.display_settings_page.php',
-            'adapter.gallery_display_factory.php',
-            'adapter.gallery_display_installer.php',
-            'adapter.gallery_display_routes.php',
-            'adapter.gallery_display_view.php',
-            'class.displayed_gallery.php',
-            'class.displayed_gallery_mapper.php',
-            'class.displayed_gallery_renderer.php',
-            'class.displayed_gallery_source.php',
-            'class.displayed_gallery_source_mapper.php',
-            'class.display_type.php',
-            'class.display_type_controller.php',
-            'class.display_type_mapper.php',
-            'hook.propagate_thumbnail_dimensions_to_settings.php',
-            'interface.displayed_gallery.php',
-            'interface.displayed_gallery_mapper.php',
-            'interface.displayed_gallery_renderer.php',
-            'interface.displayed_gallery_source.php',
-            'interface.displayed_gallery_source_mapper.php',
-            'interface.display_settings_controller.php',
-            'interface.display_type.php',
-            'interface.display_type_controller.php',
-            'interface.display_type_mapper.php',
-            'mixin.display_type_form.php'
+            'A_Display_Settings_Controller' => 'adapter.display_settings_controller.php',
+            'A_Display_Settings_Page' => 'adapter.display_settings_page.php',
+            'A_Gallery_Display_Factory' => 'adapter.gallery_display_factory.php',
+            'A_Gallery_Display_Installer' => 'adapter.gallery_display_installer.php',
+            'A_Gallery_Display_Routes' => 'adapter.gallery_display_routes.php',
+            'A_Gallery_Display_View' => 'adapter.gallery_display_view.php',
+            'C_Displayed_Gallery' => 'class.displayed_gallery.php',
+            'C_Displayed_Gallery_Mapper' => 'class.displayed_gallery_mapper.php',
+            'C_Displayed_Gallery_Renderer' => 'class.displayed_gallery_renderer.php',
+            'C_Displayed_Gallery_Source' => 'class.displayed_gallery_source.php',
+            'C_Displayed_Gallery_Source_Mapper' => 'class.displayed_gallery_source_mapper.php',
+            'C_Display_Type' => 'class.display_type.php',
+            'C_Display_Type_Controller' => 'class.display_type_controller.php',
+            'C_Display_Type_Mapper' => 'class.display_type_mapper.php',
+            'Hook_Propagate_Thumbnail_Dimensions_To_Settings' => 'hook.propagate_thumbnail_dimensions_to_settings.php',
+            'I_Displayed_Gallery' => 'interface.displayed_gallery.php',
+            'I_Displayed_Gallery_Mapper' => 'interface.displayed_gallery_mapper.php',
+            'I_Displayed_Gallery_Renderer' => 'interface.displayed_gallery_renderer.php',
+            'I_Displayed_Gallery_Source' => 'interface.displayed_gallery_source.php',
+            'I_Displayed_Gallery_Source_Mapper' => 'interface.displayed_gallery_source_mapper.php',
+            'I_Display_Settings_Controller' => 'interface.display_settings_controller.php',
+            'I_Display_Type' => 'interface.display_type.php',
+            'I_Display_Type_Controller' => 'interface.display_type_controller.php',
+            'I_Display_Type_Mapper' => 'interface.display_type_mapper.php',
+            'Mixin_Display_Type_Form' => 'mixin.display_type_form.php'
         );
     }
 }

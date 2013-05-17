@@ -53,14 +53,14 @@ class M_Ajax extends C_Base_Module
         wp_enqueue_script('photocrati_ajax');
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.ajax_routes.php',
-            'adapter.ajax_settings.php',
-            'class.ajax_controller.php',
-            'interface.ajax_controller.php',
-            'module.ajax.php'
+            'A_Ajax_Routes' => 'adapter.ajax_routes.php',
+            'A_Ajax_Settings' => 'adapter.ajax_settings.php',
+            'C_Ajax_Controller' => 'class.ajax_controller.php',
+            'I_Ajax_Controller' => 'interface.ajax_controller.php',
+            'M_Ajax' => 'module.ajax.php'
         );
     }
 }

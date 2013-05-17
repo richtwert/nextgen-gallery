@@ -94,15 +94,15 @@ class M_NextGen_Basic_Singlepic extends C_Base_Module
         return $renderer->display_images($params, $inner_content);
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'adapter.nextgen_basic_singlepic.php',
-            'adapter.nextgen_basic_singlepic_controller.php',
-            'adapter.nextgen_basic_singlepic_form.php',
-            'adapter.nextgen_basic_singlepic_forms.php',
-            'adapter.nextgen_basic_singlepic_installer.php',
-            'adapter.nextgen_basic_singlepic_mapper.php'
+            'A_Nextgen_Basic_Singlepic' => 'adapter.nextgen_basic_singlepic.php',
+            'A_Nextgen_Basic_Singlepic_Controller' => 'adapter.nextgen_basic_singlepic_controller.php',
+            'A_Nextgen_Basic_Singlepic_Form' => 'adapter.nextgen_basic_singlepic_form.php',
+            'A_Nextgen_Basic_Singlepic_Forms' => 'adapter.nextgen_basic_singlepic_forms.php',
+            'A_Nextgen_Basic_Singlepic_Installer' => 'adapter.nextgen_basic_singlepic_installer.php',
+            'A_Nextgen_Basic_Singlepic_Mapper' => 'adapter.nextgen_basic_singlepic_mapper.php'
         );
     }
 }

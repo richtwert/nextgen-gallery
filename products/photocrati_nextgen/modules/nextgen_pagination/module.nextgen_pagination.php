@@ -19,10 +19,10 @@ class M_NextGen_Pagination extends C_Base_Module
         );
     }
 
-		function set_file_list()
+		function get_type_list()
 		{
 			return array(
-				'mixin.nextgen_basic_pagination.php'
+				'Mixin_Nextgen_Basic_Pagination' => 'mixin.nextgen_basic_pagination.php'
 			);
 		}
 }

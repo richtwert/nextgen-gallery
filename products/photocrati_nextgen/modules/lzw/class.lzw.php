@@ -7,27 +7,6 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
 */
 
-class C_Lzw extends C_Component
-{
-	static $_instances = array();
-
-	function define($context=FALSE)
-	{
-		parent::define($context);
-		$this->add_mixin('Mixin_Lzo_Instance_Methods');
-		$this->implement('I_Lzw');
-	}
-
-	static function &get_instance($context=FALSE)
-	{
-		if (!isset(self::$_instances[$context])) {
-			$klass = get_class();
-			self::$_instances[$context] = new $klass($context);
-		}
-		return self::$_instances[$context];
-	}
-}
-
 
 class Mixin_Lzo_Instance_Methods extends Mixin
 {
@@ -116,3 +95,25 @@ class Mixin_Lzo_Instance_Methods extends Mixin
 		return $return;
 	}
 }
+
+class C_Lzw extends C_Component
+{
+	static $_instances = array();
+
+	function define($context=FALSE)
+	{
+		parent::define($context);
+		$this->add_mixin('Mixin_Lzo_Instance_Methods');
+		$this->implement('I_Lzw');
+	}
+
+	static function &get_instance($context=FALSE)
+	{
+		if (!isset(self::$_instances[$context])) {
+			$klass = get_class();
+			self::$_instances[$context] = new $klass($context);
+		}
+		return self::$_instances[$context];
+	}
+}
+

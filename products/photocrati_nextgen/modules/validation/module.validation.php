@@ -21,10 +21,10 @@ class M_Validation extends C_Base_Module
 		);
 	}
 
-    function set_file_list()
+    function get_type_list()
     {
         return array(
-            'mixin.validation.php'
+            'Mixin_Validation' => 'mixin.validation.php'
         );
     }
 }
