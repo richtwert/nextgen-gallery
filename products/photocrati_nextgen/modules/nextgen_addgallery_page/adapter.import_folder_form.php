@@ -17,7 +17,7 @@ class A_Import_Folder_Form extends Mixin
 
     function render()
     {
-        return $this->object->render_partial('import_folder', array(
+        return $this->object->render_partial('nextgen_addgallery_page#import_folder', array(
         ), TRUE);
     }
 }
