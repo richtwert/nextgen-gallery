@@ -401,17 +401,12 @@ class nggAdminPanel{
 
 		}
 	}
-	function enqueue_shutter()
-	{
-		$registry	= C_Component_Registry::get_instance();
-		$router		= $registry->get_utility('I_Router');
-	}
 
 
 	function enqueue_jquery_ui_theme()
 	{
 		$registry = C_Component_Registry::get_instance();
-		$settings = $registry->get_utility('I_Settings_Manager');
+		$settings = $registry->get_utility('I_Settings_Manager', 'photocrati-nextgen_admin');
 		wp_enqueue_style(
 			$settings->jquery_ui_theme,
 			$settings->jquery_ui_theme_url,
