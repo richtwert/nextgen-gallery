@@ -46,11 +46,8 @@ class Mixin_Gallery_Image_Mapper extends Mixin
         $retval = $this->call_parent('_save_entity', $entity);
         if ($retval) {
             include_once(NGGALLERY_ABSPATH.'/admin/functions.php');
-            $image_id = $this->get_id($entity);
+            $image_id = $this->get_id($entity);;
             nggAdmin::import_MetaData($image_id);
-            foreach ($this->object->find($image_id) as $key => $value) {
-                $entity->$key = $value;
-            }
         }
         return $retval;
     }
@@ -118,7 +115,9 @@ class Mixin_Gallery_Image_Mapper extends Mixin
 		}
 
         // Set unique slug
-        $this->object->_set_default_value($entity, 'image_slug', nggdb::get_unique_slug( sanitize_title_with_dashes( $entity->alttext ), 'image' ));
+        if (isset($entity->alttext)) {
+            $this->object->_set_default_value($entity, 'image_slug', nggdb::get_unique_slug( sanitize_title_with_dashes( $entity->alttext ), 'image' ));
+        }
 
 		// Ensure that the exclude parameter is an integer or boolean-evaluated
 		// value
