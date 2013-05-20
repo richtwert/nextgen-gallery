@@ -150,7 +150,6 @@
 					src="<?php echo esc_attr($storage->get_image_url($image))?>"
 					width="<?php echo esc_attr($image_size['width'])?>"
 					height="<?php echo esc_attr($image_size['height'])?>"
-					style="max-width:none;"
 				/>
 				
 			<?php
