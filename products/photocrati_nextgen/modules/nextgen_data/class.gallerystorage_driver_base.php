@@ -541,8 +541,6 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
                     $image->meta_data = array_merge($image->meta_data, $full_meta);
                     $image->meta_data['full'] = $full_meta;
 
-                    //$this->object->_image_mapper->save($image);
-
 					// Generate a thumbnail for the image
 					$this->object->generate_thumbnail($image);
 
@@ -565,8 +563,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					);
 				}
 			}
+            else throw new E_InvalidEntityException();
 		}
-		else throw new E_InvalidEntityException();
+		else throw new E_EntityNotFoundException();
 
 		return $retval;
 	}

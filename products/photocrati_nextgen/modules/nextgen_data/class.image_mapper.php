@@ -40,6 +40,52 @@ class C_Image_Mapper extends C_DataMapper
  */
 class Mixin_Gallery_Image_Mapper extends Mixin
 {
+    function _save_entity($entity)
+    {
+        // If successfully saved, then import metadata and
+        $retval = $this->call_parent('_save_entity', $entity);
+        if ($retval) {
+            include_once(NGGALLERY_ABSPATH.'/admin/functions.php');
+            $image_id = $this->get_id($entity);
+            nggAdmin::import_MetaData($image_id);
+            foreach ($this->object->find($image_id) as $key => $value) {
+                $entity->$key = $value;
+            }
+        }
+        return $retval;
+    }
+
+    /**
+     * Retrieves the id from an image
+     * @param $image
+     * @return bool
+     */
+    function get_id($image)
+    {
+        $retval = FALSE;
+
+        // Have we been passed an entity and is the id_field set?
+        if ($image instanceof stdClass) {
+            if (isset($image->id_field)) {
+                $retval = $image->{$image->id_field};
+            }
+        }
+
+        // Have we been passed a model?
+        else $retval = $image->id();
+
+        // If we still don't have an id, then we'll lookup the primary key
+        // and try fetching it manually
+        if (!$retval) {
+            $key = $this->object->get_primary_key_column();
+            $retval = $image->$key;
+
+        }
+
+        return $retval;
+    }
+
+
 	function get_post_title($entity)
 	{
 		return $entity->alttext;

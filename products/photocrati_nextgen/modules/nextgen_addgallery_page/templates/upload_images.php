@@ -20,6 +20,7 @@
         else return;
 
         $(window).on('lazy_resources_loaded', function(){
+
             window.urlencode = function(str){
                 str = (str + '').toString();
 
@@ -76,6 +77,7 @@
                                 $('#gallery_name:visible').fadeOut();
                                 gallery_select.focus();
                             }
+                            up.refresh();
                         });
 
                         // Change the text for the dragdrop
@@ -97,8 +99,10 @@
                         start_button.click(function(e){
                             e.preventDefault();
 
-                            var uploader = $('#uploader').pluploadQueue();
-                            uploader.settings.url = window.set_plupload_url($gallery_id.val(), $gallery_name.val());
+                            var up = $('#uploader').pluploadQueue();
+                            up.settings.url = window.set_plupload_url($gallery_id.val(), $gallery_name.val());
+                            up.settings.multipart_params.gallery_id = $gallery_id.val();
+                            up.settings.multipart_params.gallery_name = $gallery_name.val();
 
                             if ($gallery_id.val() == 0 && $gallery_name.val().length == 0) {
                                 $gallery_name.addClass('error');
@@ -153,6 +157,8 @@
                         }
                         window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
                         up.settings.url = window.set_plupload_url(response.gallery_id, $gallery_name.val());
+                        up.settings.multipart_params.gallery_id = response.gallery_id;
+                        up.settings.multipart_params.gallery_name = $gallery_name.val();
 
                         // If we created a new gallery, ensure it's now in the drop-down list, and select it
                         if ($gallery_id.find('option[value="'+response.gallery_id+'"]').length == 0) {
