@@ -25,9 +25,10 @@ class M_NextGen_Data extends C_Base_Module
     function _register_adapters()
     {
         $this->get_registry()->add_adapter('I_Component_Factory', 'A_NextGen_Data_Factory');
-		//$this->get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
+		$this->get_registry()->add_adapter('I_CustomPost_DataMapper', 'A_Attachment_DataMapper', 'attachment');
 		$this->get_registry()->add_adapter('I_CustomTable_DataMapper', 'A_CustomTable_Sorting_DataMapper');
         $this->get_registry()->add_adapter('I_Installer', 'A_NextGen_Data_Installer');
+        $this->get_registry()->add_adapter('I_Image', 'A_Parse_Image_MetaData');
     }
 
 

@@ -122,10 +122,22 @@
 
                     // Refresh the interface after a successful upload
                     StateChanged: function(up){
+
+                        // Determine appropriate message to display
+                        var upload_count = window.uploaded_image_ids.length;
+                        var msg = upload_count + " images were uploaded successfully";
+                        if (upload_count == 1) {
+                            msg = "1 image was uploaded successfully";
+                        }
+                        elseif (upload_count == 0) {
+                            msg = "0 images were uploaded";
+                        }
+
+                        // Display message/notification
                         if (up.state == plupload.STOPPED) {
                             $.gritter.add({
                                 title: "Upload complete",
-                                text: window.uploaded_image_ids.length + " were uploaded successfully."
+                                text: msg
                             });
                             setTimeout(function(){
                                 reinit_plupload(up);

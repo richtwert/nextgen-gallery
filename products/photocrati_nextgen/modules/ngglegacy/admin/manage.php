@@ -79,10 +79,10 @@ class nggManageGallery {
 				}
 				do_action('ngg_delete_picture', $this->pid);
                 $result = nggdb::delete_image ( $this->pid );
-            }
 
-			if ($result)
-				nggGallery::show_message( __('Picture','nggallery').' \''.$this->pid.'\' '.__('deleted successfully','nggallery') );
+                if ($result)
+                    nggGallery::show_message( __('Picture','nggallery').' \''.$this->pid.'\' '.__('deleted successfully','nggallery') );
+            }
 
 		 	$this->mode = 'edit'; // show pictures
 
