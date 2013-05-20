@@ -48,7 +48,7 @@ class A_NextGen_Basic_TagCloud_Urls extends Mixin
 		);
 
 		// Get the settings manager
-		$settings	= $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-router');
+		$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
 
 		// Create the regex pattern
 		$sep		= preg_quote($settings->router_param_separator, '#');

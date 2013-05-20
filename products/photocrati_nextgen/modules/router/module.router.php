@@ -28,7 +28,7 @@ class M_Router extends C_Base_Module
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter('I_Component_Factory', 'A_Routing_App_Factory');
-		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Router_Settings', $this->module_id);
+		$this->get_registry()->add_adapter('I_Settings_Manager', 'A_Router_Settings');
 	}
 
     function get_type_list()

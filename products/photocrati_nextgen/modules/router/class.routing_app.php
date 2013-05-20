@@ -802,19 +802,20 @@ class C_Routing_App extends C_Component
     
     function initialize()
     {
-			$this->_settings = $this->object->get_routing_settings();
+        parent::initialize();
+		$this->_settings = $this->object->get_routing_settings();
     }
     
     function get_routing_settings()
     {
-			$settings	= $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-router');
-			
-			$object = new stdClass();
-			$object->router_param_separator = $settings->router_param_separator;
-			$object->router_param_slug = $settings->router_param_slug;
-			$object->router_param_prefix = $settings->router_param_prefix;
-			
-			return $object;
+        $settings	= $this->get_registry()->get_utility('I_Settings_Manager');
+
+        $object = new stdClass();
+        $object->router_param_separator = $settings->router_param_separator;
+        $object->router_param_slug = $settings->router_param_slug;
+        $object->router_param_prefix = $settings->router_param_prefix;
+
+        return $object;
     }
 
     static function &get_instance($context = False)
