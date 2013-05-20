@@ -53,6 +53,18 @@ class Mixin_Gallery_Mapper extends Mixin
 	}
 
 
+    function _save_entity($entity)
+    {
+        $retval = $this->call_parent('_save_entity', $entity);
+
+        if ($retval) {
+            do_action('ngg_created_new_gallery', $entity->{$entity->id_field});
+        }
+
+        return $retval;
+    }
+
+
 	/**
 	 * Sets the preview image for the gallery
 	 * @param int|stdClass|C_Gallery $gallery

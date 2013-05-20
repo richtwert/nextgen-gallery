@@ -16,7 +16,7 @@ class A_NextGen_AddGallery_Controller extends Mixin
     {
         $this->call_parent('enqueue_backend_resources');
         wp_enqueue_style('nextgen_addgallery_page');
-        wp_enqueue_script('nextgen_addgallery_page');
+        wp_enqueue_script('frame_event_publisher');
     }
 
     function show_save_button()

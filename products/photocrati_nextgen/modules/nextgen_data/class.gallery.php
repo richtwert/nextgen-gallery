@@ -1,27 +1,5 @@
 <?php
 
-/**
- * This hook is triggered to fire a WordPress action after the NextGen Gallery
- * been successfully saved
- */
-class Hook_NextGen_Gallery_Persistence extends Hook
-{
-	/**
-	 * Once a gallery has been created, NextGEN legacy fires an action for
-	 * other plugins to use.
-	 */
-	function fire_wordpress_action()
-	{
-		$retval = $this->object->get_method_property(
-			'save', ExtensibleObject::METHOD_PROPERTY_RETURN_VALUE
-		);
-
-		// here you can inject a custom function. Again for legacy purposes
-		if ($retval) do_action('ngg_created_new_gallery', $this->object->id());
-	}
-}
-
-
 class Mixin_NextGen_Gallery_Validation
 {
     /**
@@ -73,7 +51,6 @@ class C_Gallery extends C_DataMapper_Model
     {
         parent::define($mapper, $properties, $context);
 		$this->add_mixin('Mixin_NextGen_Gallery_Validation');
-		$this->add_post_hook('save', 'Fire WordPress Action', 'Hook_NextGen_Gallery_Persistence', 'fire_wordpress_action');
         $this->implement('I_Gallery');
     }
 
