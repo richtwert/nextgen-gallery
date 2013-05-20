@@ -38,7 +38,6 @@ jQuery.fn.nggShowSlideshow = function(args) {
                 slideExpr: '.ngg-gallery-slideshow-image',
                 slideResize: false,
         				containerResize: false,
-                fit: 1,
                 timeout: s.timeout
             });
         }
