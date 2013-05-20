@@ -7,7 +7,7 @@ jQuery(function($){
          */
         init:                     function(){
             var self = this;
-            jQuery('a.page-numbers, a.prev, a.next').on('click', function(e){
+            jQuery('body').on('click', 'a.page-numbers, a.prev, a.next', function(e){
               e.preventDefault();
               var $this     = $(this);
               var $gallery  = $this.parents('.ngg-galleryoverview:first');

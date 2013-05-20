@@ -102,7 +102,7 @@ $this->end_element();
 <script type="text/javascript">
 (function($){
     $('#ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>').css('opacity', 0.0);
-    $(document).on('lazy_resources_loaded', function(){
+    $(document).on('lazy_resources_loaded refreshed', function(){
         $('#ngg-gallery-<?php echo_h($displayed_gallery_id)?>-<?php echo_h($current_page)?>').css('opacity', 1.0);
     });
 })(jQuery);
