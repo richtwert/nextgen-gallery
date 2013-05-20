@@ -502,13 +502,13 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			}
 
 			// Determine filenames
-			$filename = $filename ? $filename : uniqid('nextgen-gallery');
+			$filename = $filename ? sanitize_title_with_dashes($filename) : uniqid('nextgen-gallery');
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record
 			$factory = $this->object->get_registry()->get_utility('I_Component_Factory');
 			$retval = $image = $factory->create('image');
-			$image->alttext		= sanitize_title($filename);
+			$image->alttext		= sanitize_title_with_dashes($filename);
 			$image->galleryid	= $this->object->_get_gallery_id($gallery);
 			$image->filename	= $filename;
 			$image_key			= $this->object->_image_mapper->get_primary_key_column();
