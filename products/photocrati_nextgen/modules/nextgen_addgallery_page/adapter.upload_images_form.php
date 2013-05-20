@@ -10,8 +10,10 @@ class A_Upload_Images_Form extends Mixin
 
     function enqueue_static_resources()
     {
-       wp_enqueue_style('plupload.queue');
-       wp_enqueue_script('plupload.queue');
+        wp_enqueue_style('plupload.queue');
+        wp_enqueue_script('browserplus');
+        wp_enqueue_script('plupload.queue');
+
     }
 
     function render()
@@ -27,7 +29,7 @@ class A_Upload_Images_Form extends Mixin
         $retval = array();
 
         // Generate default Plupload options
-        $retval['runtimes']             = 'html5,gears,flash,silverlight,browserplus,html4';
+        $retval['runtimes']             = 'gears,browserplus,html5,flash,silverlight,html4';
         $retval['max_file_size']        = strval(round( (int) wp_max_upload_size() / 1024 )).'kb';
         $retval['filters']              = $this->object->get_plupload_filters();
         $retval['flash_swf_url']        = includes_url('js/plupload/plupload.flash.swf');

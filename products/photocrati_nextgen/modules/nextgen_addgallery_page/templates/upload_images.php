@@ -129,7 +129,7 @@
                         if (upload_count == 1) {
                             msg = "1 image was uploaded successfully";
                         }
-                        elseif (upload_count == 0) {
+                        else if (upload_count == 0) {
                             msg = "0 images were uploaded";
                         }
 

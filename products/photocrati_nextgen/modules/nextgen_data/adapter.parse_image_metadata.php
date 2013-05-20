@@ -17,6 +17,7 @@ class A_Parse_Image_Metadata extends Hook
      */
     function parse_image_metadata()
     {
+        die(var_dump($this->object));
         if (!$this->object->is_valid()) return;
         
         //TODO: NextGen provides notices when looking for metadata, as it does
