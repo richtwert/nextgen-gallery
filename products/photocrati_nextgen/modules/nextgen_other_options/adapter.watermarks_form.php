@@ -35,7 +35,6 @@ class A_Watermarks_Form extends Mixin
 	{
 		// We do this so that an adapter can add new sources
 		return array(
-            'Do Not Watermark'  =>  0,
 			'Using an Image'	=>	'image',
 			'Using Text'		=>	'text',
 		);

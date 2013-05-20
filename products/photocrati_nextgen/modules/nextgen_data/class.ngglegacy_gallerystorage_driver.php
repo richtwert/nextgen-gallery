@@ -240,9 +240,10 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 					}
 				}
 
-				if (!isset($params['watermark'])) {
-					$params['watermark'] = $settings->wmType;
-				}
+				// Not sure why this was here... commenting out for now, always require watermark parameters to be explicit
+#				if (!isset($params['watermark'])) {
+#					$params['watermark'] = $settings->wmType;
+#				}
 			}
 
 			// width and height when omitted make generate_image_clone create a clone with original size, so try find defaults regardless of $skip_defaults
