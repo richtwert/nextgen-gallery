@@ -227,7 +227,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
             // modules and inspect their file listing to determine which module provides what we need
             $modules = $this->object->get_registry()->get_module_list();
             foreach ($modules as $module) {
-                $module_file_list = $this->object->get_registry()->get_module($module)->get_module_file_list();
+                $module_file_list = array_values($this->object->get_registry()->get_module($module)->get_type_list());
                 $module_dir = $this->object->get_registry()->get_module_dir($module);
 
                 $variations = array(
