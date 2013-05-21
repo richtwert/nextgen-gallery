@@ -24,7 +24,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 	function get($property, $default=NULL)
 	{
 		$retval = $default;
-		if ($this->object->is_set($property)) {
+		if ($this->is_set($property)) {
 			$retval  = $this->object->_options[$property];
 		}
 		return $retval;
@@ -91,7 +91,7 @@ class Mixin_Settings_Manager_Instance_Methods extends Mixin
 
 	function set_default($key, $value)
 	{
-		if ((!$this->object->is_set($key)) OR $this->object->is_default($key)) $this->object->set($key, $value);
+		if ((!$this->is_set($key)) OR $this->object->is_default($key)) $this->object->set($key, $value);
 		$this->object->_defaults[$key] = $value;
 		return $this->object;
 
@@ -174,7 +174,7 @@ class C_Settings_Manager extends C_Component implements ArrayAccess
 	 */
 	function __isset($property)
 	{
-		return $this->object->is_set($property);
+		return $this->is_set($property);
 	}
 
 	/**

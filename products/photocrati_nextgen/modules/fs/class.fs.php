@@ -59,9 +59,9 @@ class Mixin_Fs_Instance_Methods extends Mixin
             // Wel'l assume that we're to calculate the path relative to
             // the site document root
             $retval = $path;
-            if (strpos($path, $this->object->get_document_root()) === FALSE) {
-                $retval = $this->object->join_paths(
-                    $this->object->get_document_root(),
+            if (strpos($path, $this->get_document_root()) === FALSE) {
+                $retval = $this->join_paths(
+                    $this->get_document_root(),
                     $path
                 );
             }
@@ -70,18 +70,18 @@ class Mixin_Fs_Instance_Methods extends Mixin
             // relative to the module directory
             if ($module) {
                 if (($module_dir = $this->get_registry()->get_module_dir($module))) {
-                    $retval = $this->object->join_paths($module_dir, $path);
+                    $retval = $this->join_paths($module_dir, $path);
                 }
                 else {
-                    $retval = $this->object->join_path(
-                        $this->object->get_document_root(), $module, $path
+                    $retval = $this->join_path(
+                        $this->get_document_root(), $module, $path
                     );
                 }
             }
             
             // Return the calculated path relative to the document root
             if ($relpath) $retval = $this->object->remove_path_segment(
-                $retval, $this->object->get_document_root()
+                $retval, $this->get_document_root()
             );
             
             return $retval;
@@ -109,7 +109,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
         {
             if (substr($segment, -1) == '/') $segment = substr($segment, 0, -1);
             $parts = explode($segment, $path);
-            return $this->object->join_paths($parts);
+            return $this->join_paths($parts);
         }
     
     
@@ -141,8 +141,8 @@ class Mixin_Fs_Instance_Methods extends Mixin
 
             // See if the file is located under one of the search paths directly
             foreach ($search_paths as $dir) {
-                if (file_exists($this->object->join_paths($dir, $path))) {
-                    $retval = $this->object->join_paths($dir, $path);
+                if (file_exists($this->join_paths($dir, $path))) {
+                    $retval = $this->join_paths($dir, $path);
                     break;
                 }
             }
@@ -156,7 +156,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
 
             // Return the relative path if we're to do so
             if ($relpath) {
-                $retval = $this->object->remove_path_segment($retval, $this->object->get_document_root());
+                $retval = $this->object->remove_path_segment($retval, $this->get_document_root());
             }
         }
 
@@ -195,14 +195,14 @@ class Mixin_Fs_Instance_Methods extends Mixin
 		// Add product's module directories
 		foreach ($this->get_registry()->get_product_list() as $product_id) {
 			$product_dir = $this->get_registry()->get_product_module_path($product_id);
-			if ($append_module) $directories[] = $this->object->join_paths(
+			if ($append_module) $directories[] = $this->join_paths(
 				$product_dir, $module
 			);
 			$directories[] = $product_dir;
 		}
 
 		// If all else fails, we search from the document root
-		$directories[] = $this->object->get_document_root();
+		$directories[] = $this->get_document_root();
 
 		return $directories;
 	}
@@ -218,7 +218,7 @@ class Mixin_Fs_Instance_Methods extends Mixin
 	{
 		$retval = NULL;
 
-		$results = file_exists($this->object->join_paths($base_path, $file));
+		$results = file_exists($this->join_paths($base_path, $file));
 
 		// Must be located in a sub-directory
 		if (!$results)
@@ -238,14 +238,14 @@ class Mixin_Fs_Instance_Methods extends Mixin
                 foreach ($variations as $variant) {
                     if (in_array($variant, $module_file_list))
                     {
-                        $retval = $this->object->join_paths($module_dir, $variant);
+                        $retval = $this->join_paths($module_dir, $variant);
                         break 2;
                     }
                 }
             }
 		}
 		else {
-            $retval = $this->object->join_paths($base_path, $file);
+            $retval = $this->join_paths($base_path, $file);
         }
 
 		return $retval;
