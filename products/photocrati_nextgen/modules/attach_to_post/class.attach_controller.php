@@ -156,12 +156,14 @@ class Mixin_Attach_To_Post extends Mixin
 		}
 
 		// Were we able to find a preview pic? If so, then render it
-		$found_preview_pic = $storage->render_image($image, $dyn_thumbs->get_size_name(array(
-			'width'     =>  200,
-			'height'    =>  200,
-			'quality'   =>  90,
-			'type'		=>	'jpg'
-		), TRUE));
+        $image_size = $dyn_thumbs->get_size_name(array(
+
+            'width'     =>  200,
+            'height'    =>  200,
+            'quality'   =>  90,
+            'type'		=>	'jpg'
+        ));
+		$found_preview_pic = $storage->render_image($image, $image_size, TRUE);
 
 		// Render invalid image if no preview pic is found
 		if (!$found_preview_pic) {

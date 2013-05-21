@@ -784,8 +784,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			// - fails if the dimensions are unchanged
 			// - doesn't support filename prefix, only suffix so names like thumbs_original_name.jpg for $clone_path are not supported
 			//   also suffix cannot be null as that will make WordPress use a default suffix...we could use an object that returns empty string from __toString() but for now just fallback to ngg generator
-			if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height) && $clone_suffix != null)
-			{
+            if (FALSE) { // disabling the WordPress method for Iteration #6
+//			if (($crop_frame == null || !$crop) && ($dimensions[0] != $width && $dimensions[1] != $height) && $clone_suffix != null)
 				$result['method'] = 'wordpress';
 
 				$new_dims = image_resize_dimensions($dimensions[0], $dimensions[1], $width, $height, $crop);
