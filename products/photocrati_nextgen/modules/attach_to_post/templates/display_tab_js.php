@@ -157,8 +157,10 @@ jQuery(function($){
                 this.$el.html(this.model.get(this.text_field).replace(/\\&/g, '&').replace(/\\'/g, "'"));
                 this.$el.prop({
                     value:    this.value_field == 'id' ? this.model.id : this.model.get(this.value_field),
-                    selected: self.model.get('selected') == true
                 });
+                if (self.model.get('selected') == true) {
+                    this.$el.attr('selected', 'selected');
+                }
                 return this;
             }
         })
@@ -191,6 +193,7 @@ jQuery(function($){
 			};
 
 			// Create the select2 drop-down
+            debugger;
 			if (this.$el.parent().length == 0) {
 				$('body').append(this.$el);
 				this.select_tag.$el.select2(this.select2_opts);

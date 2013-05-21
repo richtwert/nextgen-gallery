@@ -111,8 +111,8 @@ class Mixin_NextGen_Admin_Page_Instance_Methods extends Mixin
 		);
 
 		// Ensure select2
-		wp_enqueue_style('select2', $this->get_static_url('nextgen_admin#select2/select2.css'));
-		wp_enqueue_script('select2', $this->get_static_url('nextgen_admin#select2/select2.min.js'));
+		wp_enqueue_style('select2');
+		wp_enqueue_script('select2');
 	}
 
 	function enqueue_jquery_ui_theme()
