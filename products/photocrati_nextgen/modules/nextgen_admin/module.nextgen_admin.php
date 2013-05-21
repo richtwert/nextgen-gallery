@@ -106,8 +106,8 @@ class M_NextGen_Admin extends C_Base_Module
         wp_register_style('gritter',  $router->get_static_url('nextgen_admin#gritter/css/gritter.css'));
         wp_register_script('ngg_progressbar', $router->get_static_url('nextgen_admin#ngg_progressbar.js'), array('gritter'));
         wp_register_style('ngg_progressbar', $router->get_static_url('nextgen_admin#ngg_progressbar.css'), array('gritter'));
-        wp_register_style('select2', $this->get_static_url('nextgen_admin#select2/select2.css'));
-        wp_register_script('select2', $this->get_static_url('nextgen_admin#select2/select2.modded.js'));
+        wp_register_style('select2', $router->get_static_url('nextgen_admin#select2/select2.css'));
+        wp_register_script('select2', $router->get_static_url('nextgen_admin#select2/select2.modded.js'));
 
         $match = preg_quote("/wp-admin/post.php", "#");
         if (preg_match("#{$match}#", $_SERVER['REQUEST_URI'])) {
