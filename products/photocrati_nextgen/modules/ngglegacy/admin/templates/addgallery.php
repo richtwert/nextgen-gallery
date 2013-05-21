@@ -16,8 +16,8 @@
 					// If a new gallery has been created, add it to the drop-downs of
 					// available galleries
 					Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
-						var gallery_id = data.gallery[data.gallery.id_field];
-						var gallery_title = data.gallery.title.replace(/\\&/, '&');
+                        var gallery_id = data.gallery_id;
+                        var gallery_title = data.gallery_title.replace(/\\&/, '&');
 						var option = $('<option/>').attr({
 							value:	gallery_id
 						});

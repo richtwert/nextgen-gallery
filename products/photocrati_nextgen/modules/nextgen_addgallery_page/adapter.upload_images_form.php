@@ -34,13 +34,13 @@ class A_Upload_Images_Form extends Mixin
         $retval['filters']              = $this->object->get_plupload_filters();
         $retval['flash_swf_url']        = includes_url('js/plupload/plupload.flash.swf');
         $retval['silverlight_xap_url']  = includes_url('js/plupload/plupload.silverlight.xap');
-        $retval['multipart']            = TRUE;
+//        $retval['multipart']            = TRUE;
         $retval['debug']                = TRUE;
-        $retval['multipart_params']     = array(
-            'gallery_id'    =>  0,
-            'action'        =>  'upload_image',
-            'gallery_name'  =>  ''
-        );
+//        $retval['multipart_params']     = array(
+//            'gallery_id'    =>  0,
+//            'action'        =>  'upload_image',
+//            'gallery_name'  =>  ''
+//        );
 
         return $retval;
     }

@@ -22,18 +22,6 @@
         // Listen for events emitted in other frames
         if (window.Frame_Event_Publisher) {
 
-            // If a new gallery has been created, add it to the drop-downs of
-            // available galleries
-            Frame_Event_Publisher.listen_for('attach_to_post:new_gallery', function(data){
-                var gallery_id = data.gallery_id;
-                var gallery_title = data.gallery.title.replace(/\\&/, '&');
-                var option = $('<option/>').attr({
-                    value:	gallery_id
-                });
-                option.html(gallery_id+' - '+gallery_title);
-                $('#gallery_id').append(option);
-            });
-
             // If a gallery has been deleted, remove it from the drop-downs of
             // available galleries
             Frame_Event_Publisher.listen_for('attach_to_post:manage_galleries', function(){
@@ -54,7 +42,7 @@
 
             // Sets the plupload url with necessary parameters in the QS
             window.set_plupload_url = function(gallery_id, gallery_name) {
-                var qs = "?gallery_id="+urlencode(gallery_id);
+                var qs = "?action=upload_image&gallery_id="+urlencode(gallery_id);
                 qs += "&gallery_name="+urlencode(gallery_name);
                 return photocrati_ajax_url+qs;
             };
@@ -64,7 +52,7 @@
                 $("#uploader").animate({
                     'opacity': 0.0,
                 }, 'slow');
-                up.refresh();
+                up.destroy();
                 $('#gallery_id').val(0);
                 $('#gallery_name').val('');
                 init_plupload();
@@ -123,8 +111,8 @@
 
                             var up = $('#uploader').pluploadQueue();
                             up.settings.url = window.set_plupload_url($gallery_id.val(), $gallery_name.val());
-                            up.settings.multipart_params.gallery_id = $gallery_id.val();
-                            up.settings.multipart_params.gallery_name = $gallery_name.val();
+//                            up.settings.multipart_params.gallery_id = $gallery_id.val();
+//                            up.settings.multipart_params.gallery_name = $gallery_name.val();
 
                             if ($gallery_id.val() == 0 && $gallery_name.val().length == 0) {
                                 $gallery_name.addClass('error');
@@ -142,7 +130,7 @@
                         // Rearrange event handler for start button, to ensure that it has the ability
                         // to execute first
                         var click_events = $._data(start_button[0], 'events').click;
-                        click_events.unshift(click_events.pop());
+                        if (click_events.length == 2) click_events.unshift(click_events.pop());
 
                     },
 
@@ -179,8 +167,8 @@
                         }
                         window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
                         up.settings.url = window.set_plupload_url(response.gallery_id, $gallery_name.val());
-                        up.settings.multipart_params.gallery_id = response.gallery_id;
-                        up.settings.multipart_params.gallery_name = $gallery_name.val();
+//                        up.settings.multipart_params.gallery_id = response.gallery_id;
+//                        up.settings.multipart_params.gallery_name = $gallery_name.val();
 
                         // If we created a new gallery, ensure it's now in the drop-down list, and select it
                         if ($gallery_id.find('option[value="'+response.gallery_id+'"]').length == 0) {

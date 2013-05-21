@@ -522,8 +522,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             }
 
 			// Save the image
-			if ($this->object->_image_mapper->save($image)) {
-
+			if (($image_id = $this->object->_image_mapper->save($image))) {
 				try {
 					// Try writing the image
 					if (!file_exists($upload_dir)) wp_mkdir_p($upload_dir);
@@ -531,7 +530,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					fwrite($fp, $data);
 					fclose($fp);
 
-
+                    // Ensure that fullsize dimensions are added to metadata array
                     $dimensions = getimagesize($abs_filename);
                     $full_meta = array(
                         'width'		=>	$dimensions[0],
@@ -543,6 +542,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 					// Generate a thumbnail for the image
 					$this->object->generate_thumbnail($image);
+
+                    // Set gallery preview image if missing
+                    $this->object->get_registry()->get_utility('I_Gallery_Mapper')->set_preview_image($gallery, $image_id, TRUE);
 
 					// Notify other plugins that an image has been added
 					do_action('ngg_added_new_image', $image);

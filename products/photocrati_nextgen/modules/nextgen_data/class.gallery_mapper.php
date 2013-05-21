@@ -64,40 +64,34 @@ class Mixin_Gallery_Mapper extends Mixin
         return $retval;
     }
 
+    function set_preview_image($gallery, $image, $only_if_empty=FALSE)
+    {
+        $retval = FALSE;
 
-	/**
-	 * Sets the preview image for the gallery
-	 * @param int|stdClass|C_Gallery $gallery
-	 * @return bool
-	 */
-	function set_gallery_preview_image($gallery)
-	{
-		$retval = FALSE;
+        // We need the gallery object
+        if (is_numeric($gallery)) {
+            $gallery = $this->object->find($gallery);
+        }
 
-		// Ensure we have the gallery id and gallery entitys
-		$gallery_id = $gallery;
-		if (!is_int($gallery)) {
-			$pkey = $this->object->get_primary_key_column();
-			$gallery_id = $gallery->$pkey;
-		}
-		else {
-			$gallery = $this->object->find($gallery_id);
-		}
+        // We need the image id
+        if (!is_numeric($image)) {
+            if (method_exists($image, 'id')) {
+                $image = $image->id();
+            }
+            else {
+                $image = $image->{$image->id_field};
+            }
+        }
 
-		// Get the first gallery image
-		$factory = $this->get_registry()->get_utility('I_Component_Factory');
-		$image_mapper = $factory->create('image_mapper');
-		$image = $image_mapper->find_first(array('galleryid = %s', $gallery));
+        if ($gallery && $image) {
+            if (($only_if_empty && !$gallery->previewpic) OR !$only_if_empty) {
+                $gallery->previewpic = $image;
+                $retval = $this->object->save($gallery);
+            }
+        }
 
-		// Set preview image for the gallery
-		if ($image) {
-			$pkey = $image->id_field;
-			$gallery->previewpic = $image->$pkey;
-			$retval = $this->object->save($gallery);
-		}
-
-		return $retval;
-	}
+        return $retval;
+    }
 
 	/**
 	 * Sets default values for the gallery
