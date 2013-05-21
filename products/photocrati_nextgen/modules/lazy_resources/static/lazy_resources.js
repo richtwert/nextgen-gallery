@@ -31,9 +31,9 @@ var Lazy_Resources = {
 	// and ready() event has fired
 	enqueue_styles:		function(){
 		Sid.css(this.style_urls, function(){
-            setTimeout(function(){
+            window.setTimeout(function(){
                 jQuery(document).trigger('lazy_resources_loaded');
-            }, 0);
+            }, 50);
         });
 		this.style_urls = [];
 	}

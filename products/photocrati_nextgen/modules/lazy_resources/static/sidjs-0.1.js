@@ -73,9 +73,9 @@ jQuery(function(){
 			return node;
 		};
 
-		var append	= function(scope, node, url, attribute){
+		var append	= function(scope, node, url, attribute, main){
 			if (this == win) {
-				return new append(scope, node, url, attribute);
+				return new append(scope, node, url, attribute, main);
 			}
 			var container = node.tagName == 'SCRIPT' ? document.scripts : document.styleSheets;
 			var perform = true;
@@ -85,7 +85,11 @@ jQuery(function(){
 					break;
 				}
 			}
-			if (perform) scope.appendChild(node);
+			
+			if (perform) 
+				scope.appendChild(node);
+			else if (main)
+				main.count -= 1;
 		};
 
 		var load = function(type, urls, callback, scope) {
@@ -98,6 +102,7 @@ jQuery(function(){
 
 			this.callback = callback || function() {};
 			this.queue = [];
+			this.count = urls.length;
 
 			var node, i = len = 0, that = this;
 
@@ -106,11 +111,11 @@ jQuery(function(){
 				var url = urls[i];
 				if (type == 'css') {
 					node = createNode('link', { type: 'text/css', rel: 'stylesheet', href: url });
-					append(scope, node, url, 'href');
+					append(scope, node, url, 'href', this);
 				}
 				else {
 					node = createNode('script', { type: 'text/javascript', src: url });
-					append(scope, node, url, 'src');
+					append(scope, node, url, 'src', this);
 				}
 
 				if (sniff) {
@@ -121,7 +126,9 @@ jQuery(function(){
 								clearInterval(intervalID);
 								that.__callback();
 							}
-							catch (ex) {}
+							catch (ex) {
+								this.count--;
+							}
 						}, 100);
 					}
 					else {
@@ -143,7 +150,9 @@ jQuery(function(){
 			return this;
 		};
 		load[proto].__callback = function() {
-			if (this.queue.pop() && (this.queue == 0)) { this.callback(); }
+			this.queue.pop();
+			this.count -= 1;
+			if (this.count <= 0) { this.callback(); }
 		};
 
 		window.Sid = {
