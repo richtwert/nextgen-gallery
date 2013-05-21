@@ -587,7 +587,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
                 // Sometimes users try importing a directory, which actually has all images under another directory
                 $first_file_abspath = $fs->join_paths($abspath, $files[0]);
-                if (is_dir($first_file_abspath)) return $this->import_gallery_from_fs($first_file_abspath);
+                if (is_dir($first_file_abspath)) return $this->import_gallery_from_fs($first_file_abspath, $gallery_id);
 
                 // If no gallery has been specified, then use the directory name as the gallery name
                 if (!$gallery_id) {
