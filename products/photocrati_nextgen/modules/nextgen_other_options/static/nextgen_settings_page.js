@@ -5,13 +5,18 @@ jQuery(function($){
 
 	/**** LIGHTBOX EFFECT TAB ****/
 
+    $('tbody#lightbox_library_' + $('#lightbox_library').find(':selected').data('library-name') + '_basic').removeClass('hidden');
+
     // Only show the currently selected library; hide the rest
     $('#lightbox_library').change(function() {
+        var name = $(this).find(':selected').data('library-name');
         if ($('#lightbox_library_advanced_toggle').data('currently-hidden') == false) {
-            var name = $(this).find(':selected').data('library-name');
-            $('tbody.lightbox_library_advanced_settings').hide();
-            $('tbody#lightbox_library_' + name).show();
+            $('tbody.lightbox_library_advanced_settings').addClass('hidden');
+            $('tbody#lightbox_library_' + name + '_advanced').removeClass('hidden');
         }
+
+        $('tbody.lightbox_library_settings').addClass('hidden');
+        $('tbody#lightbox_library_' + name + '_basic').removeClass('hidden');
 
 	}).change();
 
@@ -20,11 +25,11 @@ jQuery(function($){
         event.preventDefault();
         if ($(this).data('currently-hidden') == true) {
             var name = $('#lightbox_library').find(':selected').data('library-name');
-            $('tbody#lightbox_library_' + name).show();
+            $('tbody#lightbox_library_' + name + '_advanced').removeClass('hidden');
             $(this).data('currently-hidden', false);
 
         } else if($(this).data('currently-hidden') == false) {
-            $('tbody.lightbox_library_advanced_settings').hide();
+            $('tbody.lightbox_library_advanced_settings').addClass('hidden');
             $(this).data('currently-hidden', true);
         }
     });

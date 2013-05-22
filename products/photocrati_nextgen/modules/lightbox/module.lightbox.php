@@ -8,6 +8,7 @@
 ***/
 
 define('NEXTGEN_LIGHTBOX_OPTIONS_SLUG', 'ngg_lightbox_options');
+define('NEXTGEN_LIGHTBOX_ADVANCED_OPTIONS_SLUG', 'ngg_lightbox_advanced_options');
 
 class M_Lightbox extends C_Base_Module
 {
@@ -30,13 +31,11 @@ class M_Lightbox extends C_Base_Module
 
         // Add a configuration form to each library
         foreach ($this->get_registry()->get_utility('I_Lightbox_Library_Mapper')->find_all() as $lib) {
-            // allow libraries with their own display settings to configure their own forms
-            if (!empty($lib->display_settings)) { continue; }
             $this->get_registry()
                  ->add_adapter('I_Form', 'A_Lightbox_Library_Form', $lib->name);
             $this->get_registry()
                  ->get_utility('I_Form_Manager')
-                 ->add_form(NEXTGEN_LIGHTBOX_OPTIONS_SLUG, $lib->name);
+                 ->add_form(NEXTGEN_LIGHTBOX_ADVANCED_OPTIONS_SLUG, $lib->name);
         }
     }
 

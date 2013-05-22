@@ -21,6 +21,12 @@
 		</td>
 	</tr>
 
+    <?php foreach ($sub_fields as $name => $form) { ?>
+        <tbody class="lightbox_library_settings hidden" id="lightbox_library_<?php print $name; ?>">
+            <?php echo $form; ?>
+        </tbody>
+    <?php } ?>
+
     <tr>
 		<td colspan="2">
 			<a href="#"
@@ -33,8 +39,8 @@
 		</td>
 	</tr>
 
-    <?php foreach ($sub_fields as $name => $form) { ?>
-        <tbody class="lightbox_library_advanced_settings hidden" id="lightbox_library_<?php print $name; ?>">
+    <?php foreach ($adv_fields as $name => $form) { ?>
+        <tbody class="lightbox_library_advanced_settings hidden" id="lightbox_library_<?php print $name; ?>_advanced">
             <?php echo $form; ?>
         </tbody>
     <?php } ?>

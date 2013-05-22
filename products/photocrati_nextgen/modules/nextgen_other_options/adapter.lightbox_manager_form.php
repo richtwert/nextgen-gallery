@@ -19,9 +19,16 @@ class A_Lightbox_Manager_Form extends Mixin
 
         // retrieve and render the settings forms for each library
         $sub_fields = array();
+        $advanced_fields = array();
+
         foreach ($form_manager->get_forms(NEXTGEN_LIGHTBOX_OPTIONS_SLUG, TRUE) as $form) {
             $form->enqueue_static_resources();
             $sub_fields[$form->context] = $form->render(FALSE);
+        }
+
+        foreach ($form_manager->get_forms(NEXTGEN_LIGHTBOX_ADVANCED_OPTIONS_SLUG, TRUE) as $form) {
+            $form->enqueue_static_resources();
+            $advanced_fields[$form->context] = $form->render(FALSE);
         }
 
 		// Render container tab
@@ -32,7 +39,8 @@ class A_Lightbox_Manager_Form extends Mixin
                 'libs'       => $mapper->find_all(),
                 'id_field'   => $mapper->get_primary_key_column(),
                 'selected'   => $this->object->get_model()->thumbEffect,
-                'sub_fields' => $sub_fields
+                'sub_fields' => $sub_fields,
+                'adv_fields' => $advanced_fields
             ),
             TRUE
         );
