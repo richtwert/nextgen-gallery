@@ -13,11 +13,6 @@ class C_Display_Type_Mapper extends C_CustomPost_DataMapper_Driver
 		$this->add_mixin('Mixin_Display_Type_Mapper');
 		$this->implement('I_Display_Type_Mapper');
 		$this->set_model_factory_method('display_type');
-//		$this->add_post_hook(
-//			'save',
-//			'Propagate thumbnail dimensions',
-//			'Hook_Propagate_Thumbnail_Dimensions_To_Settings'
-//		);
 	}
 
 	function initialize($context=FALSE)
@@ -100,13 +95,9 @@ class Mixin_Display_Type_Mapper extends Mixin
 	function set_defaults($entity)
 	{
 		if (!isset($entity->settings)) $entity->settings = array();
-		$this->_set_default_value($entity, 'settings', 'alternative_view', '');
-		$this->_set_default_value($entity, 'settings', 'show_return_link', '');
-		$this->_set_default_value($entity, 'settings', 'alternative_view_link_text', '');
-		$this->_set_default_value($entity, 'settings', 'return_link_text', '');
-		$this->_set_default_value($entity, 'settings', 'show_alternative_view_link', '');
 		$this->_set_default_value($entity, 'preview_image_relpath', '');
 		$this->_set_default_value($entity, 'default_source', '');
         $this->_set_default_value($entity, 'view_order', NEXTGEN_DISPLAY_PRIORITY_BASE);
+        $this->_set_default_value($entity, 'settings', 'use_lightbox_effect', TRUE);
 	}
 }

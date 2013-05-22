@@ -14,11 +14,6 @@
 </div>
 <script type="text/javascript">
     (function($){
-        // Only run this function once!
-        if (typeof($(window).data('ready')) == 'undefined')
-            $(window).data('ready', true);
-        else return;
-
         // Listen for events emitted in other frames
         if (window.Frame_Event_Publisher) {
 
@@ -30,6 +25,12 @@
         }
 
         $(window).on('lazy_resources_loaded', function(){
+
+            // Only execute this code once!
+            var flag = 'addgallery';
+            if (typeof($(window).data(flag)) == 'undefined')
+                $(window).data(flag, true);
+            else return;
 
             window.urlencode = function(str){
                 str = (str + '').toString();

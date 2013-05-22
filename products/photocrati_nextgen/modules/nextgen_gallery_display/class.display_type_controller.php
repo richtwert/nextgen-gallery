@@ -69,7 +69,6 @@ class Mixin_Display_Type_Controller extends Mixin
 		$settings	= $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$library	= $mapper->find_by_name($settings->thumbEffect);
-		if ($library)
         {
 			$i=0;
 			foreach (explode("\n", $library->scripts) as $script) {
@@ -130,7 +129,7 @@ class Mixin_Display_Type_Controller extends Mixin
             FALSE
         );
 
-        if ($displayed_gallery->use_lightbox_effect)
+        if ($displayed_gallery->display_settings['use_lightbox_effect'])
             $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
 	

@@ -503,6 +503,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
 			// Determine filenames
 			$filename = $filename ? sanitize_title_with_dashes($filename) : uniqid('nextgen-gallery');
+            if (preg_match("/\-(png|jpg|gif|jpeg)$/i", $filename, $match)) {
+                $filename = str_replace($match[0], '.'.$match[1], $filename);
+            }
 			$abs_filename = path_join($upload_dir, $filename);
 
 			// Create the database record

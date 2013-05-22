@@ -97,8 +97,5 @@ class Mixin_Displayed_Gallery_Defaults extends Mixin
 		// Set maximum_entity_count
 		$settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$this->object->_set_default_value($entity, 'maximum_entity_count', $settings->maximum_entity_count);
-
-        // Use lightbox effects or not?
-        $this->object->_set_default_value($entity, 'use_lightbox_effect', TRUE);
 	}
 }

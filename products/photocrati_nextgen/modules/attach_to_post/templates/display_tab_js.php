@@ -193,7 +193,6 @@ jQuery(function($){
 			};
 
 			// Create the select2 drop-down
-            debugger;
 			if (this.$el.parent().length == 0) {
 				$('body').append(this.$el);
 				this.select_tag.$el.select2(this.select2_opts);
