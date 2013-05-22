@@ -16,21 +16,15 @@ class A_NextGen_Basic_Tagcloud_Controller extends Mixin
         // we're looking at a tag, so show images w/that tag as a thumbnail gallery
         if (!is_home() && !empty($tag))
         {
-            $mapper  = $this->object->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
-            $factory = $this->object->get_registry()->get_utility('I_Component_Factory');
-
-            // recreate our gallery (so as to fill in the default settings)
-            $dg = $displayed_gallery;
-            $dg->display_type = $display_settings['display_type'];
-            $dg->tag_ids = array(esc_attr($tag));
-            $dg->container_ids = array(esc_attr($tag));
-            $dg->source = 'tags';
-
-            // and display it
-            $dg = $factory->create('displayed_gallery', $mapper, $dg->get_entity());
-            $controller = $this->object->get_registry()->get_utility('I_Display_Type_Controller', $dg->display_type);
-            $controller->enqueue_frontend_resources($dg);
-            return $controller->index_action($dg, $return);
+            return $this->object->get_registry()
+                        ->get_utility('I_Displayed_Gallery_Renderer')
+                        ->display_images(
+                array(
+                    'source' => 'tags',
+                    'container_ids' => array(esc_attr($tag)),
+                    'display_type' => $display_settings['display_type']
+                )
+            );
         }
 
         $defaults = array(
