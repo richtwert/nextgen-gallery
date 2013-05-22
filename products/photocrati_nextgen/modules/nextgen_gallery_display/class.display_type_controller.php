@@ -302,8 +302,6 @@ class Mixin_Display_Type_Controller extends Mixin
             // Once we have the image, get it's dimension and calculate margins
             if ($image) {
                 $dimensions = $storage->get_image_dimensions($image, $named_size);
-                $entity->top = ($longest - $dimensions['height'])/2;
-                $entity->left = ($widest - $dimensions['width'])/2;
             }
         }
 
