@@ -463,10 +463,14 @@ class Mixin_NggLegacy_GalleryStorage_Driver extends Mixin
 	function generate_thumbnail($image, $params = null, $skip_defaults = false)
 	{
 		$sized_image = $this->object->generate_image_size($image, 'thumbnail', $params, $skip_defaults);
-
-		$retval = $sized_image != null;
-
-		$sized_image->destruct();
+		$retval = false;
+		
+		if ($sized_image != null)
+		{
+			$retval = true;
+		
+			$sized_image->destruct();
+		}
 
 		return $retval;
 	}
