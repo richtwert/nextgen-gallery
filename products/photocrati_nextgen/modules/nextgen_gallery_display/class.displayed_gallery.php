@@ -684,6 +684,10 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 	{
 		global $wpdb;
 
+        // don't run for galleries without a container-id, like the tagcloud
+        if (!$tags && empty($this->object->container_ids))
+            return array();
+
         // If no tags were provided, get them from the container_ids
         if (!$tags) $tags = $this->object->container_ids;
 
