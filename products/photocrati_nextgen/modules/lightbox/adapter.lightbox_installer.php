@@ -19,6 +19,12 @@ class A_Lightbox_Installer extends Mixin
 		);
 	}
 
+    function set_attr(&$obj, $key, $val)
+    {
+        if (!isset($obj->$key))
+            $obj->$key = $val;
+    }
+
 	/**
 	 * Installs a lightbox library
 	 * @param string $name
@@ -33,28 +39,31 @@ class A_Lightbox_Installer extends Mixin
 		$router			= $this->get_registry()->get_utility('I_Router');
 		$mapper			= $this->get_registry()->get_utility('I_Lightbox_Library_Mapper');
         $lightbox		= $mapper->find_by_name($name);
-		if (!$lightbox) $lightbox = new stdClass;
+		if (!$lightbox)
+            $lightbox = new stdClass;
 
-		// Set properties
-		$lightbox->name				= $name;
-		$lightbox->code				= $code;
-		$lightbox->css_stylesheets	= array();
-		$lightbox->scripts			= array();
-		$lightbox->values			= $values;
+        $styles  = array();
 		foreach ($stylesheet_paths as $stylesheet) {
 			if (preg_match("/http(s)?/", $stylesheet))
-				$lightbox->css_stylesheets[] = $stylesheet;
+				$styles[] = $stylesheet;
 			else
-				$lightbox->css_stylesheets[] = $router->get_static_url($stylesheet);
+				$styles[] = $router->get_static_url($stylesheet);
 		}
+
+        $scripts = array();
 		foreach ($script_paths as $script) {
 			if (preg_match("/http(s)?/", $script))
-				$lightbox->scripts[]		 = $script;
+				$scripts[] = $script;
 			else
-				$lightbox->scripts[]		 = $router->get_static_url($script);
+				$scripts[] = $router->get_static_url($script);
 		}
-		$lightbox->css_stylesheets = implode("\n", $lightbox->css_stylesheets);
-		$lightbox->scripts		   = implode("\n", $lightbox->scripts);
+
+        // Set properties
+        $lightbox->name	= $name;
+        $this->set_attr($lightbox, 'code', $code);
+        $this->set_attr($lightbox, 'values', $values);
+        $this->set_attr($lightbox, 'css_stylesheets', implode("\n", $styles));
+        $this->set_attr($lightbox, 'scripts', implode("\n", $scripts));
 
 		// Save the lightbox
 		$mapper->save($lightbox);
@@ -159,9 +168,12 @@ class A_Lightbox_Installer extends Mixin
 	/**
 	 * Uninstalls all lightboxes
 	 */
-	function uninstall_lightboxes()
+	function uninstall_lightboxes($hard=FALSE)
 	{
-		$mapper = $this->get_registry()->get_utility('I_Lightbox_Library_Mapper');
-		$mapper->delete()->run_query();
+        if ($hard)
+        {
+            $mapper = $this->get_registry()->get_utility('I_Lightbox_Library_Mapper');
+            $mapper->delete()->run_query();
+        }
 	}
 }
