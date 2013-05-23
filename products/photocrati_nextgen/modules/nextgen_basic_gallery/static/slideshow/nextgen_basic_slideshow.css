@@ -26,24 +26,21 @@ body {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+    clear: both;
 }
 
 .ngg-slideshow * {
     vertical-align: middle;
 }
 
-.ngg-slideshow img {
+.ngg-slideshow .ngg-gallery-slideshow-image img {
 	max-width: 100% !important; 
 	width: auto;
 	height: auto;
 }
 
 .ngg-slideshow .ngg-gallery-slideshow-image {
-	position: relative;
 	width: 100% !important;
-	height: 100% !important;
-	max-width: 100% !important;
-	max-height: 100% !important;
 }
 
 .ngg-slideshow .image-placeholder {
