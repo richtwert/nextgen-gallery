@@ -57,7 +57,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-mvc');
 
 		// Load the Lazy Resource Loader - dependent on photocrati-router
-		$this->get_registry()->load_module('photocrati-lazy_resources');
+		//$this->get_registry()->load_module('photocrati-lazy_resources');
 
 		// Load the dynamic stylesheet utility - dependent on photocrati-lzw
 		// and photocrati-mvc
@@ -69,6 +69,9 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// This provides a general AJAX handler for all other modules to extend
 		$this->get_registry()->load_module('photocrati-ajax');
+
+        // Provides a resource minifier - an alternative to the lazy resource loader
+        $this->get_registry()->load_module('photocrati-resource_minifier');
 
 		// The datamapper is a library which is required by our data tier
 		// components. This is the first module we load as in the future, the

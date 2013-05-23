@@ -55,7 +55,7 @@ class Mixin_Lazy_Resource_Loader extends Mixin
 	 */
 	function enqueue($return=FALSE)
 	{
-        wp_print_scripts();
+//        wp_print_scripts();
         ob_start();
         wp_print_styles();
         $this->style_urls = array_merge($this->style_urls, $this->_parse_resource_urls(ob_get_contents()));
