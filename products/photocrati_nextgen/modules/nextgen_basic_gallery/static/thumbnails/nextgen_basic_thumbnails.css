@@ -16,11 +16,11 @@
 
 .ngg-gallery-thumbnail-box {
     float: left;
+    margin-right: 5px;
 }
 
 .ngg-gallery-thumbnail {
     float: left;
-    margin-right: 5px;
     text-align: center;
 }
 
