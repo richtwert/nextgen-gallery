@@ -97,7 +97,8 @@ class C_Widget_Gallery extends WP_Widget
         // they're probably a small dimension, so use the dynamic thumbnails manager to prevent squishing
         $thumbnail_size_name = $dynthumbs->get_size_name(array(
             'width'  => $instance['width'],
-            'height' => $instance['height']
+            'height' => $instance['height'],
+            'crop'   => TRUE
         ));
 
         echo $renderer->display_images(array(
