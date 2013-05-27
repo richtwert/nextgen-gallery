@@ -93,4 +93,4 @@ class M_Lazy_Resources extends C_Base_Module
     }
 }
 
-new M_Lazy_Resources();
+//new M_Lazy_Resources();
