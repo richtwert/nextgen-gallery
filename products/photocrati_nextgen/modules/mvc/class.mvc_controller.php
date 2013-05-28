@@ -81,7 +81,6 @@ class Mixin_MVC_Controller_Instance_Methods extends Mixin
                 $type = 'application/pdf';
                 break;
         }
-
         $this->object->_content_type = $type;
         return $type;
     }

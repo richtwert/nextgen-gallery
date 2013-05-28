@@ -5,8 +5,6 @@
 }
 */
 
-error_reporting(E_ALL);
-@ini_set('display_errors', 'On');
 class M_Resource_Minifier extends C_Base_Module
 {
     function define()
@@ -52,7 +50,16 @@ class M_Resource_Minifier extends C_Base_Module
     {
         $this->write_resource_tags('styles');
         $this->write_resource_tags('scripts');
+    }
 
+    /**
+     * Gets the resouce map for a particular type
+     * @param $resource_type
+     * @return mixed|void
+     */
+    function get_resource_map($resource_type)
+    {
+        return get_option('ngg_'.$resource_type.'_map');
     }
 
     /**
@@ -66,12 +73,14 @@ class M_Resource_Minifier extends C_Base_Module
         $output_func = $resource_type == 'scripts' ? 'wp_print_scripts' : 'wp_print_styles';
         $this->resources = array(
             'scripts'       =>  array(
-                'static'    =>  array(),
-                'dynamic'   =>  array()
+                'static'    =>  array('jquery'),
+                'dynamic'   =>  array(),
+                'map'       =>  $this->get_resource_map($resource_type)
             ),
-            'styles'   =>  array(
+            'styles'        =>  array(
                 'static'    =>  array(),
-                'dynamic'   =>  array()
+                'dynamic'   =>  array(),
+                'map'       =>  $this->get_resource_map($resource_type)
             )
         );
 
@@ -84,6 +93,9 @@ class M_Resource_Minifier extends C_Base_Module
         // Strip out any scripts be loading by url, and outputs the rest. We
         // need to this for wp_localize_script() calls
         echo $this->strip_tags_with_urls($tagname, $html);
+
+        // Store the map
+        update_option('ngg_'.$resource_type.'_map', $this->resources[$resource_type]['map']);
 
         // Load the static scripts. These scripts will be concatenated and the final result will be
         // cached and never regenerated
@@ -110,10 +122,10 @@ class M_Resource_Minifier extends C_Base_Module
                 $url        = $router->get_url("/{$group}/{$resource_type}").'?load='.$handles;
 
                 if ($resource_type == 'scripts') {
-                    echo "<script type='text/javascript' src='{$url}'></script>";
+                    echo "<script type='text/javascript' src='{$url}'></script>\n";
                 }
                 else {
-                    echo "<link type='text/css' media='screen' rel='stylesheet' href='{$url}'/>";
+                    echo "<link type='text/css' media='screen' rel='stylesheet' href='{$url}'/>\n";
                 }
 
                 $resources = &$this->resources[$resource_type];
@@ -157,7 +169,7 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function append_script($src, $handle)
     {
-        $this->append_resource('scripts', $handle);
+        $this->append_resource('scripts', $handle, $src);
 
         return $src;
     }
@@ -171,7 +183,13 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function append_stylesheet($tag, $handle)
     {
-        $this->append_resource('styles', $handle);
+        // Parse the url from the tag
+        $src = '';
+        if (preg_match("/href=['\"]([^'\"]*)/", $tag, $match)) {
+            $src = $match[1];
+        }
+
+        $this->append_resource('styles', $handle, $src);
 
         return $tag;
     }
@@ -181,15 +199,27 @@ class M_Resource_Minifier extends C_Base_Module
      * @param $resource_type
      * @param $handle
      */
-    function append_resource($resource_type, $handle)
+    function append_resource($resource_type, $handle, $url)
     {
+        // Add the handle to the appropriate group
         $resources = &$this->resources[$resource_type];
-        if (strpos($handle, '@dyn') !== FALSE) {
-            $resources['dynamic'][] = $handle;
+        $group = 'static';
+
+        // Store the association between the handle and the url. Not all
+        // resources are registered before they are enqueued so we need
+        // to store this information
+        $resources['map'][$handle] = $url;
+
+        // Ensure that the group hasn't been embedded in
+        // the name of the handle
+        if (strpos($handle, '@') !== FALSE) {
+            $parts  = explode('@', $handle);
+            $handle = $parts[0];
+            $group  = $parts[1];
         }
-        else {
-            $resources['static'][] = $handle;
-        }
+
+        // Add the handle to the appropriate group
+        $resources[$group][] = $handle;
     }
 
     function get_type_list()
