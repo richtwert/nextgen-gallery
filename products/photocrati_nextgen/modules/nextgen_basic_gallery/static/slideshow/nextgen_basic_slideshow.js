@@ -38,7 +38,15 @@ jQuery.fn.nggShowSlideshow = function(args) {
                 slideExpr: '.ngg-gallery-slideshow-image',
                 slideResize: false,
         				containerResize: false,
-                timeout: s.timeout
+                timeout: s.timeout,
+                after: function(currSlideElement, nextSlideElement, options, forwardFlag) {
+                    // update the pro-lightbox triggers should they exist
+                    jQuery(nextSlideElement).parent().siblings('div.ngg-trigger-buttons').each(function() {
+                        jQuery(this).find('i').each(function() {
+                            jQuery(this).data('image-id', jQuery(nextSlideElement).find('img').data('image-id'));
+                        });
+                    });
+                }
             });
         }
     });
