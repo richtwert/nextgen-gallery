@@ -25,9 +25,10 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function _register_hooks()
     {
+        add_action('init', array(&$this, 'register_sidjs'));
         add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
-        add_action('wp_print_footer_scripts', array(&$this, 'write_tags'), 1);
-        add_action('admin_print_footer_scripts', array(&$this, 'write_tags'), 1);
+        add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+        add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
         add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
         add_filter('style_loader_tag', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
@@ -43,13 +44,34 @@ class M_Resource_Minifier extends C_Base_Module
         $this->_get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
     }
 
+    function register_sidjs()
+    {
+        // Register SidJS: http://www.diveintojavascript.com/projects/sidjs-load-javascript-and-stylesheets-on-demand
+        $router = $this->get_registry()->get_utility('I_Router');
+        wp_register_script(
+            'sidjs',
+            $router->get_static_url('resource_minifier#sidjs-0.1.js'),
+            array('jquery'),
+            '0.1'
+        );
+        wp_enqueue_script('sidjs');
+    }
+
+    /**
+     * Writes the HTML tags in the footer
+     */
+    function write_footer_tags()
+    {
+        $this->write_tags(TRUE);
+    }
+
     /**
      * Writes the resource tags to the browser
      */
-    function write_tags()
+    function write_tags($in_footer=FALSE)
     {
-        $this->write_resource_tags('styles');
-        $this->write_resource_tags('scripts');
+        $this->write_resource_tags('styles',  $in_footer);
+        $this->write_resource_tags('scripts', $in_footer);
     }
 
     /**
@@ -65,7 +87,7 @@ class M_Resource_Minifier extends C_Base_Module
     /**
      * Gets the list of scripts that should be minified
      */
-    function write_resource_tags($resource_type)
+    function write_resource_tags($resource_type, $in_footer=FALSE)
     {
         // Initialize this portion
         $router = NULL;
@@ -73,7 +95,7 @@ class M_Resource_Minifier extends C_Base_Module
         $output_func = $resource_type == 'scripts' ? 'wp_print_scripts' : 'wp_print_styles';
         $this->resources = array(
             'scripts'       =>  array(
-                'static'    =>  array('jquery'),
+                'static'    =>  array(),
                 'dynamic'   =>  array(),
                 'map'       =>  $this->get_resource_map($resource_type)
             ),
@@ -99,11 +121,11 @@ class M_Resource_Minifier extends C_Base_Module
 
         // Load the static scripts. These scripts will be concatenated and the final result will be
         // cached and never regenerated
-        $this->write_tag($resource_type, 'static');
+        $this->write_tag($resource_type, 'static', $in_footer);
 
         // Load the dynamic scripts. These scripts will be concatenated but not cached,
         // as their content is known to change
-        $this->write_tag($resource_type, 'dynamic');
+        $this->write_tag($resource_type, 'dynamic', $in_footer);
     }
 
     /**
@@ -111,9 +133,9 @@ class M_Resource_Minifier extends C_Base_Module
      * @param $resource_type
      * @param $group
      */
-    function write_tag($resource_type, $group)
+    function write_tag($resource_type, $group, $in_footer=FALSE)
     {
-        $args = func_get_args();
+        $written = FALSE;
         if (isset($this->resources[$resource_type])) {
             if (isset($this->resources[$resource_type][$group])) {
                 if (empty($this->resources[$resource_type][$group])) return;
@@ -123,14 +145,48 @@ class M_Resource_Minifier extends C_Base_Module
 
                 if ($resource_type == 'scripts') {
                     echo "<script type='text/javascript' src='{$url}'></script>\n";
+                    $written = TRUE;
                 }
                 else {
-                    echo "<link type='text/css' media='screen' rel='stylesheet' href='{$url}'/>\n";
+                    // If we're in the footer, we need to lazy load the stylesheet
+                    if ($in_footer) {
+                        echo '<script type="text/javascript">
+                            jQuery(function($){
+                                Sid.css("'.$url.'", function(){
+                                     window.setTimeout(function(){
+                                        var $doc = jQuery(document);
+                                        if (typeof($doc.data("lazy_resources_loaded")) == "undefined") {
+                                            $doc.data("lazy_resources_loaded", true);
+                                            $doc.trigger("lazy_resources_loaded");
+                                        }
+                                }, 0);
+                                });
+                            });
+                        </script>';
+                    }
+
+                    // Otherwise, we can just output a normal link tag
+                    else echo "<link type='text/css' media='screen' rel='stylesheet' href='{$url}'/>\n";
+
+                    $written = TRUE;
                 }
 
                 $resources = &$this->resources[$resource_type];
                 unset($resources[$group]);
             }
+        }
+
+        // For styles, we still need to trigger the lazy_resources_event
+        if (!$written && $in_footer && $resource_type != 'scripts') {
+            echo '<script type="text/javascript">
+                jQuery(function($){
+                    var $doc = jQuery(document);
+                    if (typeof($doc.data("lazy_resources_loaded")) == "undefined") {
+                        $doc.data("lazy_resources_loaded", true);
+                        $doc.trigger("lazy_resources_loaded");
+                    }
+                });
+            </script>';
         }
     }
 
