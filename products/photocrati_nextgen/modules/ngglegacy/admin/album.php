@@ -128,7 +128,7 @@ class nggManageAlbum {
 
 				// Is the first entity a gallery or album
 				if (substr($first_entity, 0, 1) == 'a') {
-					$subalbum = $mapper->find(substr($first_entity, 1));
+					$subalbum = $this->get_album_mapper()->find(substr($first_entity, 1));
 					if ($subalbum->previewpic) {
 						$album->previewpic = $subalbum->previewpic;
 						$set_previewpic = TRUE;
