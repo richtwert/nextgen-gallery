@@ -650,7 +650,7 @@ jQuery(function($){
                 self.displayed_gallery.set('slug', $(this).val());
             });
 
-            var tooltip = 'Sets an SEO-friendly name to this gallery for URLs';
+            var tooltip = 'Sets an SEO-friendly name to this gallery for URLs. Currently only in use by the Pro Lightbox.';
             this.$el.append('<tr><td id="slug_label"><label for="field_slug" class="tooltip" title="' + tooltip + '">Slug</label></td><td id="slug_column"></td></tr>');
             this.$el.find('#slug_column').append(input);
 

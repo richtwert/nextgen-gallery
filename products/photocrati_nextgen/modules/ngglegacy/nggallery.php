@@ -437,9 +437,7 @@ if (!class_exists('nggLoader')) {
 		function add_plugin_links($links, $file) {
 
 			if ( $file == $this->plugin_name ) {
-				$plugin_name = plugin_basename(NGGALLERY_ABSPATH);
-				$links[] = "<a href='admin.php?page={$plugin_name}'>" . __('Overview', 'nggallery') . '</a>';
-				$links[] = '<a href="http://wordpress.org/tags/nextgen-gallery?forum_id=10">' . __('Get help', 'nggallery') . '</a>';
+				$links[] = '<a href="http://wordpress.org/support/plugin/nextgen-gallery">' . __('Get help', 'nggallery') . '</a>';
 				$links[] = '<a href="https://bitbucket.org/photocrati/nextgen-gallery">' . __('Contribute', 'nggallery') . '</a>';
 			}
 			return $links;
