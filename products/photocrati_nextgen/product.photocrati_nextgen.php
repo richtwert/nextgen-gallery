@@ -56,8 +56,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Dependent on photocrati-router
 		$this->get_registry()->load_module('photocrati-mvc');
 
-		// Load the Lazy Resource Loader - dependent on photocrati-router
-		$this->get_registry()->load_module('photocrati-lazy_resources');
+        // Provides a resource minifier
+        $this->get_registry()->load_module('photocrati-resource_minifier');
 
 		// Load the dynamic stylesheet utility - dependent on photocrati-lzw
 		// and photocrati-mvc

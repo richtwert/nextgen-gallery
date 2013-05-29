@@ -3,7 +3,7 @@
 /***
 	{
 		Module: photocrati-nextgen_gallery_display,
-		Depends: { photocrati-lazy_resources, photocrati-simple_html_dom }
+		Depends: { photocrati-simple_html_dom }
 	}
 ***/
 
