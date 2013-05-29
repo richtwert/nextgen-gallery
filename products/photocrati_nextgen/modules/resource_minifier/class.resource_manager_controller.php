@@ -171,6 +171,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
 
             $transient_name = md5('ngg_resources_'.$resource_type.$handles);
             $retval = get_transient($transient_name);
+            $retval = FALSE;
 
             // Generate the results and cache
             if (!$retval) {

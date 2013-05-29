@@ -73,15 +73,13 @@ class Mixin_Dynamic_Stylesheet_Instance_Methods extends Mixin
 		if (($index = $this->object->get_css_template_index($name)) !== FALSE) {
             if (is_subclass_of($data, 'C_DataMapper_Model')) $data = $data->get_entity();
 			$data			= $this->object->encode($data);
-            wp_enqueue_style('dyncss-'.$index.'@dynamic', $this->get_router()->get_url("{$this->object->_app}/$index/{$data}"));
+            wp_enqueue_style('dyncss-'.$index.'@dynamic', "/{$this->object->_app}/$index/{$data}");
 		}
 	}
 
 	function encode($data)
 	{
-		$lzw			= $this->get_registry()->get_utility('I_Lzw');
 		$data			= json_encode($data);
-//		$data			= $lzw->compress($data);
 		$data			= base64_encode($data);
 		$data			= str_replace('/', '\\', $data);
 		return $data;
@@ -90,10 +88,8 @@ class Mixin_Dynamic_Stylesheet_Instance_Methods extends Mixin
 
 	function decode($data)
 	{
-		$lzw			= $this->get_registry()->get_utility('I_Lzw');
 		$data			= str_replace('\\', '/', $data);
 		$data			= base64_decode($data);
-//		$data			= $lzw->decompress($data);
 		$data			= json_decode($data);
 		return $data;
 	}
@@ -107,8 +103,6 @@ class Mixin_Dynamic_Stylesheet_Actions extends Mixin
 	function index_action()
 	{
 		$this->set_content_type('css');
-		$this->expires("1 year");
-
 		if (($data = $this->param('data')) !== FALSE && ($index = $this->param('index')) !== FALSE) {
 			$data = $this->object->decode($data);
 			$this->render_view($this->object->get_css_template($index), $data);

@@ -88,8 +88,6 @@ class nggAdminPanel{
 			$html = ob_get_contents();
 			ob_end_clean();
 
-            define('NGG_JQUERY_CONFLICT_DETECTION', FALSE);
-
             if (!defined('NGG_JQUERY_CONFLICT_DETECTION')) {
 				define('NGG_JQUERY_CONFLICT_DETECTION', TRUE);
 			}

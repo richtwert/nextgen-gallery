@@ -39,7 +39,7 @@ class M_Resource_Minifier extends C_Base_Module
         add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
         add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
         add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
-        add_filter('style_loader_tag', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
+        add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
 
     function _register_utilities()
@@ -252,17 +252,13 @@ class M_Resource_Minifier extends C_Base_Module
      * @param $handle
      * @return mixed
      */
-    function append_stylesheet($tag, $handle)
+    function append_stylesheet($src, $handle)
     {
-        // Parse the url from the tag
-        $src = '';
-        if (preg_match("/href=['\"]([^'\"]*)/", $tag, $match)) {
-            $src = $match[1];
-        }
-
+        global $wp_styles;
+        $src = $wp_styles->registered[$handle]->src;
         $this->append_resource('styles', $handle, $src);
 
-        return $tag;
+        return $src;
     }
 
     /**
@@ -285,7 +281,6 @@ class M_Resource_Minifier extends C_Base_Module
         // the name of the handle
         if (strpos($handle, '@') !== FALSE) {
             $parts  = explode('@', $handle);
-            $handle = $parts[0];
             $group  = $parts[1];
         }
 
