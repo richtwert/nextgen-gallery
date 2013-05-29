@@ -452,6 +452,7 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		$album_mapper	= $this->get_registry()->get_utility('I_Album_Mapper');
 		$album_key		= $album_mapper->get_primary_key_column();
 		$gallery_mapper	= $this->get_registry()->get_utility('I_Gallery_Mapper');
+		$image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
 		$gallery_key	= $gallery_mapper->get_primary_key_column();
 		$album_select	= ($id_only ? $album_key : '*').", 1 AS is_album, 0 AS is_gallery, name AS title, albumdesc AS galdesc";
 		$gallery_select = ($id_only ? $gallery_key : '*').", 1 AS is_gallery, 0 AS is_album";
@@ -528,6 +529,8 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 		$galleries	= $gallery_mapper->select($gallery_select)->where(
 			array("{$gallery_key} IN %s", $gallery_ids)
 		)->order_by('ordered_by', 'DESC')->run_query();
+		$counts = $image_mapper->select('galleryid, COUNT(*) as counter')->where(
+			array("galleryid IN %s", $gallery_ids))->group_by('galleryid')->run_query();
 		$albums		= $album_mapper->select($album_select)->where(
 			array("{$album_key} IN %s", $album_ids)
 		)->order_by('ordered_by', 'DESC')->run_query();
@@ -541,7 +544,16 @@ class Mixin_Displayed_Gallery_Queries extends Mixin
 
 			else {
                 $gallery = array_shift($galleries);
-                if ($gallery) $retval[] = $gallery;
+                if ($gallery) {
+                	foreach ($counts as $id => $gal_count) {
+                		if ($gal_count->galleryid == $gallery->gid) {
+		              		$gallery->counter = intval($gal_count->counter);
+		              		unset($counts[$id]);
+                		}
+                	}
+                	
+                	$retval[] = $gallery;
+                }
             }
 
 		}
