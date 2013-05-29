@@ -89,7 +89,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
      * @param $url
      * @return string
      */
-    function _get_source($url)
+    function _get_source($url, $resource_type)
     {
         $retval     = '';
         $fs         = $this->_get_fs_utility();
@@ -129,9 +129,30 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
         // to fetch it using HTTP
         else {
             if (strpos($url, '/') === 0) {
-                $url = $this->get_router()->get_url($url);
+                $url = $this->get_router()->get_url($url, FALSE);
             }
             $retval = wp_remote_fopen($url);
+        }
+
+        // Now that we have the content, we have to adjust any links within CSS
+        $dir = trailingslashit(dirname($url));
+        if ($resource_type == 'styles' && preg_match_all("/url\\((['\"])?([^'\"\\)]*)(['\"])?\\)/", $retval, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $original_url       = $match[2];
+
+                // If the original url isn't absolute, then we need to make it so
+                if (strpos($original_url, 'http') !== 0) {
+                    $new_url        = $original_url;
+                    if (strpos($new_url, '/') == 0) $new_url = substr($new_url, 1);
+                    if (strpos($dir, '/') === 0 && strpos($dir, $http_site) !== 0) {
+                        $dir = untrailingslashit($http_site).$dir;
+                    }
+                    $new_url        = $dir.$new_url;
+                    $original_match = $match[0];
+                    $new_match      = str_replace($original_url, $new_url, $original_match);
+                    $retval         = str_replace($original_match, $new_match, $retval);
+                }
+            }
         }
 
         return $retval;
@@ -144,17 +165,30 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
      */
     function _concatenate_resources($resource_type)
     {
-        $retval = array();
+        $retval = '';
 
-        // Include each script
         if (($handles = $this->param('load'))) {
-            foreach (explode(';', $handles) as $handle) {
-                if (($src = $this->_get_handle_url($handle, $resource_type))) {
-                    $retval[] = $this->_get_source($src);
+
+            $transient_name = md5('ngg_resources_'.$resource_type.$handles);
+            $retval = get_transient($transient_name);
+
+            // Generate the results and cache
+            if (!$retval) {
+                $retval = array();
+                foreach (explode(';', $handles) as $handle) {
+                    if (($src = $this->_get_handle_url($handle, $resource_type))) {
+                        $retval[] = $this->_get_source($src, $resource_type);
+                    }
+                    else $retval[]= "// {$handle} was not found";
                 }
+
+                $retval = implode("\n", $retval);
+                set_transient($transient_name, $retval);
             }
         }
-        return implode("\n", $retval);
+
+        return $retval;
+
     }
 
 

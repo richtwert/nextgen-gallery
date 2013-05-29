@@ -61,7 +61,7 @@ class P_Photocrati_NextGen extends C_Base_Product
 
 		// Load the dynamic stylesheet utility - dependent on photocrati-lzw
 		// and photocrati-mvc
-		//$this->get_registry()->load_module('photocrati-dynamic_stylesheet');
+		$this->get_registry()->load_module('photocrati-dynamic_stylesheet');
 
 		// Provides a mechanism for Frame Communication - dependent on
 		// photocrati-settings and photocrati-router

@@ -21,6 +21,15 @@ class M_Resource_Minifier extends C_Base_Module
     }
 
     /**
+     * Initializes the resources array
+     */
+    function initialize()
+    {
+        parent::initialize();
+        $this->initialize_resources();
+    }
+
+    /**
      * Registers necessary hooks for WordPress
      */
     function _register_hooks()
@@ -84,6 +93,23 @@ class M_Resource_Minifier extends C_Base_Module
         return get_option('ngg_'.$resource_type.'_map');
     }
 
+
+    function initialize_resources()
+    {
+        $this->resources = array(
+            'scripts'       =>  array(
+                'static'    =>  array(),
+                'dynamic'   =>  array(),
+                'map'       =>  $this->get_resource_map('scripts')
+            ),
+            'styles'        =>  array(
+                'static'    =>  array(),
+                'dynamic'   =>  array(),
+                'map'       =>  $this->get_resource_map('styles')
+            )
+        );
+    }
+
     /**
      * Gets the list of scripts that should be minified
      */
@@ -93,18 +119,7 @@ class M_Resource_Minifier extends C_Base_Module
         $router = NULL;
         $tagname = $resource_type == 'scripts' ? 'script' : 'link';
         $output_func = $resource_type == 'scripts' ? 'wp_print_scripts' : 'wp_print_styles';
-        $this->resources = array(
-            'scripts'       =>  array(
-                'static'    =>  array(),
-                'dynamic'   =>  array(),
-                'map'       =>  $this->get_resource_map($resource_type)
-            ),
-            'styles'        =>  array(
-                'static'    =>  array(),
-                'dynamic'   =>  array(),
-                'map'       =>  $this->get_resource_map($resource_type)
-            )
-        );
+        $this->initialize_resources();
 
         // Parse scripts for inclusion
         ob_start();
@@ -141,7 +156,7 @@ class M_Resource_Minifier extends C_Base_Module
                 if (empty($this->resources[$resource_type][$group])) return;
                 $router     = $this->get_registry()->get_utility('I_Router');
                 $handles    = $this->get_enqueued($resource_type, $group);
-                $url        = $router->get_url("/{$group}/{$resource_type}").'?load='.$handles;
+                $url        = $router->get_url("/{$group}/{$resource_type}", FALSE).'?load='.$handles;
 
                 if ($resource_type == 'scripts') {
                     echo "<script type='text/javascript' src='{$url}'></script>\n";
