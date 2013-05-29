@@ -143,7 +143,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
                 // If the original url isn't absolute, then we need to make it so
                 if (strpos($original_url, 'http') !== 0) {
                     $new_url        = $original_url;
-                    if (strpos($new_url, '/') == 0) $new_url = substr($new_url, 1);
+                    if (strpos($new_url, '/') === 0) $new_url = substr($new_url, 1);
                     if (strpos($dir, '/') === 0 && strpos($dir, $http_site) !== 0) {
                         $dir = untrailingslashit($http_site).$dir;
                     }
