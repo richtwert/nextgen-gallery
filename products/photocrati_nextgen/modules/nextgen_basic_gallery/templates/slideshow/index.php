@@ -144,12 +144,12 @@
 			
 			?>
 			
-				<img
-					title="<?php echo esc_attr($image->description)?>"
-					alt="<?php echo esc_attr($image->alttext)?>"
-					src="<?php echo esc_attr($storage->get_image_url($image))?>"
-					width="<?php echo esc_attr($image_size['width'])?>"
-					height="<?php echo esc_attr($image_size['height'])?>"
+				<img data-image-id='<?php echo esc_attr($image->pid); ?>'
+					 title="<?php echo esc_attr($image->description)?>"
+					 alt="<?php echo esc_attr($image->alttext)?>"
+					 src="<?php echo esc_attr($storage->get_image_url($image))?>"
+					 width="<?php echo esc_attr($image_size['width'])?>"
+					 height="<?php echo esc_attr($image_size['height'])?>"
 				/>
 				
 			<?php
