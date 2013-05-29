@@ -159,6 +159,15 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
     }
 
     /**
+     * Determines whether the cache should be refreshed or not
+     * @return bool
+     */
+    function _do_refresh_cache()
+    {
+        return ((defined('SCRIPT_DEBUG') && SCRIPT_DEBUG == TRUE) OR $this->param('refresh'));
+    }
+
+    /**
      * Concatenates the resources requested
      * @param $resource_type
      * @return string
@@ -170,8 +179,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
         if (($handles = $this->param('load'))) {
 
             $transient_name = md5('ngg_resources_'.$resource_type.$handles);
-            $retval = get_transient($transient_name);
-            $retval = FALSE;
+            $retval = $this->_do_refresh_cache() ? FALSE : get_transient($transient_name);
 
             // Generate the results and cache
             if (!$retval) {
@@ -184,7 +192,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
                 }
 
                 $retval = implode("\n", $retval);
-                set_transient($transient_name, $retval);
+                set_transient($transient_name, $retval, 3600);
             }
         }
 
@@ -196,7 +204,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
     function static_scripts_action()
     {
         $this->set_content_type('javascript');
-        $this->expires("+1 hour");
+        if (!$this->_do_refresh_cache()) $this->expires("+1 hour");
         $this->render();
         echo $this->_concatenate_resources('scripts');
     }
@@ -212,7 +220,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
     function static_styles_action()
     {
         $this->set_content_type('css');
-        $this->expires("+1 hour");
+        if (!$this->_do_refresh_cache()) $this->expires("+1 hour");
         $this->render();
         echo $this->_concatenate_resources('styles');
     }

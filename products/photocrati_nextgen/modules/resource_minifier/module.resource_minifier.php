@@ -34,10 +34,12 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function _register_hooks()
     {
-        add_action('init', array(&$this, 'register_sidjs'));
+        add_action('init', array(&$this, 'register_lazy_resources'));
         add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
         add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
         add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+        add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
+        add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
         add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
@@ -53,7 +55,7 @@ class M_Resource_Minifier extends C_Base_Module
         $this->_get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
     }
 
-    function register_sidjs()
+    function register_lazy_resources()
     {
         // Register SidJS: http://www.diveintojavascript.com/projects/sidjs-load-javascript-and-stylesheets-on-demand
         $router = $this->get_registry()->get_utility('I_Router');
@@ -63,7 +65,14 @@ class M_Resource_Minifier extends C_Base_Module
             array('jquery'),
             '0.1'
         );
-        wp_enqueue_script('sidjs');
+
+        wp_register_script(
+            'lazy_resources',
+            $router->get_static_url('resource_minifier#lazy_resources.js'),
+            array('sidjs')
+        );
+
+        wp_enqueue_script('lazy_resources');
     }
 
     /**
@@ -150,7 +159,6 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function write_tag($resource_type, $group, $in_footer=FALSE)
     {
-        $written = FALSE;
         if (isset($this->resources[$resource_type])) {
             if (isset($this->resources[$resource_type][$group])) {
                 if (empty($this->resources[$resource_type][$group])) return;
@@ -160,48 +168,20 @@ class M_Resource_Minifier extends C_Base_Module
 
                 if ($resource_type == 'scripts') {
                     echo "<script type='text/javascript' src='{$url}'></script>\n";
-                    $written = TRUE;
                 }
                 else {
                     // If we're in the footer, we need to lazy load the stylesheet
                     if ($in_footer) {
-                        echo '<script type="text/javascript">
-                            jQuery(function($){
-                                Sid.css("'.$url.'", function(){
-                                     window.setTimeout(function(){
-                                        var $doc = jQuery(document);
-                                        if (typeof($doc.data("lazy_resources_loaded")) == "undefined") {
-                                            $doc.data("lazy_resources_loaded", true);
-                                            $doc.trigger("lazy_resources_loaded");
-                                        }
-                                }, 0);
-                                });
-                            });
-                        </script>';
+                        echo '<script type="text/javascript">Lazy_Resources.enqueue("'.$url.'")</script>';
                     }
 
                     // Otherwise, we can just output a normal link tag
                     else echo "<link type='text/css' media='screen' rel='stylesheet' href='{$url}'/>\n";
-
-                    $written = TRUE;
                 }
 
                 $resources = &$this->resources[$resource_type];
                 unset($resources[$group]);
             }
-        }
-
-        // For styles, we still need to trigger the lazy_resources_event
-        if (!$written && $in_footer && $resource_type != 'scripts') {
-            echo '<script type="text/javascript">
-                jQuery(function($){
-                    var $doc = jQuery(document);
-                    if (typeof($doc.data("lazy_resources_loaded")) == "undefined") {
-                        $doc.data("lazy_resources_loaded", true);
-                        $doc.trigger("lazy_resources_loaded");
-                    }
-                });
-            </script>';
         }
     }
 
@@ -254,8 +234,14 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function append_stylesheet($src, $handle)
     {
-        global $wp_styles;
-        $src = $wp_styles->registered[$handle]->src;
+        // Both the src passed in and the src registered aren't reliable, and
+        // I'm not 100% sure why - it looks to be related to the esc_url() function.
+        // It sucks, but we'll have to live with it for now.
+        if (!preg_match("#http(s)?://\w+\.\w+#", $src)) {
+            global $wp_styles;
+            $src = $wp_styles->registered[$handle]->src;
+        }
+
         $this->append_resource('styles', $handle, $src);
 
         return $src;
@@ -286,6 +272,12 @@ class M_Resource_Minifier extends C_Base_Module
 
         // Add the handle to the appropriate group
         $resources[$group][] = $handle;
+    }
+
+
+    function start_lazy_loading()
+    {
+        echo '<script type="text/javascript">jQuery(function(){Lazy_Resources.load()});</script>';
     }
 
     function get_type_list()
