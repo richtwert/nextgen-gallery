@@ -83,8 +83,9 @@ class A_Gallery_Display_Installer extends Mixin
 	/**
 	 * Installs displayed gallery sources
 	 */
-	function install_displayed_gallery_sources()
+	function install_displayed_gallery_sources($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->install_displayed_gallery_source('galleries', array(
 			'title'		=>	'Galleries',
 			'returns'	=>	array('image'),
@@ -128,8 +129,9 @@ class A_Gallery_Display_Installer extends Mixin
 	/**
 	 * Uninstalls this module
 	 */
-	function uninstall_nextgen_gallery_display($hard=FALSE)
+	function uninstall_nextgen_gallery_display($product, $hard = FALSE)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->uninstall_display_types();
 		$this->object->uninstall_displayed_gallery_sources();
 		if ($hard) $this->object->uninstall_displayed_galleries();

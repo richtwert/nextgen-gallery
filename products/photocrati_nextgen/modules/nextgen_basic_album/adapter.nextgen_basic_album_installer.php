@@ -12,8 +12,9 @@ class A_NextGen_Basic_Album_Installer extends Mixin
 		);
 	}
 
-	function install_nextgen_basic_album()
+	function install_nextgen_basic_album($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->install_display_type(
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM, array(
 			'title'					=>	'NextGEN Basic Compact Album',

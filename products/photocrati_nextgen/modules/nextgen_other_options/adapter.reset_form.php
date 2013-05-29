@@ -31,14 +31,14 @@ class A_Reset_Form extends Mixin
 	function reset_action()
 	{
 		$installer = $this->get_registry()->get_utility('I_Installer');
-		$installer->uninstall();
-		$installer->install();
+		$installer->uninstall(NEXTGEN_GALLERY_PLUGIN_BASENAME);
+		$installer->install(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 	}
 
 	function uninstall_action()
 	{
 		$installer = $this->get_registry()->get_utility('I_Installer');
-		$installer->uninstall(TRUE);
+		$installer->uninstall(NEXTGEN_GALLERY_PLUGIN_BASENAME, TRUE);
 		deactivate_plugins(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 		wp_redirect(admin_url('/plugins.php'));
 	}

@@ -12,8 +12,9 @@ class A_NextGen_Data_Installer extends Mixin
         );
 	}
 
-    function uninstall_nextgen_data($hard=FALSE)
+    function uninstall_nextgen_data($product, $hard = FALSE)
     {
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
         if ($hard) {
             $mappers = array(
                 $this->object->get_registry()->get_utility('I_Album_Mapper'),

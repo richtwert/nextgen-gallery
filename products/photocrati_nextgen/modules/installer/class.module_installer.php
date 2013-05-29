@@ -59,30 +59,29 @@ class Mixin_Settings_Installer extends Mixin
 		
 		if ($run_uninstall)
 		{
-			$this->object->uninstall();
+			$this->object->uninstall(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 		}
 		
 		if ($run_install)
 		{
-			$this->object->install();
+			$this->object->install(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 		}
 		
 		return $run_install;
 	}
 	
-	function install()
+	function install($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$list = $this->object->_get_product_install_list();
-		
-		
 		$this->object->settings->product_install_list = $list;
-		
 		$this->object->global_settings->save();
 		$this->object->settings->save();
 	}
 
-	function uninstall()
+	function uninstall($product, $hard = FALSE)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->global_settings->destroy();
 		$this->object->settings->destroy();
 	}

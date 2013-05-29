@@ -18,8 +18,9 @@ class A_NextGen_Basic_Tagcloud_Installer extends Mixin
     /**
      * Installs the display type for NextGEN Basic Tagcloud
      */
-    function install_nextgen_basic_tagcloud()
+    function install_nextgen_basic_tagcloud($product)
     {
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->install_display_type(
 			NEXTGEN_BASIC_TAG_CLOUD_MODULE_NAME, array(
 				'title'					=>	'NextGEN Basic TagCloud',

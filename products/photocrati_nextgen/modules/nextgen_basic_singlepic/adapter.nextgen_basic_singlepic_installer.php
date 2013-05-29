@@ -12,8 +12,9 @@ class A_NextGen_Basic_SinglePic_Installer extends Mixin
 		);
 	}
 
-	function install_singlepic()
+	function install_singlepic($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->install_display_type(
 			NEXTGEN_BASIC_SINGLEPIC_MODULE_NAME, array(
 			'title'					=>	'NextGEN Basic SinglePic',

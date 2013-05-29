@@ -12,8 +12,9 @@ class A_NextGen_Basic_ImageBrowser_Installer extends Mixin
 		);
 	}
 
-	function install_nextgen_basic_imagebrowser()
+	function install_nextgen_basic_imagebrowser($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$this->object->install_display_type(
 			NEXTGEN_GALLERY_NEXTGEN_BASIC_IMAGEBROWSER, array(
 				'title'					=>	'NextGEN Basic ImageBrowser',

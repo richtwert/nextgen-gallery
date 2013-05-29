@@ -85,8 +85,9 @@ class A_Lightbox_Installer extends Mixin
 	/**
 	 * Installs all of the lightbox provided by this module
 	 */
-	function install_lightboxes()
+	function install_lightboxes($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		$router = $this->get_registry()->get_utility('I_Router');
 
 		$this->install_lightbox(
@@ -168,8 +169,9 @@ class A_Lightbox_Installer extends Mixin
 	/**
 	 * Uninstalls all lightboxes
 	 */
-	function uninstall_lightboxes($hard=FALSE)
+	function uninstall_lightboxes($product, $hard = FALSE)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
         if ($hard)
         {
             $mapper = $this->get_registry()->get_utility('I_Lightbox_Library_Mapper');

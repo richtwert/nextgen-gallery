@@ -130,7 +130,7 @@ class C_NextGEN_Bootstrap
 	 */
 	static function activate()
 	{
-		self::get_pope_installer()->install();
+		self::get_pope_installer()->install(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 	}
 
 	/**
@@ -138,7 +138,7 @@ class C_NextGEN_Bootstrap
 	 */
 	static function deactivate()
 	{
-		self::get_pope_installer()->uninstall();
+		self::get_pope_installer()->uninstall(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 	}
 
 	/**

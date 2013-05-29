@@ -39,8 +39,9 @@ class A_NextGen_Admin_Installer extends Mixin
 		$this->get_current_actor()->remove_capability($cap);
 	}
 
-	function install_nextgen_admin_module()
+	function install_nextgen_admin_module($product)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		// this is incorrect because it's using the page slug which is the DEFAULT permission but not the one used currently
 		// needs to be reworked to function properly...maybe as part of the security module
 #		foreach ($this->object->capabilities as $cap) {
@@ -48,8 +49,9 @@ class A_NextGen_Admin_Installer extends Mixin
 #		}
 	}
 
-	function uninstall_nextgen_admin_module()
+	function uninstall_nextgen_admin_module($product, $hard = FALSE)
 	{
+        if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
 		// this is incorrect because it's using the page slug which is the DEFAULT permission but not the one used currently
 		// needs to be reworked to function properly...maybe as part of the security module
 #		foreach ($this->object->capabilities as $cap) {
