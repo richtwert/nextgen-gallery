@@ -98,6 +98,7 @@ class A_Watermarks_Form extends Mixin
 	function render()
 	{
 		$settings	= $this->get_model();
+		$ajax_settings = $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-ajax');
 		$registry	= $this->object->get_registry();
 		$storage	= $registry->get_utility('I_Gallery_Storage');
 		$image		= $registry->get_utility('I_Image_Mapper')->find_first();
@@ -125,7 +126,7 @@ class A_Watermarks_Form extends Mixin
             'thumbnail_url'             => $thumb_url,
             'preview_label'             => _('Preview of saved settings:'),
             'refresh_label'             => _('Refresh preview image'),
-            'refresh_url'               => $settings->ajax_url
+            'refresh_url'               => $ajax_settings->ajax_url
 		), TRUE);
 	}
 
