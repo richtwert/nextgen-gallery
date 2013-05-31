@@ -13,7 +13,7 @@ jQuery(function($){
               var $gallery  = $this.parents('.ngg-galleryoverview:first');
               var gallery_id= $gallery.attr('id').replace('ngg-gallery-','').replace(/-\d+$/, '');
 
-              self.toggle_busy();
+              self.toggle_busy(true);
 
               // Create a request to render a displayed gallery
               var params = self.get_querystring_params_from_url($this.attr('href'));
@@ -31,9 +31,10 @@ jQuery(function($){
                   }
 
                   // Let the user know that we've refreshed the content
-                  self.toggle_busy();
                   $(document).trigger('refreshed');
-              });
+              }).always(function() { 
+                  self.toggle_busy(false);
+              });;
 
             });
         },
@@ -57,8 +58,8 @@ jQuery(function($){
         },
 
 
-        toggle_busy:                    function() {
-            $('body, a').css('cursor', $('body').css('cursor') == 'wait' ? 'auto' : 'wait');
+        toggle_busy:                    function(busy) {
+            $('body, a').css('cursor', busy ? 'wait' : 'auto');
         }
     };
 

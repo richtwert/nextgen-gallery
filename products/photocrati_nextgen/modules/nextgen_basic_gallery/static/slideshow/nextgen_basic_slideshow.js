@@ -29,7 +29,7 @@ jQuery.fn.nggShowSlideshow = function(args) {
         self.show();
         
         if (placeholder) {
-        	self.prepend('<img class="image-placeholder" src="' + placeholder + '" width="2500" height="2500" />');
+        	self.prepend('<img class="image-placeholder" src="' + placeholder + '" width="' + s.width + '" height="' + s.height + '" style="width: ' + s.width + 'px; height: ' + s.height + 'px;" />');
         }
 
         if (self.children().length > 1) {
@@ -38,6 +38,7 @@ jQuery.fn.nggShowSlideshow = function(args) {
                 slideExpr: '.ngg-gallery-slideshow-image',
                 slideResize: false,
         				containerResize: false,
+        				fit: 1,
                 timeout: s.timeout,
                 after: function(currSlideElement, nextSlideElement, options, forwardFlag) {
                     // update the pro-lightbox triggers should they exist

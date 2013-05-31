@@ -20,7 +20,7 @@ body {
 /* ----------- JS Slideshow -------------*/
 
 .ngg-slideshow {
-    overflow: hidden;
+		overflow: hidden;
     position: relative;
     margin-left: auto;
     margin-right: auto;
@@ -32,14 +32,19 @@ body {
     vertical-align: middle;
 }
 
-.ngg-slideshow .ngg-gallery-slideshow-image img {
+.ngg-slideshow img {
 	max-width: 100% !important; 
+	max-height: 100%; 
 	width: auto;
 	height: auto;
 }
 
 .ngg-slideshow .ngg-gallery-slideshow-image {
-	width: 100% !important;
+	position: relative;
+ 	width: 100% !important;
+	height: 100% !important;
+	max-width: 100% !important;
+	max-height: 100% !important;
 }
 
 .ngg-slideshow .image-placeholder {
