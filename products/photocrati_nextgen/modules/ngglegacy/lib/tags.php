@@ -147,6 +147,8 @@ class nggTags {
 			$return_value['status'] = 'error';
 		}
 
+        do_action('ngg_manage_tags', $new_tags);
+
 		return $return_value;
 	}
 
@@ -187,6 +189,8 @@ class nggTags {
 		} else {
 			$return_value['message'] = sprintf(__('%1s tag(s) deleted.', 'nggallery'), $counter);
 		}
+
+        do_action('ngg_manage_tags', $delete_tags);
 	}
 
 	/**

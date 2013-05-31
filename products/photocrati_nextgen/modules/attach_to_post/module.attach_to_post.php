@@ -115,6 +115,7 @@ class M_Attach_To_Post extends C_Base_Module
 		add_action('ngg_created_new_gallery',	array(&$this, 'new_gallery_event'));
 		add_action('ngg_after_new_images_added',array(&$this, 'images_added_event'));
 		add_action('ngg_page_event',			array(&$this, 'nextgen_page_event'));
+        add_action('ngg_manage_tags',           array(&$this, 'manage_tags_event'));
 	}
 
 	/**
@@ -338,6 +339,19 @@ class M_Attach_To_Post extends C_Base_Module
 			'gallery_id'		=>	intval($gallery_id)
 		));
 	}
+
+    /**
+     * Notifies a frame that the tags have changed
+     *
+     * @param array $tags
+     */
+    function manage_tags_event($tags = array())
+    {
+        $this->_get_frame_event_publisher()->add_event(array(
+            'event' => 'manage_tags',
+            'tags' => $tags
+        ));
+    }
 
 	/**
 	 * Notifies a frame that an action has been performed on a particular

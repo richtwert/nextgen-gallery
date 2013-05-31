@@ -421,7 +421,7 @@ jQuery(function($){
      * Ngg.DisplayTab.Models.Tag_Collection
      * Represents a collection of tag objects
     **/
-    Ngg.DisplayTab.Models.Tag_Collection        = Ngg.Models.SelectableItems.extend({
+    Ngg.DisplayTab.Models.Tag_Collection        = Ngg.Models.Remote_Collection.extend({
         model: Ngg.DisplayTab.Models.Tag,
         /*
 		selected_ids: function(){
