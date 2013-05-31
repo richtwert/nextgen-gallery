@@ -75,11 +75,11 @@
         <!--
         // <![CDATA[
         <?php endif ?>
-        jQuery('#gallery_<?php $displayed_gallery_id ?>').css('opacity', 0.0);
+        jQuery('#gallery_<?php echo_h($displayed_gallery_id) ?>').css('opacity', 0.0);
         (function($){
             $(document).on('lazy_resources_loaded', function(){
                 <?php echo $swfobject->javascript(); ?>
-                $('#gallery_<?php $displayed_gallery_id ?>').css('opacity', 1.0);
+                $('#gallery_<?php echo_h($displayed_gallery_id) ?>').css('opacity', 1.0);
             });
         })(jQuery);
         <?php if ($flash_xhtml_validation): ?>
