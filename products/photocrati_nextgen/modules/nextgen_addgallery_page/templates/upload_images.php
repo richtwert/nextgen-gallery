@@ -111,7 +111,6 @@
                             e.preventDefault();
 
                             var up = $('#uploader').pluploadQueue();
-                            up.settings.url = window.set_plupload_url($gallery_id.val(), $gallery_name.val());
 //                            up.settings.multipart_params.gallery_id = $gallery_id.val();
 //                            up.settings.multipart_params.gallery_name = $gallery_name.val();
 
@@ -134,7 +133,12 @@
                         if (click_events.length == 2) click_events.unshift(click_events.pop());
 
                     },
-
+                    
+                    // change url before upload
+                    BeforeUpload: function(up, file) {
+                        up.settings.url = window.set_plupload_url($gallery_id.val(), $gallery_name.val());
+                    },
+                    
                     // Refresh the interface after a successful upload
                     StateChanged: function(up){
 

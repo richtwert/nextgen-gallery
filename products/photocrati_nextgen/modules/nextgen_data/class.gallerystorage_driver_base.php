@@ -450,7 +450,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
         if ($this->object->is_zip()) {
             $zipfile    = $_FILES['file']['tmp_name'];
-            $dest_path  = path_join(sys_get_temp_dir(), 'unpacked-'.basename($zipfile));
+            $dest_path  = path_join(get_temp_dir(), 'unpacked-'.basename($zipfile));
             $fs         = $this->get_registry()->get_utility('I_Fs');
 
             // Ensure that we truly have the gallery id
