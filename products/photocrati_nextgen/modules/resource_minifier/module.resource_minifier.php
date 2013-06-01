@@ -165,7 +165,7 @@ class M_Resource_Minifier extends C_Base_Module
                 if (empty($this->resources[$resource_type][$group])) return;
                 $router     = $this->get_registry()->get_utility('I_Router');
                 $handles    = $this->get_enqueued($resource_type, $group);
-                $url        = $router->get_url("/{$group}/{$resource_type}", FALSE).'?load='.$handles;
+                $url        = $router->get_url("/ngg-{$group}/{$resource_type}", FALSE).'?load='.$handles;
 
                 if ($resource_type == 'scripts') {
                     echo "<script type='text/javascript' src='{$url}'></script>\n";

@@ -4,10 +4,10 @@ class A_Resource_Minifier_Routes extends Mixin
 {
     function initialize()
     {
-        $app = $this->create_app('/static');
+        $app = $this->create_app('/ngg-static');
         $app->route('scripts', 'I_Resource_Manager#static_scripts');
         $app->route('styles',  'I_Resource_Manager#static_styles');
-        $app = $this->create_app('/dynamic');
+        $app = $this->create_app('/ngg-dynamic');
         $app->route('scripts', 'I_Resource_Manager#dynamic_scripts');
         $app->route('styles',  'I_Resource_Manager#dynamic_styles');
     }
