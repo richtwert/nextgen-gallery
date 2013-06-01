@@ -39,8 +39,11 @@ class A_Miscellaneous_Form extends Mixin
 
     function cache_action()
     {
-        $cache = $this->get_registry()->get_utility('I_Cache');
+        $cache   = $this->get_registry()->get_utility('I_Cache');
+        $manager = $this->get_registry()->get_utility('I_Resource_Manager');
+
         $cache->flush_galleries();
+        $manager->flush_cache();
     }
 
 	function save_action()

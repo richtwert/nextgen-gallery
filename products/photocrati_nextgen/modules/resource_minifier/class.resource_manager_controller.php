@@ -178,8 +178,8 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
 
         if (($handles = $this->param('load'))) {
 
-            $transient_name = md5('ngg_resources_'.$resource_type.$handles);
-            $retval = $this->_do_refresh_cache() ? FALSE : get_transient($transient_name);
+            $cache_name = md5('ngg_resources_' . $resource_type . $handles);
+            $retval = $this->_do_refresh_cache() ? FALSE : wp_cache_get($cache_name, 'photocrati-nextgen');
 
             // Generate the results and cache
             if (!$retval) {
@@ -192,14 +192,17 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
                 }
 
                 $retval = implode("\n", $retval);
-                set_transient($transient_name, $retval, 3600);
+                wp_cache_set($cache_name, $retval, 'photocrati-nextgen', 3600);
             }
         }
 
         return $retval;
-
     }
 
+    function flush_cache()
+    {
+        return wp_cache_flush();
+    }
 
     function static_scripts_action()
     {

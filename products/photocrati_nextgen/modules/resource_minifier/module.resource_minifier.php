@@ -52,7 +52,8 @@ class M_Resource_Minifier extends C_Base_Module
 
     function _register_adapters()
     {
-        $this->_get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
+        $this->get_registry()->add_adapter('I_Installer', 'A_Resource_Minifier_Installer');
+        $this->get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
     }
 
     function register_lazy_resources()
@@ -283,6 +284,7 @@ class M_Resource_Minifier extends C_Base_Module
     function get_type_list()
     {
         return array(
+            'A_Resource_Minifier_Installer' => 'adapter.resource_minifier_installer.php',
             'A_Resource_Minifier_Routes'    =>  'adapter.resource_minifier_routes.php',
             'C_Resource_Manager_Controller' =>  'class.resource_manager_controller.php',
             'I_Resource_Manager'            =>  'interface.resource_manager.php',
