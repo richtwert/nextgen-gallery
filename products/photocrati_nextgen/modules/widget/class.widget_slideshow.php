@@ -41,6 +41,13 @@ class C_Widget_Slideshow extends WP_Widget
 
     function update($new_instance, $old_instance)
     {
+        $nh = $new_instance['height'];
+        $nw = $new_instance['width'];
+        if (empty($nh) || (int)$nh === 0)
+            $new_instance['height'] = 120;
+        if (empty($nw) || (int)$nw === 0)
+            $new_instance['width'] = 160;
+
         $instance = $old_instance;
         $instance['title'] = strip_tags($new_instance['title']);
         $instance['galleryid'] = (int) $new_instance['galleryid'];
