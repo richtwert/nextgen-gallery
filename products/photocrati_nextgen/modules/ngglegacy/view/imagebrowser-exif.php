@@ -40,23 +40,23 @@ Please note : A Image resize or watermarking operation will remove all meta info
 			<tbody>
 			<tr>
 				<th width="140"><?php _e('Camera / Type', 'nggallery') ?></th>
-				<td><?php echo $exif['camera'] ?></td>
+				<td><?php echo @$exif['camera'] ?></td>
 			</tr>
 			<tr>
 				<th><?php _e('Aperture', 'nggallery') ?></th>
-				<td><?php echo $exif['aperture'] ?></td>
+				<td><?php echo @$exif['aperture'] ?></td>
 			</tr>
 			<tr>
 				<th><?php _e('Focal Length', 'nggallery') ?></th>
-				<td><?php echo $exif['focal_length'] ?></td>
+				<td><?php echo @$exif['focal_length'] ?></td>
 			</tr>
 			<tr>
 				<th><?php _e('Shutter speed', 'nggallery') ?></th>
-				<td><?php echo $exif['shutter_speed'] ?></td>
+				<td><?php echo @$exif['shutter_speed'] ?></td>
 			</tr>
 			<tr>
 				<th><?php _e('Date / Time', 'nggallery') ?></th>
-				<td><?php echo $exif['created_timestamp'] ?></td>
+				<td><?php echo @$exif['created_timestamp'] ?></td>
 			</tr>
 			</tbody>
 		</table>
