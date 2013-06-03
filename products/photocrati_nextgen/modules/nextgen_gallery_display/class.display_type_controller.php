@@ -69,6 +69,17 @@ class Mixin_Display_Type_Controller extends Mixin
 		$settings	= $this->object->get_registry()->get_utility('I_Settings_Manager');
 		$mapper		= $this->object->get_registry()->get_utility('I_Lightbox_Library_Mapper');
 		$library	= $mapper->find_by_name($settings->thumbEffect);
+
+        // Make the path to the static resources available for libraries
+        // Shutter-Reloaded in particular depends on this
+        $this->object->_add_script_data(
+            'ngg_common',
+            'nextgen_lightbox_settings',
+            array('static_path' => $this->object->get_static_relpath('', 'lightbox')),
+            TRUE,
+            FALSE
+        );
+
         {
 			$i=0;
 			foreach (explode("\n", $library->scripts) as $script) {

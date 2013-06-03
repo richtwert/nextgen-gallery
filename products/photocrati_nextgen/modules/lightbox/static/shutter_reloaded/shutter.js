@@ -21,7 +21,7 @@ Released under the GPL, http://www.gnu.org/copyleft/gpl.html
 */
 
 // Compute path to images
-var imagePath = jQuery('script[src*="/shutter.js"]').attr('src').replace(/shutter\.js\?.*$/, 'images/');
+var imagePath = nextgen_lightbox_settings.static_path + '/shutter_reloaded/images/';
 
 if (window.console && console.log) {
 	console.log(imagePath);
