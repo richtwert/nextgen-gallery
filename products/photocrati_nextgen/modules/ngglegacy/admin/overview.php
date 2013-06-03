@@ -98,33 +98,10 @@ if ( !is_multisite() || is_super_admin() ) {
 function ngg_AboutMetaBox()
 {
 	?>
-		<div id="poststuff">
-				<p><?php _e('NextGEN Gallery is primarily developed, maintained, supported and documented by <a href="http://www.photocrati.com" target="_blank">Photocrati Media</a>. We\'d like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011.', 'nggallery') ;?></p>
-			<h3 class="hndle"><span><?php _e('Contributors / Tribute to', 'nggallery'); ?></span></h3>
-				<p><?php _e('If you study the code of this plugin, you\'ll find we\'ve included a lot of good, existing code and ideas. We\'d like to thank the following people for their work:', 'nggallery') ;?></p>
-				<ul class="ngg-list">
-				<li><a href="http://wordpress.org" target="_blank">The WordPress Team</a> <?php _e('for their great documented code', 'nggallery') ;?></li>
-				<li><a href="http://jquery.com" target="_blank">The jQuery Team</a> <?php _e('for jQuery, which is the best Web2.0 framework', 'nggallery') ;?></li>
-				<li><a href="http://www.gen-x-design.com" target="_blank">Ian Selby</a> <?php _e('for the fantastic PHP Thumbnail Class', 'nggallery') ;?></li>
-				<li><a href="http://www.lesterchan.net/" target="_blank">GaMerZ</a> <?php _e('for a lot of very useful plugins and ideas', 'nggallery') ;?></li>
-				<li><a href="http://www.laptoptips.ca/" target="_blank">Andrew Ozz</a> <?php _e('for Shutter Reloaded, a real lightweight image effect', 'nggallery') ;?></li>
-				<li><a href="http://www.jeroenwijering.com/" target="_blank">Jeroen Wijering</a> <?php _e('for the best Media Flash Scripts on earth', 'nggallery') ;?></li>
-				<li><a href="http://field2.com" target="_blank">Ben Dunkle</a> <?php _e('for the Gallery Icon', 'nggallery') ;?></li>
-				<li><a href="http://watermark.malcherek.com/" target="_blank">Marek Malcherek</a> <?php _e('for the Watermark plugin', 'nggallery') ;?></li>
-				</ul>
-				<p><?php _e('If you don\'t see your name on this list and we\'ve integrated some of your code into the plugin, don\'t hesitate to email us.', 'nggallery') ;?></p>
-			<h3 class="hndle"><span><?php _e('How to support ?', 'nggallery'); ?></span></h3>
-				<p><?php _e('There are several ways to contribute:', 'nggallery') ;?></p>
-				<ul class="ngg-list">
-					<li><strong><?php _e('Send us bugfixes / code changes', 'nggallery') ;?></strong><br /><?php _e('The most motivated support for this plugin are your ideas and brain work.', 'nggallery') ;?></li>
-					<li><strong><?php _e('Translate the plugin', 'nggallery') ;?></strong><br /><?php _e('To help people to work with this plugin, we would like to have it in all available languages.', 'nggallery') ;?></li>
-					<li><strong><?php _e('Place a link to the plugin in your blog/webpage', 'nggallery') ;?></strong><br /><?php _e('Yes, sharing and linking are also supportive and helpful.', 'nggallery') ;?></li>
-				</ul>
-		<div id="donators">
-			<h3 class="hndle"><span><?php _e('Thanks!', 'nggallery'); ?></span></h3>
-				<p><?php _e('We would like to thank the following people who have supported the NextGEN Gallery plugin:', 'nggallery'); ?></p>
-				<p><a href="http://www.boelinger.com/heike/" target="_blank">HEIKE</a>, <?php ngg_list_support(); ?></p>
-		</div>
+    <div id="poststuff">
+        <p><?php _e("NextGEN Gallery is one of the most popular Wordpress plugins of all time with over 7 million downloads. It is developed and supported by Photocrati Media. We'd like to offer a special thanks to Alex Rabe, who first developed the plugin and maintained it through 2011.", 'nggallery'); ?></p>
+        <p><?php _e("<strong>NEED  HELP?</strong> If you need help or assistance please visit the <a href='http://wordpress.org/support/plugin/nextgen-gallery'>NextGEN Gallery forums on WordPress.org</a>. Please note that we actively monitor and  participate in the forums, but given that NextGEN Gallery is a free  product, we don't guarantee replies to support queries.", 'nggallery'); ?></p>
+        <p><?php _e("<strong>EXTENDING NEXTGEN?</strong> There are many third party plugins that add displays and functionality for NextGEN Gallery. See our <a href='http://www.nextgen-gallery.com/nextgen-gallery-extension-plugins/'>Complete List of NextGEN Extension  Plugins</a>.", 'nggallery'); ?></p>
 	</div>
 	<?php
 }
@@ -537,11 +514,7 @@ function ngg_overview_right_now() {
 	</table>
 </div>
 <div class="versions" style="padding-top:14px">
-    <p>
-	<?php if(current_user_can('NextGEN Upload images')): ?><a class="button rbutton" href="admin.php?page=nggallery-add-gallery"><?php _e('Upload pictures', 'nggallery') ?></a><?php endif; ?>
-	<?php _e('Here you can control your images, galleries and albums.', 'nggallery') ?>
-	</p>
-<br class="clear" />
+    <br class="clear" />
 </div>
 <?php
 if ( is_multisite() )
