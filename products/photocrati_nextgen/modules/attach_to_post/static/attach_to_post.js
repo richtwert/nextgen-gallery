@@ -61,10 +61,10 @@ function ngg_get_measures_for_frame(frame)
 			else {
 				measures.scrollHeight = jDoc.height();
 			}
-			
-			if (window.console && console.log) {
-				console.log(measures);
-			}
+
+            if (typeof(window.console) != 'undefined') {
+                console.log(measures);
+            }
 		}
 	}
 	

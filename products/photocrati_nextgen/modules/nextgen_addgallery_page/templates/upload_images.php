@@ -185,7 +185,7 @@
                     },
 
                     Error: function(up, args){
-                        console.log(args);
+                        if (typeof(window.console) != 'undefined') console.log(args);
                     }
                 };
 

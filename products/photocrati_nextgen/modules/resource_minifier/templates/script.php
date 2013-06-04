@@ -15,8 +15,7 @@
                     $('body').append(script);
                 }
                 catch (err) {
-                    debugger;
-                    console.log(err.message);
+                    if (typeof(console) != 'undefined') console.log(err.message);
                 }
             }
             else alert(response.error);
