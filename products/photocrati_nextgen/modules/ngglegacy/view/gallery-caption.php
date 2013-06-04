@@ -35,6 +35,7 @@ Follow variables are useable :
 <?php } ?>
 	
 	<!-- Thumbnails -->
+    <?php $i = 0; ?>
 	<?php foreach ( $images as $image ) : ?>
 	
 	<div id="ngg-image-<?php echo $image->pid ?>" class="ngg-gallery-thumbnail-box" <?php echo $image->style ?> >
