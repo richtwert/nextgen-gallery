@@ -551,13 +551,17 @@ function showDialog() {
         <tr>
             <th>
                 <?php esc_html_e('Page Link to', 'nggallery')?><br />
-                    <select name="pageid" style="width:95%">
-                        <option value="0" ><?php esc_html_e('Not linked', 'nggallery') ?></option>
-                        <?php
-                        if (!isset($album->pageid))
-                            $album->pageid = 0;
-                        parent_dropdown($album->pageid); ?>
-                    </select>
+                <?php
+                if (!isset($album->pageid))
+                    $album->pageid = 0;
+
+                wp_dropdown_pages(array(
+                    'echo' => TRUE,
+                    'name' => 'pageid',
+                    'selected' => $album->pageid,
+                    'show_option_none' => esc_html('Not linked', 'nggallery'),
+                    'option_none_value' => 0
+                )); ?>
             </th>
         </tr>
 
