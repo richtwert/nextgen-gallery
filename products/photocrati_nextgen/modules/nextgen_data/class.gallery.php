@@ -23,9 +23,12 @@ class Mixin_NextGen_Gallery_Validation
         }
 
         // Set what will be the path to the gallery
-        $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
-        $this->object->path = $storage->get_upload_relpath($this->object);
-        unset($storage);
+        if (empty($this->object->path))
+        {
+            $storage = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+            $this->object->path = $storage->get_upload_relpath($this->object);
+            unset($storage);
+        }
 
         $this->object->validates_presence_of('title');
 		$this->object->validates_presence_of('name');

@@ -130,6 +130,9 @@ class C_NextGEN_Bootstrap
 	 */
 	static function activate()
 	{
+        if (is_multisite())
+            die("NextGEN does not currently support Multisite installation.");
+
 		self::get_pope_installer()->install(NEXTGEN_GALLERY_PLUGIN_BASENAME);
 	}
 

@@ -149,7 +149,7 @@ class A_Image_Options_Form extends Mixin
 						// Update gallery paths
 						$mapper = $this->get_registry()->get_utility('I_Gallery_Mapper');
 						foreach ($mapper->find_all() as $gallery) {
-							$gallery->path = $image_options['gallerypath'];
+							$gallery->path = $image_options['gallerypath'] . $gallery->name;
 							$mapper->save($gallery);
 						}
 					}

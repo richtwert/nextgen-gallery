@@ -110,6 +110,7 @@ class M_Attach_To_Post extends C_Base_Module
 
 		// Add hook to subsitute displayed gallery placeholders
 		add_filter('the_content', array(&$this, 'substitute_placeholder_imgs'), 1000, 1);
+        add_filter('the_editor_content', array(&$this, 'substitute_editor_placeholder_imgs'), 1000);
 
 		// Emit frame communication events
 		add_action('ngg_created_new_gallery',	array(&$this, 'new_gallery_event'));
@@ -139,7 +140,13 @@ class M_Attach_To_Post extends C_Base_Module
 				$router	= $this->get_registry()->get_utility('I_Router');
 
 				// Set some parameters
-				$preview_url	 = preg_quote($router->get_url('/attach_to_post/preview', FALSE), '#');
+                $preview_url = preg_quote(
+                    $router->join_paths(
+                        $router->remove_url_segment('index.php', $router->get_base_url()),
+                        '/attach_to_post/preview'
+                    ),
+                '#');
+
 				$alt_preview_url = preg_quote(
 						$router->join_paths(
 							$router->remove_url_segment('index.php', $router->get_base_url()),
@@ -151,7 +158,7 @@ class M_Attach_To_Post extends C_Base_Module
                 foreach ($imgs as $img) {
 
                     // The placeholder MUST have a gallery instance id
-                    if (preg_match("#({$preview_url}|$alt_preview_url)/id--(\d+)#", $img->src, $match)) {
+                    if (preg_match("#({$preview_url}|{$alt_preview_url})/id--(\d+)#", $img->src, $match)) {
 
                         // Find the displayed gallery
                         $displayed_gallery_id = $match[2];
@@ -172,6 +179,49 @@ class M_Attach_To_Post extends C_Base_Module
             }
             return $content;
         }
+    }
+
+    function substitute_editor_placeholder_imgs($content)
+    {
+        $router	= $this->get_registry()->get_utility('I_Router');
+        if ($content)
+        {
+            $doc = new simple_html_dom();
+            $doc->load(html_entity_decode($content));
+            $imgs = $doc->find("img[class='ngg_displayed_gallery']");
+            if ($imgs)
+            {
+                // Set some parameters
+                $preview_url = stripslashes(preg_quote(
+                    $router->join_paths(
+                        $router->remove_url_segment('index.php', $router->get_base_url()),
+                        '/attach_to_post/preview'
+                    ),
+                '#'));
+
+                $alt_preview_url = stripslashes(preg_quote(
+                    $router->join_paths(
+                        $router->remove_url_segment('index.php', $router->get_base_url()),
+                        'index.php/attach_to_post/preview'
+                    ),
+                '#'));
+
+                $current_preview_url = $router->get_url('/attach_to_post/preview', FALSE);
+
+                // Ensure the current preview image is correct, regardless of whether permalinks are enabled
+                foreach ($imgs as $img) {
+                    if (preg_match("#({$preview_url}|{$alt_preview_url})/id--(\d+)#", $img->src, $match)) {
+                        $matched = $match[1];
+                        $gallery_id = $match[2];
+                        if ($matched != $current_preview_url) {
+                            $img->src = $current_preview_url . '/id--' . $gallery_id;
+                        }
+                    }
+                }
+            }
+            $content = (string)$doc->save();
+        }
+        return $content;
     }
 
 

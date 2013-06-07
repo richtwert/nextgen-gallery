@@ -242,6 +242,10 @@ div .progressbar span {
 	padding-left: 50px;
 }
 
+#editalbum select[name='pageid'] {
+    width: 95%;
+}
+
 div .groupItem
 {
 	cursor: move;

@@ -276,12 +276,9 @@ class Mixin_Fs_Instance_Methods extends Mixin
 		$this->_flatten_array($params, $segments);
 
 		foreach ($segments as $segment) {
-                    if (strpos($segment, '/') === 0)
-                        $segment = substr($segment, 1);
-                    if (substr($segment, -1) === '/')
-                        $segment = substr($segment, 0, -1);
-                    if ($segment)
-                        $retval[] = $segment;
+            $segment = trim($segment, '/');
+            if (!empty($segment))
+                $retval = array_unique(array_merge($retval, explode('/', $segment)));
 		}
 
 		$retval = implode('/', $retval);

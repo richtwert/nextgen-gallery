@@ -44,8 +44,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             'nextgen_basic_slideshow_flash_rollover_color',
             'nextgen_basic_slideshow_flash_screen_color',
             'nextgen_basic_slideshow_show_thumbnail_link',
-            'nextgen_basic_slideshow_thumbnail_link_text',
-            'nextgen_basic_templates_template',
+            'nextgen_basic_slideshow_thumbnail_link_text'
         );
     }
 
