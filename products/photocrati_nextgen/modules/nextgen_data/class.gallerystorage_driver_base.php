@@ -446,6 +446,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 
     function upload_zip($gallery_id)
     {
+        $memory_limit = intval(ini_get('memory_limit'));
+        if ($memory_limit < 256) @ini_set('memory_limit', '256M');
+
         $retval = FALSE;
 
         if ($this->object->is_zip()) {
@@ -466,6 +469,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             $this->object->delete_directory($dest_path);
         }
 
+        @ini_set('memory_limit', $memory_limit.'M');
+
         return $retval;
     }
 
@@ -479,6 +484,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	 */
 	function upload_base64_image($gallery, $data, $filename=FALSE)
 	{
+        $memory_limit = intval(ini_get('memory_limit'));
+        if ($memory_limit < 256) @ini_set('memory_limit', '256M');
+
 		$retval		= NULL;
 		if (($gallery_id = $this->object->_get_gallery_id($gallery))) {
 
@@ -571,6 +579,8 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
             else throw new E_InvalidEntityException();
 		}
 		else throw new E_EntityNotFoundException();
+
+        @ini_set('memory_limit', $memory_limit.'M');
 
 		return $retval;
 	}

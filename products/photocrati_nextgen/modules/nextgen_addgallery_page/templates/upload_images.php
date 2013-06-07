@@ -168,7 +168,18 @@
                     FileUploaded: function(up, file, info){
                         var response = info.response;
                         if (typeof(response) != 'object') {
-                            response = JSON.parse(info.response);
+                            try {
+                                response = JSON.parse(info.response);
+                            }
+                            catch (ex) {
+                                up.trigger('Error', {
+                                   code: plupload.IO_ERROR,
+                                   msg:  "An unexpected error occured. This is most likely due to a server misconfiguration. Check your PHP error log or ask your hosting provider for assistance.",
+                                   details: response.replace(/<.*>/, '').trim(),
+                                   file: file
+                                });
+                                return;
+                            }
                         }
                         window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
                         up.settings.url = window.set_plupload_url(response.gallery_id, $gallery_name.val());
