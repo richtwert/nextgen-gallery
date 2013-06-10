@@ -28,6 +28,7 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             'nextgen_basic_slideshow_gallery_dimensions',
             'nextgen_basic_slideshow_cycle_effect',
             'nextgen_basic_slideshow_cycle_interval',
+            'nextgen_basic_slideshow_images_per_page',
             'nextgen_basic_slideshow_flash_enabled',
             'nextgen_basic_slideshow_flash_background_music',
             'nextgen_basic_slideshow_flash_stretch_image',
@@ -59,6 +60,20 @@ class A_NextGen_Basic_Slideshow_Form extends Mixin_Display_Type_Form
             FALSE,
             '# of seconds',
             1
+        );
+    }
+
+    function _render_nextgen_basic_slideshow_images_per_page_field($display_type)
+    {
+        return $this->_render_number_field(
+            $display_type,
+            'images_per_page',
+            'Image limit',
+            $display_type->settings['images_per_page'],
+            'Maximum number of images to display with recent or random sources',
+            FALSE,
+            '# of images',
+            0
         );
     }
 
