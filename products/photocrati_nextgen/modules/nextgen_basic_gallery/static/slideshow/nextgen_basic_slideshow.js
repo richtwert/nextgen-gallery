@@ -37,8 +37,8 @@ jQuery.fn.nggShowSlideshow = function(args) {
                 fx: s.fx,
                 slideExpr: '.ngg-gallery-slideshow-image',
                 slideResize: false,
-        				containerResize: false,
-        				fit: 1,
+                containerResize: false,
+                fit: 1,
                 timeout: s.timeout,
                 after: function(currSlideElement, nextSlideElement, options, forwardFlag) {
                     // update the pro-lightbox triggers should they exist

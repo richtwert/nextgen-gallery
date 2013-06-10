@@ -128,7 +128,7 @@ class C_NextGEN_Bootstrap
 	/**
 	 * Run the installer
 	 */
-	static function activate()
+	static function activate($network=FALSE)
 	{
         if (is_multisite())
             die("NextGEN does not currently support Multisite installation.");

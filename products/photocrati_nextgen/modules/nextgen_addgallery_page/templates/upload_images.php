@@ -74,6 +74,10 @@
                 plupload_options.url = photocrati_ajax_url;
                 plupload_options.preinit = {
                     PostInit: function(up){
+			if (navigator.appVersion.indexOf("MSIE 10") > -1) {
+                        	up.features.triggerDialog = true;
+                    	}
+
                         // Hide/show the gallery name field
                         $gallery_selection.insertAfter('.plupload_header');
                         var gallery_select    = $('#gallery_id');
