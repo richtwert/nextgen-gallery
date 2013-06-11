@@ -202,7 +202,7 @@ For more information, feel free to visit the official website for the NextGEN Ga
 
 == Changelog ==
 
-= V1.9.13 - 06.05.2013 =
+= V1.9.13 - 06.11.2013 =
 * NEW:     Slideshows are now centered to their content area
 * Secured: Ensure that only logged in users can upload images
 * Fixed:   Import date is presered are no longer Jan 1 1970
