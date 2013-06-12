@@ -83,7 +83,30 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
 
         return $retval;
     }
-
+    
+    /**
+     * Remote request which checks for status code
+     */
+    function _remote_fopen($uri)
+    {
+    	$options = array();
+    	$options['timeout'] = 10;
+    	
+    	$response = wp_remote_get($uri, $options);
+    	
+    	if (!is_wp_error($response))
+    	{
+				$code = wp_remote_retrieve_response_code($response);
+				
+				if ($code >= 200 && $code < 300)
+				{
+					return wp_remote_retrieve_body($response);
+				}
+    	}
+  		
+  		return null;
+    } 
+    
     /**
      * Gets the source of a script/stylesheet
      * @param $url
@@ -117,7 +140,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
 
         // This is a real url and it's not local. We'll have to fetch it
         else {
-            $retval = wp_remote_fopen($url);
+            $retval = $this->_remote_fopen($url);
         }
 
         // If a path has been set, and it's exists on the filesystem
@@ -131,7 +154,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
             if (strpos($url, '/') === 0) {
                 $url = $this->get_router()->get_url($url, FALSE);
             }
-            $retval = wp_remote_fopen($url);
+            $retval = $this->_remote_fopen($url);
         }
 
         // Now that we have the content, we have to adjust any links within CSS
