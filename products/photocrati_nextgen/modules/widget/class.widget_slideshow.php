@@ -107,7 +107,7 @@ class C_Widget_Slideshow extends WP_Widget
 
         if (0 === $galleryID)
         {
-            $params['source'] = 'images';
+            $params['source'] = 'random_images';
             unset($params['container_ids']);
         }
 

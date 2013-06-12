@@ -99,7 +99,7 @@ class A_NextGen_Basic_Template_Form extends Mixin
         $current_pid  = NULL;
 
         // begin processing
-        $current_page = (get_the_ID() == FALSE) ? 0 : get_the_ID();
+        $current_page = (@get_the_ID() == FALSE) ? 0 : @get_the_ID();
 
         // determine what the "current image" is; used mostly for carousel
         if (!is_numeric($pid) && !empty($pid))
