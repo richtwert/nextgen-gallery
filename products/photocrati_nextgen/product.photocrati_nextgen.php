@@ -56,6 +56,8 @@ class P_Photocrati_NextGen extends C_Base_Product
 		// Dependent on photocrati-router
 		$this->get_registry()->load_module('photocrati-mvc');
 
+        $this->get_registry()->load_module('photocrati-nextgen_settings');
+
         // Provides a resource minifier
         $this->get_registry()->load_module('photocrati-resource_minifier');
 
@@ -76,8 +78,6 @@ class P_Photocrati_NextGen extends C_Base_Product
 		$this->get_registry()->load_module('photocrati-datamapper');
 
 		/*** NEXTGEN GALLERY MODULES ***/
-		$this->get_registry()->load_module('photocrati-nextgen_settings');
-
 		// This is Alex Rabe's version of NextGEN, which we built on top of.
 		$this->get_registry()->load_module('photocrati-nextgen-legacy');
 

@@ -23,6 +23,12 @@ class A_Miscellaneous_Form extends Mixin
                 'mediarss_activated_no'    => _('No'),
                 'mediarss_activated_yes'   => _('Yes'),
 
+                'minifier_activated'       => $this->object->get_model()->resource_minifier,
+                'minifier_activated_label' => _('Enable the resource minifier?'),
+                'minifier_activated_help'  => _('Combines available Javascript and CSS resources into one file for faster load times'),
+                'minifier_activated_no'    => _('No'),
+                'minifier_activated_yes'   => _('Yes'),
+
                 'cache_label'        => _('Clear image cache'),
                 'cache_confirmation' => _("Completely clear the NextGEN cache of all image modifications?\n\nChoose [Cancel] to Stop, [OK] to proceed."),
 

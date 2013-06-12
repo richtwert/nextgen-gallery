@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-@ini_set('display_errors', 'On');
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 
 /**

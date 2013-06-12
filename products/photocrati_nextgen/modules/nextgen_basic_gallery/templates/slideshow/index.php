@@ -70,23 +70,6 @@
     <div class="slideshow" id="gallery_<?php echo_h($displayed_gallery_id) ?>">
         <?php echo $swfobject->output(); ?>
     </div>
-    <script type="text/javascript" defer="defer">
-        <?php if ($flash_xhtml_validation): ?>
-        <!--
-        // <![CDATA[
-        <?php endif ?>
-        jQuery('#gallery_<?php echo_h($displayed_gallery_id) ?>').css('opacity', 0.0);
-        (function($){
-            $(document).on('lazy_resources_loaded', function(){
-                <?php echo $swfobject->javascript(); ?>
-                $('#gallery_<?php echo_h($displayed_gallery_id) ?>').css('opacity', 1.0);
-            });
-        })(jQuery);
-        <?php if ($flash_xhtml_validation): ?>
-        // ]]>
-        -->
-        <?php endif ?>
-    </script>
 
 <?php else: ?>
 	<!-- Display JQuery Cycle Slideshow -->

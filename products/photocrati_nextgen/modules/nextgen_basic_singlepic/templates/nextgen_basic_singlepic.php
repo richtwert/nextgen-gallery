@@ -22,15 +22,6 @@
              <?php if (!empty($settings['height'])) { ?>height="<?php echo esc_attr($settings['height']); ?>"<?php } ?>/></a>
     <?php if (!is_null($inner_content)) { ?><span><?php echo $inner_content; ?></span><?php } ?>
     <?php $this->include_template('nextgen_gallery_display#image/after', $template_params); ?>
-
-    <script type="text/javascript">
-        (function($){
-            $('a[data-image-id="<?php echo esc_attr($image->pid)?>"]').css('opacity', 0.0);
-            $(document).on('lazy_resources_loaded', function(){
-                $('a[data-image-id="<?php echo esc_attr($image->pid)?>"]').css('opacity', 1.0);
-            });
-        })(jQuery);
-    </script>
 <?php else: ?>
     <p>No image found</p>
 <?php endif ?>

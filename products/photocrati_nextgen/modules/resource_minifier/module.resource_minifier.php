@@ -1,7 +1,8 @@
 <?php
 /*
 {
-    Module: photocrati-resource_minifier
+    Module: photocrati-resource_minifier,
+    Depends: { photocrati-nextgen_settings }
 }
 */
 
@@ -35,13 +36,17 @@ class M_Resource_Minifier extends C_Base_Module
     function _register_hooks()
     {
         add_action('init', array(&$this, 'register_lazy_resources'));
-        add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
-        add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
-        add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
         add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
-        add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
-        add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
+
+        if ($this->get_registry()->get_utility('I_Settings_Manager')->resource_minifier)
+        {
+            add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
+            add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+            add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+            add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
+            add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
+        }
     }
 
     function _register_utilities()

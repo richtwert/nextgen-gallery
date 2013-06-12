@@ -134,7 +134,8 @@ class Mixin_NextGen_Settings extends Mixin
 			'datamapper_driver'		=> 'custom_table_datamapper',
 			'gallerystorage_driver' => 'ngglegacy_gallery_storage',
 			'maximum_entity_count'	=> 500,
-            'router_param_slug'     =>  'nggallery'
+            'router_param_slug'     =>  'nggallery',
+            'resource_minifier'     => TRUE
 		);
 
 		foreach ($defaults as $key=>$value) $this->object->set_default($key, $value);

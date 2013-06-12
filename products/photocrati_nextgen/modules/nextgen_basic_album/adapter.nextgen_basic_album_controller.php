@@ -103,7 +103,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
             $display_settings = $this->prepare_legacy_album_params($display_settings);
             $retval = $this->object->legacy_render($display_settings['template'], $display_settings, TRUE, 'album');
-            $retval .= "<script type='text/javascript'>jQuery('.ngg-albumoverview').css('opacity', 0.0);</script>";
 
             if ($return) return $retval;
             else echo($retval);

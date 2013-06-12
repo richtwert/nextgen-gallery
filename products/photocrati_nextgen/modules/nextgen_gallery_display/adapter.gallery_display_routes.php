@@ -14,6 +14,6 @@ class A_Gallery_Display_Routes extends Mixin
 
     function _add_common_js_route()
     {
-        $this->object->route('/ngg_common.js', 'I_Display_Type_Controller#common_js');
+        $this->object->route('/ngg_common', 'I_Display_Type_Controller#common_js');
     }
 }
