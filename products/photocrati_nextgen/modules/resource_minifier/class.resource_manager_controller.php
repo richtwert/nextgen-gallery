@@ -143,6 +143,9 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
             $retval = $this->_remote_fopen($url);
         }
 
+        // ensure there's no url parameters (strip ? and on) and no newlines in our potential filename
+        $path = str_replace(array("\r", "\n"), '', substr($path, 0, strpos($path, "?")));
+
         // If a path has been set, and it's exists on the filesystem
         if ($path && file_exists($path)) {
             $retval = file_get_contents($path);
