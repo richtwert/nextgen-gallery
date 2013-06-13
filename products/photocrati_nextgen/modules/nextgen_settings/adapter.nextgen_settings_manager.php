@@ -135,7 +135,7 @@ class Mixin_NextGen_Settings extends Mixin
 			'gallerystorage_driver' => 'ngglegacy_gallery_storage',
 			'maximum_entity_count'	=> 500,
             'router_param_slug'     =>  'nggallery',
-            'resource_minifier'     => TRUE
+            'resource_minifier'     => FALSE
 		);
 
 		foreach ($defaults as $key=>$value) $this->object->set_default($key, $value);

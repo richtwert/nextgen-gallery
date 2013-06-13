@@ -39,7 +39,11 @@ class M_Resource_Minifier extends C_Base_Module
         add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
 
-        if ($this->get_registry()->get_utility('I_Settings_Manager')->resource_minifier)
+        if ($this->get_registry()
+                 ->get_utility('I_Settings_Manager')
+                 ->resource_minifier
+            && constant('CONCATENATE_SCRIPTS') != TRUE
+            && !is_admin())
         {
             add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
             add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
