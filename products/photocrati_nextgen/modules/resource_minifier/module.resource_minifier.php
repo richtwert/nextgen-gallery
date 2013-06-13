@@ -42,7 +42,7 @@ class M_Resource_Minifier extends C_Base_Module
         if ($this->get_registry()
                  ->get_utility('I_Settings_Manager')
                  ->resource_minifier
-            && constant('CONCATENATE_SCRIPTS') != TRUE
+            && (!defined('CONCATENATE_SCRIPTS') || CONCATENATE_SCRIPTS != true)
             && !is_admin())
         {
             add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
@@ -222,6 +222,41 @@ class M_Resource_Minifier extends C_Base_Module
         }
         return $content;
     }
+    
+    /**
+     * check if resource is provided by external site
+     * @param $src
+     * @param $match_count - minimum amount of components to match eg comp1.comp2.comp3.ext
+     */
+    function is_resource_external($src, $match_count = 2)
+    {
+				$host = parse_url(site_url(), PHP_URL_HOST);
+				$host_src = parse_url($src, PHP_URL_HOST);
+				
+				$parts = explode('.', $host);
+				$parts_src = explode('.', $host_src);
+				
+				$count = count($parts);
+				$count_src = count($parts_src);
+				
+				$max = min($count, $count_src);
+				$max = min($match_count, $max);
+				$external = false;
+				
+				for ($i = 0; $i < $max; $i++) {
+					$l = $i + 1;
+					$comp = $parts[$count - $l];
+					$comp_src = $parts_src[$count_src - $l];
+					
+					if (strtolower($comp) != strtolower($comp_src)) {
+						$external = true;
+						
+						break;
+					}
+				}
+				
+				return $external;
+    }
 
     /**
      * Appends a script to the queue of resources to load
@@ -230,7 +265,21 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function append_script($src, $handle)
     {
-        $this->append_resource('scripts', $handle, $src);
+        // Both the src passed in and the src registered aren't reliable, and
+        // I'm not 100% sure why - it looks to be related to the esc_url() function.
+        // It sucks, but we'll have to live with it for now.
+        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+            global $wp_scripts;
+            $src = $wp_scripts->registered[$handle]->src;
+        }
+        
+        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+        		$src = site_url() . '/' . ltrim($src, '/');
+        }
+        
+        if (!$this->is_resource_external($src)) {
+        	$this->append_resource('scripts', $handle, $src);
+        }
 
         return $src;
     }
@@ -247,12 +296,18 @@ class M_Resource_Minifier extends C_Base_Module
         // Both the src passed in and the src registered aren't reliable, and
         // I'm not 100% sure why - it looks to be related to the esc_url() function.
         // It sucks, but we'll have to live with it for now.
-        if (!preg_match("#http(s)?://\w+\.\w+#", $src)) {
+        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
             global $wp_styles;
             $src = $wp_styles->registered[$handle]->src;
         }
+        
+        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+        		$src = site_url() . '/' . ltrim($src, '/');
+        }
 
-        $this->append_resource('styles', $handle, $src);
+        if (!$this->is_resource_external($src)) {
+        	$this->append_resource('styles', $handle, $src);
+        }
 
         return $src;
     }
