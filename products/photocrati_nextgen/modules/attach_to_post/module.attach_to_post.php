@@ -143,14 +143,14 @@ class M_Attach_To_Post extends C_Base_Module
                 $preview_url = preg_quote(
                     $router->join_paths(
                         $router->remove_url_segment('index.php', $router->get_base_url()),
-                        '/attach_to_post/preview'
+                        '/nextgen-attach_to_post/preview'
                     ),
                 '#');
 
 				$alt_preview_url = preg_quote(
 						$router->join_paths(
 							$router->remove_url_segment('index.php', $router->get_base_url()),
-							'index.php/attach_to_post/preview'
+							'index.php/nextgen-attach_to_post/preview'
 						),
 				'#');
 
@@ -195,18 +195,18 @@ class M_Attach_To_Post extends C_Base_Module
                 $preview_url = stripslashes(preg_quote(
                     $router->join_paths(
                         $router->remove_url_segment('index.php', $router->get_base_url()),
-                        '/attach_to_post/preview'
+                        '/nextgen-attach_to_post/preview'
                     ),
                 '#'));
 
                 $alt_preview_url = stripslashes(preg_quote(
                     $router->join_paths(
                         $router->remove_url_segment('index.php', $router->get_base_url()),
-                        'index.php/attach_to_post/preview'
+                        'index.php/nextgen-attach_to_post/preview'
                     ),
                 '#'));
 
-                $current_preview_url = $router->get_url('/attach_to_post/preview', FALSE);
+                $current_preview_url = $router->get_url('/nextgen-attach_to_post/preview', FALSE);
 
                 // Ensure the current preview image is correct, regardless of whether permalinks are enabled
                 foreach ($imgs as $img) {

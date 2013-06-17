@@ -5,7 +5,7 @@ class Mixin_Dynamic_Thumbnails_Manager extends Mixin
 	function get_route_name()
 	{
 		$settings = $this->get_registry()->get_utility('I_Settings_Manager', 'photocrati-dynamic_thumbnails');
-		return $settings->get('dynamic_thumbnail_slug', 'nextgen_image');
+		return $settings->get('dynamic_thumbnail_slug', 'nextgen-image');
 	}
 
 	function _get_params_sanitized($params)

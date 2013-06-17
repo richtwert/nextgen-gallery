@@ -133,7 +133,7 @@ class M_Gallery_Display extends C_Base_Module
             array('jquery')
         );
 
-        wp_register_script('ngg_common', $router->get_url('/ngg_common'), array('jquery'));
+        wp_register_script('ngg_common', $router->get_url('/nextgen-commonjs'), array('jquery'));
     }
 
 

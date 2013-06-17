@@ -41,7 +41,7 @@ class A_NextGen_Basic_Slideshow_Controller extends Mixin_NextGen_Basic_Gallery_C
 				include_once(path_join(NGGALLERY_ABSPATH, implode(DIRECTORY_SEPARATOR, array('lib', 'swfobject.php'))));
                 $transient_id = $displayed_gallery->to_transient();
 				$params['mediarss_link'] = $this->get_router()->get_url(
-					'/mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $transient_id, false
+					'/nextgen-mediarss?template=playlist_feed&source=displayed_gallery&transient_id=' . $transient_id, false
 				);
 			}
             

@@ -14,7 +14,7 @@ class A_Dynamic_Thumbnail_Routes extends Mixin
 
 	function add_dynamic_thumbnail_routes()
 	{
-        $app = $this->create_app('/nextgen_image');
+        $app = $this->create_app('/nextgen-image');
 
 		// The C_Dynamic_Thumbnails Controller was created before the new
 		// router implementation was conceptualized. It uses it's own mechanism

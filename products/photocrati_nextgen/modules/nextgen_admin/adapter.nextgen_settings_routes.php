@@ -14,7 +14,7 @@ class A_NextGen_Settings_Routes extends Mixin
 
     function add_nextgen_settings_routes()
     {
-        $this->create_app('/nextgen_settings')
+        $this->create_app('/nextgen-settings')
              ->route('/update_watermark_preview', 'I_Settings_Manager_Controller#watermark_update');
     }
 }
