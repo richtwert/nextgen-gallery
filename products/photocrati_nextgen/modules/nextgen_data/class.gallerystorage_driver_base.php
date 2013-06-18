@@ -1051,20 +1051,16 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 			$height = $result['height'];
 			$quality = $result['quality'];
 
-			// image_resize() has limitations:
-			// - no easy crop frame support
-			// - fails if the dimensions are unchanged
-			// - doesn't support filename prefix, only suffix so names like thumbs_original_name.jpg for $clone_path are not supported
-			//   also suffix cannot be null as that will make WordPress use a default suffix...we could use an object that returns empty string from __toString() but for now just fallback to ngg generator
 			if ($method == 'wordpress')
 			{
-				$destpath = @image_resize(
-						$image_path,
-						$width, $height, $crop,
-						$clone_suffix, // filename suffix
-						$clone_dir,
-						$quality
-				);
+                $original = wp_get_image_editor($image_path);
+                $destpath = $clone_path;
+                if (!is_wp_error($original))
+                {
+                    $original->resize($width, $height, $crop);
+                    $original->set_quality($quality);
+                    $original->save($clone_path);
+                }
 			}
 			else if ($method == 'nextgen')
 			{
