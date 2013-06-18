@@ -161,7 +161,8 @@ class nggAddGallery {
     <script type="text/javascript">
     //<![CDATA[
     var resize_height = <?php echo (int) $ngg->options['imgHeight']; ?>,
-    	resize_width = <?php echo (int) $ngg->options['imgWidth']; ?>;
+    	resize_width = <?php echo (int) $ngg->options['imgWidth']; ?>,
+        resize_quality = <?php echo (int) $ngg->options['imgQuality']; ?>;
 
     jQuery(document).ready(function($) {
     	window.uploader = new plupload.Uploader({

@@ -174,7 +174,7 @@ function setResize(arg) {
 	if ( arg ) {
         debug('[enable resize]');
 		if ( uploader.features.jpgresize )
-			uploader.settings['resize'] = { width: resize_width, height: resize_height, quality: 100 };
+			uploader.settings['resize'] = { width: resize_width, height: resize_height, quality: resize_quality };
 		else
 			uploader.settings.multipart_params.image_resize = true;
 	} else {
