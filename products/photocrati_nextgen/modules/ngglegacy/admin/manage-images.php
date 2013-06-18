@@ -283,7 +283,7 @@ jQuery(document).ready( function($) {
 			<table class="form-table" >
 				<tr>
 					<th align="left"><?php _e('Title') ?>:</th>
-					<th align="left"><input <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery title' ); ?> type="text" size="50" name="title" value="<?php echo $gallery->title; ?>"  /></th>
+					<th align="left"><input <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery title' ); ?> type="text" size="50" name="title" value="<?php echo esc_attr(stripslashes($gallery->title)); ?>"  /></th>
 					<th align="right"><?php _e('Page Link to', 'nggallery') ?>:</th>
 					<th align="left">
 					<select <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery page id' ); ?>  name="pageid" style="width:95%">
@@ -296,7 +296,7 @@ jQuery(document).ready( function($) {
 				</tr>
 				<tr>
 					<th align="left"><?php _e('Description') ?>:</th>
-					<th align="left"><textarea  <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery description' ); ?> name="gallerydesc" cols="30" rows="3" style="width: 95%" ><?php echo $gallery->galdesc; ?></textarea></th>
+					<th align="left"><textarea  <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery description' ); ?> name="gallerydesc" cols="30" rows="3" style="width: 95%" ><?php echo esc_attr(stripslashes($gallery->galdesc)); ?></textarea></th>
 					<th align="right"><?php _e('Preview image', 'nggallery') ?>:</th>
 					<th align="left">
 						<select <?php nggGallery::current_user_can_form( 'NextGEN Edit gallery preview pic' ); ?> name="previewpic" style="width:95%" >

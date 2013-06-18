@@ -379,12 +379,12 @@ class nggManageGallery {
 				if ( nggGallery::current_user_can( 'NextGEN Edit gallery title' )) {
 				    // don't forget to update the slug
 				    $slug = nggdb::get_unique_slug( sanitize_title( $_POST['title'] ), 'gallery', $this->gid );
-				    $wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET title= '%s', slug= '%s' WHERE gid = %d", esc_attr($_POST['title']), $slug, $this->gid) );
+				    $wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET title= '%s', slug= '%s' WHERE gid = %d", stripslashes($_POST['title']), $slug, $this->gid) );
 				}
 				if ( nggGallery::current_user_can( 'NextGEN Edit gallery path' ))
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET path= '%s' WHERE gid = %d", untrailingslashit ( str_replace('\\', '/', trim( stripslashes($_POST['path']) )) ), $this->gid ) );
 				if ( nggGallery::current_user_can( 'NextGEN Edit gallery description' ))
-					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET galdesc= '%s' WHERE gid = %d", esc_attr( $_POST['gallerydesc'] ), $this->gid) );
+					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET galdesc= '%s' WHERE gid = %d", stripslashes($_POST['gallerydesc']), $this->gid) );
 				if ( nggGallery::current_user_can( 'NextGEN Edit gallery page id' ))
 					$wpdb->query( $wpdb->prepare ("UPDATE $wpdb->nggallery SET pageid= '%d' WHERE gid = %d", (int) $_POST['pageid'], $this->gid) );
 				if ( nggGallery::current_user_can( 'NextGEN Edit gallery preview pic' ))
@@ -494,11 +494,11 @@ class nggManageGallery {
                 $image = $nggdb->find_image( $pid );
                 if ($image) {
                     // description field
-                    $image->description = $description[$image->pid];
+                    $image->description = stripslashes($description[$image->pid]);
 
                     // only uptade this field if someone change the alttext
                     if ( $image->alttext != $alttext[$image->pid] ) {
-                        $image->alttext = $alttext[$image->pid];
+                        $image->alttext = stripslashes($alttext[$image->pid]);
                         $image->image_slug = nggdb::get_unique_slug( sanitize_title( $image->alttext ), 'image', $image->pid );
                     }
 

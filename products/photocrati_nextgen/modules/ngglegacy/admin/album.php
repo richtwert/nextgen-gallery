@@ -227,8 +227,8 @@ class nggManageAlbum {
 			wp_die(__('Cheatin&#8217; uh?'));
 
 		$album = $this->get_album_mapper()->find($this->currentID, TRUE);
-		$album->name		= $_POST['album_name'];
-		$album->albumdesc	= $_POST['album_desc'];
+		$album->name		= stripslashes($_POST['album_name']);
+		$album->albumdesc	= stripslashes($_POST['album_desc']);
 		$album->previewpic	= (int)$_POST['previewpic'];
 		$album->pageid		= (int)$_POST['pageid'];
 		$result = $album->save();
