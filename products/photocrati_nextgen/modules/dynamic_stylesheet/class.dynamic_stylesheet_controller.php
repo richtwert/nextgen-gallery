@@ -70,27 +70,45 @@ class Mixin_Dynamic_Stylesheet_Instance_Methods extends Mixin
 	 */
 	function enqueue($name, $data=array())
 	{
-		if (($index = $this->object->get_css_template_index($name)) !== FALSE) {
-            if (is_subclass_of($data, 'C_DataMapper_Model')) $data = $data->get_entity();
-			$data			= $this->object->encode($data);
-            wp_enqueue_style('dyncss-'.$index.'@dynamic', "/{$this->object->_app}/$index/{$data}");
+		if (($index = $this->object->get_css_template_index($name)) !== FALSE)
+        {
+            if (is_subclass_of($data, 'C_DataMapper_Model'))
+                $data = $data->get_entity();
+			$data = $this->object->encode($data);
+            wp_enqueue_style(
+                'dyncss-' . $index . '@dynamic',
+                $this->object->get_router()->get_url("/{$this->object->_app}", FALSE) . "/{$index}/{$data}"
+            );
 		}
 	}
 
-	function encode($data)
+    /**
+     * Encodes $data
+     *
+     * base64 encoding uses '==' to denote the end of the sequence, but keep it out of the url
+     * @param $data
+     * @return string
+     */
+    function encode($data)
 	{
-		$data			= json_encode($data);
-		$data			= base64_encode($data);
-		$data			= str_replace('/', '\\', $data);
+		$data = json_encode($data);
+		$data = base64_encode($data);
+		$data = str_replace('/', '\\', $data);
+        $data = rtrim($data, '=');
 		return $data;
 	}
 
-
-	function decode($data)
+    /**
+     * Decodes $data
+     *
+     * @param $data
+     * @return array|mixed
+     */
+    function decode($data)
 	{
-		$data			= str_replace('\\', '/', $data);
-		$data			= base64_decode($data);
-		$data			= json_decode($data);
+		$data = str_replace('\\', '/', $data);
+		$data = base64_decode($data . '==');
+		$data = json_decode($data);
 		return $data;
 	}
 }
