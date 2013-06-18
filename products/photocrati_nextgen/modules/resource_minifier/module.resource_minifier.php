@@ -262,9 +262,13 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function strip_tags_with_urls($tagname, $content)
     {
-        if (preg_match_all("/\\s*<{$tagname}.*(src|href)=['\"].*(<\\/{$tagname}>|\\/>)\\s*/mi", $content, $matches)) {
-            foreach ($matches[0] as $tag) {
-                $content = str_replace($tag, '', $content);
+        if (preg_match_all("/\\s*<{$tagname}.*(src|href)=['\"]([^'\"]+).*(<\\/{$tagname}>|\\/>)\\s*/mi", $content, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $tag = $match[0];
+                $url = $match[2];
+                if (!$this->is_resource_external($url)) {
+                    $content = str_replace($tag, '', $content);
+                }
             }
         }
         return $content;
@@ -284,7 +288,7 @@ class M_Resource_Minifier extends C_Base_Module
                 $handle_parts   = explode('@', $handle);
                 $group          = 'static';
                 if (isset($handle_parts[1])) $group = $handle_parts[1];
-                if (!isset($wp_styles->registered[$handle]->extra['conditional'])) {
+                if (!isset($wp_styles->registered[$handle]->extra['conditional']) AND !$this->is_resource_external($url)) {
                     if (preg_match("/\\s*<link.*{$handle}.*\\/>/m", $content, $link_match)) {
                         $content = str_replace($link_match[0], '', $content);
                     }
@@ -351,9 +355,9 @@ class M_Resource_Minifier extends C_Base_Module
         		$src = site_url() . '/' . ltrim($src, '/');
         }
         
-//        if (!$this->is_resource_external($src)) {
+        if (!$this->is_resource_external($src)) {
         	$this->append_resource('scripts', $handle, $src);
-//        }
+        }
 
         return $src;
     }
