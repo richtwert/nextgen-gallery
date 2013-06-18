@@ -8,6 +8,9 @@
 
 class M_Resource_Minifier extends C_Base_Module
 {
+    var $minifier_enabled = TRUE;
+    var $resources        = array();
+
     function define()
     {
         parent::define(
@@ -38,19 +41,11 @@ class M_Resource_Minifier extends C_Base_Module
         add_action('init', array(&$this, 'register_lazy_resources'));
         add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
-
-        if ($this->get_registry()
-                 ->get_utility('I_Settings_Manager')
-                 ->resource_minifier
-            && (!defined('CONCATENATE_SCRIPTS') || CONCATENATE_SCRIPTS != true)
-            && !is_admin())
-        {
-            add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
-            add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
-            add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
-            add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
-            add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
-        }
+        add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
+        add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+        add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+        add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
+        //add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
 
     function _register_utilities()
@@ -127,6 +122,14 @@ class M_Resource_Minifier extends C_Base_Module
                 'map'       =>  $this->get_resource_map('styles')
             )
         );
+
+        // Determine if the minifier should be enabled or not
+        if (defined('CONCATENATE_SCRIPTS') && CONCATENATE_SCRIPTS == FALSE)
+            $this->minifier_enabled = FALSE;
+        else {
+            $settings = $this->_get_registry()->get_utility('I_Settings_Manager');
+            $this->minifier_enabled = $settings->resource_minifier;
+        }
     }
 
     /**
@@ -140,26 +143,41 @@ class M_Resource_Minifier extends C_Base_Module
         $output_func = $resource_type == 'scripts' ? 'wp_print_scripts' : 'wp_print_styles';
         $this->initialize_resources();
 
-        // Parse scripts for inclusion
-        ob_start();
-        $output_func();
-        $html = ob_get_contents();
-        ob_end_clean();
+        // If the minifier is enabled, we'll concatenate all scripts and styles. If the
+        // minifier is disabled, but we're writing styles in the footer, then we'll
+        // continue with the routine and let $this->write_tags() decide what to do
+        if ($this->minifier_enabled OR ($in_footer AND $resource_type == 'styles')) {
 
-        // Strip out any scripts be loading by url, and outputs the rest. We
-        // need to this for wp_localize_script() calls
-        echo $this->strip_tags_with_urls($tagname, $html);
+            // Parse scripts for inclusion
+            ob_start();
+            $output_func();
+            $html = ob_get_contents();
+            ob_end_clean();
 
-        // Store the map
-        update_option('ngg_'.$resource_type.'_map', $this->resources[$resource_type]['map']);
+            // Populate styles
+            if ($resource_type == 'styles') echo $this->extract_enqueued_styles($html);
 
-        // Load the static scripts. These scripts will be concatenated and the final result will be
-        // cached and never regenerated
-        $this->write_tag($resource_type, 'static', $in_footer);
+            // Strip out any scripts be loading by url, and outputs the rest. We
+            // need to this for wp_localize_script() calls
+            else echo $this->strip_tags_with_urls($tagname, $html);
 
-        // Load the dynamic scripts. These scripts will be concatenated but not cached,
-        // as their content is known to change
-        $this->write_tag($resource_type, 'dynamic', $in_footer);
+            // Store the map
+            update_option('ngg_'.$resource_type.'_map', $this->resources[$resource_type]['map']);
+
+            // Load the static scripts. These scripts will be concatenated and the final result will be
+            // cached and never regenerated
+            $this->write_tag($resource_type, 'static', $in_footer);
+
+            // Load the dynamic scripts. These scripts will be concatenated but not cached,
+            // as their content is known to change
+            $this->write_tag($resource_type, 'dynamic', $in_footer);
+        }
+
+        // Otherwise we'll just output the html
+        else {
+            $output_func();
+        }
+
     }
 
     /**
@@ -174,19 +192,48 @@ class M_Resource_Minifier extends C_Base_Module
                 if (empty($this->resources[$resource_type][$group])) return;
                 $router     = $this->get_registry()->get_utility('I_Router');
                 $handles    = $this->get_enqueued($resource_type, $group);
-                $url        = $router->get_url("/nextgen-{$group}/{$resource_type}", FALSE).'?load='.$handles;
 
+                // Are we enqueuing scripts?
                 if ($resource_type == 'scripts') {
-                    echo "<script type='text/javascript' src='{$url}'></script>\n";
-                }
-                else {
-                    // If we're in the footer, we need to lazy load the stylesheet
-                    if ($in_footer) {
-                        echo '<script type="text/javascript">Lazy_Resources.enqueue("'.$url.'")</script>';
+
+                    // Use the concatenated url if the minifier is enabled
+                    if ($this->minifier_enabled) {
+                        $url = $router->get_url("/nextgen-{$group}/{$resource_type}", FALSE).'?load='.$handles;
+                        echo "<script type='text/javascript' src='{$url}'></script>\n";
                     }
 
-                    // Otherwise, we can just output a normal link tag
-                    else echo "<link type='text/css' media='screen' rel='stylesheet' href='{$url}'/>\n";
+                    // If the minifier is disabled, then just out the scripts as normal
+                    else {
+                        foreach ($this->resources[$resource_type][$group] as $handle) {
+                            $url = $this->resources[$resource_type]['map'][$handle];
+                            $handle = esc_attr($handle);
+                            echo "<script name='{$handle}' type='text/javascript' src='{$url}'></script>\n";
+                        }
+                    }
+                }
+
+                // If we're enqueuing stylesheets
+                else {
+
+                    // If we're in the footer, we need to lazy load the stylesheet
+                    if ($in_footer) {
+
+                        // Use the concatenated url if the minifier is enabled
+                        if ($this->minifier_enabled) {
+                            $url = $router->get_url("/nextgen-{$group}/{$resource_type}", FALSE).'?load='.$handles;
+                            echo '<script type="text/javascript">Lazy_Resources.enqueue("'.$url.'")</script>';
+                            echo "\n";
+                        }
+
+                        // If the minifier is disabled, we still need to lazy load the stylesheets
+                        else {
+                            foreach ($this->resources[$resource_type][$group] as $handle) {
+                                $url = $this->resources[$resource_type]['map'][$handle];
+                                echo '<script type="text/javascript">Lazy_Resources.enqueue("'.$url.'")</script>';
+                                echo "\n";
+                            }
+                        }
+                    }
                 }
 
                 $resources = &$this->resources[$resource_type];
@@ -215,11 +262,38 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function strip_tags_with_urls($tagname, $content)
     {
-        if (preg_match_all("/\s*<{$tagname}.*(src|href)=['\"].*(<\/{$tagname}>|\/>)\s*/mi", $content, $matches)) {
+        if (preg_match_all("/\\s*<{$tagname}.*(src|href)=['\"].*(<\\/{$tagname}>|\\/>)\\s*/mi", $content, $matches)) {
             foreach ($matches[0] as $tag) {
                 $content = str_replace($tag, '', $content);
             }
         }
+        return $content;
+    }
+
+    function extract_enqueued_styles($content)
+    {
+        global $wp_styles;
+        $this->resources['styles']['static'] = array();
+        $this->resources['styles']['dynamic'] = array();
+
+        // Find stylesheet handle ids and urls
+        if (preg_match_all("/id=['\"]([^'\"]+)['\"].*href=['\"]([^'\"]+)/m", $content, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $handle         = substr($match[1], 0, -4);
+                $url            = $match[2];
+                $handle_parts   = explode('@', $handle);
+                $group          = 'static';
+                if (isset($handle_parts[1])) $group = $handle_parts[1];
+                if (!isset($wp_styles->registered[$handle]->extra['conditional'])) {
+                    if (preg_match("/\\s*<link.*{$handle}.*\\/>/m", $content, $link_match)) {
+                        $content = str_replace($link_match[0], '', $content);
+                    }
+                    $this->resources['styles'][$group][] = $handle;
+                    $this->resources['styles']['map'][$handle] = $url;
+                }
+            }
+        }
+
         return $content;
     }
     
@@ -230,32 +304,32 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function is_resource_external($src, $match_count = 2)
     {
-				$host = parse_url(site_url(), PHP_URL_HOST);
-				$host_src = parse_url($src, PHP_URL_HOST);
-				
-				$parts = explode('.', $host);
-				$parts_src = explode('.', $host_src);
-				
-				$count = count($parts);
-				$count_src = count($parts_src);
-				
-				$max = min($count, $count_src);
-				$max = min($match_count, $max);
-				$external = false;
-				
-				for ($i = 0; $i < $max; $i++) {
-					$l = $i + 1;
-					$comp = $parts[$count - $l];
-					$comp_src = $parts_src[$count_src - $l];
-					
-					if (strtolower($comp) != strtolower($comp_src)) {
-						$external = true;
-						
-						break;
-					}
-				}
-				
-				return $external;
+        $host = parse_url(site_url(), PHP_URL_HOST);
+        $host_src = parse_url($src, PHP_URL_HOST);
+
+        $parts = explode('.', $host);
+        $parts_src = explode('.', $host_src);
+
+        $count = count($parts);
+        $count_src = count($parts_src);
+
+        $max = min($count, $count_src);
+        $max = min($match_count, $max);
+        $external = false;
+
+        for ($i = 0; $i < $max; $i++) {
+            $l = $i + 1;
+            $comp = $parts[$count - $l];
+            $comp_src = $parts_src[$count_src - $l];
+
+            if (strtolower($comp) != strtolower($comp_src)) {
+                $external = true;
+
+                break;
+            }
+        }
+
+        return $external;
     }
 
     /**
@@ -277,9 +351,9 @@ class M_Resource_Minifier extends C_Base_Module
         		$src = site_url() . '/' . ltrim($src, '/');
         }
         
-        if (!$this->is_resource_external($src)) {
+//        if (!$this->is_resource_external($src)) {
         	$this->append_resource('scripts', $handle, $src);
-        }
+//        }
 
         return $src;
     }
@@ -293,20 +367,25 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function append_stylesheet($src, $handle)
     {
-        // Both the src passed in and the src registered aren't reliable, and
-        // I'm not 100% sure why - it looks to be related to the esc_url() function.
-        // It sucks, but we'll have to live with it for now.
-        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
-            global $wp_styles;
-            $src = $wp_styles->registered[$handle]->src;
-        }
-        
-        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
-        		$src = site_url() . '/' . ltrim($src, '/');
-        }
+        global $wp_styles;
 
-        if (!$this->is_resource_external($src)) {
+        // Conditions will be output as usual, and not concatenated
+        if (!isset($wp_styles->registered[$handle]->extra['conditional'])) {
+
+            // Both the src passed in and the src registered aren't reliable, and
+            // I'm not 100% sure why - it looks to be related to the esc_url() function.
+            // It sucks, but we'll have to live with it for now.
+            if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+                $src = $wp_styles->registered[$handle]->src;
+            }
+
+            if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+                    $src = site_url() . '/' . ltrim($src, '/');
+            }
+
+//        if (!$this->is_resource_external($src)) {
         	$this->append_resource('styles', $handle, $src);
+//        }
         }
 
         return $src;

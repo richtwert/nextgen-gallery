@@ -114,7 +114,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
      */
     function _get_source($url, $resource_type)
     {
-        $retval     = '';
+        $retval     = "/* {$url } */\n";
         $fs         = $this->_get_fs_utility();
         $docroot    = $fs->get_document_root();
         $http_site  = $this->get_router()->get_base_url();
@@ -140,7 +140,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
 
         // This is a real url and it's not local. We'll have to fetch it
         else {
-            $retval = $this->_remote_fopen($url);
+            $retval .= $this->_remote_fopen($url);
         }
 
         // ensure there's no url parameters (strip ? and on) and no newlines in our potential filename
@@ -148,7 +148,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
 
         // If a path has been set, and it's exists on the filesystem
         if ($path && file_exists($path)) {
-            $retval = file_get_contents($path);
+            $retval .= file_get_contents($path);
         }
 
         // This a local but dynamically generated resource. We need
@@ -157,7 +157,7 @@ class C_Resource_Manager_Controller extends C_MVC_Controller
             if (strpos($url, '/') === 0) {
                 $url = $this->get_router()->get_url($url, FALSE);
             }
-            $retval = $this->_remote_fopen($url);
+            $retval .= $this->_remote_fopen($url);
         }
 
         // Now that we have the content, we have to adjust any links within CSS
