@@ -100,9 +100,8 @@ class C_Widget_Slideshow extends WP_Widget
             'gallery_width'  => $irWidth,
             'gallery_height' => $irHeight,
             'source'         => 'galleries',
-            'show_return_link' => FALSE,
-            'show_alternative_view_link' => FALSE,
-            'entity_types' => array('image')
+            'entity_types'   => array('image'),
+            'show_thumbnail_link' => FALSE
         );
 
         if (0 === $galleryID)

@@ -5,9 +5,14 @@ class Hook_NextGen_Basic_Gallery_Integration extends Hook
     function index_action($displayed_gallery, $return=FALSE)
     {
         // Are we to display a different display type?
-        if (($show = $this->object->param('show'))) {
-            if ($show != $this->object->context) {
-                
+        if (($show = $this->object->param('show')))
+        {
+            $params = (array)$displayed_gallery->get_entity();
+            $ds = $params['display_settings'];
+
+            if ((!empty($ds['show_slideshow_link']) || !empty($ds['show_thumbnail_link']))
+            &&   $show != $this->object->context)
+            {
                 // We've got an alternate request. We'll use a different display
                 // type to serve the request and not run the original controller
                 // action
