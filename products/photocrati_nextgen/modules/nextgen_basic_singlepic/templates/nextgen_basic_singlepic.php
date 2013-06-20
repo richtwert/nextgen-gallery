@@ -8,6 +8,33 @@
         );
 
     $this->include_template('nextgen_gallery_display#image/before', $template_params);
+    
+    $width = isset($settings['width']) ? $settings['width'] : null;
+    $height = isset($settings['height']) ? $settings['height'] : null;
+		
+		if ($width != null && $height != null)
+		{
+			$image_size = $storage->get_original_dimensions($image);
+
+			if ($image_size == null) {
+				$image_size['width'] = $image->meta_data['width'];
+				$image_size['height'] = $image->meta_data['height'];
+			}
+			
+			// check image aspect ratio, avoid distortions
+			$aspect_ratio = $width / $height;
+			$image_ratio = $image_size['width'] / $image_size['height'];
+			if ($image_ratio > $aspect_ratio) {
+				if ($image_size['width'] > $width) {
+					$height = (int) round($width / $image_ratio);
+				}
+			}
+			else {
+				if ($image_size['height'] > $height) {
+					$width = (int) round($height * $image_ratio);
+				}
+			}
+		}
 
     ?>
     <a href="<?php echo esc_attr($settings['link']); ?>"
@@ -18,8 +45,8 @@
              src="<?php echo $thumbnail_url; ?>"
              alt="<?php echo esc_attr($image->alttext); ?>"
              title="<?php echo esc_attr($image->alttext); ?>"
-             <?php if (!empty($settings['width']))  { ?>width="<?php echo esc_attr($settings['width']); ?>"<?php } ?>
-             <?php if (!empty($settings['height'])) { ?>height="<?php echo esc_attr($settings['height']); ?>"<?php } ?>/></a>
+             <?php if ($width) { ?> width="<?php echo esc_attr($width); ?>" <?php } ?>
+             <?php if ($height) { ?> height="<?php echo esc_attr($height); ?>" <?php } ?>/></a>
     <?php if (!is_null($inner_content)) { ?><span><?php echo $inner_content; ?></span><?php } ?>
     <?php $this->include_template('nextgen_gallery_display#image/after', $template_params); ?>
 <?php else: ?>

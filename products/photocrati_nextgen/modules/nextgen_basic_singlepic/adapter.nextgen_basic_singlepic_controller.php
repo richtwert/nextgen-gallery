@@ -42,16 +42,27 @@ class A_NextGen_Basic_Singlepic_Controller extends Mixin
             $display_settings['display_reflection'] = TRUE;
         if (in_array('watermark', $display_settings['mode']))
             $display_settings['display_watermark'] = TRUE;
-
+        
+	      if (isset($display_settings['w']))
+	          $display_settings['width'] = $display_settings['w'];
+	      elseif (isset($display_settings['h']))
+	      		unset($display_settings['width']);
+	          
+	      if (isset($display_settings['h']))
+	          $display_settings['height'] = $display_settings['h'];
+	      elseif (isset($display_settings['w']))
+	      		unset($display_settings['height']);
+        
         // legacy assumed no width/height meant full size unlike generate_thumbnail: force a full resolution
-        if (empty($display_settings['width']))
+        if (!isset($display_settings['width']) && !isset($display_settings['height']))
             $display_settings['width'] = $image->meta_data['width'];
-        // XXX setting both width and height can cause distortions for themes that have set max-width on images
-        //if (empty($display_settings['height']))
-        //    $display_settings['height'] = $image->meta_data['height'];
-
-        $params['width'] = isset($display_settings['width']) ? $display_settings['width'] : $image->meta_data['width'];
-        $params['height'] = isset($display_settings['height']) ? $display_settings['height'] : $image->meta_data['height'];
+        
+        if (isset($display_settings['width']))
+        		$params['width'] = $display_settings['width'];
+        
+        if (isset($display_settings['height']))
+            $params['height'] = $display_settings['height'];
+            
         $params['quality'] = $display_settings['quality'];
         $params['crop'] = $display_settings['crop'];
         $params['watermark'] = $display_settings['display_watermark'];
