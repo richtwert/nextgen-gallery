@@ -416,7 +416,8 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 	{
 		$retval = array();
 
-		if ($sql) {
+		if ($sql)
+        {
 			$this->object->_query_args['cache_results'] = FALSE;
 			$this->object->_query_args['custom_sql'] = $sql;
 		}
@@ -424,8 +425,9 @@ class Mixin_CustomPost_DataMapper_Driver extends Mixin
 		// Execute the query
 		$query = new WP_Query($this->object->_query_args);
 		foreach ($query->get_posts() as $row) {
-			$row = $this->object->convert_post_to_entity($row, $model);
-			if (!$model) $row->id_field = $this->object->get_primary_key_column();
+			$row = $this->object->convert_post_to_entity($this->scrub_result($row), $model);
+			if (!$model)
+                $row->id_field = $this->object->get_primary_key_column();
 			$retval[] = $row;
 		}
 

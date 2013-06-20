@@ -200,21 +200,30 @@ class C_CustomTable_DataMapper_Driver_Mixin extends Mixin
 		$retval = array();
 
 		// Or generate SQL query
-		if (!$sql) $sql = $this->object->get_generated_query();
+		if (!$sql)
+            $sql = $this->object->get_generated_query();
 
 		// If we have a SQL statement to execute, then heck, execute it!
-		if ($sql) {
-            if ($this->object->debug) var_dump($sql);
-			$this->_wpdb()->query($sql);
-			if ($this->_wpdb()->last_result) {
-				$retval = array();
+		if ($sql)
+        {
+            if ($this->object->debug)
+                var_dump($sql);
 
-				// For each row, create an entity, update it's properties, and
-				// add it to the result set
-				if ($no_entities) $retval = $this->_wpdb()->last_result;
-				else foreach ($this->_wpdb()->last_result as $row) {
-					$retval[] = $this->_convert_to_entity($row);
-				}
+			$this->_wpdb()->query($sql);
+
+			if ($this->_wpdb()->last_result)
+            {
+				$retval = array();
+				// For each row, create an entity, update it's properties, and add it to the result set
+				if ($no_entities)
+                {
+                    $retval = $this->_wpdb()->last_result;
+                }
+				else {
+                    foreach ($this->_wpdb()->last_result as $row) {
+                        $retval[] = $this->_convert_to_entity($this->scrub_result($row));
+                    }
+                }
 			}
 		}
 
