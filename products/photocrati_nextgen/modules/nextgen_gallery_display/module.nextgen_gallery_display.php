@@ -105,9 +105,26 @@ class M_Gallery_Display extends C_Base_Module
 	{
 		// Add a shortcode for displaying galleries
 		add_shortcode('ngg_images', array(&$this, 'display_images'));
-
         add_action('init', array(&$this, '_register_resources'));
+        add_action('admin_bar_menu', array(&$this, 'add_admin_bar_menu'), 100);
 	}
+
+    /**
+     * Adds menu item to the admin bar
+     */
+    function add_admin_bar_menu()
+    {
+        global $wp_admin_bar;
+
+        if ( current_user_can('NextGEN Change options') ) {
+            $wp_admin_bar->add_menu(array(
+                'parent' => 'ngg-menu',
+                'id' => 'ngg-menu-display_settings',
+                'title' => __('Gallery Settings', 'nggallery'),
+                'href' => admin_url('admin.php?page=ngg_display_settings')
+            ));
+        }
+    }
 
     /**
      * Registers our static settings resources so the ATP module can find them later

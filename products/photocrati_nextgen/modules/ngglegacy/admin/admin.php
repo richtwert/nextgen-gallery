@@ -192,18 +192,13 @@ class nggAdminPanel{
     	$wp_admin_bar->add_menu( array( 'id' => 'ngg-menu', 'title' => __( 'Gallery' ), 'href' => admin_url('admin.php?page='. NGGFOLDER) ) );
         $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-overview', 'title' => __('Overview', 'nggallery'), 'href' => admin_url('admin.php?page='. NGGFOLDER) ) );
         if ( current_user_can('NextGEN Upload images') )
-            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-add-gallery', 'title' => __('Add Gallery / Images', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-add-gallery') ) );
+            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-add-gallery', 'title' => __('Add Gallery / Images', 'nggallery'), 'href' => admin_url('admin.php?page=ngg_addgallery') ) );
         if ( current_user_can('NextGEN Manage gallery') )
-            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-manage-gallery', 'title' => __('Manage Gallery', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-manage-gallery') ) );
+            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-manage-gallery', 'title' => __('Manage Galleries', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-manage-gallery') ) );
         if ( current_user_can('NextGEN Edit album') )
-            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-manage-album', 'title' => _n( 'Album', 'Albums', 1, 'nggallery' ), 'href' => admin_url('admin.php?page=nggallery-manage-album') ) );
+            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-manage-album', 'title' => _n( 'Manage Albums', 'Manage Albums', 1, 'nggallery' ), 'href' => admin_url('admin.php?page=nggallery-manage-album') ) );
         if ( current_user_can('NextGEN Manage tags') )
-            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-tags', 'title' => __('Tags', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-tags') ) );
-        if ( current_user_can('NextGEN Change options') )
-            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-options', 'title' => __('Options', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-options') ) );
-        if ( wpmu_enable_function('wpmuStyle') && ( current_user_can('NextGEN Change style') ))
-            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-style', 'title' => __('Style', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-style') ) );
-        $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-about', 'title' => __('About', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-about') ) );
+            $wp_admin_bar->add_menu( array( 'parent' => 'ngg-menu', 'id' => 'ngg-menu-tags', 'title' => __('Manage Tags', 'nggallery'), 'href' => admin_url('admin.php?page=nggallery-tags') ) );
     }
 
     // show the network page
