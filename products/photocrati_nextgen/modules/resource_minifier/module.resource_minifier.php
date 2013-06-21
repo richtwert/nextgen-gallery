@@ -79,7 +79,7 @@ class M_Resource_Minifier extends C_Base_Module
         $tags = ob_get_clean();
 
         // Move the style tags to the head element
-        echo str_replace("</head>", $tags."</head>", $contents);
+        echo str_ireplace("</head>", $tags."</head>", $contents);
     }
 
     function register_lazy_resources()
