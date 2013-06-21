@@ -38,14 +38,15 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function _register_hooks()
     {
-        add_action('init', array(&$this, 'register_lazy_resources'));
+        add_action('init', array($this, 'start_buffering'));
         add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
-        add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
-        add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+        add_action('wp_print_footer_scripts', array($this, 'move_resource_tags'), 1);
+        add_action('wp_print_footer_scripts', array($this, 'write_footer_tags'), 2);
+        add_action('admin_print_footer_scripts', array($this, 'move_resource_tags'), 1);
+        add_action('admin_print_footer_scripts', array($this, 'write_footer_tags'), 2);
         add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
-        //add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
 
     function _register_utilities()
@@ -53,11 +54,32 @@ class M_Resource_Minifier extends C_Base_Module
         $this->get_registry()->add_utility('I_Resource_Manager', 'C_Resource_Manager_Controller');
     }
 
-
     function _register_adapters()
     {
         $this->get_registry()->add_adapter('I_Installer', 'A_Resource_Minifier_Installer');
         $this->get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
+    }
+    
+    function start_buffering()
+    {
+    	ob_start();
+    	
+    	$this->register_lazy_resources();
+    }
+    
+    function move_resource_tags()
+    {
+        // Get the buffer of the page thus far
+    	$contents = ob_get_clean();
+        $tags = null;
+
+        // Get the style tags
+        ob_start();
+        $this->write_resource_tags('styles');
+        $tags = ob_get_clean();
+
+        // Move the style tags to the head element
+        echo str_ireplace("</head>", $tags."</head>", $contents);
     }
 
     function register_lazy_resources()
@@ -234,6 +256,21 @@ class M_Resource_Minifier extends C_Base_Module
                             }
                         }
                     }
+
+                    // We're not in the footer, meaning we don't have to lazy load
+                    else {
+                        if ($this->minifier_enabled) {
+                            $url = $router->get_url("/nextgen-{$group}/{$resource_type}", FALSE).'?load='.$handles;
+                            echo "<link href='{$url}' rel='stylesheet' type='text/css'/>\n";
+                        }
+                        else {
+                            foreach ($this->resources[$resource_type][$group] as $handle) {
+                                $url = $this->resources[$resource_type]['map'][$handle];
+                                echo "<link href='{$url}' rel='stylesheet' type='text/css' name='{$handle}-css'/>\n";
+                            }
+                        }
+                    }
+
                 }
 
                 $resources = &$this->resources[$resource_type];
