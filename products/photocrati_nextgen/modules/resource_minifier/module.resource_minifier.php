@@ -46,9 +46,7 @@ class M_Resource_Minifier extends C_Base_Module
         add_action('wp_print_footer_scripts', array($this, 'write_footer_tags'), 2);
         add_action('admin_print_footer_scripts', array($this, 'move_resource_tags'), 1);
         add_action('admin_print_footer_scripts', array($this, 'write_footer_tags'), 2);
-        
         add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
-        //add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
 
     function _register_utilities()
@@ -161,7 +159,7 @@ class M_Resource_Minifier extends C_Base_Module
             $this->minifier_enabled = FALSE;
         else {
             $settings = $this->_get_registry()->get_utility('I_Settings_Manager');
-            $this->minifier_enabled = $settings->resource_minifier = TRUE;
+            $this->minifier_enabled = $settings->resource_minifier;
         }
     }
 
