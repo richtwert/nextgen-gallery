@@ -38,12 +38,15 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function _register_hooks()
     {
-        add_action('init', array(&$this, 'register_lazy_resources'));
+        add_action('init', array($this, 'wp_init'));
         add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
-        add_action('wp_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
-        add_action('admin_print_footer_scripts', array(&$this, 'write_footer_tags'), 1);
+        add_action('wp_print_footer_scripts', array($this, 'move_resource_tags'), 1);
+        add_action('wp_print_footer_scripts', array($this, 'write_footer_tags'), 2);
+        add_action('admin_print_footer_scripts', array($this, 'move_resource_tags'), 1);
+        add_action('admin_print_footer_scripts', array($this, 'write_footer_tags'), 2);
+        
         add_filter('script_loader_src', array(&$this, 'append_script'), PHP_INT_MAX, 2);
         //add_filter('style_loader_src', array(&$this, 'append_stylesheet'), PHP_INT_MAX, 2);
     }
@@ -53,11 +56,41 @@ class M_Resource_Minifier extends C_Base_Module
         $this->get_registry()->add_utility('I_Resource_Manager', 'C_Resource_Manager_Controller');
     }
 
-
     function _register_adapters()
     {
         $this->get_registry()->add_adapter('I_Installer', 'A_Resource_Minifier_Installer');
         $this->get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
+    }
+    
+    function wp_init()
+    {
+    	ob_start();
+    	
+    	$this->register_lazy_resources();
+    }
+    
+    function move_resource_tags()
+    {
+    	$contents = ob_get_clean();
+    	$matches = null;
+    	
+  		$tags = null;
+
+      ob_start();
+      wp_print_styles();
+      $tags = ob_get_clean();
+			
+    	if (preg_match('/<\\/head>/i', $contents, $matches, PREG_OFFSET_CAPTURE))
+    	{
+    		$offset = $matches[0][1];
+    		
+    		$start = substr($contents, 0, $offset);
+    		$end = substr($contents, $offset);
+    		
+    		$contents = $start . $tags . $end;
+    	}
+    	
+    	echo $contents;
     }
 
     function register_lazy_resources()
