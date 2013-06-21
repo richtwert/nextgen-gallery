@@ -23,6 +23,25 @@ class M_NextGen_Other_Options extends C_Base_Module
 		);
 	}
 
+    function _register_hooks()
+    {
+        add_action('admin_bar_menu', array(&$this, 'add_admin_bar_menu'), 101);
+    }
+
+    function add_admin_bar_menu()
+    {
+        global $wp_admin_bar;
+
+        if ( current_user_can('NextGEN Change options') ) {
+            $wp_admin_bar->add_menu(array(
+                'parent' => 'ngg-menu',
+                'id' => 'ngg-menu-other_options',
+                'title' => __('Other Options', 'nggallery'),
+                'href' => admin_url('admin.php?page=ngg_other_options')
+            ));
+        }
+    }
+
 	function _register_adapters()
 	{
 		$this->get_registry()->add_adapter(
