@@ -38,7 +38,7 @@ class M_Resource_Minifier extends C_Base_Module
      */
     function _register_hooks()
     {
-        add_action('init', array($this, 'wp_init'));
+        add_action('init', array($this, 'start_buffering'));
         add_action('wp_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('admin_print_footer_scripts', array(&$this, 'start_lazy_loading'), PHP_INT_MAX);
         add_action('wp_enqueue_scripts', array(&$this, 'write_tags'), PHP_INT_MAX);
@@ -60,7 +60,7 @@ class M_Resource_Minifier extends C_Base_Module
         $this->get_registry()->add_adapter('I_Router', 'A_Resource_Minifier_Routes');
     }
     
-    function wp_init()
+    function start_buffering()
     {
     	ob_start();
     	
@@ -69,26 +69,17 @@ class M_Resource_Minifier extends C_Base_Module
     
     function move_resource_tags()
     {
+        // Get the buffer of the page thus far
     	$contents = ob_get_clean();
-    	$matches = null;
-    	
-  		$tags = null;
+        $tags = null;
 
-      ob_start();
-      $this->write_resource_tags('styles');
-      $tags = ob_get_clean();
-			
-    	if (preg_match('/<\\/head>/i', $contents, $matches, PREG_OFFSET_CAPTURE))
-    	{
-    		$offset = $matches[0][1];
-    		
-    		$start = substr($contents, 0, $offset);
-    		$end = substr($contents, $offset);
-    		
-    		$contents = $start . $tags . $end;
-    	}
-    	
-    	echo $contents;
+        // Get the style tags
+        ob_start();
+        $this->write_resource_tags('styles');
+        $tags = ob_get_clean();
+
+        // Move the style tags to the head element
+        echo str_replace("</head>", $tags."</head>", $contents);
     }
 
     function register_lazy_resources()
