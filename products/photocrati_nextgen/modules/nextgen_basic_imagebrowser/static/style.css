@@ -7,6 +7,10 @@
     text-align: center;
 }
 
+.ngg-imagebrowser-desc {
+    clear: both;
+}
+
 .ngg-imagebrowser img {
     border: 1px solid #A9A9A9;
     margin-top: 10px;

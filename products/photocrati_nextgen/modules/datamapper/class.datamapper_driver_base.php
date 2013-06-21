@@ -501,6 +501,28 @@ class Mixin_DataMapper_Driver_Base extends Mixin
 			if ($value === '' OR is_null($value)) $object->$field = $default_value;
 		}
 	}
+
+    function scrub_result($result)
+    {
+        if (is_object($result))
+        {
+            $new_result = new stdClass();
+            foreach ($result as $key => $value) {
+                $new_value = $this->scrub_result($value);
+                $new_result->$key = $new_value;
+            }
+            return $new_result;
+        }
+        else if (is_array($result)) {
+            $new_array = array();
+            foreach ($result as $key => $value) {
+                $new_array[$key] = $this->scrub_result($value);
+            }
+            return $new_array;
+        } else {
+            return stripslashes($result);
+        }
+    }
 }
 
 class C_DataMapper_Driver_Base extends C_Component
