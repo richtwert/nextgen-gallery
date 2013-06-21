@@ -74,7 +74,7 @@
                 plupload_options.url = photocrati_ajax_url;
                 plupload_options.preinit = {
                     PostInit: function(up){
-			if (navigator.appVersion.indexOf("MSIE 10") > -1) {
+			            if (navigator.appVersion.indexOf("MSIE 10") > -1) {
                         	up.features.triggerDialog = true;
                     	}
 
@@ -115,8 +115,6 @@
                             e.preventDefault();
 
                             var up = $('#uploader').pluploadQueue();
-//                            up.settings.multipart_params.gallery_id = $gallery_id.val();
-//                            up.settings.multipart_params.gallery_name = $gallery_name.val();
 
                             if ($gallery_id.val() == 0 && $gallery_name.val().length == 0) {
                                 $gallery_name.addClass('error');
@@ -160,7 +158,8 @@
                         if (up.state == plupload.STOPPED) {
                             $.gritter.add({
                                 title: "Upload complete",
-                                text: msg
+                                text: msg,
+                                sticky: true
                             });
                             setTimeout(function(){
                                 reinit_plupload(up);
@@ -187,8 +186,6 @@
                         }
                         window.uploaded_image_ids = window.uploaded_image_ids.concat(response.image_ids);
                         up.settings.url = window.set_plupload_url(response.gallery_id, $gallery_name.val());
-//                        up.settings.multipart_params.gallery_id = response.gallery_id;
-//                        up.settings.multipart_params.gallery_name = $gallery_name.val();
 
                         // If we created a new gallery, ensure it's now in the drop-down list, and select it
                         if ($gallery_id.find('option[value="'+response.gallery_id+'"]').length == 0) {

@@ -28,19 +28,18 @@ class A_Upload_Images_Form extends Mixin
     {
         $retval = array();
 
-        // Generate default Plupload options
-        $retval['runtimes']             = 'gears,browserplus,html5,flash,silverlight,html4';
+        // Internet Explorer doesn't yet support the HTML5 runtime
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') == FALSE) {
+            $retval['runtimes']             = 'gears,browserplus,html5,flash,silverlight,html4';
+        }
+        else {
+            $retval['runtimes']             = 'gears,browserplus,flash,silverlight,html4';
+        }
         $retval['max_file_size']        = strval(round( (int) wp_max_upload_size() / 1024 )).'kb';
         $retval['filters']              = $this->object->get_plupload_filters();
         $retval['flash_swf_url']        = includes_url('js/plupload/plupload.flash.swf');
         $retval['silverlight_xap_url']  = includes_url('js/plupload/plupload.silverlight.xap');
-//        $retval['multipart']            = TRUE;
         $retval['debug']                = TRUE;
-//        $retval['multipart_params']     = array(
-//            'gallery_id'    =>  0,
-//            'action'        =>  'upload_image',
-//            'gallery_name'  =>  ''
-//        );
 
         return $retval;
     }
