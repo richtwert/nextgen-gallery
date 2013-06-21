@@ -77,7 +77,7 @@ class M_Resource_Minifier extends C_Base_Module
   		$tags = null;
 
       ob_start();
-      wp_print_styles();
+      $this->write_resource_tags('styles');
       $tags = ob_get_clean();
 			
     	if (preg_match('/<\\/head>/i', $contents, $matches, PREG_OFFSET_CAPTURE))
@@ -161,7 +161,7 @@ class M_Resource_Minifier extends C_Base_Module
             $this->minifier_enabled = FALSE;
         else {
             $settings = $this->_get_registry()->get_utility('I_Settings_Manager');
-            $this->minifier_enabled = $settings->resource_minifier;
+            $this->minifier_enabled = $settings->resource_minifier = TRUE;
         }
     }
 
@@ -267,6 +267,21 @@ class M_Resource_Minifier extends C_Base_Module
                             }
                         }
                     }
+
+                    // We're not in the footer, meaning we don't have to lazy load
+                    else {
+                        if ($this->minifier_enabled) {
+                            $url = $router->get_url("/nextgen-{$group}/{$resource_type}", FALSE).'?load='.$handles;
+                            echo "<link href='{$url}' rel='stylesheet' type='text/css'/>\n";
+                        }
+                        else {
+                            foreach ($this->resources[$resource_type][$group] as $handle) {
+                                $url = $this->resources[$resource_type]['map'][$handle];
+                                echo "<link href='{$url}' rel='stylesheet' type='text/css' name='{$handle}-css'/>\n";
+                            }
+                        }
+                    }
+
                 }
 
                 $resources = &$this->resources[$resource_type];
