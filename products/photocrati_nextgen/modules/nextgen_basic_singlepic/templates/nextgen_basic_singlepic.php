@@ -9,21 +9,22 @@
 
     $this->include_template('nextgen_gallery_display#image/before', $template_params);
     
+		$image_size = $storage->get_original_dimensions($image);
+
+		if ($image_size == null) {
+			$image_size['width'] = $image->meta_data['width'];
+			$image_size['height'] = $image->meta_data['height'];
+		}
+		
+		$image_ratio = $image_size['width'] / $image_size['height'];
+    
     $width = isset($settings['width']) ? $settings['width'] : null;
     $height = isset($settings['height']) ? $settings['height'] : null;
 		
 		if ($width != null && $height != null)
 		{
-			$image_size = $storage->get_original_dimensions($image);
-
-			if ($image_size == null) {
-				$image_size['width'] = $image->meta_data['width'];
-				$image_size['height'] = $image->meta_data['height'];
-			}
-			
 			// check image aspect ratio, avoid distortions
 			$aspect_ratio = $width / $height;
-			$image_ratio = $image_size['width'] / $image_size['height'];
 			if ($image_ratio > $aspect_ratio) {
 				if ($image_size['width'] > $width) {
 					$height = (int) round($width / $image_ratio);
@@ -34,6 +35,15 @@
 					$width = (int) round($height * $image_ratio);
 				}
 			}
+			
+			// Ensure that height is always null, or else the image won't be responsive correctly
+			$height = null;
+		}
+		else if ($height != null)
+		{
+			$width = (int) round($height * $image_ratio);
+			// Ensure that height is always null, or else the image won't be responsive correctly
+			$height = null;
 		}
 
     ?>
