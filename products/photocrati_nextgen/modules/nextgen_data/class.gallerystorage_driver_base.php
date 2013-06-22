@@ -547,7 +547,9 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
                         'width'		=>	$dimensions[0],
                         'height'	=>	$dimensions[1]
                     );
-                    if (!isset($image->meta_data)) $image->meta_data = array();
+                    if (!isset($image->meta_data) OR (is_string($image->meta_data) && strlen($image->meta_data) == 0)) {
+                        $image->meta_data = array();
+                    }
                     $image->meta_data = array_merge($image->meta_data, $full_meta);
                     $image->meta_data['full'] = $full_meta;
 
