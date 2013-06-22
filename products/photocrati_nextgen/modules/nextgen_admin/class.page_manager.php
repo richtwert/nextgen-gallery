@@ -111,30 +111,32 @@ class Mixin_Page_Manager extends Mixin
 					$item_index = -1;
 					$before_index = -1;
 					
-					foreach ($parent as $index => $menu) {
+					if ($parent != null) {
+						foreach ($parent as $index => $menu) {
 						
-						// under add_submenu_page, $menu_slug is index 2
-						// $submenu[$parent_slug][] = array ( $menu_title, $capability, $menu_slug, $page_title );
-						if ($menu[2] == $slug) {
-							$item_index = $index;
-						}
-						else if ($menu[2] == $properties['before']) {
-							$before_index = $index;
+							// under add_submenu_page, $menu_slug is index 2
+							// $submenu[$parent_slug][] = array ( $menu_title, $capability, $menu_slug, $page_title );
+							if ($menu[2] == $slug) {
+								$item_index = $index;
+							}
+							else if ($menu[2] == $properties['before']) {
+								$before_index = $index;
+							}
 						}
 					}
-					
+				
 					if ($item_index > -1 && $before_index > -1) {
-					
+				
 						$item = $parent[$item_index];
-						
+					
 						unset($parent[$item_index]);
 						$parent = array_values($parent);
-						
+					
 						if ($item_index < $before_index) 
 							$before_index--;
-							
-						array_splice($parent, $before_index, 0, array($item));
 						
+						array_splice($parent, $before_index, 0, array($item));
+					
 						$submenu[$properties['parent']] = $parent;
 					}
 				}
