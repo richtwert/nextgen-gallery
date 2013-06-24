@@ -73,6 +73,7 @@ class Mixin_Settings_Installer extends Mixin
 	function install($product)
 	{
         if ($product != NEXTGEN_GALLERY_PLUGIN_BASENAME) { return; }
+        C_Component_Factory::$_instances = array();
 		$list = $this->object->_get_product_install_list();
 		$this->object->settings->product_install_list = $list;
 		$this->object->global_settings->save();

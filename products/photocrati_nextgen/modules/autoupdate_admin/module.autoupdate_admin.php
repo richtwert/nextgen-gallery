@@ -75,7 +75,7 @@ class M_AutoUpdate_Admin extends C_Base_Module
 		      );
 
 					wp_register_style(
-						'jquery-ui', NEXTGEN_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL . '/jquery-ui/jquery-ui-1.8.16.custom.css', false, '1.8.16'
+						'jquery-ui', NEXTGEN_GALLERY_AUTOUPDATE_ADMIN_MOD_STATIC_URL . '/jquery-ui/jquery-ui-1.9.1.custom.css', false, '1.8.16'
 					);
 
 		      wp_register_style(
