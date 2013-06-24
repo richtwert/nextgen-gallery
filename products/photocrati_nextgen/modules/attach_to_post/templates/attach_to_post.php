@@ -11,16 +11,16 @@
 		<div id="attach_to_post_tabs">
             <div class='ui-tabs-icon'><span class="nextgen_logo"><?php echo_h('NextGEN')?></span> <span class="nextgen_logo_sub"><?php echo_h('Gallery')?></span></div>
 			<ul>
-			<?php foreach ($tab_titles as $title => $id): ?>
+            <?php foreach ($tabs as $id => $tab_params): ?>
 				<li>
 					<a href='#<?php echo esc_attr($id)?>'>
-						<?php echo_h($title) ?>
+						<?php echo_h($tab_params['title']) ?>
 					</a>
 				</li>
 			<?php endforeach ?>
 			</ul>
-			<?php foreach ($tabs as $id => $tab_content): ?>
-			<div class="main_menu_tab" id="<?php echo esc_attr($id) ?>"><?php echo $tab_content ?></div>
+			<?php reset($tabs); foreach ($tabs as $id => $tab_params): ?>
+			<div class="main_menu_tab" id="<?php echo esc_attr($id) ?>"><?php echo $tab_params['content'] ?></div>
 			<?php endforeach ?>
 		</div>
 

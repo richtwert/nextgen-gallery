@@ -118,8 +118,7 @@ class Mixin_Attach_To_Post extends Mixin
 		// Enqueue resources
 		$this->object->render_view('attach_to_post#attach_to_post', array(
 			'page_title'	=>	$this->object->_get_page_title(),
-			'tabs'			=>	$this->object->_get_main_tabs(),
-			'tab_titles'	=>	$this->object->_get_main_tab_titles()
+			'tabs'			=>	$this->object->_get_main_tabs()
 		));
 	}
 
@@ -190,24 +189,47 @@ class Mixin_Attach_To_Post extends Mixin
 	 */
 	function _get_main_tabs()
 	{
-		return array(
-			'displayed_tab'		=> $this->object->_render_display_tab(),
-			'create_tab'		=> $this->object->_render_create_tab(),
-			'galleries_tab'		=> $this->object->_render_galleries_tab(),
-			'albums_tab'		=> $this->object->_render_albums_tab(),
-			'tags_tab'			=> $this->object->_render_tags_tab()
-		);
-	}
+        $retval = array();
 
-	function _get_main_tab_titles()
-	{
-		return array(
-			_('Display Galleries') => 'displayed_tab',
-			_('Add Gallery / Images')  => 'create_tab',
-			_('Manage Galleries')			  => 'galleries_tab',
-			_('Manage Albums')				  => 'albums_tab',
-			_('Manage Tags')				  => 'tags_tab',
-		);
+        $security   = $this->get_registry()->get_utility('I_Security_Manager');
+        $sec_actor  = $security->get_current_actor();
+
+        if ($sec_actor->is_allowed('NextGEN Manage gallery')) {
+            $retval['displayed_tab']    = array(
+                'content'   => $this->object->_render_display_tab(),
+                'title'     => _('Display Galleries')
+            );
+        }
+
+        if ($sec_actor->is_allowed('NextGEN Upload images')) {
+            $retval['create_tab']       = array(
+                'content'   =>  $this->object->_render_create_tab(),
+                'title'     =>  _('Add Gallery / Images')
+            );
+        }
+
+        if ($sec_actor->is_allowed('NextGEN Manage others gallery') && $sec_actor->is_allowed('NextGEN Manage gallery')) {
+            $retval['galleries_tab']    = array(
+                'content'   =>  $this->object->_render_galleries_tab(),
+                'title'     =>  _('Manage Galleries')
+            );
+        }
+
+        if ($sec_actor->is_allowed('NextGEN Edit album')) {
+            $retval['albums_tab']       = array(
+                'content'   =>  $this->object->_render_albums_tab(),
+                'title'     =>  _('Manage Albums')
+            );
+        }
+
+        if ($sec_actor->is_allowed('NextGEN Manage tags')) {
+            $retval['tags_tab']         = array(
+                'content'   =>  $this->object->_render_tags_tab(),
+                'title'     =>  _('Manage Tags')
+            );
+        }
+
+		return $retval;
 	}
 
 	/**

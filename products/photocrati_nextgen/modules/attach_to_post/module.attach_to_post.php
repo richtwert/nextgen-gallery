@@ -281,7 +281,13 @@ class M_Attach_To_Post extends C_Base_Module
 		);
 
 		// Registers our tinymce button and plugin for attaching galleries
-        if (current_user_can('edit_posts') || current_user_can('edit_pages')) {
+        $security   = $this->get_registry()->get_utility('I_Security_Manager');
+        $sec_actor  = $security->get_current_actor();
+        $checks = array(
+            $sec_actor->is_allowed('NextGEN Attach Interface'),
+            $sec_actor->is_allowed('NextGEN Use TinyMCE')
+        );
+        if (!in_array(FALSE, $checks)) {
             if (get_user_option('rich_editing') == 'true') {
                 add_filter('mce_buttons', array(&$this, 'add_attach_to_post_button'));
                 add_filter('mce_external_plugins', array(&$this, 'add_attach_to_post_tinymce_plugin'));
