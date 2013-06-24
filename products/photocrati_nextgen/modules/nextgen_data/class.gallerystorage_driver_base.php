@@ -435,10 +435,24 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
     function is_zip()
     {
         $retval = FALSE;
-
+        
         if ((isset($_FILES['file']) && $_FILES['file']['error'] == 0)) {
             $file_info = $_FILES['file'];
-            $retval = (isset($file_info['type']) && in_array($file_info['type'], array('application/zip', 'application/octet-stream')));
+            
+            if (isset($file_info['type'])) {
+            	$type = $file_info['type'];
+            	$type_parts = explode('/', $type);
+            	
+            	if (strtolower($type_parts[0]) == 'application') {
+            		$spec = $type_parts[1];
+            		$spec_parts = explode('-', $spec);
+            		$spec_parts = array_map('strtolower', $spec_parts);
+            		
+            		if (in_array($spec, array('zip', 'octet-stream')) || in_array('zip', $spec_parts)) {
+            			$retval = true;
+            		}
+            	}
+            }
         }
 
         return $retval;
