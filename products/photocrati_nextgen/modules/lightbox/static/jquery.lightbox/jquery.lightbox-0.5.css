@@ -78,6 +78,8 @@
 	overflow: auto;
 	width: 100%;
 	padding: 0 10px 0;
+	position: relative;
+	min-height: 32px;
 }
 #lightbox-container-image-data {
 	padding: 0 10px; 
