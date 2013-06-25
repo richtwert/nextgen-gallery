@@ -28,7 +28,7 @@ class Mixin_NextGen_Basic_Album_Form extends Mixin_Display_Type_Form
                 'gallery_display_type'          =>  $display_type->settings['gallery_display_type'],
                 'galleries_per_page_label'      =>  _('Galleries per page'),
                 'galleries_per_page'            =>  $display_type->settings['galleries_per_page'],
-                'display_types'                 =>  $mapper->find_all()
+                'display_types'                 =>  $mapper->find_by_entity_type('image')
             ),
             TRUE
         );
