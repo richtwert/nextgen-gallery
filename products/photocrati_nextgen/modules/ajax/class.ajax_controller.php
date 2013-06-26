@@ -13,6 +13,9 @@ class C_Ajax_Controller extends C_MVC_Controller
 	function index_action()
 	{
 		$retval = FALSE;
+        $error_reporting = error_reporting(
+            E_CORE_ERROR|E_CORE_WARNING|E_COMPILE_ERROR|E_ERROR|E_PARSE|E_USER_ERROR|E_USER_WARNING|E_RECOVERABLE_ERROR
+        );
 
 		// Inform the MVC framework what type of content we're returning
 		$this->set_content_type('json');
@@ -31,6 +34,9 @@ class C_Ajax_Controller extends C_MVC_Controller
 
 		// Return the JSON to the browser
 		echo json_encode($retval);
+
+        // reset the reporting level
+        error_reporting($error_reporting);
 	}
 
 
