@@ -79,14 +79,9 @@ class A_NextGen_Basic_Album_Controller extends Mixin
         // If there are entities to be displayed
         if ($entities)
         {
-            // Add additional parameters
-            $display_settings['image_gen']    = &$this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
-            $display_settings['current_page'] = $current_page;
-            $display_settings['entities']     = &$entities;
-            $display_settings['storage']      = &$this->object->get_registry()->get_utility('I_Gallery_Storage');
-
-            // Add pagination, if needed. Not supported yet
-            if (FALSE) {// $display_settings['galleries_per_page']) {
+            if (!empty($display_settings['template']))
+            {
+                // Add additional parameters
                 $pagination_result = $this->object->create_pagination(
                     $current_page,
                     $displayed_gallery->get_entity_count(),
@@ -94,18 +89,35 @@ class A_NextGen_Basic_Album_Controller extends Mixin
                     urldecode($this->object->param('ajax_pagination_referrer'))
                 );
                 $this->object->remove_param('ajax_pagination_referrer');
+                $display_settings['current_page'] = $current_page;
+                $display_settings['entities']     = &$entities;
                 $display_settings['pagination_prev'] = $pagination_result['prev'];
                 $display_settings['pagination_next'] = $pagination_result['next'];
                 $display_settings['pagination']      = $pagination_result['output'];
+
+                // Render legacy template
+                $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
+                $display_settings = $this->prepare_legacy_album_params($display_settings);
+                return $this->object->legacy_render($display_settings['template'], $display_settings, $return, 'album');
             }
+            else {
+                $params = $display_settings;
+                $albums = $this->prepare_legacy_album_params(array('entities' => $entities));;
+                $params['galleries'] = $albums['galleries'];
+                $params['displayed_gallery'] = $displayed_gallery;
+                $params = $this->object->prepare_display_parameters($displayed_gallery, $params);
 
-            // Render legacy template
-            $this->object->add_mixin('Mixin_NextGen_Basic_Templates');
-            $display_settings = $this->prepare_legacy_album_params($display_settings);
-            $retval = $this->object->legacy_render($display_settings['template'], $display_settings, TRUE, 'album');
+                switch ($displayed_gallery->display_type) {
+                    case NEXTGEN_GALLERY_NEXTGEN_BASIC_COMPACT_ALBUM:
+                        $template = 'compact';
+                        break;
+                    case NEXTGEN_GALLERY_NEXTGEN_BASIC_EXTENDED_ALBUM:
+                        $template = 'extended';
+                        break;
+                }
 
-            if ($return) return $retval;
-            else echo($retval);
+                return $this->object->render_view("nextgen_basic_album#{$template}", $params, $return);
+            }
         }
         else {
             return $this->object->render_partial('nextgen_gallery_display#no_images_found');
@@ -134,10 +146,9 @@ class A_NextGen_Basic_Album_Controller extends Mixin
 
     function prepare_legacy_album_params($params)
     {
-        $image_mapper           = $this->object->get_registry()->get_utility('I_Image_Mapper');
-        $application            = $this->object->get_registry()->get_utility('I_Router')->get_routed_app();
-        $storage                = $params['storage'];
-        $image_gen              = $params['image_gen'];
+        $image_mapper = $this->object->get_registry()->get_utility('I_Image_Mapper');
+        $storage      = $this->object->get_registry()->get_utility('I_Gallery_Storage');
+        $image_gen    = $this->object->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 
         // legacy templates expect these dimensions
         $image_gen_params       = array(
@@ -145,10 +156,6 @@ class A_NextGen_Basic_Album_Controller extends Mixin
             'height'            => 68,
             'crop'              => TRUE
         );
-
-        // If pagination is not set, then set it to FALSE
-        if (!isset($params['pagination']))
-            $params['pagination'] = FALSE;
 
         // Transform entities
         $params['galleries']    = $params['entities'];

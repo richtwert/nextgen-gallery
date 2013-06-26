@@ -1,3 +1,4 @@
+<?php $this->start_element('nextgen_gallery.gallery_container', 'container', $displayed_gallery); ?>
 <?php if ($show_thumbnail_link): ?>
 <!-- Thumbnails Link -->
 <div class="slideshowlink">
@@ -207,3 +208,4 @@
 	//]]>
 	</script>
 <?php endif ?>
+<?php $this->end_element(); ?>

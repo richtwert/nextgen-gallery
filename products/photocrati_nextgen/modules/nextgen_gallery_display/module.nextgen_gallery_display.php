@@ -96,6 +96,7 @@ class M_Gallery_Display extends C_Base_Module
         );
         
 		$this->get_registry()->add_adapter('I_MVC_View', 'A_Gallery_Display_View');
+        $this->get_registry()->add_adapter('I_MVC_View', 'A_Displayed_Gallery_Related_Element');
 	}
 
 	/**
@@ -199,6 +200,7 @@ class M_Gallery_Display extends C_Base_Module
         return array(
             'A_Display_Settings_Controller' => 'adapter.display_settings_controller.php',
             'A_Display_Settings_Page' => 'adapter.display_settings_page.php',
+            'A_Displayed_Gallery_Related_Element' => 'adapter.displayed_gallery_related_element.php',
             'A_Gallery_Display_Factory' => 'adapter.gallery_display_factory.php',
             'A_Gallery_Display_Installer' => 'adapter.gallery_display_installer.php',
             'A_Gallery_Display_Routes' => 'adapter.gallery_display_routes.php',
