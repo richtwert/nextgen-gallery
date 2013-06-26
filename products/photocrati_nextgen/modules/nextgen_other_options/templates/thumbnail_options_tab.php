@@ -25,8 +25,20 @@
 			</label>
 		</td>
 		<td colspan="2">
-			<input type="checkbox" name="thumbnail_settings[thumbfix]" id="thumbnail_crop" value="1" <?php checked('1', $thumbnail_crop); ?> />
-			<p class="description"><?php echo_h($thumbnail_crop_help)?></p>
+            <input type="radio"
+                   id="thumbnail_crop"
+                   name="thumbnail_settings[thumbfix]"
+                   value="1"
+                <?php checked(1, $thumbnail_crop); ?>/>
+            <label for="thumbnail_crop"><?php _e('Yes'); ?></label>
+            &nbsp;
+            <input type="radio"
+                   id="thumbnail_crop_no"
+                   name="thumbnail_settings[thumbfix]"
+                   value="0"
+                <?php checked(0, $thumbnail_crop); ?>/>
+            <label for="thumbnail_crop_no"><?php _e('No'); ?></label>
+			<p class="description"><?php echo_h($thumbnail_crop_help); ?></p>
 		</td>
 	</tr>
 	<tr>
