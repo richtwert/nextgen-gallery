@@ -47,6 +47,7 @@
 		}
 
     ?>
+    <?php $this->start_element('nextgen_gallery.gallery_container', 'container', $displayed_gallery); ?>
     <a href="<?php echo esc_attr($settings['link']); ?>"
        title="<?php echo esc_attr($image->description)?>"
        data-image-id='<?php echo esc_attr($image->pid); ?>'
@@ -58,6 +59,7 @@
              <?php if ($width) { ?> width="<?php echo esc_attr($width); ?>" <?php } ?>
              <?php if ($height) { ?> height="<?php echo esc_attr($height); ?>" <?php } ?>/></a>
     <?php if (!is_null($inner_content)) { ?><span><?php echo $inner_content; ?></span><?php } ?>
+    <?php $this->end_element(); ?>
     <?php $this->include_template('nextgen_gallery_display#image/after', $template_params); ?>
 <?php else: ?>
     <p>No image found</p>

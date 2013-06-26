@@ -129,10 +129,6 @@ class NextGEN_shortcodes {
             }
         }
 
-        // attach related images based on category or tags
-        if ($ngg_options['activateTags'])
-            $content .= nggShowRelatedImages();
-
         return $content;
     }
 }

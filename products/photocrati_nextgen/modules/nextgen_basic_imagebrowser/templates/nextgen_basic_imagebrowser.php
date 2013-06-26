@@ -1,8 +1,4 @@
-<?php
-
-$this->include_template('nextgen_gallery_display#container/before');
-
-?>
+<?php $this->start_element('nextgen_gallery.gallery_container', 'container', $displayed_gallery); ?>
 	<div class='ngg-imagebrowser' id='<?php echo $anchor; ?>'>
 
     <h3><?php echo esc_attr($image->alttext); ?></h3>
@@ -64,5 +60,4 @@ $this->include_template('nextgen_gallery_display#container/before');
     </div>
 
 </div>
-
-<?php $this->include_template('nextgen_gallery_display#container/after'); ?>
+<?php $this->end_element(); ?>

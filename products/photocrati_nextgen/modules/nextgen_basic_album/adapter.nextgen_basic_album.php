@@ -33,7 +33,6 @@ class Hook_NextGen_Basic_Album_Validation extends Hook
 {
     function validation()
     {
-      $this->object->validates_presence_of('template');
       $this->object->validates_presence_of('gallery_display_type');
       $this->object->validates_numericality_of('galleries_per_page');
     }
