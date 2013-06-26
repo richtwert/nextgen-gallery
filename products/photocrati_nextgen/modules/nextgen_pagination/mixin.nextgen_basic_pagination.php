@@ -17,7 +17,7 @@ class Mixin_NextGen_Basic_Pagination extends Mixin
     public function create_pagination($page, $totalElement, $maxElement = 0, $current_url = NULL)
     {
         $prev_symbol = apply_filters('ngg_prev_symbol', '&#9668;');
-        $next_symbol = apply_filters('ngg_prev_symbol', '&#9658;');
+        $next_symbol = apply_filters('ngg_next_symbol', '&#9658;');
 
         if (empty($current_url))
             $current_url = $this->object->get_routed_url(TRUE);
