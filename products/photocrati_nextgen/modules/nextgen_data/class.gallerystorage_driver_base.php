@@ -498,6 +498,7 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 	 */
 	function upload_base64_image($gallery, $data, $filename=FALSE)
 	{
+        $settings = $this->object->get_registry()->get_utility('I_Settings_Manager');
         $memory_limit = intval(ini_get('memory_limit'));
         if ($memory_limit < 256) @ini_set('memory_limit', '256M');
 
@@ -554,6 +555,16 @@ class Mixin_GalleryStorage_Driver_Base extends Mixin
 					$fp = fopen($abs_filename, 'w');
 					fwrite($fp, $data);
 					fclose($fp);
+
+                    if ($settings->imgBackup)
+                        $this->object->backup_image($image);
+
+                    if ($settings->imgAutoResize)
+                        $this->object->generate_image_clone(
+                            $abs_filename,
+                            $abs_filename,
+                            $this->object->get_image_size_params($image_id, 'full')
+                        );
 
                     // Ensure that fullsize dimensions are added to metadata array
                     $dimensions = getimagesize($abs_filename);
