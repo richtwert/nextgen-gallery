@@ -101,13 +101,19 @@ class Mixin_Router extends Mixin
 	{
 		$fs = $this->get_registry()->get_utility('I_Fs');
 		$path = $fs->find_abspath($path, $module);
+
 		$base_url = $this->object->get_base_url();
 		$base_url = $this->object->remove_url_segment('/index.php', $base_url);
-		return str_replace(
+
+		$path = str_replace(
 			$fs->get_document_root(),
 			$base_url,
 			$path
 		);
+
+        // adjust for possible windows hosts
+        $path = str_replace('\\', '/', $path);
+        return $path;
 	}
 
 
