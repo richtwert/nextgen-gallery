@@ -61,8 +61,8 @@ class Mixin_NextGen_Settings extends Mixin
 			'maxImages'    => 7,      // number of images toshow
 
 			// Thumbnail Settings
-			'thumbwidth'   => 100,  // Thumb Width
-			'thumbheight'  => 75,   // Thumb height
+			'thumbwidth'   => 120,  // Thumb Width
+			'thumbheight'  => 90,   // Thumb height
 			'thumbfix'     => True, // Fix the dimension
 			'thumbquality' => 100,  // Thumb Quality
 
