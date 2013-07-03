@@ -282,9 +282,9 @@ class Mixin_Fs_Instance_Methods extends Mixin
 		}
 
 		$retval = implode('/', $retval);
-                
-                if (strpos($retval, '/') !== 0 && !preg_match("#^http(s)?://#", $retval))
-                    $retval = '/' . $retval;
+
+        if (strpos($retval, '/') !== 0 && !preg_match("#^http(s)?://#", $retval) && !file_exists($retval))
+            $retval = '/' . $retval;
 
 		return $retval;
 	}

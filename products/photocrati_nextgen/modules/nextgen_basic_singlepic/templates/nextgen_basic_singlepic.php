@@ -1,13 +1,7 @@
 <?php if (!empty($image)): ?>
     <?php
-
-    $template_params = array(
-            'index' => 0,
-            'class' => 'ngg-gallery-singlepic-image',
-            'image' => $image,
-        );
-
-    $this->include_template('nextgen_gallery_display#image/before', $template_params);
+    
+    $this->start_element('nextgen_gallery.gallery_container', 'container', $displayed_gallery);
     
 		$image_size = $storage->get_original_dimensions($image);
 
@@ -45,22 +39,49 @@
 			// Ensure that height is always null, or else the image won't be responsive correctly
 			$height = null;
 		}
+		
+		$style = null;
+		
+		if ($width) {
+			$style .= 'max-width: ' . $width . 'px';
+		}
+		
+		if ($height) {
+			$style .= 'max-height: ' . $height . 'px';
+		}
 
     ?>
-    <?php $this->start_element('nextgen_gallery.gallery_container', 'container', $displayed_gallery); ?>
-    <a href="<?php echo esc_attr($settings['link']); ?>"
-       title="<?php echo esc_attr($image->description)?>"
-       data-image-id='<?php echo esc_attr($image->pid); ?>'
+    <?php $this->start_element('nextgen_gallery.image_panel', 'item', $image); ?>
+    
+		<div class="ngg-gallery-singlepic-image <?php echo $settings['float']; ?>" style="<?php echo esc_attr($style); ?>">
+			<?php
+
+			$this->start_element('nextgen_gallery.image', 'item', $image);
+			
+			?>
+    	<a href="<?php echo esc_attr($settings['link']); ?>"
+		     title="<?php echo esc_attr($image->description)?>"
+		     data-image-id='<?php echo esc_attr($image->pid); ?>'
        <?php echo $effect_code ?>>
-        <img class="ngg-singlepic <?php echo $settings['float']; ?>"
+        	<img class="ngg-singlepic"
              src="<?php echo $thumbnail_url; ?>"
              alt="<?php echo esc_attr($image->alttext); ?>"
              title="<?php echo esc_attr($image->alttext); ?>"
              <?php if ($width) { ?> width="<?php echo esc_attr($width); ?>" <?php } ?>
-             <?php if ($height) { ?> height="<?php echo esc_attr($height); ?>" <?php } ?>/></a>
+             <?php if ($height) { ?> height="<?php echo esc_attr($height); ?>" <?php } ?> />
+    	</a>
+		  <?php
+		  
+		 		$this->end_element(); 
+		 	?>
+    </div>
     <?php if (!is_null($inner_content)) { ?><span><?php echo $inner_content; ?></span><?php } ?>
-    <?php $this->end_element(); ?>
-    <?php $this->include_template('nextgen_gallery_display#image/after', $template_params); ?>
+    <?php
+    
+   		$this->end_element(); 
+   		
+   		$this->end_element(); 
+    ?>
 <?php else: ?>
     <p>No image found</p>
 <?php endif ?>

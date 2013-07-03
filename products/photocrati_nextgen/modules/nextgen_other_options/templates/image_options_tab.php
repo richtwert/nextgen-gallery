@@ -26,14 +26,20 @@
 		</td>
 		<td colspan="2">
 			<p class="description">
-				<input
-					type="checkbox"
-					id="delete_images"
-					name="image_options[deleteImg]"
-					value="1"
-					<?php checked(TRUE, $delete_image_files? TRUE: FALSE)?>
-				/>
-				<?php echo_h($delete_image_files_help)?>
+                <input type="radio"
+                       id="delete_images"
+                       name="image_options[deleteImg]"
+                       value="1"
+                       <?php checked(1, $delete_image_files); ?>/>
+                <label for="delete_images"><?php _e('Yes'); ?></label>
+                &nbsp;
+                <input type="radio"
+                       id="delete_images_no"
+                       name="image_options[deleteImg]"
+                       value="0"
+                       <?php checked(0, $delete_image_files); ?>/>
+                <label for="delete_images_no"><?php _e('No'); ?></label>
+                <?php echo_h($delete_image_files_help); ?>
 			</p>
 		</td>
 	</tr>
@@ -45,16 +51,21 @@
 		</td>
 		<td colspan="2">
 			<p class="description">
-				<input
-					type="checkbox"
-					id="automatic_resize"
-					name="image_options[imgAutoResize]"
-					value="1"
-					<?php checked(TRUE, $automatic_resize ? TRUE : FALSE)?>
-				/>
-				<?php echo_h($automatic_resize_help) ?>
-			</p>
-
+                <input type="radio"
+                       id="automatic_resize"
+                       name="image_options[imgAutoResize]"
+                       value="1"
+                    <?php checked(1, $automatic_resize); ?>/>
+                <label for="automatic_resize"><?php _e('Yes'); ?></label>
+                &nbsp;
+                <input type="radio"
+                       id="automatic_resize_no"
+                       name="image_options[imgAutoResize]"
+                       value="0"
+                    <?php checked(0, $automatic_resize); ?>/>
+                <label for="automatic_resize_no"><?php _e('No'); ?></label>
+                <?php echo_h($automatic_resize_help); ?>
+            </p>
 		</td>
 	</tr>
 	<tr>
@@ -166,14 +177,20 @@
 		</td>
 		<td colspan="2">
 			<p class="description">
-				<input
-					type="checkbox"
-					id="show_related_images"
-					name="image_options[activateTags]"
-					value="1"
-					<?php checked(TRUE, $show_related_images ? TRUE: FALSE)?>
-				/>
-				<?php echo_h($show_related_images_help) ?>
+                <input type="radio"
+                       id="show_related_images"
+                       name="image_options[activateTags]"
+                       value="1"
+                       <?php checked(1, $show_related_images); ?>/>
+                <label for="show_related_images"><?php _e('Yes'); ?></label>
+                &nbsp;
+                <input type="radio"
+                       id="show_related_images_no"
+                       name="image_options[activateTags]"
+                       value="0"
+                       <?php checked(0, $show_related_images); ?>/>
+                <label for="show_related_images_no"><?php _e('No'); ?></label>
+                <?php echo_h($show_related_images_help); ?>
 			</p>
 		</td>
 	</tr>

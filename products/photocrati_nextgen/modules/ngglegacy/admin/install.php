@@ -141,8 +141,8 @@ function ngg_default_options() {
 	$ngg_options['maxImages']			= 7;  							// number of images toshow
 
 	// Thumbnail Settings
-	$ngg_options['thumbwidth']			= 100;  						// Thumb Width
-	$ngg_options['thumbheight']			= 75;  							// Thumb height
+	$ngg_options['thumbwidth']			= 120;  						// Thumb Width
+	$ngg_options['thumbheight']			= 90;  							// Thumb height
 	$ngg_options['thumbfix']			= true;							// Fix the dimension
 	$ngg_options['thumbquality']		= 100;  						// Thumb Quality
 

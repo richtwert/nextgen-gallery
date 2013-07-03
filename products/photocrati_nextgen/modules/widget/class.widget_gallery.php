@@ -72,11 +72,10 @@ class C_Widget_Gallery extends WP_Widget
         $renderer  = C_Component_Registry::get_instance()->get_utility('I_Displayed_Gallery_Renderer');
         $factory   = C_Component_Registry::get_instance()->get_utility('I_Component_Factory');
         $dynthumbs = C_Component_Registry::get_instance()->get_utility('I_Dynamic_Thumbnails_Manager');
+        $mapper    = C_Component_Registry::get_instance()->get_utility('I_Gallery_Mapper');
         $view      = $factory->create('mvc_view', '');
 
-        $container_ids = array();
-        $exclusions    = array();
-        $source        = $instance['type'];
+        $exclusions = array();
 
         if ((!empty($instance['list'])) && ($instance['exclude'] != 'all'))
         {
@@ -84,6 +83,26 @@ class C_Widget_Gallery extends WP_Widget
                 $exclusions = $instance['list'];
             if ($instance['exclude'] == 'allow')
                 $container_ids = $instance['list'];
+        }
+        else {
+            $container_ids = array();
+            $galleries = $mapper->find_all();
+            $key = $mapper->get_primary_key_column();
+            foreach ($galleries as $gallery) {
+                $container_ids[] = $gallery->$key;
+            }
+            $container_ids = implode(",", $container_ids);
+        }
+
+        if ($instance['type'] == 'random')
+        {
+            $order_by = 'rand()';
+            $order_direction = '';
+        }
+        else if ($instance['type'] == 'recent')
+        {
+            $order_by = C_Component_Registry::get_instance()->get_utility('I_Image_Mapper')->get_primary_key_column();
+            $order_direction = 'DESC';
         }
 
         // IE8 webslice support if needed
@@ -102,7 +121,9 @@ class C_Widget_Gallery extends WP_Widget
         ));
 
         echo $renderer->display_images(array(
-            'source' => $source,
+            'source' => 'galleries',
+            'order_by' => $order_by,
+            'order_direction' => $order_direction,
             'container_ids' => $container_ids,
             'exclusions' => $exclusions,
             'display_type' => NEXTGEN_GALLERY_BASIC_THUMBNAILS,

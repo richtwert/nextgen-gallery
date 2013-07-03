@@ -140,8 +140,7 @@ class Mixin_Display_Type_Controller extends Mixin
             FALSE
         );
 
-        if ($displayed_gallery->display_settings['use_lightbox_effect'])
-            $this->object->enqueue_lightbox_resources($displayed_gallery);
+        $this->object->enqueue_lightbox_resources($displayed_gallery);
 	}
 	
 	function get_render_mode()

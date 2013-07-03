@@ -383,15 +383,15 @@ class M_Resource_Minifier extends C_Base_Module
         // Both the src passed in and the src registered aren't reliable, and
         // I'm not 100% sure why - it looks to be related to the esc_url() function.
         // It sucks, but we'll have to live with it for now.
-        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+        if (!preg_match("#^http(s)?://#", $src)) {
             global $wp_scripts;
             $src = $wp_scripts->registered[$handle]->src;
         }
-        
-        if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
-        		$src = site_url() . '/' . ltrim($src, '/');
+
+        if (!preg_match("#^http(s)?://#", $src)) {
+            $src = site_url() . '/' . ltrim($src, '/');
         }
-        
+
         if (!$this->is_resource_external($src)) {
         	$this->append_resource('scripts', $handle, $src);
         }
@@ -416,12 +416,12 @@ class M_Resource_Minifier extends C_Base_Module
             // Both the src passed in and the src registered aren't reliable, and
             // I'm not 100% sure why - it looks to be related to the esc_url() function.
             // It sucks, but we'll have to live with it for now.
-            if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
+            if (!preg_match("#^http(s)?://#", $src)) {
                 $src = $wp_styles->registered[$handle]->src;
             }
 
-            if (!preg_match("#^http(s)?://\w+\.\w+#", $src)) {
-                    $src = site_url() . '/' . ltrim($src, '/');
+            if (!preg_match("#^http(s)?://#", $src)) {
+                $src = site_url() . '/' . ltrim($src, '/');
             }
 
 //        if (!$this->is_resource_external($src)) {

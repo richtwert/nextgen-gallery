@@ -42,7 +42,7 @@ class A_WordPress_Router extends Mixin
 			$retval = $this->object->remove_url_segment('/index.php', $retval);
 
 			// Static urls don't end with a slash
-			$retval = untrailingslashit($retval);;
+			$retval = untrailingslashit($retval);
 
 			// Set retval to the new url being returned
 			$this->object->set_method_property(
