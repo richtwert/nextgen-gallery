@@ -89,8 +89,8 @@ class Mixin_NextGen_Settings extends Mixin
 			'galAjaxNav'        => 0,       // AJAX Navigation for Shutter effect
 
 			// Thumbnail Effect
-			'thumbEffect'  => 'shutter',                           // select effect
-			'thumbCode'    => 'class="shutterset_%GALLERY_NAME%"', //
+			'thumbEffect'  => 'fancybox', // select effect
+			'thumbCode'    => 'class="ngg-fancybox" rel="%GALLERY_NAME%"',
 
 			// Watermark settings
 			'wmPos'    => 'botRight',             // Postion
