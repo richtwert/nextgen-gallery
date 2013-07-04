@@ -83,6 +83,18 @@ class Mixin_WordPress_Security_Action_Converter extends Mixin
 				
 				break;
 			}
+			case 'nextgen_edit_gallery':
+			{
+				$capability_name = 'NextGEN Manage gallery';
+				
+				break;
+			}
+			case 'nextgen_edit_gallery_unowned':
+			{
+				$capability_name = 'NextGEN Manage others gallery';
+				
+				break;
+			}
 		}
 		
 		return $capability_name;
