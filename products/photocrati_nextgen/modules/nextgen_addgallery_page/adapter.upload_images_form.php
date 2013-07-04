@@ -57,7 +57,30 @@ class A_Upload_Images_Form extends Mixin
 
     function get_galleries()
     {
-        $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
-        return $gallery_mapper->find_all();
+        $security  = $this->get_registry()->get_utility('I_Security_Manager');
+        $sec_actor = $security->get_current_actor();
+    		$galleries = array();
+        
+        if ($sec_actor->is_allowed('nextgen_edit_gallery'))
+        {
+		      $gallery_mapper = $this->object->get_registry()->get_utility('I_Gallery_Mapper');
+		      $galleries = $gallery_mapper->find_all();
+		      
+		      if (!$sec_actor->is_allowed('nextgen_edit_gallery_unowned'))
+		      {
+		      	$galleries_all = $galleries;
+		      	$galleries = array();
+		      	
+		      	foreach ($galleries_all as $gallery)
+		      	{
+		      		if ($sec_actor->is_user() && $sec_actor->get_entity_id() == (int)$gallery->author)
+		      		{
+		      			$galleries[] = $gallery;
+		      		}
+		      	}
+		      }
+        }
+        
+        return $galleries;
     }
 }
