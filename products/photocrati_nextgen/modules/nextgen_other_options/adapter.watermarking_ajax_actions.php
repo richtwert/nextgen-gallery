@@ -11,7 +11,7 @@ class A_Watermarking_Ajax_Actions extends Mixin
 		$security = $this->get_registry()->get_utility('I_Security_Manager');
 		$sec_actor = $security->get_current_actor();
 		
-		if ($sec_actor->is_allowed('nextgen_edit_settings') {
+		if ($sec_actor->is_allowed('nextgen_edit_settings')) {
 			$settings	= $this->get_registry()->get_utility('I_Settings_Manager');
 			$imagegen	= $this->get_registry()->get_utility('I_Dynamic_Thumbnails_Manager');
 			$mapper		= $this->get_registry()->get_utility('I_Image_Mapper');
