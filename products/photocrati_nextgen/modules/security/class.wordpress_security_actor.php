@@ -67,13 +67,19 @@ class Mixin_WordPress_Security_Action_Converter extends Mixin
 		{
 			case 'nextgen_edit_settings':
 			{
-				$capability_name = 'manage_options';
+				$capability_name = 'NextGEN Change options';
+				
+				break;
+			}
+			case 'nextgen_edit_style':
+			{
+				$capability_name = 'NextGEN Change style';
 				
 				break;
 			}
 			case 'nextgen_edit_display_settings':
 			{
-				$capability_name = 'manage_options';
+				$capability_name = 'NextGEN Change options';
 				
 				break;
 			}
@@ -92,6 +98,12 @@ class Mixin_WordPress_Security_Action_Converter extends Mixin
 			case 'nextgen_edit_gallery_unowned':
 			{
 				$capability_name = 'NextGEN Manage others gallery';
+				
+				break;
+			}
+			case 'nextgen_upload_image':
+			{
+				$capability_name = 'NextGEN Upload images';
 				
 				break;
 			}

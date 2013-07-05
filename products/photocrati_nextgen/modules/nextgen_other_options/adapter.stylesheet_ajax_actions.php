@@ -50,6 +50,9 @@ class A_Stylesheet_Ajax_Actions extends Mixin
 	 */
 	function _authorized_for_stylesheet_action()
 	{
-		return TRUE;
+		$security = $this->get_registry()->get_utility('I_Security_Manager');
+		$sec_actor = $security->get_current_actor();
+		
+		return $sec_actor->is_allowed('nextgen_edit_style');
 	}
 }
