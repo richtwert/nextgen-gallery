@@ -139,29 +139,28 @@ class M_Attach_To_Post extends C_Base_Module
                 $mapper = $this->get_registry()->get_utility('I_Displayed_Gallery_Mapper');
 				$router	= $this->get_registry()->get_utility('I_Router');
 
-				// Set some parameters
-                $preview_url = preg_quote(
-                    $router->join_paths(
-                        $router->remove_url_segment('index.php', $router->get_base_url()),
-                        '/nextgen-attach_to_post/preview'
-                    ),
-                '#');
+				// To match ATP entries we compare the stored url against a generic path
+				// We must check HTTP and HTTPS as well as permalink and non-permalink forms
+                $preview_url = parse_url($router->join_paths(
+					$router->remove_url_segment('index.php', $router->get_base_url()),
+					'/nextgen-attach_to_post/preview'
+				));
+				$preview_url = preg_quote($preview_url['host'] . $preview_url['path'], '#');
 
-				$alt_preview_url = preg_quote(
-						$router->join_paths(
-							$router->remove_url_segment('index.php', $router->get_base_url()),
-							'index.php/nextgen-attach_to_post/preview'
-						),
-				'#');
+				$alt_preview_url = parse_url($router->join_paths(
+					$router->remove_url_segment('index.php', $router->get_base_url()),
+					'index.php/nextgen-attach_to_post/preview'
+				));
+				$alt_preview_url = preg_quote($alt_preview_url['host'] . $alt_preview_url['path'], '#');
 
                 // Substitute each image for the gallery type frontent content
                 foreach ($imgs as $img) {
 
                     // The placeholder MUST have a gallery instance id
-                    if (preg_match("#({$preview_url}|{$alt_preview_url})/id--(\d+)#", $img->src, $match)) {
+                    if (preg_match("#http(s)?://({$preview_url}|{$alt_preview_url})/id--(\d+)#", $img->src, $match)) {
 
                         // Find the displayed gallery
-                        $displayed_gallery_id = $match[2];
+                        $displayed_gallery_id = $match[3];
                         $displayed_gallery = $mapper->find($displayed_gallery_id, TRUE);
 
                         // Get the content for the displayed gallery
