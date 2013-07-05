@@ -32,7 +32,8 @@
     // init the flash output
     $swfobject = new swfobject( $flash_path, 'so' . $displayed_gallery_id, $width, $height, '7.0.0', 'false');
 
-    $swfobject->message = '<p>'. __('The <a href="http://www.macromedia.com/go/getflashplayer">Flash Player</a> and <a href="http://www.mozilla.com/firefox/">a browser with Javascript support</a> are needed.', 'nggallery').'</p>';
+    $swfobject->message = '<p>' . __('Slideshows require the&nbsp;<a href="http://www.macromedia.com/go/getflashplayer">Flash Player</a>&nbsp;and a&nbsp;<a href="http://www.mozilla.com/firefox/">browser with Javascript support</a>.', 'nggallery') . '</p>';
+
     $swfobject->add_params('wmode', 'opaque');
     $swfobject->add_params('allowfullscreen', 'true');
     $swfobject->add_params('bgcolor', $flash_screen_color, 'FFFFFF', 'string', '#');
