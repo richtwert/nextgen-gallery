@@ -20,12 +20,13 @@ body {
 /* ----------- JS Slideshow -------------*/
 
 .ngg-slideshow {
-		overflow: hidden;
+    overflow: hidden;
     position: relative;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
     clear: both;
+    z-index: 0;
 }
 
 .ngg-slideshow * {
