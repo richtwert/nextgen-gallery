@@ -53,7 +53,7 @@ class Hook_NextGen_Basic_Gallery_Defaults extends Hook
         $this->object->_set_default_value($entity, 'settings', 'flash_background_music', $settings->irAudio);
         $this->object->_set_default_value($entity, 'settings', 'flash_xhtml_validation', $settings->irXHTMLvalid);
         $this->object->_set_default_value($entity, 'settings', 'effect_code', $settings->thumbCode);
-        $this->object->_set_default_value($entity, 'settings', 'show_thumbnail_link', $settings->galShowGallery ? 1 : 0);
+        $this->object->_set_default_value($entity, 'settings', 'show_thumbnail_link', $settings->galShowSlide ? 1 : 0);
         $this->object->_set_default_value($entity, 'settings', 'thumbnail_link_text', $settings->galTextGallery);
         $this->object->_set_default_value($entity, 'settings', 'template', '');
     }
